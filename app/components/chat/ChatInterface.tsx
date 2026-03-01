@@ -3,12 +3,13 @@
  *
  * GregLite strategic thread UI.
  * Single Claude model (Anthropic), no Ghost, no override policies.
+ * Restores last session on boot. Maintains conversationId for multi-turn.
  * Phase 1 foundation — will evolve through Phase 2+ sprints.
  */
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Header } from '../ui/Header';
 import { MessageList } from './MessageList';
 import { InputField } from './InputField';
@@ -19,6 +20,42 @@ export function ChatInterface() {
   const [messages, setMessages] = useState<MessageProps[]>([]);
   const [input, setInput] = useState('');
   const [sendButtonState, setSendButtonState] = useState<SendButtonState>('normal');
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [restoring, setRestoring] = useState(true);
+
+  // Boot restore — runs once on mount
+  useEffect(() => {
+    let cancelled = false;
+
+    async function bootRestore() {
+      try {
+        const res = await fetch('/api/restore');
+        if (!res.ok) return;
+
+        const data = await res.json();
+        if (cancelled) return;
+
+        if (data?.data?.restored && data.data.messages?.length > 0) {
+          const restored: MessageProps[] = data.data.messages.map(
+            (m: { role: 'user' | 'assistant'; content: string; timestamp: number }) => ({
+              role: m.role,
+              content: m.content,
+              timestamp: new Date(m.timestamp),
+            })
+          );
+          setMessages(restored);
+          setConversationId(data.data.threadId);
+        }
+      } catch {
+        // Restore failure is non-fatal — start fresh
+      } finally {
+        if (!cancelled) setRestoring(false);
+      }
+    }
+
+    void bootRestore();
+    return () => { cancelled = true; };
+  }, []);
 
   const handleSubmit = async () => {
     if (!input.trim()) return;
@@ -39,16 +76,25 @@ export function ChatInterface() {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: messageText }),
+        body: JSON.stringify({
+          message: messageText,
+          ...(conversationId && { conversationId }),
+        }),
       });
 
       if (!response.ok) throw new Error(`API error: ${response.statusText}`);
 
       const data = await response.json();
+      const chatData = data?.data;
+
+      // Persist the thread ID for subsequent messages
+      if (chatData?.conversationId && !conversationId) {
+        setConversationId(chatData.conversationId);
+      }
 
       const aiMessage: MessageProps = {
         role: 'assistant',
-        content: data?.data?.content ?? data?.content ?? 'No response',
+        content: chatData?.content ?? data?.content ?? 'No response',
         timestamp: new Date(),
       };
 
@@ -71,7 +117,13 @@ export function ChatInterface() {
       <Header />
 
       <div className="flex-1 overflow-hidden">
-        <MessageList messages={messages} />
+        {restoring ? (
+          <div className="flex h-full items-center justify-center text-[var(--ghost-text)] text-sm">
+            Restoring session...
+          </div>
+        ) : (
+          <MessageList messages={messages} />
+        )}
       </div>
 
       <div className="border-t border-[var(--shadow)] bg-[var(--deep-space)] px-6 py-4">
@@ -82,14 +134,14 @@ export function ChatInterface() {
                 value={input}
                 onChange={setInput}
                 onSubmit={handleSubmit}
-                disabled={sendButtonState === 'checking'}
+                disabled={sendButtonState === 'checking' || restoring}
                 placeholder="Type message..."
               />
             </div>
             <SendButton
               state={sendButtonState}
               onClick={handleSubmit}
-              disabled={!input.trim()}
+              disabled={!input.trim() || restoring}
             />
           </div>
         </div>

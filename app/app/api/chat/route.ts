@@ -30,8 +30,8 @@ import {
   getThread,
   getThreadMessages,
   addMessage,
-  checkpointThread,
 } from '@/lib/kernl';
+import { checkpoint } from '@/lib/continuity';
 
 const client = new Anthropic();
 
@@ -138,8 +138,8 @@ export const POST = safeHandler(async (request: Request) => {
       latency_ms: latencyMs,
     });
 
-    // Checkpoint after every assistant response (crash recovery)
-    checkpointThread(threadId, assistantMsg.id);
+    // Continuity checkpoint after every assistant response (crash recovery)
+    checkpoint(threadId, assistantMsg.id);
 
     const chatResponse: ChatResponse = {
       content,
