@@ -1,6 +1,6 @@
 # GREGORE LITE — STATUS
-**Last Updated:** March 1, 2026 — Sprint 2C COMPLETE  
-**Phase:** Phase 2 — Parallel (2A ∥ 2B ∥ 2C ∥ 2D ∥ 2E) — 2B + 2C DONE
+**Last Updated:** March 1, 2026 — Sprint 2A COMPLETE  
+**Phase:** Phase 2 — Parallel (2A ∥ 2B ∥ 2C ∥ 2D ∥ 2E) — 2A + 2B + 2C DONE
 
 ---
 
@@ -42,11 +42,40 @@ Phase 1 complete. App has a working strategic thread with KERNL SQLite persisten
 
 ## Active: Phase 2 — Parallel Sprints
 
-- [ ] **SPRINT 2A** — Agent SDK integration, job queue UI (4–5 sessions)
+- [x] **SPRINT 2A** — Agent SDK integration, job queue UI — **COMPLETE** (2 sessions)
 - [x] **SPRINT 2B** — Context panel + KERNL UI — **COMPLETE** (1 session)
 - [x] **SPRINT 2C** — AEGIS integration, workload signaling — **COMPLETE** (2 sessions)
 - [ ] **SPRINT 2D** — Artifact rendering: Monaco, Sandpack, markdown (3–4 sessions)
 - [ ] **SPRINT 2E** — War Room dependency graph UI (2–3 sessions) — start after 2A manifest schema committed
+
+## Sprint 2A Gate Results
+
+| Gate | Result |
+|------|--------|
+| tsc --noEmit | ✅ 0 errors |
+| pnpm test:run (full suite) | ✅ 140/140 passing (40 new) |
+| zod installed | ✅ Done |
+| manifests table (schema.sql + INLINE_SCHEMA) | ✅ Done |
+| types.ts + config.ts | ✅ Done |
+| manifest.ts (buildManifest, buildAgentSystemPrompt, validateManifest) | ✅ Done |
+| job-tracker.ts (insertManifest, transitionState, markStale, getRow) | ✅ Done |
+| cost-tracker.ts (CostTracker class + costTracker singleton) | ✅ Done |
+| executor.ts (runSession streaming wrapper) | ✅ Done |
+| index.ts public API (spawn, kill, status, list) | ✅ Done |
+| JobCard.tsx + JobQueue.tsx + ManifestBuilder.tsx | ✅ Done |
+| app/jobs/page.tsx (jobs route) | ✅ Done |
+| agent-sdk.test.ts (40 tests covering all modules) | ✅ Done |
+| STATUS.md updated | ✅ Done |
+| Conventional commit + push | ✅ Done |
+
+### Sprint 2A Key Discoveries
+
+- **exactOptionalPropertyTypes**: All optional fields in object literals require conditional spread — `...(x !== undefined && { key: x })` — not direct assignment.
+- **noUncheckedIndexedAccess**: `RegExpExecArray[1]` is `string | undefined`. Use `match?.[1] ?? 'fallback'` not `match ? match[1] : 'fallback'`.
+- **GREGORE PowerShell hook**: The GREGORE profile intercepts `&` operator calls and swallows stdout. TSC / vitest must be invoked via `Start-Process` with `-RedirectStandardOutput/-RedirectStandardError` files.
+- **TSC incremental cache**: `.next/tsconfig.tsbuildinfo` returns false exit 0. Delete it and use `--incremental false` for reliable TSC output.
+- **CostTracker sessionId**: Uses auto-generated nanoid, not manifestId. `startSession(model): string` returns the ID — callers must store it.
+- **aegis/index.ts gap**: Sprint 2C left `lib/aegis/` with only `types.ts`. Sprint 2A created the full `index.ts` stub to satisfy bootstrap imports.
 
 ## Sprint 2C Gate Results
 
