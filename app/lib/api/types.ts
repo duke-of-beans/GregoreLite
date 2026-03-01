@@ -83,38 +83,18 @@ export interface ChatResponse {
   conversationId: string;
   /** Message ID */
   messageId: string;
-  /** Strategy used */
-  strategy: string;
-  /** Models used */
-  modelsUsed: string[];
-  /** Total cost */
-  totalCost: number;
-  /** Total latency in milliseconds */
-  totalLatencyMs: number;
-  /** Ghost approval status */
-  ghostApproved: boolean;
-  /** Ghost metrics */
-  ghostMetrics: {
-    preApproval: boolean;
-    postApproval: boolean;
-    sacredLawsViolated: number;
-    rMetric: number;
-  };
-  /** Metabolism metrics */
-  metabolismMetrics: {
-    actualCost: number;
-    estimatedCost: number;
-    costAccuracy: number;
-    cognitiveTokensUsed: number;
-    budgetRemaining: number;
-    budgetStatus: 'ok' | 'warning' | 'exceeded';
-  };
+  /** Model used */
+  model: string;
   /** Token usage */
   usage: {
     inputTokens: number;
     outputTokens: number;
     totalTokens: number;
   };
+  /** Cost in USD */
+  costUsd: number;
+  /** Latency in milliseconds */
+  latencyMs: number;
 }
 
 /**

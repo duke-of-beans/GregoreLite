@@ -1,16 +1,15 @@
 /**
  * Services Module
  *
- * Centralized services for GREGORE.
+ * Centralized services for GregLite.
  *
  * Exports:
  * - AISDKService: Vercel AI SDK wrapper
  * - Pricing utilities
- * - Orchestration patterns (Cascade, Parallel, Tribunal, Builder-Auditor)
+ * - Orchestration patterns (Cascade only — GregLite is single-model)
  *
- * References:
- * - LEAN-OUT Migration
- * - Checkpoint 3.2: Orchestration Patterns
+ * Parallel, Tribunal, Builder-Auditor patterns are Gregore Full features
+ * and are not present in GregLite.
  */
 
 // AI SDK Service
@@ -27,41 +26,16 @@ export type {
 export { calculateCost, getModelPricing } from './pricing';
 export type { ModelPricing, ModelCost } from './pricing';
 
-// Orchestration Patterns
+// Orchestration Patterns (Cascade only)
 export {
-  // Cascade
   cascadeRequest,
   createStandardHierarchy,
   createCostOptimizedHierarchy,
-  // Parallel
-  parallelRequests,
-  parallelMapReduce,
-  // Tribunal
-  tribunalRequest,
-  // Builder-Auditor
-  builderAuditorRequest,
-  builderAuditorWithGhost,
-  createCodeGenerationPattern,
-  createConfigGenerationPattern,
 } from './patterns';
 
 export type {
-  // Cascade types
   CascadeModel,
   CascadeOptions,
   CascadeAttempt,
   CascadeResult,
-  // Parallel types
-  ParallelResult,
-  ParallelOptions,
-  // Tribunal types
-  TribunalModel,
-  TribunalOptions,
-  TribunalResult,
-  // Builder-Auditor types
-  BuilderConfig,
-  AuditorConfig,
-  AuditResult,
-  BuilderAuditorResult,
-  BuilderAuditorOptions,
 } from './patterns';

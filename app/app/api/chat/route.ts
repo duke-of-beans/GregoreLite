@@ -3,15 +3,15 @@
  *
  * POST /api/chat - Send message and get AI response
  *
- * Uses OrchestrationExecutor for intelligent routing
- * and multi-model orchestration.
+ * Direct Anthropic SDK call. No orchestration layer.
+ * Phase 1 foundation — context injection added in Sprint 1D.
  *
  * @module api/chat
  */
 
 import { NextResponse } from 'next/server';
 import { nanoid } from 'nanoid';
-import { OrchestrationExecutor } from '@/lib/orchestration/executor';
+import Anthropic from '@anthropic-ai/sdk';
 import type { ChatRequest, ChatResponse } from '@/lib/api/types';
 import {
   successResponse,
@@ -24,6 +24,8 @@ import {
   rateLimiter,
   getRateLimitIdentifier,
 } from '@/lib/api/rate-limiter';
+
+const client = new Anthropic();
 
 /**
  * POST /api/chat
@@ -67,78 +69,43 @@ export const POST = safeHandler(async (request: Request) => {
     return validationError('Missing required field: message');
   }
 
-  // Validate message length
   if (body.message.length > 10000) {
     return validationError('Message too long (max 10,000 characters)');
   }
 
-  // Initialize orchestrator
-  const executor = new OrchestrationExecutor();
+  const start = Date.now();
 
   try {
-    // Execute orchestrated query
-    const orchestrationRequest: {
-      query: string;
-      systemPrompt?: string;
-      temperature?: number;
-      userPreferences?: {
-        maxCost?: number;
-        maxLatency?: number;
-        preferredProvider?: string;
-      };
-    } = {
-      query: body.message,
-    };
+    const message = await client.messages.create({
+      model: 'claude-sonnet-4-5',
+      max_tokens: 8096,
+      system:
+        body.systemPrompt ??
+        "You are GregLite, a premier AI development environment. You are Claude, acting as COO to the user's CEO role. Be direct, intelligent, and execution-focused.",
+      messages: [{ role: 'user', content: body.message }],
+    });
 
-    if (body.systemPrompt) {
-      orchestrationRequest.systemPrompt = body.systemPrompt;
-    }
-    if (body.temperature !== undefined) {
-      orchestrationRequest.temperature = body.temperature;
-    }
-    if (body.preferences) {
-      orchestrationRequest.userPreferences = body.preferences;
-    }
+    const textBlock = message.content.find((b) => b.type === 'text');
+    const content = textBlock?.type === 'text' ? textBlock.text : '';
+    const latencyMs = Date.now() - start;
 
-    const result = await executor.execute(orchestrationRequest);
-
-    if (!result.ok) {
-      return errorResponse(result.error.message, 500);
-    }
-
-    const orchestrationResult = result.value;
-
-    // Generate IDs
-    const conversationId = body.conversationId || `conv_${nanoid()}`;
-    const messageId = `msg_${nanoid()}`;
-
-    // Build response
     const chatResponse: ChatResponse = {
-      content: orchestrationResult.response.content,
-      conversationId,
-      messageId,
-      strategy: orchestrationResult.strategy,
-      modelsUsed: orchestrationResult.modelsUsed,
-      totalCost: orchestrationResult.totalCost,
-      totalLatencyMs: orchestrationResult.totalLatencyMs,
-      ghostApproved: orchestrationResult.ghostApproved,
-      ghostMetrics: {
-        preApproval: orchestrationResult.ghostMetrics.preApproval,
-        postApproval: orchestrationResult.ghostMetrics.postApproval,
-        sacredLawsViolated: orchestrationResult.ghostMetrics.violationsDetected,
-        rMetric: orchestrationResult.ghostMetrics.rMetric,
-      },
-      metabolismMetrics: orchestrationResult.metabolismMetrics,
+      content,
+      conversationId: body.conversationId ?? `conv_${nanoid()}`,
+      messageId: `msg_${nanoid()}`,
+      model: message.model,
       usage: {
-        inputTokens: orchestrationResult.response.usage.inputTokens,
-        outputTokens: orchestrationResult.response.usage.outputTokens,
-        totalTokens: orchestrationResult.response.usage.totalTokens,
+        inputTokens: message.usage.input_tokens,
+        outputTokens: message.usage.output_tokens,
+        totalTokens: message.usage.input_tokens + message.usage.output_tokens,
       },
+      costUsd: 0, // Phase 2D: wire pricing.ts
+      latencyMs,
     };
 
     return successResponse(chatResponse, 200);
   } catch (error) {
-    console.error('Chat API error:', error);
+    console.error('[chat/route] Error:', error);
     return errorResponse(
       error instanceof Error ? error.message : 'Failed to process message',
       500

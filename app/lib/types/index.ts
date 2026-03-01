@@ -18,33 +18,6 @@ export type {
   ConversationSummary,
 } from './domain';
 
-// System architecture types
-export type {
-  Result,
-  SystemInput,
-  SystemOutput,
-  RequestContext,
-  RequestConstraint,
-  KnowledgeEntry,
-  Evidence,
-  KnowledgeStore,
-  KnowledgeGap,
-  KnowledgeRelationship,
-  ActiveContext,
-  ContextSlot,
-  RequestQuota,
-  PerformanceMetrics,
-  DomainMetrics,
-  CalibrationData,
-  CalibrationBin,
-  ValidationResult,
-  SystemHealth,
-  RuntimeProfile,
-  RoutingDecision,
-  ModelRoute,
-  AuditEntry,
-} from './cognitive';
-
 // AI service types
 export type {
   AIModelConfig,

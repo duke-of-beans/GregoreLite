@@ -1,0 +1,1 @@
+sprint-1a: clean chat route, working strategic thread  
