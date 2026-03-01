@@ -23,11 +23,20 @@ export function ChatInterface() {
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [restoring, setRestoring] = useState(true);
 
-  // Boot restore — runs once on mount
+  // Boot sequence — runs once on mount
+  // Bootstrap (context injection) and restore (session recovery) fire in parallel.
+  // UI becomes interactive as soon as restore settles; bootstrap is fire-and-forget.
   useEffect(() => {
     let cancelled = false;
 
-    async function bootRestore() {
+    async function bootSequence() {
+      // Fire bootstrap non-blocking — server caches the context package for chat route
+      void fetch('/api/bootstrap', { method: 'POST' }).then((res) => {
+        if (!res.ok) console.warn('[boot] Bootstrap returned', res.status);
+        else res.json().then((d) => console.log('[boot] Bootstrap complete', d?.data?.coldStartMs + 'ms')).catch(() => null);
+      }).catch((err) => console.warn('[boot] Bootstrap fetch failed:', err));
+
+      // Restore last session
       try {
         const res = await fetch('/api/restore');
         if (!res.ok) return;
@@ -53,7 +62,7 @@ export function ChatInterface() {
       }
     }
 
-    void bootRestore();
+    void bootSequence();
     return () => { cancelled = true; };
   }, []);
 

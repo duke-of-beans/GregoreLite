@@ -32,11 +32,9 @@ import {
   addMessage,
 } from '@/lib/kernl';
 import { checkpoint } from '@/lib/continuity';
+import { getBootstrapSystemPrompt } from '@/lib/bootstrap';
 
 const client = new Anthropic();
-
-const SYSTEM_PROMPT =
-  "You are GregLite, a premier AI development environment. You are Claude, acting as COO to the user's CEO role. Be direct, intelligent, and execution-focused.";
 
 /**
  * POST /api/chat
@@ -119,7 +117,7 @@ export const POST = safeHandler(async (request: Request) => {
     const response = await client.messages.create({
       model: 'claude-sonnet-4-5',
       max_tokens: 8096,
-      system: body.systemPrompt ?? SYSTEM_PROMPT,
+      system: body.systemPrompt ?? getBootstrapSystemPrompt(),
       messages: anthropicMessages,
     });
 
