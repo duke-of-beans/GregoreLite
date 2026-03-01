@@ -1,10 +1,10 @@
-Add DEV_PROTOCOLS.md - resolves D:\Dev\ dependency gap
+feat(sprint-2c): AEGIS integration -- workload signaling, governor, status bar override
 
-New file: DEV_PROTOCOLS.md
-- Documents the two mandatory D:\Dev\ bootstrap files
-- Contains GregLite-specific extracts of Technical Standards and Authority Protocol
-- Fallback behavior if D:\Dev\ files cannot be loaded
-- Version tracking for TECHNICAL_STANDARDS.md v1.0.0 and CLAUDE_INSTRUCTIONS.md v1.3.0
-
-Updated: BLUEPRINT_FINAL.md §2.1 - references DEV_PROTOCOLS.md for gap coverage
-Updated: STATUS.md - reflects new file and closed gap
+- app/lib/aegis/: types, client (HTTP port 8743), governor (5s poll + 5s anti-flap), public index
+- AEGISGovernor: determineProfile() pure fn, anti-flap dedup, start/stop/forceEvaluate
+- Public API: initAEGIS, shutdownAEGIS, getAEGISStatus, overrideAEGISProfile, updateAEGISState
+- Bootstrap wired: initAEGIS on boot, STARTUP signal sent, governor started
+- POST /api/aegis/override: manual profile override route, bypasses anti-flap, logs is_override=1
+- aegis.test.ts: 31 new tests covering determineProfile, AEGIS_PROFILE_MAP, governor, lifecycle
+- agent-sdk.test.ts: fix vi.hoisted() pattern for vi.mock() factory variable references
+- tsc: 0 errors | tests: 140/140 passing

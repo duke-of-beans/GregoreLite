@@ -214,3 +214,72 @@ pre {
   background: rgba(0, 212, 232, 0.3);
   color: var(--ice-white);
 }
+
+/* ========== MISSING VARIABLES (aliases) ========== */
+
+:root {
+  --muted: #8895a5;        /* alias for --mist, used in War Room edges */
+  --ghost-text: #4a5560;   /* subdued placeholder text */
+}
+
+/* ========== WAR ROOM ========== */
+
+/* Node container */
+.war-room-node {
+  display: flex;
+  align-items: stretch;
+  border-radius: 8px;
+  border: 1.5px solid var(--shadow);
+  background: var(--elevated);
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.war-room-node:hover {
+  border-color: var(--frost);
+}
+
+/* Left status strip */
+.war-room-node-strip {
+  width: 4px;
+  flex-shrink: 0;
+}
+
+/* Text area */
+.war-room-node-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: 6px 10px;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.war-room-node-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ice-white);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.war-room-node-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Status change pulse */
+@keyframes war-room-pulse-anim {
+  0%   { box-shadow: 0 0 0 0 rgba(0, 212, 232, 0.5); }
+  50%  { box-shadow: 0 0 0 6px rgba(0, 212, 232, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 212, 232, 0); }
+}
+
+.war-room-pulse {
+  animation: war-room-pulse-anim 0.6s ease-out;
+}

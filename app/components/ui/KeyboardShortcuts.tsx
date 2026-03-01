@@ -23,6 +23,7 @@ const shortcuts = [
       { keys: ['Cmd', '/'], description: 'Show keyboard shortcuts' },
       { keys: ['Cmd', ','], description: 'Open settings' },
       { keys: ['Cmd', 'B'], description: 'Toggle context panel' },
+      { keys: ['Cmd', 'W'], description: 'Toggle War Room (dependency graph)' },
       { keys: ['Cmd', 'I'], description: 'Toggle inspector drawer' },
       { keys: ['Cmd', '['], description: 'Toggle chat history' },
     ],
