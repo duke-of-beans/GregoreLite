@@ -235,8 +235,10 @@ describe('getRecencyFactor', () => {
   });
 
   it('returns 1.0 for content created 7 days ago', () => {
-    const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-    expect(getRecencyFactor(sevenDaysAgo)).toBe(1.0);
+    // Use 6 days 23h 59m to stay strictly within the ≤7d boundary,
+    // avoiding floating-point drift at the exact millisecond boundary.
+    const justUnder7Days = Date.now() - (7 * 24 * 60 * 60 * 1000 - 60_000);
+    expect(getRecencyFactor(justUnder7Days)).toBe(1.0);
   });
 
   it('returns 0.5 for content created 90 days ago', () => {

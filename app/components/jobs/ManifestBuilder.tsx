@@ -2,9 +2,10 @@
  * ManifestBuilder
  *
  * Form to create a TaskManifest from the strategic thread context.
- * Calls spawnJob() from the job store on submit.
+ * Calls spawnJob() from the job store on submit — guarded by the
+ * Already-Built Gate (Sprint 3F) before spawning.
  *
- * BLUEPRINT §4.3 (ManifestBuilder)
+ * BLUEPRINT §4.3 + §5.4 (ManifestBuilder + Already-Built Gate)
  */
 
 'use client';
@@ -12,7 +13,11 @@
 import { useState } from 'react';
 import { useJobStore } from '@/lib/stores/job-store';
 import { buildManifest } from '@/lib/agent-sdk/manifest';
-import type { TaskType } from '@/lib/agent-sdk/types';
+import type { TaskManifest, TaskType } from '@/lib/agent-sdk/types';
+import { checkBeforeManifest } from '@/lib/cross-context/gate';
+import { recordOverride } from '@/lib/cross-context/override-tracker';
+import { AlreadyBuiltModal } from '@/components/cross-context/AlreadyBuiltModal';
+import type { GateMatch } from '@/lib/cross-context/gate';
 
 const TASK_TYPES: TaskType[] = ['code', 'test', 'docs', 'research', 'deploy', 'self_evolution'];
 
@@ -33,6 +38,10 @@ export function ManifestBuilder({ threadId, strategicThreadId, onSpawned }: Mani
   const [projectPath, setProjectPath] = useState('D:\\Projects\\GregLite');
   const [successCriteria, setSuccessCriteria] = useState('');
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  // Gate state (Sprint 3F)
+  const [gateMatches, setGateMatches] = useState<GateMatch[]>([]);
+  const [pendingManifest, setPendingManifest] = useState<TaskManifest | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -59,9 +68,24 @@ export function ManifestBuilder({ threadId, strategicThreadId, onSpawned }: Mani
         dependencies: [],
       });
 
+      // ── Already-Built Gate (Sprint 3F) ─────────────────────────────────────
+      const gateResult = await checkBeforeManifest(manifest);
+      if (gateResult.shouldIntercept) {
+        setGateMatches(gateResult.matches);
+        setPendingManifest(manifest);
+        return; // Modal takes over
+      }
+
+      await doSpawn(manifest);
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : 'Failed to spawn session');
+    }
+  }
+
+  async function doSpawn(manifest: TaskManifest) {
+    try {
       const result = await spawnJob(manifest);
       onSpawned?.(result.jobId, result.queued);
-
       // Reset form
       setTitle('');
       setDescription('');
@@ -69,6 +93,27 @@ export function ManifestBuilder({ threadId, strategicThreadId, onSpawned }: Mani
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : 'Failed to spawn session');
     }
+  }
+
+  function handleReuseAsBase(content: string) {
+    // Pre-fill description with matched content as starting context
+    setDescription(content);
+    setGateMatches([]);
+    setPendingManifest(null);
+  }
+
+  function handleContinueAnyway(chunkId: string) {
+    recordOverride(chunkId);
+    setGateMatches([]);
+    if (pendingManifest) {
+      void doSpawn(pendingManifest);
+    }
+    setPendingManifest(null);
+  }
+
+  function handleCloseGate() {
+    setGateMatches([]);
+    setPendingManifest(null);
   }
 
   const fieldStyle: React.CSSProperties = {
@@ -92,6 +137,7 @@ export function ManifestBuilder({ threadId, strategicThreadId, onSpawned }: Mani
   };
 
   return (
+    <>
     <form
       onSubmit={handleSubmit}
       style={{
@@ -203,5 +249,18 @@ export function ManifestBuilder({ threadId, strategicThreadId, onSpawned }: Mani
         {loading ? 'Spawning…' : 'Spawn Worker Session'}
       </button>
     </form>
+
+    {/* Already-Built Gate modal (Sprint 3F) */}
+    {gateMatches.length > 0 && (
+      <AlreadyBuiltModal
+        matches={gateMatches}
+        proposedTitle={title}
+        proposedDescription={description}
+        onReuseAsBase={handleReuseAsBase}
+        onContinue={handleContinueAnyway}
+        onClose={handleCloseGate}
+      />
+    )}
+    </>
   );
 }
