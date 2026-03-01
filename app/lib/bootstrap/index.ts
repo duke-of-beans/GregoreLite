@@ -13,7 +13,7 @@
 
 import { loadDevProtocols } from './dev-protocols';
 import { buildContextPackage, DEFAULT_SYSTEM_PROMPT } from './context-builder';
-import { sendStartupSignal } from './aegis-signal';
+import { initAEGIS } from '../aegis';
 import type { BootstrapResult, ContextPackage } from './types';
 
 const CACHE_TTL_MS = 30 * 60 * 1000; // 30 minutes
@@ -60,8 +60,11 @@ export async function runBootstrap(): Promise<BootstrapResult> {
     // Step 3: Build full context package (queries KERNL internally)
     const pkg = buildContextPackage(devProtocols, startTime);
 
-    // Step 4: AEGIS STARTUP signal (stub)
-    sendStartupSignal(pkg.coldStartMs);
+    // Step 4: AEGIS — health check, STARTUP signal, governor start
+    const aegisOnline = await initAEGIS();
+    if (!aegisOnline) {
+      errors.push('AEGIS offline — workload signaling inactive until AEGIS starts');
+    }
 
     // Cache the result
     _cachedPackage = pkg;

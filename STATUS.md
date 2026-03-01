@@ -1,6 +1,6 @@
 # GREGORE LITE — STATUS
-**Last Updated:** March 1, 2026 — Sprint 2B COMPLETE  
-**Phase:** Phase 2 — Parallel (2A ∥ 2B ∥ 2C ∥ 2D ∥ 2E) — 2B DONE
+**Last Updated:** March 1, 2026 — Sprint 2C COMPLETE  
+**Phase:** Phase 2 — Parallel (2A ∥ 2B ∥ 2C ∥ 2D ∥ 2E) — 2B + 2C DONE
 
 ---
 
@@ -44,9 +44,36 @@ Phase 1 complete. App has a working strategic thread with KERNL SQLite persisten
 
 - [ ] **SPRINT 2A** — Agent SDK integration, job queue UI (4–5 sessions)
 - [x] **SPRINT 2B** — Context panel + KERNL UI — **COMPLETE** (1 session)
-- [ ] **SPRINT 2C** — AEGIS integration, workload signaling (2–3 sessions)
+- [x] **SPRINT 2C** — AEGIS integration, workload signaling — **COMPLETE** (2 sessions)
 - [ ] **SPRINT 2D** — Artifact rendering: Monaco, Sandpack, markdown (3–4 sessions)
 - [ ] **SPRINT 2E** — War Room dependency graph UI (2–3 sessions) — start after 2A manifest schema committed
+
+## Sprint 2C Gate Results
+
+| Gate | Result |
+|------|--------|
+| tsc --noEmit | ✅ 0 errors |
+| pnpm test:run (full suite) | ✅ 140/140 passing |
+| aegis module (types, client, governor, index) | ✅ Done |
+| AEGISGovernor — 5s poll, 5s anti-flap | ✅ Done |
+| initAEGIS / shutdownAEGIS / getAEGISStatus | ✅ Done |
+| Bootstrap wired (initAEGIS on boot) | ✅ Done |
+| POST /api/bootstrap sends STARTUP signal | ✅ Done |
+| GET /api/context returns aegisOnline field | ✅ Done |
+| POST /api/aegis/override route | ✅ Done |
+| AEGISStatus.tsx — status bar display + override modal | ✅ Done |
+| aegis.test.ts — 31 new tests | ✅ Done |
+| KERNL logging (logAegisSignal) | ✅ Done |
+| STATUS.md updated | ✅ Done |
+| Conventional commit + push | ✅ Done |
+
+### Sprint 2C Key Discoveries
+
+- **AEGIS API**: `POST /switch {profile: string}` on port 8743 (not `/signal` as spec suggested). Discovered from `D:\Dev\aegis\src\status\server.ts`.
+- **Profile mapping**: 10 GregLite `WorkloadProfile` names → 6 AEGIS native names (`idle`, `build-mode`, `deep-research`, `performance`, `wartime`, `presentation`). Map lives in `types.ts`.
+- **VM/Windows filesystem split**: Cowork VM Write tool writes to VM-local paths only. All production file writes must go through Desktop Commander to reach the real Windows filesystem.
+- **vitest hoisting**: `vi.mock()` factories are hoisted before `const` declarations. Must use `vi.hoisted()` for mock variables referenced inside factory functions.
+- **pnpm + PowerShell**: `.cmd` shims in pnpm paths fail silently in PowerShell. Test runner must use `shell: cmd`. Created `run-tests.cmd` helper.
 
 ## Sprint 2B Gate Results
 
