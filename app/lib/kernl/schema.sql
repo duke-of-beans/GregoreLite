@@ -144,6 +144,24 @@ CREATE TABLE IF NOT EXISTS aegis_signals (
 
 CREATE INDEX IF NOT EXISTS idx_aegis_signals_sent_at ON aegis_signals(sent_at DESC);
 
+-- ─── CONTENT CHUNKS (Sprint 3A — Embedding Pipeline) ────────────────────────
+-- Stores chunked text + metadata. Vectors written to vec_index by Sprint 3B.
+-- Joined by chunk_id.
+CREATE TABLE IF NOT EXISTS content_chunks (
+  id           TEXT PRIMARY KEY,              -- chunk_id (nanoid)
+  source_type  TEXT NOT NULL CHECK(source_type IN ('conversation','file','email','email_attachment')),
+  source_id    TEXT NOT NULL,                 -- thread_id, file path, email_id
+  chunk_index  INTEGER NOT NULL,              -- 0-based within source
+  content      TEXT NOT NULL,                 -- raw chunk text
+  metadata     TEXT,                          -- JSON: embedding_dim etc.
+  model_id     TEXT NOT NULL,                 -- 'Xenova/bge-small-en-v1.5' — required for migration
+  created_at   INTEGER NOT NULL,
+  indexed_at   INTEGER NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_chunks_source ON content_chunks(source_type, source_id);
+CREATE INDEX IF NOT EXISTS idx_chunks_model  ON content_chunks(model_id);
+
 -- ─── FTS VIRTUAL TABLE ───────────────────────────────────────────────────────
 CREATE VIRTUAL TABLE IF NOT EXISTS messages_fts USING fts5(
   content,

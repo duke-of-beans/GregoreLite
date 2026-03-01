@@ -64,4 +64,7 @@ CREATE INDEX IF NOT EXISTS idx_checkpoints_thread ON checkpoints(thread_id, crea
 CREATE TABLE IF NOT EXISTS manifests (id TEXT PRIMARY KEY, version TEXT NOT NULL DEFAULT '1.0', spawned_by_thread TEXT NOT NULL REFERENCES threads(id) ON DELETE CASCADE, strategic_thread_id TEXT NOT NULL, created_at TEXT NOT NULL, updated_at INTEGER NOT NULL DEFAULT (unixepoch('now','subsec')*1000), status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','spawning','running','working','validating','completed','failed','interrupted')), task_type TEXT CHECK(task_type IN ('code','test','docs','research','deploy','self_evolution')), title TEXT, description TEXT, project_path TEXT, dependencies TEXT, quality_gates TEXT, is_self_evolution INTEGER DEFAULT 0, self_evolution_branch TEXT, result_report TEXT, tokens_used INTEGER DEFAULT 0, cost_usd REAL DEFAULT 0);
 CREATE INDEX IF NOT EXISTS idx_manifests_status ON manifests(status);
 CREATE INDEX IF NOT EXISTS idx_manifests_thread ON manifests(spawned_by_thread);
+CREATE TABLE IF NOT EXISTS content_chunks (id TEXT PRIMARY KEY, source_type TEXT NOT NULL CHECK(source_type IN ('conversation','file','email','email_attachment')), source_id TEXT NOT NULL, chunk_index INTEGER NOT NULL, content TEXT NOT NULL, metadata TEXT, model_id TEXT NOT NULL, created_at INTEGER NOT NULL, indexed_at INTEGER NOT NULL);
+CREATE INDEX IF NOT EXISTS idx_chunks_source ON content_chunks(source_type, source_id);
+CREATE INDEX IF NOT EXISTS idx_chunks_model ON content_chunks(model_id);
 `;

@@ -33,6 +33,7 @@ import {
 } from '@/lib/kernl';
 import { checkpoint } from '@/lib/continuity';
 import { getBootstrapSystemPrompt } from '@/lib/bootstrap';
+import { embed, persistEmbeddings } from '@/lib/embeddings';
 
 const client = new Anthropic();
 
@@ -138,6 +139,14 @@ export const POST = safeHandler(async (request: Request) => {
 
     // Continuity checkpoint after every assistant response (crash recovery)
     checkpoint(threadId, assistantMsg.id);
+
+    // Fire-and-forget embedding — does NOT delay chat response (§5.1 blueprint)
+    // Sprint 3B will wire the resulting Float32Arrays into vec_index.
+    embed(content, 'conversation', threadId)
+      .then((records) => persistEmbeddings(records))
+      .catch((err: unknown) =>
+        console.warn('[embeddings] persist failed', { err })
+      );
 
     const chatResponse: ChatResponse = {
       content,
