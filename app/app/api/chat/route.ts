@@ -35,6 +35,8 @@ import { checkpoint } from '@/lib/continuity';
 import { getBootstrapSystemPrompt } from '@/lib/bootstrap';
 import { embed, persistEmbeddingsFull } from '@/lib/embeddings';
 import { recordUserActivity } from '@/lib/indexer';
+import { checkOnInput } from '@/lib/cross-context/proactive';
+import { useSuggestionStore } from '@/lib/stores/suggestion-store';
 
 const client = new Anthropic();
 
@@ -108,6 +110,19 @@ export const POST = safeHandler(async (request: Request) => {
 
   // Signal user activity to background indexer (resets idle timer)
   recordUserActivity();
+
+  // Fire-and-forget proactive surfacing — does NOT delay chat response (§5.7 blueprint)
+  // Runs the full ranking pipeline; if suggestions found, pushes to Zustand store.
+  // Phase 4: resolve activeProjectId from thread metadata
+  checkOnInput(body.message)
+    .then((suggestions) => {
+      if (suggestions.length > 0) {
+        useSuggestionStore.getState().setSuggestions(suggestions);
+      }
+    })
+    .catch((err: unknown) =>
+      console.warn('[proactive] check failed', { err })
+    );
 
   // Build Anthropic messages array from thread history
   const history = getThreadMessages(threadId);

@@ -46,3 +46,12 @@ export { checkBeforeManifest } from './gate';
 
 // Override tracker (Sprint 3F)
 export { recordOverride, getOverrideCount } from './override-tracker';
+
+// Value boost (Sprint 3G)
+export { getValueBoost } from './value-boost';
+
+// Full scoring + chunk metadata (Sprint 3G)
+export { getDismissalsInWindow, getChunkMeta, scoreCandidate } from './surfacing';
+
+// Proactive on-input trigger (Sprint 3G)
+export { checkOnInput } from './proactive';

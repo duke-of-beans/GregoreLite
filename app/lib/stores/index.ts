@@ -15,6 +15,12 @@
 export { useConversationStore } from './conversation-store';
 export { useMessageStore } from './message-store';
 export { useUIStore } from './ui-store';
+export {
+  useSuggestionStore,
+  selectSuggestionCount,
+  selectSuggestions,
+} from './suggestion-store';
+export type { SuggestionStore } from './suggestion-store';
 
 // ============================================================================
 // UI STORE TYPES & SELECTORS

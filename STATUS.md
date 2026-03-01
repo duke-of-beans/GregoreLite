@@ -1,5 +1,5 @@
 # GREGORE LITE — STATUS
-**Last Updated:** March 1, 2026 — Sprint 3F COMPLETE  
+**Last Updated:** March 1, 2026 — Sprint 3G COMPLETE  
 **Phase:** Phase 3 — Intelligence Layer (3A→3B→3C, then 3D∥3E, then 3F→3G→3H)
 
 ---
@@ -204,7 +204,7 @@ Execution order: 3A → 3B → 3C → (3D ∥ 3E) → 3F → 3G → 3H
 - [x] **SPRINT 3D** — Background indexer + AEGIS throttling (30-min cadence, 500ms budget) — **COMPLETE**
 - [x] **SPRINT 3E** — Suggestion feedback + threshold calibration (can run parallel with 3D) — **COMPLETE**
 - [x] **SPRINT 3F** — "You already built this" gate (manifest interception modal, Monaco diff) — **COMPLETE**
-- [ ] **SPRINT 3G** — Ranking, suppression + proactive surfacing UI (suggestion cards)
+- [x] **SPRINT 3G** — Ranking, suppression + proactive surfacing UI (suggestion cards) — **COMPLETE**
 - [ ] **SPRINT 3H** — Phase 3 end-to-end integration + hardening gate
 
 ## Phase 3 Execution Briefs
