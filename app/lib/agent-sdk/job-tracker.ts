@@ -9,6 +9,7 @@
 
 import { getDatabase } from '../kernl/database';
 import type { TaskManifest, JobState, ResultReport } from './types';
+import { runOnce } from '../indexer';
 
 // ─── Row shape matching schema.sql manifests table ────────────────────────────
 
@@ -125,6 +126,15 @@ export function writeResultReport(
     updated_at: Date.now(),
     id: manifestId,
   });
+
+  // After a successful job, opportunistically index any new content
+  if (state === 'COMPLETED') {
+    setImmediate(() => {
+      runOnce().catch((err: unknown) =>
+        console.warn('[indexer] post-job run failed', { err })
+      );
+    });
+  }
 }
 
 // ─── Reads ────────────────────────────────────────────────────────────────────

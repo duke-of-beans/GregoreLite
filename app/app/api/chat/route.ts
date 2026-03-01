@@ -34,6 +34,7 @@ import {
 import { checkpoint } from '@/lib/continuity';
 import { getBootstrapSystemPrompt } from '@/lib/bootstrap';
 import { embed, persistEmbeddingsFull } from '@/lib/embeddings';
+import { recordUserActivity } from '@/lib/indexer';
 
 const client = new Anthropic();
 
@@ -104,6 +105,9 @@ export const POST = safeHandler(async (request: Request) => {
     role: 'user',
     content: body.message,
   });
+
+  // Signal user activity to background indexer (resets idle timer)
+  recordUserActivity();
 
   // Build Anthropic messages array from thread history
   const history = getThreadMessages(threadId);
