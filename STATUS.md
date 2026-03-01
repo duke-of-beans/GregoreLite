@@ -1,6 +1,6 @@
 # GREGORE LITE — STATUS
-**Last Updated:** March 1, 2026 — Sprint 2A COMPLETE  
-**Phase:** Phase 2 — Parallel (2A ∥ 2B ∥ 2C ∥ 2D ∥ 2E) — 2A + 2B + 2C DONE
+**Last Updated:** March 1, 2026 — Sprint 2D COMPLETE  
+**Phase:** Phase 2 — Parallel (2A ∥ 2B ∥ 2C ∥ 2D ∥ 2E) — 2A + 2B + 2C + 2D DONE
 
 ---
 
@@ -45,7 +45,7 @@ Phase 1 complete. App has a working strategic thread with KERNL SQLite persisten
 - [x] **SPRINT 2A** — Agent SDK integration, job queue UI — **COMPLETE** (2 sessions)
 - [x] **SPRINT 2B** — Context panel + KERNL UI — **COMPLETE** (1 session)
 - [x] **SPRINT 2C** — AEGIS integration, workload signaling — **COMPLETE** (2 sessions)
-- [ ] **SPRINT 2D** — Artifact rendering: Monaco, Sandpack, markdown (3–4 sessions)
+- [x] **SPRINT 2D** — Artifact rendering: Monaco, Sandpack, Shiki, 3-panel layout — **COMPLETE** (3 sessions)
 - [ ] **SPRINT 2E** — War Room dependency graph UI (2–3 sessions) — start after 2A manifest schema committed
 
 ## Sprint 2A Gate Results
@@ -120,6 +120,34 @@ Phase 1 complete. App has a working strategic thread with KERNL SQLite persisten
 | scripts/seed-kernl.ts | ✅ Done |
 | STATUS.md updated | ✅ Done |
 | Conventional commit + push | ✅ Done |
+
+## Sprint 2D Gate Results
+
+| Gate | Result |
+|------|--------|
+| tsc --noEmit | ✅ 0 errors |
+| pnpm test:run (full suite) | ✅ 140/140 passing |
+| lib/artifacts/ (types, detector, store, kernl-sync, index) | ✅ Done |
+| app/api/kernl/artifact/route.ts | ✅ Done |
+| ArtifactToolbar, CodeArtifact, MarkdownArtifact, SandpackArtifact, ArtifactPanel | ✅ Done |
+| Message.tsx — Shiki inline syntax highlighting + copy button | ✅ Done |
+| ChatInterface.tsx — artifact detection + 3-panel layout | ✅ Done |
+| artifacts/detector.test.ts (11 tests) | ✅ Done |
+| artifacts/store.test.ts (7 tests) | ✅ Done |
+| lib/aegis/ — full Sprint 2C impl (governor, anti-flap, lifecycle) | ✅ Done |
+| CostTracker API redesign — startSession(model): string, totalCostUsd, getCostCapStatus | ✅ Done |
+| executor.ts updated to new CostTracker API | ✅ Done |
+| STATUS.md updated | ✅ Done |
+| Conventional commit + push | ✅ Done |
+
+### Sprint 2D Key Discoveries
+
+- **vitest batch runner**: PowerShell `Start-Process` + `ReadToEnd()` hangs when vitest spawns worker processes that inherit the stdout pipe handle. Fixed by using a `.bat` file with `>` file redirection (`> D:\test_out.txt 2>&1`) launched via `cmd.exe -WindowStyle Hidden`.
+- **CMD `set` quoting**: `set PATH=D:\Program Files\nodejs;...` breaks on spaces — `Program` is the value, `Files\nodejs;...` is discarded. Must use `set "PATH=D:\Program Files\nodejs;..."` (quotes around the whole assignment).
+- **Full-path binary calls**: When PATH manipulation is unreliable, use absolute paths directly: `"D:\Program Files\nodejs\node.exe"`, `"D:\Program Files\Git\cmd\git.exe"`. Bypasses all PATH ambiguity.
+- **TSC incremental cache**: `incremental: true` in tsconfig causes false-positive clean runs (exit 0, 0.5s). Must delete `tsconfig.tsbuildinfo` before each clean check.
+- **AEGIS forward references**: Sprint 2B/2C wrote imports to `@/lib/aegis/governor` and `@/lib/aegis/types` before the module existed. Sprint 2D created the full implementation to unblock tsc.
+- **CostTracker API drift**: Sprint 2A tests spec'd `startSession(model): string` but implementation had `startSession(id, model): void`. Test is canonical spec — implementation updated to match.
 
 ## Sprint Blueprint Files
 
