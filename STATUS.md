@@ -1,6 +1,6 @@
 # GREGORE LITE — STATUS
-**Last Updated:** March 1, 2026 — Sprint 2E COMPLETE  
-**Phase:** Phase 2 — Parallel (2A ∥ 2B ∥ 2C ∥ 2D ∥ 2E) — ALL DONE
+**Last Updated:** March 1, 2026 — Sprint 3A COMPLETE  
+**Phase:** Phase 3 — Intelligence Layer (3A→3B→3C, then 3D∥3E, then 3F→3G→3H)
 
 ---
 
@@ -194,9 +194,35 @@ Phase 1 complete. App has a working strategic thread with KERNL SQLite persisten
 | PHASE2D_EXECUTION_BRIEF.md | Cowork prompt — Instance D | Ready |
 | PHASE2E_EXECUTION_BRIEF.md | Cowork prompt — Instance E | Ready |
 
+## Queued: Phase 3 — Intelligence Layer (after Phase 2 complete)
+
+Execution order: 3A → 3B → 3C → (3D ∥ 3E) → 3F → 3G → 3H
+
+- [x] **SPRINT 3A** — Embedding pipeline (bge-small-en-v1.5, chunker, content_chunks) — **COMPLETE**
+- [ ] **SPRINT 3B** — sqlite-vec integration (vector store, cosine search)
+- [ ] **SPRINT 3C** — Three-tier cold start warming (hot_cache.bin, 30-day in-memory, full index)
+- [ ] **SPRINT 3D** — Background indexer + AEGIS throttling (30-min cadence, 500ms budget)
+- [ ] **SPRINT 3E** — Suggestion feedback + threshold calibration (can run parallel with 3D)
+- [ ] **SPRINT 3F** — "You already built this" gate (manifest interception modal, Monaco diff)
+- [ ] **SPRINT 3G** — Ranking, suppression + proactive surfacing UI (suggestion cards)
+- [ ] **SPRINT 3H** — Phase 3 end-to-end integration + hardening gate
+
+## Phase 3 Execution Briefs
+
+| File | Sprint |
+|------|--------|
+| PHASE3A_EXECUTION_BRIEF.md | Embedding pipeline |
+| PHASE3B_EXECUTION_BRIEF.md | sqlite-vec vector store |
+| PHASE3C_EXECUTION_BRIEF.md | Three-tier cold start |
+| PHASE3D_EXECUTION_BRIEF.md | Background indexer |
+| PHASE3E_EXECUTION_BRIEF.md | Feedback + calibration |
+| PHASE3F_EXECUTION_BRIEF.md | Already-built gate |
+| PHASE3G_EXECUTION_BRIEF.md | Proactive surfacing UI |
+| PHASE3H_EXECUTION_BRIEF.md | Integration + hardening |
+
 ## Open Questions
 
-None. Phase 2 sprints can start in any order (all parallel). Recommended start: 2A (Agent SDK) and 2B (Context Panel) as highest-value foundational work.
+None. Phase 3 briefs ready. Fire sequentially (3A→3B→3C, then 3D∥3E, then 3F→3G→3H) after Phase 2 complete.
 
 ## Blueprint Files
 
