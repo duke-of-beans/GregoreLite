@@ -1,0 +1,105 @@
+# GREGORE LITE — PROJECT DNA
+# Version: 0.1.0 | Status: Pre-build | Created: February 28, 2026
+
+identity:
+  name: "Gregore Lite"
+  canonical_name: "GregLite"
+  tagline: "The personal cognitive operating system for a high-velocity solo operator."
+  purpose: |
+    Replace Claude Desktop entirely as David's primary AI interface.
+    Hits Claude API directly. Tauri desktop app. Native TypeScript module integration.
+    Not a wrapper — a purpose-built cockpit.
+  philosophy:
+    - "Option B Perfection — no MVP mentality"
+    - "Foundation out (backend before surface)"
+    - "Zero technical debt"
+    - "Build Intelligence, Not Plumbing"
+    - "LEAN-OUT — use existing tools, build only unique intelligence"
+
+current_state:
+  version: "0.1.0"
+  phase: "Pre-build — awaiting Council prompts and execution"
+  status: "Blueprint locked. Three Council sessions required before build."
+  scaffold_source: "D:\\Projects\\Gregore\\app\\ — copy, don't start from scratch"
+
+key_decisions:
+  - date: "2026-02-28"
+    decision: "Tauri + Next.js 16 + React 19 + TypeScript strict — identical to Gregore"
+    rationale: "Borrow scaffold entirely, 40-60% Phase 1 time savings"
+
+  - date: "2026-02-28"
+    decision: "Cowork is a UI product — cannot be programmatically spawned"
+    rationale: "Research confirmed no CLI/manifest API. Claude Agent SDK is the right tool."
+
+  - date: "2026-02-28"
+    decision: "Claude Agent SDK replaces all Cowork references in blueprint"
+    rationale: "Programmatic spawn, manifest-as-system-prompt injection, streaming results"
+
+  - date: "2026-02-28"
+    decision: "Ghost Thread gets full disk + all email/inbox access"
+    rationale: "David explicitly approved. Ghost needs full context awareness to be valuable."
+
+  - date: "2026-02-28"
+    decision: "War Room Dependency Visualization is Phase 2, not cut"
+    rationale: "Phase 1 must carry dependency graph fields in manifest schema from day one"
+
+  - date: "2026-02-28"
+    decision: "Self-Evolution Mode is in scope — Phase 5 or post-launch"
+    rationale: "Gregore Lite runs Agent SDK sessions against its own source code. David is merge gate."
+
+  - date: "2026-02-28"
+    decision: "Gregore design system carries over completely"
+    rationale: "CSS variables, animations, dark theme, Geyser G branding — direct copy"
+
+  - date: "2026-02-28"
+    decision: "Session end is inferred, not signaled"
+    rationale: "Three triggers: Tauri on_window_event, idle timeout (20min default), explicit thread close"
+
+  - date: "2026-02-28"
+    decision: "TECHNICAL_STANDARDS.md and CLAUDE_INSTRUCTIONS.md are Phase 1 inputs"
+    rationale: "Bootstrap sequence loads dev protocols the same way it loads KERNL context"
+
+  - date: "2026-02-28"
+    decision: "Deep Research stays in Claude Desktop — passive ingestion bridge in Phase 3"
+    rationale: "Clipboard monitor + D:\\Research\\Ingest file watcher, manual trigger only"
+
+  - date: "2026-02-28"
+    decision: "Cognitive Performance Tracking is Phase 5/post-launch"
+    rationale: "AEGIS must log signal data from Day 1. Correlation model needs weeks of data first."
+
+  - date: "2026-02-28"
+    decision: "Public API is Gregore (full) feature, not Gregore Lite"
+    rationale: "Don't shape architecture prematurely for platform needs"
+
+product_funnel:
+  lite: "Single-user, Claude-only, David's daily driver, dogfooding vehicle"
+  full: "Multi-model (Consensus), multi-tenant, marketplace, team features"
+  delta: "Lite → Full adds: Consensus engine, auth/billing, model selector, marketplace API, team KERNL"
+
+interfaces:
+  - workspace: "Gregore"
+    relationship: "Scaffold source — copy entire app/ directory to start"
+    path: "D:\\Projects\\Gregore\\app\\"
+  - workspace: "KERNL"
+    relationship: "Primary memory layer — native TypeScript import, not MCP"
+  - workspace: "SHIM"
+    relationship: "Quality analysis — native TypeScript import, runs on every Agent SDK result"
+  - workspace: "AEGIS"
+    relationship: "Workload signaling — local HTTP to AEGIS REST endpoint"
+  - workspace: "Oktyv"
+    relationship: "Browser automation module — native import"
+  - workspace: "Continuity"
+    relationship: "Crash recovery — native import"
+
+documents:
+  core:
+    - "PROJECT_DNA.yaml"           # This file
+    - "BLUEPRINT_FINAL.md"         # Complete locked architecture (to be created)
+    - "COUNCIL_PROMPTS.md"         # Three Council prompts (to be written next session)
+    - "STATUS.md"                  # Build status tracking
+  source:
+    - "D:\\Downloads\\greglite synth.md"  # Full Council Round 2 synthesis (all 6 members)
+    - "D:\\Projects\\Gregore\\docs\\DESIGN_SYSTEM.md"
+    - "D:\\Projects\\Gregore\\docs\\UI_UX_FINAL_DIRECTION.md"
+    - "D:\\Dev\\TECHNICAL_STANDARDS.md"
+    - "D:\\Dev\\CLAUDE_INSTRUCTIONS.md"
