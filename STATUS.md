@@ -1,6 +1,6 @@
 # GREGORE LITE — STATUS
-**Last Updated:** March 1, 2026 — Sprint 3G COMPLETE  
-**Phase:** Phase 3 — Intelligence Layer (3A→3B→3C, then 3D∥3E, then 3F→3G→3H)
+**Last Updated:** March 1, 2026 — Phase 3 COMPLETE  
+**Phase:** Phase 4 — Decision Gate system (next)
 
 ---
 
@@ -205,7 +205,31 @@ Execution order: 3A → 3B → 3C → (3D ∥ 3E) → 3F → 3G → 3H
 - [x] **SPRINT 3E** — Suggestion feedback + threshold calibration (can run parallel with 3D) — **COMPLETE**
 - [x] **SPRINT 3F** — "You already built this" gate (manifest interception modal, Monaco diff) — **COMPLETE**
 - [x] **SPRINT 3G** — Ranking, suppression + proactive surfacing UI (suggestion cards) — **COMPLETE**
-- [ ] **SPRINT 3H** — Phase 3 end-to-end integration + hardening gate
+- [x] **SPRINT 3H** — Phase 3 end-to-end integration + hardening gate — **COMPLETE**
+
+## Phase 3 Gate Results (COMPLETE — March 1, 2026)
+
+| Gate | Result |
+|------|--------|
+| tsc --noEmit | ✅ 0 errors |
+| pnpm test:run | ✅ 374/374 passing (19 test files) |
+| k=10 query @ 1000 chunks | ✅ 1.66ms (gate: <200ms — 120× under target) |
+| Hot cache k=10 @ 1000 records | ✅ 2.36ms (gate: <5ms) |
+| On-input check latency | ✅ <10ms (fire-and-forget, no blocking) |
+| Embedding → content_chunks → vec_index pipeline | ✅ Verified (integration test) |
+| Feedback loop → calibration trigger at 100 events | ✅ Verified (integration test) |
+| Suppress-then-hide cycle (3 dismissals → isSuppressed) | ✅ Verified (integration test) |
+| Gate interception (manifest similarity → modal) | ✅ Verified (integration test) |
+| Surfacing max-2 cap enforced | ✅ Verified (integration test) |
+| Suggestion card 4h auto-expire | ✅ Verified (unit test with fake timers) |
+| Phase 3 certification commit pushed | ✅ Done |
+
+### Phase 3 Key Discoveries (Sprint 3H)
+
+- **vi.mock hoisting + vi.hoisted**: `const` declarations after `vi.mock()` are not yet initialized when the mock factory runs (factories are hoisted). Any value referenced inside a mock factory must be declared with `vi.hoisted(() => ({ ... }))` — not as a module-level `const`.
+- **better-sqlite3 native bindings**: The `.node` addon is compiled per Node ABI version. `npx tsx` on Node 22 (ABI 127) finds no prebuilt binary. Fix: `npx node-gyp rebuild` in the better-sqlite3 package directory.
+- **Calibration time condition**: `recordFeedback` triggers calibration if `eventCount >= 100` OR `timeElapsed >= CALIBRATION_INTERVAL_MS`. Test mocks must suppress the time condition (set `getLastCalibrationTime` → `Date.now()`) when testing the "below event threshold" branch.
+- **db.transaction() mock**: `better-sqlite3` `.transaction(fn)` returns a callable wrapper. Mock must return a function: `vi.fn().mockImplementation((fn) => (...args) => fn(...args))`.
 
 ## Phase 3 Execution Briefs
 

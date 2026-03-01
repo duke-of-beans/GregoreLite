@@ -1,7 +1,7 @@
 # GREGORE LITE — BLUEPRINT FINAL
 **Version:** 1.1.0  
 **Status:** LOCKED FOR EXECUTION — All Council sessions complete  
-**Last Updated:** February 28, 2026  
+**Last Updated:** March 1, 2026 (Phase 3 complete)  
 **Authority:** Council Round 2 synthesis (D:\Downloads\greglite synth.md) + seven amendments from HANDOFF.md + three Council session syntheses + identity clarification (v1.1.0)
 
 ---
@@ -972,7 +972,7 @@ Gregore-UI-specific:
 | 2D — Artifact Rendering | Monaco, Sandpack, markdown, artifact panel | 3-4 |
 | 2E — War Room Foundation | Dependency graph schema, UI with dependency lines | 2-3 |
 
-**Phase 3 — Intelligence Layer** — Vector index, embeddings, proactive suggestions, background indexer. Council Session 1 complete — see §5.
+**Phase 3 — Intelligence Layer** — ✅ COMPLETE (March 1, 2026). Vector index (sqlite-vec), embedding pipeline (bge-small-en-v1.5), three-tier cold start, background indexer (30-min cadence, AEGIS throttled), suggestion feedback + threshold calibration, already-built gate (Monaco diff modal), proactive surfacing (Zustand store, SuggestionCard, max-2 cap, 4h auto-expire). Performance: k=10 @ 1000 chunks = 1.66ms, hot cache = 2.36ms, 374/374 tests passing. See §5 and SPRINT_3H_COMPLETE.md.
 
 **Phase 4 — Council System** — Trigger detection, Council mode UI, decision records, escalation lock.
 
