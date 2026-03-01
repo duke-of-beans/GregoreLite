@@ -65,6 +65,8 @@ BOOTSTRAP ORDER
 
 The dev protocol files are not optional reference documents. They define how every Agent SDK session working on the GregLite codebase must behave: LEAN-OUT mandate, library choices, forbidden anti-patterns (vitest/winston/zod/p-retry/BullMQ standards), authority protocol, quality gates, TDD cycle, four-pillar doc sync, and checkpointing protocol. They are injected the same way KERNL context is injected.
 
+**DEV_PROTOCOLS.md** (in this repo) documents these files, their GregLite-specific extracts, fallback behavior if they cannot be loaded, and version tracking. Any execution session that cannot reach D:\Dev\ should consult DEV_PROTOCOLS.md before proceeding.
+
 **Cold start target:** Under 60 seconds from app open to strategic thread interactive.
 
 ```

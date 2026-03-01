@@ -1,5 +1,5 @@
 # GREGORE LITE — STATUS
-**Last Updated:** February 28, 2026  
+**Last Updated:** February 28, 2026 — DEV_PROTOCOLS.md added, D:\Dev\ dependency gap closed  
 **Phase:** Pre-build → Ready for Phase 0
 
 ---
@@ -27,6 +27,7 @@ Blueprint locked and complete. All three Council sessions complete. All blueprin
 - [x] COUNCIL_PROMPT_1_CrossContext.md written
 - [x] COUNCIL_PROMPT_2_GhostThread.md written
 - [x] COUNCIL_PROMPT_3_AgentSDK.md written
+- [x] DEV_PROTOCOLS.md written — resolves D:\Dev\ dependency gap, contains GregLite-specific extracts, fallback behavior, version tracking
 
 ## Next Actions (In Order)
 
@@ -51,5 +52,6 @@ None. Blueprint is complete. All Council sessions done.
 | COUNCIL_PROMPT_1_CrossContext.md | Council prompt used for Session 1 |
 | COUNCIL_PROMPT_2_GhostThread.md | Council prompt used for Session 2 |
 | COUNCIL_PROMPT_3_AgentSDK.md | Council prompt used for Session 3 |
+| DEV_PROTOCOLS.md | Dev protocol reference — resolves D:\Dev\ dependency, GregLite-specific extracts |
 | PROJECT_DNA.yaml | Project identity and constraints |
 | HANDOFF.md | Original pre-Council context handoff |
