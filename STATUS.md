@@ -1,5 +1,5 @@
 # GREGORE LITE — STATUS
-**Last Updated:** March 1, 2026 — Sprint 3A COMPLETE  
+**Last Updated:** March 1, 2026 — Sprint 3B COMPLETE  
 **Phase:** Phase 3 — Intelligence Layer (3A→3B→3C, then 3D∥3E, then 3F→3G→3H)
 
 ---
@@ -199,7 +199,7 @@ Phase 1 complete. App has a working strategic thread with KERNL SQLite persisten
 Execution order: 3A → 3B → 3C → (3D ∥ 3E) → 3F → 3G → 3H
 
 - [x] **SPRINT 3A** — Embedding pipeline (bge-small-en-v1.5, chunker, content_chunks) — **COMPLETE**
-- [ ] **SPRINT 3B** — sqlite-vec integration (vector store, cosine search)
+- [x] **SPRINT 3B** — sqlite-vec integration (vector store, cosine search) — **COMPLETE**
 - [ ] **SPRINT 3C** — Three-tier cold start warming (hot_cache.bin, 30-day in-memory, full index)
 - [ ] **SPRINT 3D** — Background indexer + AEGIS throttling (30-min cadence, 500ms budget)
 - [ ] **SPRINT 3E** — Suggestion feedback + threshold calibration (can run parallel with 3D)
