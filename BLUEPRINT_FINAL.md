@@ -1,8 +1,8 @@
 # GREGORE LITE — BLUEPRINT FINAL
-**Version:** 1.0.0  
+**Version:** 1.1.0  
 **Status:** LOCKED FOR EXECUTION — All Council sessions complete  
 **Last Updated:** February 28, 2026  
-**Authority:** Council Round 2 synthesis (D:\Downloads\greglite synth.md) + seven amendments from HANDOFF.md + three Council session syntheses
+**Authority:** Council Round 2 synthesis (D:\Downloads\greglite synth.md) + seven amendments from HANDOFF.md + three Council session syntheses + identity clarification (v1.1.0)
 
 ---
 
@@ -19,6 +19,8 @@ All seven amendments from the Q&A session are incorporated below. This section i
 | 5 | Ghost Thread has full disk + all email access | §6 Ghost Thread | Ghost Thread |
 | 6 | War Room is Phase 2; dependency fields required in Phase 1 schema | §4.1 Manifest Schema | Worker Sessions |
 | 7 | Self-Evolution Mode is in scope — Phase 5 | §7 Self-Evolution | Self-Evolution |
+| 8 | GregLite is single-model only — §8 renamed from Council Escalation to Decision Gate | §8 Decision Gate | System Identity + Decision Gate |
+| 9 | Phase 0 scaffold: explicit take/leave list from Gregore added | §13 Build Order | Build Order |
 
 ---
 
@@ -810,7 +812,11 @@ Both in-session (iterative correction) and post-processing (final gate). Retry c
 
 ---
 
-## §8 — COUNCIL ESCALATION SYSTEM
+## §8 — DECISION GATE SYSTEM
+
+**What this is not:** Multi-model orchestration. No tribunal, no parallel model calls, no consensus voting. That is Gregore Full's territory (Consensus engine). GregLite is single-model — one Claude session, one thread, one provider.
+
+**What this is:** A UX safety mechanism. Claude detects high-stakes decision patterns in the conversation, pauses, and requires explicit human confirmation before proceeding. Prevents David from blowing past irreversible choices at velocity.
 
 **Automatic triggers (OR logic):**
 - Same architectural question in 3+ messages
@@ -822,9 +828,11 @@ Both in-session (iterative correction) and post-processing (final gate). Retry c
 - Decision contradicts a prior KERNL-logged decision
 - Claude expresses confidence <60%
 
-**Flow:** Trigger → pause thread → non-modal panel with trigger reason → David confirms or dismisses → 3 dismissals = mandatory escalation → Council mode → decision record → David approves → logged to KERNL → thread resumes.
+**Flow:** Trigger → pause thread → non-modal panel with trigger reason → David confirms or dismisses → 3 dismissals = mandatory gate → decision record written → David approves → logged to KERNL → thread resumes.
 
-`council_lock` flag blocks all API calls while active. Released only on David approval or manual override with written rationale (logged to KERNL).
+`decision_lock` flag blocks all API calls while active. Released only on David approval or manual override with written rationale (logged to KERNL).
+
+**Funnel note:** When David outgrows single-model and wants genuine multi-model deliberation on hard decisions — that's the Gregore Full upsell. The Decision Gate is the moment he feels that ceiling.
 
 ---
 
@@ -901,6 +909,46 @@ Components carried from Gregore scaffold: `ChatInterface.tsx`, `MessageList.tsx`
 Copy `D:\Projects\Gregore\app\` to `D:\Projects\GregLite\app\`. Audit fully before writing a single new line. Estimated time savings: 40-60% of Phase 1 work already exists.
 
 Stack (identical to Gregore): Tauri + Next.js 16 + React 19 + TypeScript strict, Zustand, SQLite via better-sqlite3, BullMQ + Redis, Vercel AI SDK, Vitest, Husky, Prettier, ESLint.
+
+**What to take from Gregore scaffold:**
+
+UI components — carry wholesale, zero modification:
+- `app/lib/components/ChatInterface.tsx`
+- `app/lib/components/MessageList.tsx`
+- `app/lib/components/Message.tsx`
+- `app/lib/components/InputField.tsx`
+- `app/lib/components/Header.tsx`
+- `app/lib/components/KeyboardShortcuts.tsx`
+- Full CSS variable system and dark theme
+- Geyser G branding assets
+
+Service layer — carry wholesale:
+- `app/lib/services/ai-sdk-service.ts` — Vercel AI SDK wrapper, multi-provider
+- `app/lib/services/pricing.ts` — model pricing table (Anthropic + OpenAI)
+- `app/lib/services/patterns/cascade.ts` — Haiku→Sonnet→Opus fallback (useful for cost-tiered worker sessions)
+
+Infrastructure — carry wholesale:
+- `app/lib/audit/logger.ts` — database-backed audit logger
+- `app/lib/repositories/base-repository.ts` — generic CRUD base class
+- Database schema patterns (adapt to §3.1 schema, not copy verbatim)
+
+**What to leave in Gregore — do not copy:**
+
+All of `app/lib/orchestration/` — this is Gregore's moat:
+- `consensus/` — multi-model voting (Gregore Full only)
+- `parallax/` — semantic search engine (Gregore Full only)
+- `novelty/` — anti-filter-bubble engine (Gregore Full only)
+- `outlier/` — minority viewpoint protection (Gregore Full only)
+- `tribunal/` patterns from `services/patterns/` — multi-model (Gregore Full only)
+
+Cognitive plane systems — not needed in Phase 1, revisit later:
+- `app/lib/world/` — claim ledger and world model
+- `app/lib/homeostasis/` — behavioral state machine
+- `app/lib/aot/self-model/` — confidence calibration
+- `app/lib/self-model/` — self-observer
+
+Gregore-UI-specific:
+- `app/lib/override-policies.ts` — Ghost UI React hook, Gregore-specific
 
 **Phase 1 — Foundation (3-5 sessions, days 1-3, sequential)**
 

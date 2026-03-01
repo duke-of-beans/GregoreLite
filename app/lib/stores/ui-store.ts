@@ -1,0 +1,485 @@
+/**
+ * UIStore - Interface State Management
+ *
+ * Manages ephemeral UI state:
+ * - Sidebar state (open/closed, width)
+ * - Theme preferences
+ * - Modal/dialog state
+ * - Command palette
+ * - Notifications
+ *
+ * Part of Phase 1.3 - State Management
+ * References: BUILD_PLAN.md checkpoint 1.3.4
+ */
+
+import { create } from 'zustand';
+import { devtools, persist } from 'zustand/middleware';
+import type { StateCreator } from 'zustand';
+
+// ============================================================================
+// TYPES
+// ============================================================================
+
+export type ThemeMode = 'light' | 'dark' | 'system';
+
+export type NotificationType = 'info' | 'success' | 'warning' | 'error';
+
+export interface Notification {
+  id: string;
+  type: NotificationType;
+  title: string;
+  message?: string;
+  duration?: number; // ms, undefined = persistent
+  timestamp: number;
+  dismissed: boolean;
+}
+
+export interface SidebarState {
+  open: boolean;
+  width: number;
+  collapsed: boolean;
+}
+
+export interface ModalState {
+  activeModal: string | null;
+  modalData: Record<string, unknown> | null;
+}
+
+export interface CommandPaletteState {
+  open: boolean;
+  query: string;
+  recentCommands: string[];
+}
+
+// ============================================================================
+// STORE STATE
+// ============================================================================
+
+export interface UIState {
+  // Sidebar
+  sidebar: SidebarState;
+
+  // Theme
+  theme: ThemeMode;
+
+  // Modals/Dialogs
+  modal: ModalState;
+
+  // Command Palette
+  commandPalette: CommandPaletteState;
+
+  // Notifications
+  notifications: Notification[];
+
+  // Loading states
+  loading: {
+    global: boolean;
+    areas: Record<string, boolean>;
+  };
+
+  // Focus management
+  focusedElement: string | null;
+}
+
+// ============================================================================
+// STORE ACTIONS
+// ============================================================================
+
+export interface UIActions {
+  // Sidebar actions
+  toggleSidebar: () => void;
+  setSidebarOpen: (open: boolean) => void;
+  setSidebarWidth: (width: number) => void;
+  toggleSidebarCollapsed: () => void;
+
+  // Theme actions
+  setTheme: (theme: ThemeMode) => void;
+  toggleTheme: () => void;
+
+  // Modal actions
+  openModal: (modalId: string, data?: Record<string, unknown>) => void;
+  closeModal: () => void;
+  isModalOpen: (modalId: string) => boolean;
+
+  // Command palette actions
+  openCommandPalette: () => void;
+  closeCommandPalette: () => void;
+  toggleCommandPalette: () => void;
+  setCommandQuery: (query: string) => void;
+  addRecentCommand: (command: string) => void;
+
+  // Notification actions
+  addNotification: (
+    notification: Omit<Notification, 'id' | 'timestamp' | 'dismissed'>
+  ) => string;
+  dismissNotification: (id: string) => void;
+  clearNotifications: () => void;
+  clearDismissedNotifications: () => void;
+
+  // Loading actions
+  setGlobalLoading: (loading: boolean) => void;
+  setAreaLoading: (area: string, loading: boolean) => void;
+  clearAreaLoading: (area: string) => void;
+
+  // Focus management
+  setFocusedElement: (elementId: string | null) => void;
+
+  // Reset
+  resetUI: () => void;
+}
+
+export type UIStore = UIState & UIActions;
+
+// ============================================================================
+// INITIAL STATE
+// ============================================================================
+
+const initialState: UIState = {
+  sidebar: {
+    open: true,
+    width: 280,
+    collapsed: false,
+  },
+
+  theme: 'system',
+
+  modal: {
+    activeModal: null,
+    modalData: null,
+  },
+
+  commandPalette: {
+    open: false,
+    query: '',
+    recentCommands: [],
+  },
+
+  notifications: [],
+
+  loading: {
+    global: false,
+    areas: {},
+  },
+
+  focusedElement: null,
+};
+
+// ============================================================================
+// STORE IMPLEMENTATION
+// ============================================================================
+
+const createUISlice: StateCreator<UIStore> = (set, get) => ({
+  ...initialState,
+
+  // ========================================================================
+  // SIDEBAR ACTIONS
+  // ========================================================================
+
+  toggleSidebar: () => {
+    set((state) => ({
+      sidebar: {
+        ...state.sidebar,
+        open: !state.sidebar.open,
+      },
+    }));
+  },
+
+  setSidebarOpen: (open: boolean) => {
+    set((state) => ({
+      sidebar: {
+        ...state.sidebar,
+        open,
+      },
+    }));
+  },
+
+  setSidebarWidth: (width: number) => {
+    // Clamp width between 200-600px
+    const clampedWidth = Math.max(200, Math.min(600, width));
+
+    set((state) => ({
+      sidebar: {
+        ...state.sidebar,
+        width: clampedWidth,
+      },
+    }));
+  },
+
+  toggleSidebarCollapsed: () => {
+    set((state) => ({
+      sidebar: {
+        ...state.sidebar,
+        collapsed: !state.sidebar.collapsed,
+      },
+    }));
+  },
+
+  // ========================================================================
+  // THEME ACTIONS
+  // ========================================================================
+
+  setTheme: (theme: ThemeMode) => {
+    set({ theme });
+  },
+
+  toggleTheme: () => {
+    const current = get().theme;
+
+    // Cycle: system → light → dark → system
+    const next: ThemeMode =
+      current === 'system' ? 'light' : current === 'light' ? 'dark' : 'system';
+
+    set({ theme: next });
+  },
+
+  // ========================================================================
+  // MODAL ACTIONS
+  // ========================================================================
+
+  openModal: (modalId: string, data?: Record<string, unknown>) => {
+    set({
+      modal: {
+        activeModal: modalId,
+        modalData: data || null,
+      },
+    });
+  },
+
+  closeModal: () => {
+    set({
+      modal: {
+        activeModal: null,
+        modalData: null,
+      },
+    });
+  },
+
+  isModalOpen: (modalId: string) => {
+    return get().modal.activeModal === modalId;
+  },
+
+  // ========================================================================
+  // COMMAND PALETTE ACTIONS
+  // ========================================================================
+
+  openCommandPalette: () => {
+    set((state) => ({
+      commandPalette: {
+        ...state.commandPalette,
+        open: true,
+        query: '', // Clear query on open
+      },
+    }));
+  },
+
+  closeCommandPalette: () => {
+    set((state) => ({
+      commandPalette: {
+        ...state.commandPalette,
+        open: false,
+      },
+    }));
+  },
+
+  toggleCommandPalette: () => {
+    set((state) => ({
+      commandPalette: {
+        ...state.commandPalette,
+        open: !state.commandPalette.open,
+        query: !state.commandPalette.open ? '' : state.commandPalette.query,
+      },
+    }));
+  },
+
+  setCommandQuery: (query: string) => {
+    set((state) => ({
+      commandPalette: {
+        ...state.commandPalette,
+        query,
+      },
+    }));
+  },
+
+  addRecentCommand: (command: string) => {
+    set((state) => {
+      const recent = state.commandPalette.recentCommands;
+
+      // Remove if already exists (move to front)
+      const filtered = recent.filter((cmd) => cmd !== command);
+
+      // Add to front, limit to 10 recent commands
+      const updated = [command, ...filtered].slice(0, 10);
+
+      return {
+        commandPalette: {
+          ...state.commandPalette,
+          recentCommands: updated,
+        },
+      };
+    });
+  },
+
+  // ========================================================================
+  // NOTIFICATION ACTIONS
+  // ========================================================================
+
+  addNotification: (notification) => {
+    const id = `notification-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+
+    const newNotification: Notification = {
+      ...notification,
+      id,
+      timestamp: Date.now(),
+      dismissed: false,
+    };
+
+    set((state) => ({
+      notifications: [newNotification, ...state.notifications],
+    }));
+
+    // Auto-dismiss if duration specified
+    if (notification.duration) {
+      setTimeout(() => {
+        get().dismissNotification(id);
+      }, notification.duration);
+    }
+
+    return id;
+  },
+
+  dismissNotification: (id: string) => {
+    set((state) => ({
+      notifications: state.notifications.map((notif) =>
+        notif.id === id ? { ...notif, dismissed: true } : notif
+      ),
+    }));
+  },
+
+  clearNotifications: () => {
+    set({ notifications: [] });
+  },
+
+  clearDismissedNotifications: () => {
+    set((state) => ({
+      notifications: state.notifications.filter((notif) => !notif.dismissed),
+    }));
+  },
+
+  // ========================================================================
+  // LOADING ACTIONS
+  // ========================================================================
+
+  setGlobalLoading: (loading: boolean) => {
+    set((state) => ({
+      loading: {
+        ...state.loading,
+        global: loading,
+      },
+    }));
+  },
+
+  setAreaLoading: (area: string, loading: boolean) => {
+    set((state) => ({
+      loading: {
+        ...state.loading,
+        areas: {
+          ...state.loading.areas,
+          [area]: loading,
+        },
+      },
+    }));
+  },
+
+  clearAreaLoading: (area: string) => {
+    set((state) => {
+      const { [area]: _, ...rest } = state.loading.areas;
+      return {
+        loading: {
+          ...state.loading,
+          areas: rest,
+        },
+      };
+    });
+  },
+
+  // ========================================================================
+  // FOCUS MANAGEMENT
+  // ========================================================================
+
+  setFocusedElement: (elementId: string | null) => {
+    set({ focusedElement: elementId });
+  },
+
+  // ========================================================================
+  // RESET
+  // ========================================================================
+
+  resetUI: () => {
+    set(initialState);
+  },
+});
+
+// ============================================================================
+// STORE CREATION
+// ============================================================================
+
+export const useUIStore = create<UIStore>()(
+  devtools(
+    persist(createUISlice, {
+      name: 'gregore-ui-storage',
+
+      // Only persist certain fields
+      partialize: (state) => ({
+        sidebar: state.sidebar,
+        theme: state.theme,
+        commandPalette: {
+          // Don't persist open state or query
+          open: false,
+          query: '',
+          recentCommands: state.commandPalette.recentCommands,
+        },
+        // Don't persist notifications, modals, loading states, or focus
+      }),
+    }),
+    { name: 'UIStore' }
+  )
+);
+
+// ============================================================================
+// SELECTORS (for optimized component subscriptions)
+// ============================================================================
+
+export const selectSidebarOpen = (state: UIStore) => state.sidebar.open;
+export const selectSidebarWidth = (state: UIStore) => state.sidebar.width;
+export const selectSidebarCollapsed = (state: UIStore) =>
+  state.sidebar.collapsed;
+
+export const selectTheme = (state: UIStore) => state.theme;
+
+export const selectActiveModal = (state: UIStore) => state.modal.activeModal;
+export const selectModalData = (state: UIStore) => state.modal.modalData;
+
+export const selectCommandPaletteOpen = (state: UIStore) =>
+  state.commandPalette.open;
+export const selectCommandQuery = (state: UIStore) =>
+  state.commandPalette.query;
+export const selectRecentCommands = (state: UIStore) =>
+  state.commandPalette.recentCommands;
+
+export const selectActiveNotifications = (state: UIStore) =>
+  state.notifications.filter((n) => !n.dismissed);
+
+export const selectGlobalLoading = (state: UIStore) => state.loading.global;
+export const selectAreaLoading = (area: string) => (state: UIStore) =>
+  state.loading.areas[area] || false;
+
+export const selectFocusedElement = (state: UIStore) => state.focusedElement;
+
+// ============================================================================
+// HOOKS (convenience wrappers)
+// ============================================================================
+
+export const useTheme = () => useUIStore(selectTheme);
+export const useSidebar = () => useUIStore((state) => state.sidebar);
+export const useNotifications = () => useUIStore(selectActiveNotifications);
+export const useGlobalLoading = () => useUIStore(selectGlobalLoading);
