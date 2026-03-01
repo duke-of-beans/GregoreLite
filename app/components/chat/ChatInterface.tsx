@@ -1,10 +1,11 @@
 /**
- * ChatInterface Component
+ * ChatInterface Component — Sprint 2D update
  *
- * GregLite strategic thread UI.
- * Single Claude model (Anthropic), no Ghost, no override policies.
- * Restores last session on boot. Maintains conversationId for multi-turn.
- * Phase 1 foundation — will evolve through Phase 2+ sprints.
+ * Layout: 2-panel (thread only) ↔ 3-panel (thread + artifact) — CSS animated.
+ * After each assistant response, runs artifact detection. If an artifact is
+ * found it is written to Zustand store (opens ArtifactPanel) and synced to KERNL.
+ *
+ * Phase 1 foundation carries through; Phase 2D adds artifact layer.
  */
 
 'use client';
@@ -14,7 +15,11 @@ import { Header } from '../ui/Header';
 import { MessageList } from './MessageList';
 import { InputField } from './InputField';
 import { SendButton, type SendButtonState } from './SendButton';
+import { ArtifactPanel } from '../artifacts/ArtifactPanel';
 import type { MessageProps } from './Message';
+import { detectArtifact } from '@/lib/artifacts/detector';
+import { useArtifactStore } from '@/lib/artifacts/store';
+import { syncArtifact } from '@/lib/artifacts/kernl-sync';
 
 export function ChatInterface() {
   const [messages, setMessages] = useState<MessageProps[]>([]);
@@ -23,14 +28,14 @@ export function ChatInterface() {
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [restoring, setRestoring] = useState(true);
 
-  // Boot sequence — runs once on mount
-  // Bootstrap (context injection) and restore (session recovery) fire in parallel.
-  // UI becomes interactive as soon as restore settles; bootstrap is fire-and-forget.
+  const { activeArtifact, setArtifact, clearArtifact } = useArtifactStore();
+
+  // ── Boot sequence ────────────────────────────────────────────────────────
   useEffect(() => {
     let cancelled = false;
 
     async function bootSequence() {
-      // Fire bootstrap non-blocking — server caches the context package for chat route
+      // Fire bootstrap non-blocking
       void fetch('/api/bootstrap', { method: 'POST' }).then((res) => {
         if (!res.ok) console.warn('[boot] Bootstrap returned', res.status);
         else res.json().then((d) => console.log('[boot] Bootstrap complete', d?.data?.coldStartMs + 'ms')).catch(() => null);
@@ -50,13 +55,13 @@ export function ChatInterface() {
               role: m.role,
               content: m.content,
               timestamp: new Date(m.timestamp),
-            })
+            }),
           );
           setMessages(restored);
           setConversationId(data.data.threadId);
         }
       } catch {
-        // Restore failure is non-fatal — start fresh
+        // Non-fatal — start fresh
       } finally {
         if (!cancelled) setRestoring(false);
       }
@@ -66,6 +71,7 @@ export function ChatInterface() {
     return () => { cancelled = true; };
   }, []);
 
+  // ── Send message ─────────────────────────────────────────────────────────
   const handleSubmit = async () => {
     if (!input.trim()) return;
 
@@ -96,20 +102,31 @@ export function ChatInterface() {
       const data = await response.json();
       const chatData = data?.data;
 
-      // Persist the thread ID for subsequent messages
       if (chatData?.conversationId && !conversationId) {
         setConversationId(chatData.conversationId);
       }
 
+      const responseContent: string = chatData?.content ?? data?.content ?? 'No response';
+      const threadId: string = chatData?.conversationId ?? conversationId ?? '';
+
       const aiMessage: MessageProps = {
         role: 'assistant',
-        content: chatData?.content ?? data?.content ?? 'No response',
+        content: responseContent,
         timestamp: new Date(),
       };
 
       setMessages((prev) => [...prev, aiMessage]);
       setSendButtonState('approved');
       setTimeout(() => setSendButtonState('normal'), 1500);
+
+      // ── Artifact detection ─────────────────────────────────────────────
+      const artifact = detectArtifact(responseContent);
+      if (artifact) {
+        artifact.threadId = threadId;
+        setArtifact(artifact);
+        // Fire-and-forget KERNL sync — non-blocking
+        void syncArtifact(artifact, threadId);
+      }
     } catch (error) {
       const errorMessage: MessageProps = {
         role: 'assistant',
@@ -121,38 +138,67 @@ export function ChatInterface() {
     }
   };
 
+  // ── Render ───────────────────────────────────────────────────────────────
+  const panelOpen = activeArtifact !== null;
+
   return (
     <div className="flex h-screen w-full flex-col bg-[var(--deep-space)]">
       <Header />
 
-      <div className="flex-1 overflow-hidden">
-        {restoring ? (
-          <div className="flex h-full items-center justify-center text-[var(--ghost-text)] text-sm">
-            Restoring session...
-          </div>
-        ) : (
-          <MessageList messages={messages} />
-        )}
-      </div>
+      {/* ── Body: flex-row, splits into thread + artifact panel ── */}
+      <div className="flex flex-1 overflow-hidden">
 
-      <div className="border-t border-[var(--shadow)] bg-[var(--deep-space)] px-6 py-4">
-        <div className="mx-auto max-w-4xl">
-          <div className="flex items-end gap-3">
-            <div className="flex-1">
-              <InputField
-                value={input}
-                onChange={setInput}
-                onSubmit={handleSubmit}
-                disabled={sendButtonState === 'checking' || restoring}
-                placeholder="Type message..."
-              />
-            </div>
-            <SendButton
-              state={sendButtonState}
-              onClick={handleSubmit}
-              disabled={!input.trim() || restoring}
-            />
+        {/* ── Strategic thread column ── */}
+        <div
+          className={[
+            'flex flex-col overflow-hidden transition-[width] duration-300 ease-in-out',
+            panelOpen ? 'w-[60%]' : 'w-full',
+          ].join(' ')}
+        >
+          {/* Message list */}
+          <div className="flex-1 overflow-hidden">
+            {restoring ? (
+              <div className="flex h-full items-center justify-center text-[var(--ghost-text)] text-sm">
+                Restoring session…
+              </div>
+            ) : (
+              <MessageList messages={messages} />
+            )}
           </div>
+
+          {/* Input bar */}
+          <div className="border-t border-[var(--shadow)] bg-[var(--deep-space)] px-6 py-4 flex-shrink-0">
+            <div className="mx-auto max-w-4xl">
+              <div className="flex items-end gap-3">
+                <div className="flex-1">
+                  <InputField
+                    value={input}
+                    onChange={setInput}
+                    onSubmit={handleSubmit}
+                    disabled={sendButtonState === 'checking' || restoring}
+                    placeholder="Type message..."
+                  />
+                </div>
+                <SendButton
+                  state={sendButtonState}
+                  onClick={handleSubmit}
+                  disabled={!input.trim() || restoring}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Artifact panel (animated in/out) ── */}
+        <div
+          className={[
+            'flex-shrink-0 overflow-hidden transition-[width] duration-300 ease-in-out',
+            panelOpen ? 'w-[40%]' : 'w-0',
+          ].join(' ')}
+        >
+          {activeArtifact && (
+            <ArtifactPanel artifact={activeArtifact} onClose={clearArtifact} />
+          )}
         </div>
       </div>
     </div>

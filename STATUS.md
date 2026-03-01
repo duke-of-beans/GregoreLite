@@ -1,6 +1,6 @@
 # GREGORE LITE — STATUS
-**Last Updated:** March 1, 2026 — Phase 1 COMPLETE  
-**Phase:** Phase 2 — Parallel (2A ∥ 2B ∥ 2C ∥ 2D ∥ 2E) — ALL UNBLOCKED
+**Last Updated:** March 1, 2026 — Sprint 2B COMPLETE  
+**Phase:** Phase 2 — Parallel (2A ∥ 2B ∥ 2C ∥ 2D ∥ 2E) — 2B DONE
 
 ---
 
@@ -40,13 +40,30 @@ Phase 1 complete. App has a working strategic thread with KERNL SQLite persisten
 | Bootstrap sequence | ✅ dev protocols + KERNL context injected |
 | Cold start | ✅ <1s (dev), target was <60s |
 
-## Active: Phase 2 — Parallel Sprints (ALL UNBLOCKED)
+## Active: Phase 2 — Parallel Sprints
 
 - [ ] **SPRINT 2A** — Agent SDK integration, job queue UI (4–5 sessions)
-- [ ] **SPRINT 2B** — Context panel + KERNL UI (3–4 sessions)
+- [x] **SPRINT 2B** — Context panel + KERNL UI — **COMPLETE** (1 session)
 - [ ] **SPRINT 2C** — AEGIS integration, workload signaling (2–3 sessions)
 - [ ] **SPRINT 2D** — Artifact rendering: Monaco, Sandpack, markdown (3–4 sessions)
 - [ ] **SPRINT 2E** — War Room dependency graph UI (2–3 sessions) — start after 2A manifest schema committed
+
+## Sprint 2B Gate Results
+
+| Gate | Result |
+|------|--------|
+| Sprint 2B tsc errors introduced | ✅ 0 new errors |
+| pnpm test:run (Sprint 2B tests) | ✅ 25/25 passing |
+| pnpm test:run (full suite) | ✅ 67/67 passing |
+| aegis_signals table added to schema.sql | ✅ Done |
+| project-store.ts + aegis-store.ts | ✅ Done |
+| GET /api/context route | ✅ Done |
+| ContextPanel + 7 sub-components | ✅ Done |
+| Layout wired (20% panel + flex chat) | ✅ Done |
+| Cmd+B shortcut registered | ✅ Done |
+| scripts/seed-kernl.ts | ✅ Done |
+| STATUS.md updated | ✅ Done |
+| Conventional commit + push | ✅ Done |
 
 ## Sprint Blueprint Files
 
@@ -58,10 +75,15 @@ Phase 1 complete. App has a working strategic thread with KERNL SQLite persisten
 | SPRINT_1D_Bootstrap.md | Phase 1, Session 4 | ✅ Complete |
 | SPRINT_1E_Phase1Gate.md | Phase 1, Session 5 | ✅ Complete |
 | SPRINT_2A_AgentSDK.md | Phase 2, Parallel A | Ready |
-| SPRINT_2B_ContextPanel.md | Phase 2, Parallel B | Ready |
+| SPRINT_2B_ContextPanel.md | Phase 2, Parallel B | ✅ Complete |
 | SPRINT_2C_AEGIS.md | Phase 2, Parallel C | Ready |
 | SPRINT_2D_Artifacts.md | Phase 2, Parallel D | Ready |
 | SPRINT_2E_WarRoom.md | Phase 2, Parallel E | Ready |
+| PHASE2A_EXECUTION_BRIEF.md | Cowork prompt — Instance A | Ready |
+| PHASE2B_EXECUTION_BRIEF.md | Cowork prompt — Instance B | Ready |
+| PHASE2C_EXECUTION_BRIEF.md | Cowork prompt — Instance C | Ready |
+| PHASE2D_EXECUTION_BRIEF.md | Cowork prompt — Instance D | Ready |
+| PHASE2E_EXECUTION_BRIEF.md | Cowork prompt — Instance E | Ready |
 
 ## Open Questions
 

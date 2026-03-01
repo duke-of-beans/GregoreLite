@@ -34,6 +34,22 @@ export {
   pruneCheckpoints,
 } from './checkpoint';
 
+export {
+  createProject,
+  getProject,
+  listProjects,
+  getActiveProject,
+  upsertProject,
+  touchProject,
+} from './project-store';
+
+export {
+  getLatestAegisSignal,
+  logAegisSignal,
+} from './aegis-store';
+
+export type { AegisSignal } from './aegis-store';
+
 export type {
   Thread,
   Message,

@@ -106,6 +106,44 @@ CREATE TABLE IF NOT EXISTS patterns (
   created_at   INTEGER NOT NULL DEFAULT (unixepoch('now', 'subsec') * 1000)
 );
 
+-- ─── MANIFESTS (Agent SDK worker sessions) ───────────────────────────────────
+CREATE TABLE IF NOT EXISTS manifests (
+  id                    TEXT PRIMARY KEY,
+  version               TEXT NOT NULL DEFAULT '1.0',
+  spawned_by_thread     TEXT NOT NULL REFERENCES threads(id) ON DELETE CASCADE,
+  strategic_thread_id   TEXT NOT NULL,
+  created_at            TEXT NOT NULL,  -- ISO timestamp
+  updated_at            INTEGER NOT NULL DEFAULT (unixepoch('now', 'subsec') * 1000),
+  status                TEXT NOT NULL DEFAULT 'pending'
+                          CHECK(status IN ('pending','spawning','running','working','validating','completed','failed','interrupted')),
+  task_type             TEXT CHECK(task_type IN ('code','test','docs','research','deploy','self_evolution')),
+  title                 TEXT,
+  description           TEXT,
+  project_path          TEXT,
+  dependencies          TEXT,           -- JSON array of manifest IDs
+  quality_gates         TEXT,           -- JSON object
+  is_self_evolution     INTEGER DEFAULT 0,
+  self_evolution_branch TEXT,
+  result_report         TEXT,           -- JSON ResultReport on completion
+  tokens_used           INTEGER DEFAULT 0,
+  cost_usd              REAL DEFAULT 0
+);
+
+CREATE INDEX IF NOT EXISTS idx_manifests_status ON manifests(status);
+CREATE INDEX IF NOT EXISTS idx_manifests_thread ON manifests(spawned_by_thread);
+
+-- ─── AEGIS SIGNALS ───────────────────────────────────────────────────────────
+-- Workload profile signal log. Sprint 2C writes here; 2B reads latest row.
+CREATE TABLE IF NOT EXISTS aegis_signals (
+  id       TEXT PRIMARY KEY,
+  profile  TEXT NOT NULL,
+  source_thread TEXT,
+  sent_at  INTEGER NOT NULL DEFAULT (unixepoch('now', 'subsec') * 1000),
+  is_override INTEGER DEFAULT 0
+);
+
+CREATE INDEX IF NOT EXISTS idx_aegis_signals_sent_at ON aegis_signals(sent_at DESC);
+
 -- ─── FTS VIRTUAL TABLE ───────────────────────────────────────────────────────
 CREATE VIRTUAL TABLE IF NOT EXISTS messages_fts USING fts5(
   content,
