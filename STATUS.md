@@ -1,6 +1,6 @@
 # GREGORE LITE — STATUS
-**Last Updated:** March 1, 2026 — Sprint 2D COMPLETE  
-**Phase:** Phase 2 — Parallel (2A ∥ 2B ∥ 2C ∥ 2D ∥ 2E) — 2A + 2B + 2C + 2D DONE
+**Last Updated:** March 1, 2026 — Sprint 2E COMPLETE  
+**Phase:** Phase 2 — Parallel (2A ∥ 2B ∥ 2C ∥ 2D ∥ 2E) — ALL DONE
 
 ---
 
@@ -46,7 +46,7 @@ Phase 1 complete. App has a working strategic thread with KERNL SQLite persisten
 - [x] **SPRINT 2B** — Context panel + KERNL UI — **COMPLETE** (1 session)
 - [x] **SPRINT 2C** — AEGIS integration, workload signaling — **COMPLETE** (2 sessions)
 - [x] **SPRINT 2D** — Artifact rendering: Monaco, Sandpack, Shiki, 3-panel layout — **COMPLETE** (3 sessions)
-- [ ] **SPRINT 2E** — War Room dependency graph UI (2–3 sessions) — start after 2A manifest schema committed
+- [x] **SPRINT 2E** — War Room dependency graph UI — **COMPLETE** (2 sessions)
 
 ## Sprint 2A Gate Results
 
@@ -148,6 +148,31 @@ Phase 1 complete. App has a working strategic thread with KERNL SQLite persisten
 - **TSC incremental cache**: `incremental: true` in tsconfig causes false-positive clean runs (exit 0, 0.5s). Must delete `tsconfig.tsbuildinfo` before each clean check.
 - **AEGIS forward references**: Sprint 2B/2C wrote imports to `@/lib/aegis/governor` and `@/lib/aegis/types` before the module existed. Sprint 2D created the full implementation to unblock tsc.
 - **CostTracker API drift**: Sprint 2A tests spec'd `startSession(model): string` but implementation had `startSession(id, model): void`. Test is canonical spec — implementation updated to match.
+
+## Sprint 2E Gate Results
+
+| Gate | Result |
+|------|--------|
+| tsc --noEmit | ✅ 0 errors |
+| pnpm test:run (full suite) | ✅ 161/161 passing (21 new) |
+| lib/war-room/ (types, graph-builder, poller) | ✅ Done |
+| dagre layout (rankdir LR, ranksep 80, nodesep 40) | ✅ Done |
+| GET /api/kernl/manifests | ✅ Done |
+| WarRoomEmpty, JobNode, JobEdge, ManifestDetail, DependencyGraph, WarRoom | ✅ Done |
+| Tab bar (Strategic / Workers / War Room) in ChatInterface | ✅ Done |
+| Cmd+W toggle shortcut | ✅ Done |
+| KeyboardShortcuts.tsx updated | ✅ Done |
+| scripts/seed-manifests.ts | ✅ Done |
+| war-room.test.ts (21 tests) | ✅ Done |
+| STATUS.md updated | ✅ Done |
+| Conventional commit + push | ✅ Done |
+
+### Sprint 2E Key Discoveries
+
+- **dagre ESM import**: `graph-builder.ts` uses top-level `import dagre from 'dagre'` making it ESM. vitest tests must use `await import()` not `require()` — all tests in the file affected, not just those that directly use dagre.
+- **vi.runAllTimersAsync() + setInterval = infinite loop**: `vi.runAllTimersAsync()` fires all pending timers repeatedly until none remain — a `setInterval` never finishes. Use `vi.advanceTimersByTimeAsync(0)` to flush the immediate async tick and `vi.advanceTimersByTimeAsync(5000)` to advance one poll interval.
+- **nodeHeight unused in bezier edge**: dagre outputs center-point positions; the edge bezier path only needs `nodeWidth` (to offset from left/right edge of each node). `nodeHeight` was declared but never used — removed from JobEdge interface.
+- **CSS variable aliases**: `--muted` and `--ghost-text` were referenced in War Room components but not defined in globals.css. Added as color aliases alongside existing design tokens.
 
 ## Sprint Blueprint Files
 

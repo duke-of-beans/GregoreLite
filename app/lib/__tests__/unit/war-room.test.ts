@@ -156,8 +156,8 @@ describe('graph-builder', () => {
   });
 
   describe('layoutGraph()', () => {
-    it('returns positions for every node', () => {
-      const { layoutGraph } = require('@/lib/war-room/graph-builder');
+    it('returns positions for every node', async () => {
+      const { layoutGraph } = await import('@/lib/war-room/graph-builder');
       const graph: WarRoomGraph = {
         nodes: [
           { id: 'a', title: 'A', status: 'pending', taskType: 'code', createdAt: 0 },
@@ -170,8 +170,8 @@ describe('graph-builder', () => {
       expect(positions['b']).toMatchObject({ x: expect.any(Number), y: expect.any(Number) });
     });
 
-    it('layouts left-to-right: node with no deps has smaller x', () => {
-      const { layoutGraph } = require('@/lib/war-room/graph-builder');
+    it('layouts left-to-right: node with no deps has smaller x', async () => {
+      const { layoutGraph } = await import('@/lib/war-room/graph-builder');
       const graph: WarRoomGraph = {
         nodes: [
           { id: 'root', title: 'Root', status: 'complete', taskType: 'code', createdAt: 0 },
@@ -184,13 +184,13 @@ describe('graph-builder', () => {
       expect(pos['root']!.x).toBeLessThan(pos['child']!.x);
     });
 
-    it('silently skips edges where an endpoint node is missing', () => {
-      const { layoutGraph } = require('@/lib/war-room/graph-builder');
+    it('silently skips edges where an endpoint node is missing', async () => {
+      const { layoutGraph } = await import('@/lib/war-room/graph-builder');
       const graph: WarRoomGraph = {
         nodes: [
           { id: 'a', title: 'A', status: 'pending', taskType: 'code', createdAt: 0 },
         ],
-        // edge references 'ghost' which doesn't exist
+        // edge references 'ghost' which doesn't exist in nodes
         edges: [{ from: 'a', to: 'ghost' }],
       };
       expect(() => layoutGraph(graph)).not.toThrow();
@@ -200,15 +200,15 @@ describe('graph-builder', () => {
   });
 
   describe('computeCanvasSize()', () => {
-    it('returns fallback dimensions for empty position map', () => {
-      const { computeCanvasSize } = require('@/lib/war-room/graph-builder');
+    it('returns fallback dimensions for empty position map', async () => {
+      const { computeCanvasSize } = await import('@/lib/war-room/graph-builder');
       const size = computeCanvasSize({});
       expect(size.width).toBeGreaterThanOrEqual(400);
       expect(size.height).toBeGreaterThanOrEqual(300);
     });
 
-    it('accounts for node dimensions and padding', () => {
-      const { computeCanvasSize, NODE_WIDTH, NODE_HEIGHT } = require('@/lib/war-room/graph-builder');
+    it('accounts for node dimensions and padding', async () => {
+      const { computeCanvasSize, NODE_WIDTH, NODE_HEIGHT } = await import('@/lib/war-room/graph-builder');
       const positions = { a: { x: 200, y: 100 } };
       const size = computeCanvasSize(positions);
       expect(size.width).toBeGreaterThan(200 + NODE_WIDTH / 2);
@@ -235,8 +235,8 @@ describe('startWarRoomPolling()', () => {
     const onUpdate = vi.fn();
     const stop = startWarRoomPolling(onUpdate);
 
-    // Flush the immediate async tick
-    await vi.runAllTimersAsync();
+    // Flush the immediate async tick (advance 0ms + drain microtasks)
+    await vi.advanceTimersByTimeAsync(0);
 
     expect(onUpdate).toHaveBeenCalledOnce();
     stop();
@@ -248,7 +248,7 @@ describe('startWarRoomPolling()', () => {
     const onError = vi.fn();
     const stop = startWarRoomPolling(vi.fn(), onError);
 
-    await vi.runAllTimersAsync();
+    await vi.advanceTimersByTimeAsync(0);
 
     expect(onError).toHaveBeenCalledOnce();
     stop();
@@ -263,13 +263,12 @@ describe('startWarRoomPolling()', () => {
     const onUpdate = vi.fn();
     const stop = startWarRoomPolling(onUpdate);
 
-    // First tick
-    await vi.runAllTimersAsync();
+    // First tick — drain initial async tick
+    await vi.advanceTimersByTimeAsync(0);
     expect(onUpdate).toHaveBeenCalledOnce();
 
-    // Advance 5s → second poll tick
-    vi.advanceTimersByTime(5000);
-    await vi.runAllTimersAsync();
+    // Advance exactly 5s → fires setInterval callback, then drain its async work
+    await vi.advanceTimersByTimeAsync(5000);
 
     // Still only once — data unchanged
     expect(onUpdate).toHaveBeenCalledOnce();
@@ -284,11 +283,10 @@ describe('startWarRoomPolling()', () => {
     const onUpdate = vi.fn();
     const stop = startWarRoomPolling(onUpdate);
 
-    await vi.runAllTimersAsync();
+    await vi.advanceTimersByTimeAsync(0);
     expect(onUpdate).toHaveBeenCalledOnce();
 
-    vi.advanceTimersByTime(5000);
-    await vi.runAllTimersAsync();
+    await vi.advanceTimersByTimeAsync(5000);
 
     expect(onUpdate).toHaveBeenCalledTimes(2);
     stop();
@@ -302,11 +300,10 @@ describe('startWarRoomPolling()', () => {
     const onUpdate = vi.fn();
     const stop = startWarRoomPolling(onUpdate);
 
-    await vi.runAllTimersAsync();
+    await vi.advanceTimersByTimeAsync(0);
     stop(); // stop before second tick
 
-    vi.advanceTimersByTime(5000);
-    await vi.runAllTimersAsync();
+    await vi.advanceTimersByTimeAsync(5000);
 
     expect(onUpdate).toHaveBeenCalledOnce();
   });
