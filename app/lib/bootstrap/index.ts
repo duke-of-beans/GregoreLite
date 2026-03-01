@@ -14,6 +14,7 @@
 import { loadDevProtocols } from './dev-protocols';
 import { buildContextPackage, DEFAULT_SYSTEM_PROMPT } from './context-builder';
 import { initAEGIS } from '../aegis';
+import { warmAll } from '../vector/cold-start';
 import type { BootstrapResult, ContextPackage } from './types';
 
 const CACHE_TTL_MS = 30 * 60 * 1000; // 30 minutes
@@ -65,6 +66,9 @@ export async function runBootstrap(): Promise<BootstrapResult> {
     if (!aegisOnline) {
       errors.push('AEGIS offline — workload signaling inactive until AEGIS starts');
     }
+
+    // Non-blocking cache warming — all three tiers load in the background
+    warmAll().catch((err: unknown) => console.warn('[cold-start] warm failed', { err }));
 
     // Cache the result
     _cachedPackage = pkg;
