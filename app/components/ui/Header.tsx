@@ -30,7 +30,7 @@ export function Header() {
         </div>
         
         <span className="text-lg font-semibold tracking-tight text-[var(--ice-white)]">
-          GREGORE
+          Gregore Lite
         </span>
       </div>
 
