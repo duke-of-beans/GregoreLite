@@ -1,19 +1,21 @@
 /**
  * Embeddings — Public API
  *
- * embed()        — chunk text and embed each chunk
- * batchEmbed()   — embed multiple sources sequentially with 100ms pacing
- * persistEmbeddings() — write EmbeddingRecords to content_chunks (text+metadata only)
+ * embed()               — chunk text and embed each chunk
+ * batchEmbed()          — embed multiple sources sequentially with 100ms pacing
+ * persistEmbeddings()   — write EmbeddingRecords to content_chunks (text+metadata only)
+ * persistEmbeddingsFull() — write to content_chunks AND vec_index (Sprint 3B full pipeline)
  *
- * NOTE: The Float32Array vectors are NOT written here.
- * Sprint 3B wires them into vec_index. content_chunks and vec_index
- * are joined by chunk_id (EmbeddingRecord.chunkId).
+ * persistEmbeddings() is Sprint 3A only (text+metadata, no vectors).
+ * persistEmbeddingsFull() is the complete pipeline: call this from the chat route.
+ * chunk_id is the join key between content_chunks and vec_index.
  */
 
 import { nanoid } from 'nanoid';
 import { embedText, MODEL_ID, MODEL_DIMENSION } from './model';
 import { chunkText } from './chunker';
 import { getDatabase } from '@/lib/kernl/database';
+import { upsertVector } from '@/lib/vector';
 import type { EmbeddingRecord } from './types';
 
 export type { EmbeddingRecord } from './types';
@@ -109,4 +111,23 @@ export function persistEmbeddings(records: EmbeddingRecord[]): void {
   });
 
   insertAll(records);
+}
+
+/**
+ * Full Sprint 3A+3B pipeline: persist text+metadata to content_chunks,
+ * then upsert each vector into vec_index.
+ *
+ * Use this in the chat route (and anywhere that needs full indexing).
+ * persistEmbeddings() remains available for text-only use cases.
+ */
+export async function persistEmbeddingsFull(records: EmbeddingRecord[]): Promise<void> {
+  if (records.length === 0) return;
+
+  // Write text + metadata first (synchronous better-sqlite3 transaction)
+  persistEmbeddings(records);
+
+  // Upsert vectors — sequential to avoid saturating the DB
+  for (const record of records) {
+    await upsertVector(record.chunkId, record.embedding);
+  }
 }

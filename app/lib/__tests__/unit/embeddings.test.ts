@@ -34,6 +34,16 @@ vi.mock('@/lib/kernl/database', () => ({
   }),
 }));
 
+// ── @/lib/vector mock — intercepts upsertVector called by persistEmbeddingsFull
+const { mockUpsertVector } = vi.hoisted(() => {
+  const mockUpsertVector = vi.fn().mockResolvedValue(undefined);
+  return { mockUpsertVector };
+});
+
+vi.mock('@/lib/vector', () => ({
+  upsertVector: mockUpsertVector,
+}));
+
 // ── @xenova/transformers mock ─────────────────────────────────────────────────
 // Returns a deterministic 384-dim Float32Array seeded from the input text length.
 vi.mock('@xenova/transformers', () => {
@@ -55,6 +65,7 @@ import {
   embed,
   batchEmbed,
   persistEmbeddings,
+  persistEmbeddingsFull,
 } from '@/lib/embeddings';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -288,5 +299,60 @@ describe('persistEmbeddings()', () => {
       const metadata = JSON.parse(args[5] as string) as { embedding_dim: number };
       expect(metadata.embedding_dim).toBe(MODEL_DIMENSION);
     }
+  });
+});
+
+// ─── persistEmbeddingsFull() ─────────────────────────────────────────────────
+// Tests the full 3A+3B pipeline: content_chunks write + vec_index upsert.
+// @/lib/vector is mocked — upsertVector is a vi.fn() that resolves immediately.
+
+describe('persistEmbeddingsFull()', () => {
+  beforeEach(() => {
+    mockUpsertVector.mockClear();
+    mockRun.mockClear();
+    mockPrepare.mockClear();
+    mockTransaction.mockClear();
+  });
+
+  it('is a no-op for empty records array', async () => {
+    await persistEmbeddingsFull([]);
+    expect(mockPrepare).not.toHaveBeenCalled();
+    expect(mockUpsertVector).not.toHaveBeenCalled();
+  });
+
+  it('calls persistEmbeddings (INSERT INTO content_chunks) for each record', async () => {
+    const records = await embed(SHORT_MSG, 'conversation', 'thread-pef');
+    await persistEmbeddingsFull(records);
+    const sql = mockPrepare.mock.calls[0]?.[0] as string | undefined;
+    expect(sql).toBeDefined();
+    expect(sql).toContain('INSERT OR REPLACE INTO content_chunks');
+  });
+
+  it('calls upsertVector once per record with correct chunkId', async () => {
+    const records = await embed(SHORT_MSG, 'conversation', 'thread-pef2');
+    await persistEmbeddingsFull(records);
+    expect(mockUpsertVector).toHaveBeenCalledTimes(records.length);
+    for (let i = 0; i < records.length; i++) {
+      const call = mockUpsertVector.mock.calls[i];
+      expect(call?.[0]).toBe(records[i]!.chunkId);
+      expect(call?.[1]).toBeInstanceOf(Float32Array);
+    }
+  });
+
+  it('passes the correct Float32Array embedding to upsertVector', async () => {
+    const records = await embed(SHORT_MSG, 'conversation', 'thread-pef3');
+    await persistEmbeddingsFull(records);
+    for (let i = 0; i < records.length; i++) {
+      const call = mockUpsertVector.mock.calls[i];
+      const passedEmbedding = call?.[1] as Float32Array;
+      expect(passedEmbedding.length).toBe(MODEL_DIMENSION);
+      // Must be the same Float32Array instance (no copy)
+      expect(passedEmbedding).toBe(records[i]!.embedding);
+    }
+  });
+
+  it('resolves without error', async () => {
+    const records = await embed(SHORT_MSG, 'conversation', 'thread-pef4');
+    await expect(persistEmbeddingsFull(records)).resolves.toBeUndefined();
   });
 });
