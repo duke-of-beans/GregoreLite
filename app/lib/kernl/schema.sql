@@ -162,6 +162,30 @@ CREATE TABLE IF NOT EXISTS content_chunks (
 CREATE INDEX IF NOT EXISTS idx_chunks_source ON content_chunks(source_type, source_id);
 CREATE INDEX IF NOT EXISTS idx_chunks_model  ON content_chunks(model_id);
 
+-- ─── SUGGESTIONS (Sprint 3E — Cross-Context feedback) ────────────────────────
+-- Tracks surfaced suggestions and user feedback for threshold calibration.
+CREATE TABLE IF NOT EXISTS suggestions (
+  id              TEXT PRIMARY KEY,
+  chunk_id        TEXT NOT NULL,              -- references content_chunks.id
+  similarity_score REAL NOT NULL,
+  display_score   REAL NOT NULL,
+  surface_context TEXT NOT NULL CHECK(surface_context IN ('on_input','pattern','already_built')),
+  user_action     TEXT CHECK(user_action IN ('accepted','dismissed','ignored')),
+  acted_at        INTEGER,
+  surfaced_at     INTEGER NOT NULL DEFAULT (unixepoch('now','subsec') * 1000)
+);
+
+CREATE INDEX IF NOT EXISTS idx_suggestions_chunk ON suggestions(chunk_id, acted_at DESC);
+CREATE INDEX IF NOT EXISTS idx_suggestions_context ON suggestions(surface_context, acted_at DESC);
+
+-- ─── SETTINGS (Sprint 3E — Persisted key/value config) ───────────────────────
+-- Stores threshold_config JSON + last_calibration_at timestamp.
+CREATE TABLE IF NOT EXISTS settings (
+  key        TEXT PRIMARY KEY,
+  value      TEXT NOT NULL,
+  updated_at INTEGER NOT NULL DEFAULT (unixepoch('now','subsec') * 1000)
+);
+
 -- ─── FTS VIRTUAL TABLE ───────────────────────────────────────────────────────
 CREATE VIRTUAL TABLE IF NOT EXISTS messages_fts USING fts5(
   content,

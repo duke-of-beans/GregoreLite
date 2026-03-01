@@ -67,4 +67,8 @@ CREATE INDEX IF NOT EXISTS idx_manifests_thread ON manifests(spawned_by_thread);
 CREATE TABLE IF NOT EXISTS content_chunks (id TEXT PRIMARY KEY, source_type TEXT NOT NULL CHECK(source_type IN ('conversation','file','email','email_attachment')), source_id TEXT NOT NULL, chunk_index INTEGER NOT NULL, content TEXT NOT NULL, metadata TEXT, model_id TEXT NOT NULL, created_at INTEGER NOT NULL, indexed_at INTEGER NOT NULL);
 CREATE INDEX IF NOT EXISTS idx_chunks_source ON content_chunks(source_type, source_id);
 CREATE INDEX IF NOT EXISTS idx_chunks_model ON content_chunks(model_id);
+CREATE TABLE IF NOT EXISTS suggestions (id TEXT PRIMARY KEY, chunk_id TEXT NOT NULL, similarity_score REAL NOT NULL, display_score REAL NOT NULL, surface_context TEXT NOT NULL CHECK(surface_context IN ('on_input','pattern','already_built')), user_action TEXT CHECK(user_action IN ('accepted','dismissed','ignored')), acted_at INTEGER, surfaced_at INTEGER NOT NULL DEFAULT (unixepoch('now','subsec')*1000));
+CREATE INDEX IF NOT EXISTS idx_suggestions_chunk ON suggestions(chunk_id, acted_at DESC);
+CREATE INDEX IF NOT EXISTS idx_suggestions_context ON suggestions(surface_context, acted_at DESC);
+CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT NOT NULL, updated_at INTEGER NOT NULL DEFAULT (unixepoch('now','subsec')*1000));
 `;

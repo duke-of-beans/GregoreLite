@@ -12,11 +12,11 @@
  * @module __tests__/unit/indexer.test.ts
  */
 
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 // ── AEGIS store mock ──────────────────────────────────────────────────────────
 const { mockGetLatestAegisSignal } = vi.hoisted(() => ({
-  mockGetLatestAegisSignal: vi.fn<[], { profile: string } | null>().mockReturnValue(null),
+  mockGetLatestAegisSignal: vi.fn().mockReturnValue(null),
 }));
 
 vi.mock('@/lib/kernl/aegis-store', () => ({
@@ -25,11 +25,11 @@ vi.mock('@/lib/kernl/aegis-store', () => ({
 
 // ── Database mock ─────────────────────────────────────────────────────────────
 const { mockPrepare, mockRun, mockAll, mockGet } = vi.hoisted(() => {
-  const mockRun = vi.fn().mockReturnValue({ changes: 0 });
-  const mockAll = vi.fn().mockReturnValue([]);
-  const mockGet = vi.fn().mockReturnValue(undefined);
-  const mockPrepare = vi.fn().mockReturnValue({ run: mockRun, all: mockAll, get: mockGet });
-  return { mockPrepare, mockRun, mockAll, mockGet };
+  const mr = vi.fn().mockReturnValue({ changes: 0 });
+  const ma = vi.fn().mockReturnValue([]);
+  const mg = vi.fn().mockReturnValue(undefined);
+  const mp = vi.fn().mockReturnValue({ run: mr, all: ma, get: mg });
+  return { mockPrepare: mp, mockRun: mr, mockAll: ma, mockGet: mg };
 });
 
 vi.mock('@/lib/kernl/database', () => ({
@@ -38,7 +38,7 @@ vi.mock('@/lib/kernl/database', () => ({
 
 // ── Vector mock ───────────────────────────────────────────────────────────────
 const { mockUpsertVector } = vi.hoisted(() => ({
-  mockUpsertVector: vi.fn<[string, Float32Array], Promise<void>>().mockResolvedValue(undefined),
+  mockUpsertVector: vi.fn().mockResolvedValue(undefined),
 }));
 
 vi.mock('@/lib/vector', () => ({
@@ -47,7 +47,7 @@ vi.mock('@/lib/vector', () => ({
 
 // ── Hot-cache mock ────────────────────────────────────────────────────────────
 const { mockWriteHotCache } = vi.hoisted(() => ({
-  mockWriteHotCache: vi.fn<[], Promise<void>>().mockResolvedValue(undefined),
+  mockWriteHotCache: vi.fn().mockResolvedValue(undefined),
 }));
 
 vi.mock('@/lib/vector/hot-cache', () => ({
@@ -67,8 +67,8 @@ vi.mock('@/lib/embeddings', () => ({
 
 // ── Scheduler mock (prevent real setInterval in indexer tests) ────────────────
 const { mockStartScheduler, mockStopScheduler } = vi.hoisted(() => ({
-  mockStartScheduler: vi.fn<[() => Promise<void>], void>(),
-  mockStopScheduler: vi.fn<[], void>(),
+  mockStartScheduler: vi.fn(),
+  mockStopScheduler: vi.fn(),
 }));
 
 vi.mock('@/lib/indexer/scheduler', () => ({

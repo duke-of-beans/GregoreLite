@@ -27,9 +27,10 @@ import { writeHotCache } from '@/lib/vector/hot-cache';
 import { BudgetEnforcer } from './budget';
 import { getThrottle } from './aegis-throttle';
 import { startScheduler, stopScheduler } from './scheduler';
-import type { IndexerRun, IndexerStatus, ThrottleMode } from './types';
+import type { IndexerRun, IndexerStatus } from './types';
 
 export type { IndexerRun, IndexerStatus, ThrottleMode } from './types';
+export { recordUserActivity } from './scheduler';
 
 // ─── Module state ─────────────────────────────────────────────────────────────
 
