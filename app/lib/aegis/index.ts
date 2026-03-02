@@ -13,8 +13,12 @@
  */
 
 import { logAegisSignal } from '@/lib/kernl/aegis-store';
+import { ghostPause, ghostResume } from '@/lib/ghost/watcher-bridge';
 import { AEGISGovernor } from './governor';
 import type { WorkloadProfile } from './types';
+
+// Profiles that require Ghost indexing to pause (intensive CPU/IO workloads)
+const GHOST_PAUSE_PROFILES = new Set<WorkloadProfile>(['PARALLEL_BUILD', 'COUNCIL']);
 
 export type { WorkloadProfile, AEGISState } from './types';
 export { AEGIS_PROFILE_MAP } from './types';
@@ -38,9 +42,16 @@ async function switchProfile(profile: WorkloadProfile): Promise<void> {
       body: JSON.stringify({ profile }),
     });
   } catch {
-    // AEGIS offline — KERNl log still happens below
+    // AEGIS offline — KERNL log still happens below
   }
   logAegisSignal(profile, undefined, false);
+
+  // Ghost Thread: pause during intensive profiles, resume otherwise
+  if (GHOST_PAUSE_PROFILES.has(profile)) {
+    await ghostPause();
+  } else {
+    await ghostResume();
+  }
 }
 
 function ensureGovernor(): AEGISGovernor {

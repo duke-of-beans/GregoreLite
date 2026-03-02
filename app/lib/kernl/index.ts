@@ -50,6 +50,14 @@ export {
 
 export type { AegisSignal } from './aegis-store';
 
+export {
+  getSetting,
+  getSettingJson,
+  setSetting,
+  setSettingJson,
+  deleteSetting,
+} from './settings-store';
+
 export type {
   Thread,
   Message,
