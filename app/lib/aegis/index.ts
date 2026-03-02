@@ -115,6 +115,21 @@ export function getAEGISStatus(): { online: boolean; lastProfile: WorkloadProfil
 }
 
 /**
+ * Update the active worker count and trigger an AEGIS profile re-evaluation.
+ * Called by the Session Scheduler (Sprint 7E) whenever a session starts or ends.
+ *
+ * Profile transitions driven by activeWorkers:
+ *   0          → DEEP_FOCUS   (hasActiveThread=true assumed while app is running)
+ *   1–2        → COWORK_BATCH
+ *   3+         → PARALLEL_BUILD  (Ghost Thread also paused — GHOST_PAUSE_PROFILES)
+ */
+export async function updateWorkerCount(activeWorkers: number): Promise<void> {
+  const gov = ensureGovernor();
+  gov.updateState({ activeWorkers, hasActiveThread: true });
+  await gov.forceEvaluate();
+}
+
+/**
  * Manually override the workload profile.
  * Bypasses anti-flap; logs is_override=1 in KERNL.
  */

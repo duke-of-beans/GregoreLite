@@ -1,6 +1,6 @@
 # GREGORE LITE — STATUS
-**Last Updated:** March 2, 2026 — Sprint 7D complete: Cost accounting, session_costs table, budget_config table, pricing.yaml, calculateCost(), cost-tracker DB layer, budget-enforcer (soft/hard caps, daily override), CostTicker/DailyBurnBadge/BudgetCapAlert components. Daily cap blocks new spawns, Override for Today expires at midnight UTC. 832/832 tests passing.
-**Phase:** Phase 7 — Self-Evolution Mode (Sprint 7D complete, 7E next)
+**Last Updated:** March 2, 2026 — Sprint 7E complete: Concurrency scheduler (SessionScheduler singleton), priority queue (strategic_thread bypass → ghost, 6 tiers), max 8 concurrent sessions, token-bucket rate limiter (80% throttle, 60s rolling window), AEGIS worker-count bridge (updateWorkerCount → forceEvaluate), session_queue table, QueuePositionBadge component. 31/31 new scheduler tests passing. Zero regressions.
+**Phase:** Phase 7 — Self-Evolution Mode (Sprint 7E complete, 7F next)
 
 ---
 **Previous:** Sprint 6G complete: Privacy Dashboard UI, 6 API routes (items/exclusions/log/watch-paths/status/purge), 5 React components (GhostStatusBadge, IndexedItemRow, ExclusionLog, IndexedItemsList, ExclusionRules, WatchPaths, PurgeAllDialog, PrivacyDashboard), cascade delete + purge-all, exclusion log retention cap, deleteGhostItem()  
@@ -708,8 +708,8 @@ Execution order: 7A → 7B → 7C → 7D → 7E → 7F → 7G → 7H (all sequen
 - **jiti runner on Windows**: `node_modules/.bin/jiti` is a Unix shell script; use full path to `node_modules/.pnpm/jiti@2.6.1/node_modules/jiti/lib/jiti-cli.mjs` directly with `node.exe`. Use `node --env-file=.env.local` to inject environment variables from dotenv file without installing dotenv.
 - **better-sqlite3 singleton + partial schema**: When `_db.exec(schema)` throws mid-script, `_db` is already assigned. Subsequent `getDatabase()` calls return the partially-initialized DB silently. Pattern: fix the schema so `exec()` never throws rather than wrapping `exec()` in try/catch.
 - **Desktop Commander async shell**: `start_process cmd.exe /c bat.bat` returns immediately (the PowerShell wrapper exits). Background process writes to redirect file; poll the output file directly to detect completion via the `Exit code:` sentinel line.
-- [ ] **SPRINT 7D** — Cost accounting: token capture, session_costs table, pricing.yaml, live cost ticker, budget caps
-- [ ] **SPRINT 7E** — Concurrency scheduler: priority queue (8 slots), rate limiter, AEGIS session-count integration
+- [x] **SPRINT 7D** — Cost accounting: token capture, session_costs table, pricing.yaml, live cost ticker, budget caps — **COMPLETE**
+- [x] **SPRINT 7E** — Concurrency scheduler: SessionScheduler singleton, priority queue (6 tiers, strategic_thread bypass), max 8 slots, token-bucket rate limiter (80% throttle), AEGIS updateWorkerCount bridge, session_queue table, QueuePositionBadge — **COMPLETE**
 - [ ] **SPRINT 7F** — Job queue UI: status display, live output toggle, cost ticker, action buttons, [Merge PR] placeholder
 - [ ] **SPRINT 7G** — SHIM hybrid: in-session tool, post-processing gate, 3× retry ceiling, SHIM_LOOP escalation
 - [ ] **SPRINT 7H** — Self-evolution: branch management, .gregignore, protected paths, git tools, GitHub PR API, CI polling, [Merge PR], Phase 7 certification

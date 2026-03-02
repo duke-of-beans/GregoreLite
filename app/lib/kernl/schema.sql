@@ -444,6 +444,26 @@ CREATE TABLE IF NOT EXISTS budget_config (
 
 -- Default cap rows — only inserted when they do not yet exist.
 INSERT OR IGNORE INTO budget_config (key, value, updated_at) VALUES
-  ('session_soft_cap_usd', '2.00',  unixepoch('now') * 1000),
-  ('session_hard_cap_usd', '10.00', unixepoch('now') * 1000),
-  ('daily_hard_cap_usd',   '15.00', unixepoch('now') * 1000);
+  ('session_soft_cap_usd',          '2.00',   unixepoch('now') * 1000),
+  ('session_hard_cap_usd',          '10.00',  unixepoch('now') * 1000),
+  ('daily_hard_cap_usd',            '15.00',  unixepoch('now') * 1000),
+  ('rate_limit_tokens_per_minute',  '100000', unixepoch('now') * 1000);
+
+-- ─── PHASE 7E: SESSION QUEUE ─────────────────────────────────────────────────
+-- Concurrency scheduler queue. One row per session attempt. Strategic thread
+-- sessions (type='strategic_thread') bypass this table entirely.
+-- Max 8 rows with status='running' at any time (enforced by scheduler.ts).
+CREATE TABLE IF NOT EXISTS session_queue (
+  id             TEXT    PRIMARY KEY,
+  manifest_id    TEXT    NOT NULL,
+  session_type   TEXT    NOT NULL,
+  priority       INTEGER NOT NULL,
+  status         TEXT    CHECK(status IN ('pending','running','completed','cancelled')),
+  queue_position INTEGER,
+  enqueued_at    INTEGER NOT NULL,
+  started_at     INTEGER,
+  completed_at   INTEGER
+);
+
+CREATE INDEX IF NOT EXISTS idx_session_queue_status
+  ON session_queue (status, priority ASC, enqueued_at ASC);

@@ -25,6 +25,8 @@ import { markStaleJobsInterrupted } from './job-tracker';
 import { AGENT_COST_CONFIG } from './config';
 import { TASK_PRIORITY } from './types';
 import type { TaskManifest, JobRecord, JobState, ResultReport, JobStatus, JobStateRow } from './types';
+import { scheduler } from './scheduler';
+import { isDailyCapReached } from './budget-enforcer';
 
 // ─── Phase 7A: active query sessions ─────────────────────────────────────────
 
@@ -42,16 +44,47 @@ const activeSessions = new Map<string, QuerySession>();
 export interface SpawnSessionResult {
   manifestId: string;
   started: boolean;
+  queued?: boolean;
+  queuePosition?: number | undefined;
 }
 
 export function spawnSession(manifest: TaskManifest): SpawnSessionResult {
   const manifestId = manifest.manifest_id;
 
   if (activeSessions.has(manifestId)) {
-    return { manifestId, started: false }; // already running
+    return { manifestId, started: false };
   }
 
+  // Daily cost cap check (Sprint 7D)
+  if (isDailyCapReached()) {
+    throw new Error('Daily cost cap reached. No new sessions until tomorrow UTC.');
+  }
+
+  // Route through the concurrency scheduler (Sprint 7E).
+  // Strategic thread sessions bypass the queue; all others are subject to the
+  // 8-slot cap and token-bucket rate limit.
+  const result = scheduler.enqueue(manifest, _startQuerySession);
+  return {
+    manifestId,
+    started: result.started,
+    queued: result.queued,
+    queuePosition: result.queuePosition,
+  };
+}
+
+/**
+ * Internal session starter passed to the scheduler as a callback.
+ * Called immediately when a slot is available, or deferred when queued.
+ * The scheduler supplies onSchedulerComplete — must be called on every
+ * terminal path so the scheduler can promote the next PENDING session.
+ */
+function _startQuerySession(
+  manifest: TaskManifest,
+  onSchedulerComplete: (manifestId: string) => void,
+): void {
+  const manifestId = manifest.manifest_id;
   const abortController = new AbortController();
+
   const session: QuerySession = {
     manifestId,
     abortController,
@@ -60,19 +93,22 @@ export function spawnSession(manifest: TaskManifest): SpawnSessionResult {
   };
   activeSessions.set(manifestId, session);
 
+  const _complete = (id: string) => {
+    activeSessions.delete(id);
+    onSchedulerComplete(id);
+  };
+
   // Fire-and-forget — state tracked via job_state table
   runQuerySession(manifest, abortController.signal, {
     onStatusChange(_id: string, _status: JobStatus) { /* job_state written by query.ts */ },
     onStreamEvent(_event) { /* callers poll job_state or subscribe via 7F UI */ },
     onLogLine(_id: string, _line: string) { /* logged internally */ },
-    onComplete(id: string, _finalStatus: JobStatus) { activeSessions.delete(id); },
-    onError(id: string, _err: Error) { activeSessions.delete(id); },
+    onComplete(id: string, _finalStatus: JobStatus) { _complete(id); },
+    onError(id: string, _err: Error) { _complete(id); },
   }).catch((err: unknown) => {
     console.error(`[AgentSDK] Unhandled error in query session ${manifestId}:`, err);
-    activeSessions.delete(manifestId);
+    _complete(manifestId);
   });
-
-  return { manifestId, started: true };
 }
 
 // ─── Phase 7A: killSession ────────────────────────────────────────────────────
@@ -106,6 +142,7 @@ export function killSession(manifestId: string): KillSessionResult {
   // Signal abort — query.ts detects this and transitions to INTERRUPTED
   session.abortController.abort();
   activeSessions.delete(manifestId);
+  scheduler.cancel(manifestId); // release slot and promote next pending
 
   const killedAt = new Date().toISOString();
 
