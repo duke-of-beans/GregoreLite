@@ -1,6 +1,6 @@
 # GREGORE LITE — STATUS
-**Last Updated:** March 2, 2026 — Sprint 6H complete: Ghost context panel cards, Tell me more injection ([GHOST CONTEXT - UNTRUSTED CONTENT] label), Noted feedback, 4h auto-expire on render, GhostCardList with Tauri event listener, Ghost context active indicator in ChatInterface, activeThreadId bridged via ghost store
-**Phase:** Phase 6 — Ghost Thread (Sprint 6H complete, 6I next)
+**Last Updated:** March 2, 2026 — PHASE 6 COMPLETE. Sprint 6I: 33-test integration suite (phase6-integration.test.ts), [UNTRUSTED CONTENT] security audit verified on all Ghost→Claude API paths, EoS self-scan 82/100 (303 files, no regression), performance measurements (JS startup <1ms, shutdown <1ms, all targets met), BLUEPRINT_FINAL.md §13 Phase 6 entry updated, 736/736 tests passing.
+**Phase:** Phase 7 — Self-Evolution Mode (next)
 
 ---
 **Previous:** Sprint 6G complete: Privacy Dashboard UI, 6 API routes (items/exclusions/log/watch-paths/status/purge), 5 React components (GhostStatusBadge, IndexedItemRow, ExclusionLog, IndexedItemsList, ExclusionRules, WatchPaths, PurgeAllDialog, PrivacyDashboard), cascade delete + purge-all, exclusion log retention cap, deleteGhostItem()  
@@ -624,7 +624,7 @@ Execution order: 5A → 5B → 5C (all sequential)
 - **micromatch as new dep**: Not already present. Added `micromatch@4.0.8` + `@types/micromatch` — zero-dependency glob matcher, ~15KB, correct choice for Layer 4 path_glob matching.
 - **Layer 4 cache invalidation**: 5-minute TTL stored as `_cacheTs` module variable. No explicit invalidation API needed — Privacy Dashboard (Sprint 6G) will call `removeExclusion()` which already clears the cache via `_cacheTs = 0`.
 
-## Active: Phase 6 — Ghost Thread
+## ✅ PHASE 6 COMPLETE — Ghost Thread
 
 ## Queued: Phase 6 — Ghost Thread (after Phase 5 complete)
 
@@ -638,7 +638,7 @@ Execution order: 6A -> 6B -> 6C -> 6D -> 6E -> 6F -> 6G -> 6H -> 6I (all sequent
 - [x] **SPRINT 6F** — Ghost process lifecycle + IPC (7-step startup, 5s shutdown, AEGIS propagation, component restart, Zustand store) — **COMPLETE**
 - [x] **SPRINT 6G** — Privacy Dashboard UI (6 API routes, 8 React components, cascade delete, exclusion log retention cap, deleteGhostItem(), purge-all with Ghost restart) — **COMPLETE**
 - [x] **SPRINT 6H** — Ghost context panel cards (GhostCard, GhostCardList, GhostCardActions, Tell me more injection, Noted feedback, 4h auto-expire on render, Tauri event listener, Ghost context active indicator, activeThreadId bridge via ghost store) — **COMPLETE**
-- [ ] SPRINT 6I - Integration + Phase 6 certification (security audit, perf measurements, EoS self-scan)
+- [x] **SPRINT 6I** — Integration + Phase 6 certification: 33-test integration suite, [UNTRUSTED CONTENT] boundary verified, EoS 82/100, performance measurements, BLUEPRINT updated — **COMPLETE**
 
 ## Phase 6 Source Notes
 
