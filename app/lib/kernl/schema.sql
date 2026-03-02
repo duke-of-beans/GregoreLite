@@ -447,7 +447,8 @@ INSERT OR IGNORE INTO budget_config (key, value, updated_at) VALUES
   ('session_soft_cap_usd',          '2.00',   unixepoch('now') * 1000),
   ('session_hard_cap_usd',          '10.00',  unixepoch('now') * 1000),
   ('daily_hard_cap_usd',            '15.00',  unixepoch('now') * 1000),
-  ('rate_limit_tokens_per_minute',  '100000', unixepoch('now') * 1000);
+  ('rate_limit_tokens_per_minute',  '100000', unixepoch('now') * 1000),
+  ('shim_retry_ceiling',            '3',      unixepoch('now') * 1000);
 
 -- ─── PHASE 7E: SESSION QUEUE ─────────────────────────────────────────────────
 -- Concurrency scheduler queue. One row per session attempt. Strategic thread
@@ -467,3 +468,23 @@ CREATE TABLE IF NOT EXISTS session_queue (
 
 CREATE INDEX IF NOT EXISTS idx_session_queue_status
   ON session_queue (status, priority ASC, enqueued_at ASC);
+
+-- ─── PHASE 7G: SHIM SESSION LOG ──────────────────────────────────────────────
+-- One row per SHIM call (in-session or post-processing) for analytics and
+-- false-positive tracking. call_number = 0 means post-processing run.
+CREATE TABLE IF NOT EXISTS shim_session_log (
+  id           TEXT    PRIMARY KEY,
+  manifest_id  TEXT    NOT NULL,
+  file_path    TEXT    NOT NULL,
+  call_number  INTEGER NOT NULL,   -- 1, 2, 3... in-session; 0 = post-processing
+  score_before REAL,               -- NULL on first in-session call or post-processing
+  score_after  REAL    NOT NULL,
+  shim_required INTEGER NOT NULL,  -- 1 if score_after < 70
+  logged_at    INTEGER NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_shim_session_log_manifest
+  ON shim_session_log (manifest_id, logged_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_shim_session_log_file
+  ON shim_session_log (file_path, logged_at DESC);

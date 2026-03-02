@@ -1,6 +1,6 @@
 # GREGORE LITE — STATUS
-**Last Updated:** March 2, 2026 — Sprint 7F complete: Job Queue UI — SessionLogger registry (ring buffer exposed via module-level Map), 6 API routes (/api/agent-sdk/jobs, /jobs/:id, /jobs/:id/output, /jobs/:id/kill, /jobs/:id/restart, /api/agent-sdk/budget), 7 React components (JobQueue 2s polling, JobCard with kill confirmation, JobStatusBadge 9 status colors, LiveOutputPanel with scroll-lock, InterruptedSessionCard restart flow, PendingSessionCard queue position, BudgetSettingsPanel cap config), getPendingManifests() scheduler API. 39 test files / 863 tests passing. Zero TS errors.
-**Phase:** Phase 7 — Self-Evolution Mode (Sprint 7F complete, 7G next)
+**Last Updated:** March 2, 2026 — Sprint 7G complete: SHIM Hybrid Integration — local quality analyser (tsc + ESLint + LOC, max 100pts), shim_check in-session tool, 3× retry ceiling (configurable via budget_config), SHIM_LOOP escalation to strategic thread with [Continue Anyway]/[Kill Session] action buttons, post-processing gate (code/self_evolution sessions only, score < 70 → FAILED), shim_session_log table, /api/agent-sdk/jobs/:id/unblock route. Permission-matrix test updated (shim_check promoted from stub). 39 test files / 860 passed (3 pre-existing timeouts: watcher-bridge, war-room). Zero TS errors.
+**Phase:** Phase 7 — Self-Evolution Mode (Sprint 7G complete, 7H next)
 
 ---
 **Previous:** Sprint 6G complete: Privacy Dashboard UI, 6 API routes (items/exclusions/log/watch-paths/status/purge), 5 React components (GhostStatusBadge, IndexedItemRow, ExclusionLog, IndexedItemsList, ExclusionRules, WatchPaths, PurgeAllDialog, PrivacyDashboard), cascade delete + purge-all, exclusion log retention cap, deleteGhostItem()  

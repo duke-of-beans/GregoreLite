@@ -181,7 +181,6 @@ describe('selectTools — readOnly enforcement', () => {
 describe('isStubTool', () => {
   it('returns true for stub tools', () => {
     expect(isStubTool('test_runner')).toBe(true);
-    expect(isStubTool('shim_check')).toBe(true);
     expect(isStubTool('shim_readonly_audit')).toBe(true);
     expect(isStubTool('markdown_linter')).toBe(true);
     expect(isStubTool('kernl_search_readonly')).toBe(true);
@@ -194,6 +193,8 @@ describe('isStubTool', () => {
     expect(isStubTool('fs_write_docs_only')).toBe(false);
     expect(isStubTool('list_directory')).toBe(false);
     expect(isStubTool('run_command')).toBe(false);
+    // Sprint 7G: shim_check promoted from stub to real local analyser
+    expect(isStubTool('shim_check')).toBe(false);
   });
 
   it('returns false for unknown tool names', () => {

@@ -12,6 +12,7 @@ import type { Tool } from '@anthropic-ai/sdk/resources';
 import type { TaskType } from './types';
 import type { TaskManifest } from './types';
 import { PERMISSION_CONFIG } from './permission-config';
+import { SHIM_CHECK_TOOL_DEFINITION } from './shim-tool-definition';
 
 // ─── Stub sentinel ────────────────────────────────────────────────────────────
 
@@ -116,24 +117,8 @@ const TOOL_DEFINITIONS: Record<string, Tool & { _stub?: true }> = {
     },
   },
 
-  shim_check: {
-    _stub: true,
-    name: 'shim_check',
-    description:
-      'Run SHIM quality analysis on modified files and return score + issues. ' +
-      '(NOT IMPLEMENTED — available in Sprint 7G)',
-    input_schema: {
-      type: 'object' as const,
-      properties: {
-        files: {
-          type: 'array',
-          items: { type: 'string' },
-          description: 'File paths to analyse. Defaults to all modified files.',
-        },
-      },
-      required: [],
-    },
-  },
+  // Sprint 7G: real implementation — local tsc + ESLint + LOC analyser
+  shim_check: SHIM_CHECK_TOOL_DEFINITION,
 
   shim_readonly_audit: {
     _stub: true,

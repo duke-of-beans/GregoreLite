@@ -24,6 +24,7 @@ import type { MessageParam, ToolResultBlockParam } from '@anthropic-ai/sdk/resou
 import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
+import { randomUUID } from 'crypto';
 
 import { buildSystemPrompt } from './prompt-builder';
 import { mapEventToStatus } from './event-mapper';
@@ -36,6 +37,10 @@ import { calculateCost } from './cost-calculator';
 import { createSessionCost, updateSessionCost, finalizeSessionCost, getSessionCapStatus } from './cost-tracker';
 import { AGENT_COST_CONFIG } from './config';
 import type { TaskManifest, JobStatus, JobStateRow, StreamEvent, AgentEvent } from './types';
+// Sprint 7G: SHIM hybrid integration
+import { runShimCheck } from './shim-tool';
+import { getLastScore, recordShimCall, clearSession, SHIM_LOOP_SENTINEL } from './retry-tracker';
+import { runPostProcessingShim } from './post-processor';
 
 const client = new Anthropic();
 
@@ -132,6 +137,90 @@ function executeTool(
         }
       }
 
+      // Sprint 7G: SHIM quality check — local tsc + ESLint + LOC analyser
+      case 'shim_check': {
+        const rawFilePath = String(input['file_path'] ?? '');
+        if (!rawFilePath) return 'ERROR: shim_check requires file_path';
+        const filePath = path.isAbsolute(rawFilePath)
+          ? rawFilePath
+          : path.resolve(projectPath, rawFilePath);
+
+        // Run the local quality analyser
+        const shimResult = runShimCheck(filePath, projectPath);
+
+        // Retry tracker: get previous score, record this call
+        const manifestId = manifest.manifest_id;
+        const scoreBefore = getLastScore(manifestId, filePath) ?? 0;
+        const retryStatus = recordShimCall(manifestId, filePath, scoreBefore, shimResult.health_score);
+
+        // SHIM_LOOP: N calls on same file with no improvement → BLOCKED + escalation
+        if (retryStatus.triggerLoop) {
+          // Write BLOCKED status to job_state
+          try {
+            const db = getDatabase();
+            db.prepare(
+              `UPDATE job_state SET status = 'blocked', updated_at = ? WHERE manifest_id = ?`
+            ).run(Date.now(), manifestId);
+
+            // Write escalation message to the manifest's strategic thread
+            const manifestRow = db.prepare(
+              `SELECT strategic_thread_id, title FROM manifests WHERE id = ?`
+            ).get(manifestId) as { strategic_thread_id: string; title: string } | undefined;
+
+            if (manifestRow?.strategic_thread_id) {
+              const escalationContent =
+                `⚠️ SHIM Loop Detected — Agent SDK session "${manifestRow.title ?? manifestId}" ` +
+                `has called SHIM on ${path.basename(filePath)} ${retryStatus.callCount} times ` +
+                `with no quality improvement (score: ${shimResult.health_score}). ` +
+                `Session is blocked. Manual review required.`;
+
+              const escalationMeta = JSON.stringify({
+                type: 'shim_loop_escalation',
+                manifestId,
+                filePath,
+                score: shimResult.health_score,
+                callCount: retryStatus.callCount,
+                actions: [
+                  {
+                    label: 'Continue Anyway',
+                    endpoint: `/api/agent-sdk/jobs/${manifestId}/unblock`,
+                    method: 'POST',
+                  },
+                  {
+                    label: 'Kill Session',
+                    endpoint: `/api/agent-sdk/jobs/${manifestId}/kill`,
+                    method: 'POST',
+                  },
+                ],
+              });
+
+              db.prepare(`
+                INSERT INTO messages (id, thread_id, role, content, meta, created_at)
+                VALUES (?, ?, 'system', ?, ?, ?)
+              `).run(
+                randomUUID(),
+                manifestRow.strategic_thread_id,
+                escalationContent,
+                escalationMeta,
+                Date.now(),
+              );
+            }
+          } catch {
+            // DB escalation failure must not crash the session
+          }
+
+          // Return sentinel so query.ts outer loop can detect and report BLOCKED
+          return (
+            `${SHIM_LOOP_SENTINEL}: SHIM called ${retryStatus.callCount} times on ` +
+            `${path.basename(filePath)} with no improvement (score: ${shimResult.health_score}). ` +
+            `Session is now BLOCKED. Stop attempting to fix this file. ` +
+            `Move on or end the session. David will review via the strategic thread.`
+          );
+        }
+
+        return JSON.stringify(shimResult);
+      }
+
       default:
         return `ERROR: Unknown tool: "${toolName}". This tool is not registered in the executor.`;
     }
@@ -209,6 +298,7 @@ export async function runQuerySession(
   const logger = new SessionLogger(manifestId);
   registerLogger(manifestId, logger);
   let status: JobStatus = 'spawning';
+  let sessionCompletedNormally = false;
   let stepsCompleted = 0;
   let filesModified: string[] = [];
   let tokensUsedSoFar = 0;
@@ -446,6 +536,7 @@ export async function runQuerySession(
           });
           updateSessionCost(manifestId, inputTokensTotal, outputTokensTotal, AGENT_COST_CONFIG.defaultModel);
           finalizeSessionCost(manifestId);
+          clearSession(manifestId);
           deregisterLogger(manifestId);
           logger.close();
           callbacks.onComplete(manifestId, 'failed');
@@ -458,6 +549,7 @@ export async function runQuerySession(
           totalTokens: tokensUsedSoFar,
           costUsd: costSoFar,
         });
+        sessionCompletedNormally = true;
         break outerLoop;
       }
 
@@ -478,6 +570,15 @@ export async function runQuerySession(
 
           const result = executeTool(block.name, parsedInput, manifest);
           logger.append(`[tool_result] ${block.name}: ${result.slice(0, 200)}`);
+
+          // Sprint 7G: detect SHIM_LOOP sentinel — emit blocked event for UI
+          if (result.startsWith(SHIM_LOOP_SENTINEL)) {
+            emitAgentEvent({
+              type: 'error_recoverable',
+              message: result.replace(SHIM_LOOP_SENTINEL + ': ', ''),
+              toolTrace: 'shim_loop',
+            });
+          }
 
           // Track files modified (fs_write and fs_write_docs_only are the write tools)
           if ((block.name === 'fs_write' || block.name === 'fs_write_docs_only') && parsedInput['path']) {
@@ -524,6 +625,7 @@ export async function runQuerySession(
         });
         updateSessionCost(manifestId, inputTokensTotal, outputTokensTotal, AGENT_COST_CONFIG.defaultModel);
         finalizeSessionCost(manifestId);
+        clearSession(manifestId);
         deregisterLogger(manifestId);
         logger.close();
         callbacks.onComplete(manifestId, 'failed');
@@ -537,6 +639,7 @@ export async function runQuerySession(
         totalTokens: tokensUsedSoFar,
         costUsd: costSoFar,
       });
+      sessionCompletedNormally = true;
       break outerLoop;
 
         } catch (sdkErr) {
@@ -566,6 +669,7 @@ export async function runQuerySession(
           });
           updateSessionCost(manifestId, inputTokensTotal, outputTokensTotal, AGENT_COST_CONFIG.defaultModel);
           finalizeSessionCost(manifestId);
+          clearSession(manifestId);
           deregisterLogger(manifestId);
           logger.close();
           callbacks.onComplete(manifestId, 'failed');
@@ -605,10 +709,47 @@ export async function runQuerySession(
     });
 
     finalizeSessionCost(manifestId);
+    clearSession(manifestId);
     deregisterLogger(manifestId);
     logger.close();
     callbacks.onError(manifestId, error);
     return;
+  }
+
+  // Sprint 7G: Post-processing SHIM gate
+  // Runs before the final state write for code/self_evolution sessions that completed normally.
+  // If any modified file scores < 70, the session is downgraded to FAILED before a PR can be created.
+  if (!abortSignal.aborted && sessionCompletedNormally &&
+      (sessionType === 'code' || sessionType === 'self_evolution') &&
+      filesModified.length > 0) {
+    logger.append('[shim] Running post-processing quality gate...');
+    const postResult = runPostProcessingShim(manifestId, filesModified, projectPath);
+
+    if (!postResult.passed) {
+      const failMsg = postResult.failureReason ?? 'Post-processing SHIM gate failed.';
+      logger.append(`[error] shim_gate: ${failMsg}`);
+      emitAgentEvent({ type: 'error_terminal', message: failMsg, context: 'shim_gate' });
+      upsertJobState({
+        manifest_id: manifestId,
+        status: 'failed',
+        steps_completed: stepsCompleted,
+        files_modified: JSON.stringify(filesModified),
+        last_event: JSON.stringify({ type: 'error', context: 'shim_gate', message: failMsg }),
+        log_path: logger.logPath,
+        tokens_used_so_far: tokensUsedSoFar,
+        cost_so_far: costSoFar,
+        updated_at: Date.now(),
+      });
+      updateSessionCost(manifestId, inputTokensTotal, outputTokensTotal, AGENT_COST_CONFIG.defaultModel);
+      finalizeSessionCost(manifestId);
+      clearSession(manifestId);
+      deregisterLogger(manifestId);
+      logger.close();
+      callbacks.onComplete(manifestId, 'failed');
+      return;
+    }
+
+    logger.append(`[shim] Post-processing passed. Average score: ${postResult.shim_score_after.toFixed(1)}`);
   }
 
   // Final state write
@@ -629,6 +770,7 @@ export async function runQuerySession(
   updateSessionCost(manifestId, inputTokensTotal, outputTokensTotal, AGENT_COST_CONFIG.defaultModel);
   finalizeSessionCost(manifestId);
 
+  clearSession(manifestId);
   deregisterLogger(manifestId);
   logger.close();
   callbacks.onComplete(manifestId, finalStatus);
