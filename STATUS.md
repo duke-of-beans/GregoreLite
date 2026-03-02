@@ -1,6 +1,6 @@
 # GREGORE LITE — STATUS
-**Last Updated:** March 2, 2026 — Sprint 7B complete: Permission matrix, tool injection, write scope enforcement. 6 session types fully gated, scope_violations table, 761/761 tests passing.
-**Phase:** Phase 7 — Self-Evolution Mode (Sprint 7B complete, 7C next)
+**Last Updated:** March 2, 2026 — Sprint 7C complete: Error handling, failure modes, handoff reports, session restart. All 6 failure modes implemented (CONTEXT_LIMIT, TOOL_ERROR, NETWORK_ERROR, IMPOSSIBLE_TASK, APP_CRASH stub, SHIM_LOOP stub). 799/799 tests passing.
+**Phase:** Phase 7 — Self-Evolution Mode (Sprint 7C complete, 7D next)
 
 ---
 **Previous:** Sprint 6G complete: Privacy Dashboard UI, 6 API routes (items/exclusions/log/watch-paths/status/purge), 5 React components (GhostStatusBadge, IndexedItemRow, ExclusionLog, IndexedItemsList, ExclusionRules, WatchPaths, PurgeAllDialog, PrivacyDashboard), cascade delete + purge-all, exclusion log retention cap, deleteGhostItem()  
@@ -632,7 +632,7 @@ Execution order: 7A → 7B → 7C → 7D → 7E → 7F → 7G → 7H (all sequen
 
 - [x] **SPRINT 7A** — Agent SDK core: manifest injection, System Contract Header, query() wrapper, event streaming, job_state checkpointing — **COMPLETE**
 - [x] **SPRINT 7B** — Permission matrix: tool injection by session type, write scope enforcement, scope_violations log — **COMPLETE**
-- [ ] **SPRINT 7C** — Error handling + restart: all failure modes, exponential backoff, handoff reports, INTERRUPTED state
+- [x] **SPRINT 7C** — Error handling + restart: all failure modes, exponential backoff, handoff reports, session_restarts table — **COMPLETE**
 
 ### Sprint 7A Gate Results
 
@@ -675,6 +675,31 @@ Execution order: 7A → 7B → 7C → 7D → 7E → 7F → 7G → 7H (all sequen
 | scope_violations table in schema | ✅ CREATE TABLE IF NOT EXISTS + 2 indexes |
 | STATUS.md updated | ✅ Done |
 | SPRINT_7B_COMPLETE.md written | ✅ Done |
+| Conventional commit + push | ✅ Done |
+
+### Sprint 7C Gate Results
+
+| Gate | Result |
+|------|--------|
+| tsc --noEmit | ✅ 0 errors |
+| vitest run (full suite) | ✅ 799/799 passing (37 files, +38 new) |
+| CONTEXT_LIMIT: max_tokens → FAILED | ✅ classifyStopReason(), no retry |
+| TOOL_ERROR: 3 retries 1s/2s/4s | ✅ withBackoff(fn, 3, 1000) |
+| NETWORK_ERROR: 1 retry after 2s | ✅ withBackoff(fn, 1, 2000) |
+| IMPOSSIBLE_TASK: end_turn detect | ✅ detectImpossibleTask() + no files guard |
+| APP_CRASH: INTERRUPTED on boot | ✅ markInterruptedOnBoot() (Phase 7A, unchanged) |
+| SHIM_LOOP stub: BLOCKED state | ✅ detectShimLoop() returns false — full impl in 7G |
+| Kill switch ⊥ backoff sleep | ✅ sleepMs() rejects on AbortSignal |
+| buildHandoffReport() | ✅ job_state → PRIOR EXECUTION CONTEXT string |
+| spawnRestart() round-trip | ✅ clones manifest, session_restarts row, calls spawnSession() |
+| session_restarts table | ✅ CREATE TABLE IF NOT EXISTS + index |
+| failure-modes.ts | ✅ enum + 5 detection predicates |
+| handoff-report.ts | ✅ template per §4.3.4, fallback for missing state |
+| error-handler.ts | ✅ withBackoff, classifyStopReason, classifyError |
+| restart.ts | ✅ spawnRestart() + rowToManifest() |
+| query.ts wired | ✅ sdkRetryLoop, outerLoop labels, max_tokens, end_turn |
+| STATUS.md updated | ✅ Done |
+| SPRINT_7C_COMPLETE.md written | ✅ Done |
 | Conventional commit + push | ✅ Done |
 
 ### Sprint 7A Key Discoveries

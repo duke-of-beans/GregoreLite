@@ -399,3 +399,16 @@ CREATE TABLE IF NOT EXISTS scope_violations (
 );
 CREATE INDEX IF NOT EXISTS idx_scope_violations_manifest ON scope_violations(manifest_id);
 CREATE INDEX IF NOT EXISTS idx_scope_violations_logged  ON scope_violations(logged_at);
+
+-- ─── PHASE 7C: SESSION RESTARTS ──────────────────────────────────────────────
+-- Audit trail for every session restart. Populated by restart.ts spawnRestart().
+CREATE TABLE IF NOT EXISTS session_restarts (
+  id                   TEXT    PRIMARY KEY,
+  original_manifest_id TEXT    NOT NULL,
+  new_manifest_id      TEXT    NOT NULL,
+  restart_reason       TEXT,        -- failure mode that caused the restart
+  restarted_at         INTEGER NOT NULL,
+  restarted_by         TEXT    DEFAULT 'user'  -- 'user' or 'auto' (future auto-restart)
+);
+
+CREATE INDEX IF NOT EXISTS idx_session_restarts_original ON session_restarts(original_manifest_id);

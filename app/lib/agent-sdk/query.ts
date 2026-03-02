@@ -1,5 +1,5 @@
 /**
- * query.ts — Agent SDK Session Driver — Phase 7A/7B
+ * query.ts — Agent SDK Session Driver — Phase 7A/7B/7C
  *
  * Drives a bounded worker session from start to finish using the Anthropic SDK
  * with tool-use in an agentic loop. Maps SDK events to JobStatus transitions
@@ -8,6 +8,13 @@
  * Phase 7B: tools are injected via selectTools() from the permission matrix.
  * Write scope is enforced by checkWriteScope() / scope-enforcer.ts.
  * Stub tools return NOT_IMPLEMENTED until 7G/7H.
+ *
+ * Phase 7C: error-handler.ts wired into the agentic loop.
+ * - CONTEXT_LIMIT (max_tokens): FAILED, no retry
+ * - IMPOSSIBLE_TASK (end_turn + impossibility phrase + no files): FAILED, no retry
+ * - TOOL_ERROR (SDK exception): 3 retries with 1s/2s/4s backoff
+ * - NETWORK_ERROR (connection error): 1 retry after 2s
+ * Kill-switch and backoff are mutually exclusive (sleepMs respects AbortSignal).
  *
  * BLUEPRINT §4.3.1, §4.3.2, §4.3.3, §4.3.4, §7.10
  */
@@ -23,6 +30,7 @@ import { mapEventToStatus } from './event-mapper';
 import { SessionLogger } from './session-logger';
 import { selectTools, isStubTool } from './tool-injector';
 import { checkWriteScope, resolveCwd } from './scope-enforcer';
+import { classifyStopReason, classifyError, RETRY_CONFIG, FailureMode } from './error-handler';
 import { getDatabase } from '../kernl/database';
 import { calculateCost } from '../services/pricing';
 import { AGENT_COST_CONFIG } from './config';
@@ -34,6 +42,20 @@ const client = new Anthropic();
 
 const CHECKPOINT_EVERY_N_TOOL_CALLS = 5;
 const CHECKPOINT_EVERY_MS = 60_000; // 60 seconds
+
+// ─── Abort-aware sleep (Phase 7C) ─────────────────────────────────────────────
+// Used by the SDK retry loop. Rejects immediately if abortSignal fires so the
+// kill-switch and backoff delays are mutually exclusive.
+function sleepMs(ms: number, signal?: AbortSignal): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    if (signal?.aborted) { reject(new Error('Session aborted')); return; }
+    const timer = setTimeout(resolve, ms);
+    signal?.addEventListener('abort', () => {
+      clearTimeout(timer);
+      reject(new Error('Session aborted during retry delay'));
+    }, { once: true });
+  });
+}
 
 // ─── Tool executor ────────────────────────────────────────────────────────────
 
@@ -265,13 +287,21 @@ export async function runQuerySession(
     let loopCount = 0;
     const MAX_LOOPS = 40; // safety ceiling — prevents runaway sessions
 
-    while (loopCount < MAX_LOOPS) {
+    outerLoop: while (loopCount < MAX_LOOPS) {
       loopCount++;
 
       if (abortSignal.aborted) {
         emitAgentEvent({ type: 'session_killed', manifestId });
-        break;
+        break outerLoop;
       }
+
+      // Phase 7C: Per-round SDK retry loop.
+      // NETWORK_ERROR: 1 retry after 2s.  TOOL_ERROR: 3 retries (1s/2s/4s).
+      // sleepMs rejects on AbortSignal so kill-switch and backoff are mutually exclusive.
+      let sdkAttempt = 0;
+      sdkRetryLoop: while (true) {
+        if (abortSignal.aborted) break sdkRetryLoop;
+        try {
 
       const stream = client.messages.stream({
         model: AGENT_COST_CONFIG.defaultModel,
@@ -365,7 +395,7 @@ export async function runQuerySession(
 
       if (abortSignal.aborted) {
         emitAgentEvent({ type: 'session_killed', manifestId });
-        break;
+        break outerLoop;
       }
 
       // Get final message to check stop_reason and collect tool use blocks
@@ -378,14 +408,30 @@ export async function runQuerySession(
       costSoFar = calculateCost(AGENT_COST_CONFIG.defaultModel, inputTokensTotal, outputTokensTotal);
 
       if (finalMessage.stop_reason === 'end_turn') {
-        // Session complete
+        const finalText    = extractTextContent(finalMessage.content);
+        // Phase 7C: detect impossible task before calling it a normal completion
+        const failureCheck = classifyStopReason(null, finalText, filesModified);
+        if (failureCheck) {
+          logger.append(`[error] ${failureCheck.mode}: ${failureCheck.message}`);
+          emitAgentEvent({ type: 'error_terminal', message: failureCheck.message, context: failureCheck.mode });
+          upsertJobState({
+            manifest_id: manifestId, status: 'failed', steps_completed: stepsCompleted,
+            files_modified: JSON.stringify(filesModified),
+            last_event: JSON.stringify({ type: 'error', context: failureCheck.mode, message: failureCheck.message }),
+            log_path: logger.logPath, tokens_used_so_far: tokensUsedSoFar, cost_so_far: costSoFar, updated_at: Date.now(),
+          });
+          logger.close();
+          callbacks.onComplete(manifestId, 'failed');
+          return;
+        }
+        // Normal completion
         emitAgentEvent({
           type: 'session_final',
-          resultSummary: extractTextContent(finalMessage.content),
+          resultSummary: finalText,
           totalTokens: tokensUsedSoFar,
           costUsd: costSoFar,
         });
-        break;
+        break outerLoop;
       }
 
       if (finalMessage.stop_reason === 'tool_use') {
@@ -435,18 +481,65 @@ export async function runQuerySession(
         messages.push({ role: 'user', content: toolResults });
 
         if (shouldCheckpoint()) writeCheckpoint();
-        continue; // next loop iteration
+        break sdkRetryLoop; // tool results appended — continue outer loop for next round
       }
 
-      // Any other stop_reason (max_tokens, stop_sequence) — treat as completion
+      // Phase 7C: max_tokens → CONTEXT_LIMIT failure, no retry
+      if (finalMessage.stop_reason === 'max_tokens') {
+        const failureMsg = 'Context limit reached. Consider splitting into smaller tasks.';
+        logger.append(`[error] ${FailureMode.CONTEXT_LIMIT}: ${failureMsg}`);
+        emitAgentEvent({ type: 'error_terminal', message: failureMsg, context: FailureMode.CONTEXT_LIMIT });
+        upsertJobState({
+          manifest_id: manifestId, status: 'failed', steps_completed: stepsCompleted,
+          files_modified: JSON.stringify(filesModified),
+          last_event: JSON.stringify({ type: 'error', context: FailureMode.CONTEXT_LIMIT, message: failureMsg }),
+          log_path: logger.logPath, tokens_used_so_far: tokensUsedSoFar, cost_so_far: costSoFar, updated_at: Date.now(),
+        });
+        logger.close();
+        callbacks.onComplete(manifestId, 'failed');
+        return;
+      }
+
+      // Any other stop_reason (stop_sequence, etc.) — treat as completion
       emitAgentEvent({
         type: 'session_final',
         resultSummary: `Session ended with stop_reason: ${finalMessage.stop_reason ?? 'unknown'}`,
         totalTokens: tokensUsedSoFar,
         costUsd: costSoFar,
       });
-      break;
-    }
+      break outerLoop;
+
+        } catch (sdkErr) {
+          // Phase 7C: classify and retry SDK-level errors
+          if (abortSignal.aborted) break sdkRetryLoop;
+          const sdkFailure = classifyError(sdkErr);
+          const isNet      = sdkFailure.mode === FailureMode.NETWORK_ERROR;
+          const maxAtt     = isNet ? 1 + RETRY_CONFIG.networkError.maxRetries : 1 + RETRY_CONFIG.toolError.maxRetries;
+          const baseDelay  = isNet ? RETRY_CONFIG.networkError.baseDelayMs    : RETRY_CONFIG.toolError.baseDelayMs;
+
+          if (sdkAttempt < maxAtt - 1) {
+            sdkAttempt++;
+            const delay = baseDelay * Math.pow(2, sdkAttempt - 1);
+            logger.append(`[retry] ${sdkFailure.mode} attempt ${sdkAttempt}/${maxAtt - 1}: ${sdkFailure.message}`);
+            try { await sleepMs(delay, abortSignal); } catch { break sdkRetryLoop; } // abort during sleep
+            continue; // sdkRetryLoop
+          }
+
+          // All retries exhausted → terminal FAILED
+          logger.append(`[error] ${sdkFailure.mode}: ${sdkFailure.message}`);
+          emitAgentEvent({ type: 'error_terminal', message: sdkFailure.message, context: sdkFailure.mode });
+          upsertJobState({
+            manifest_id: manifestId, status: 'failed', steps_completed: stepsCompleted,
+            files_modified: JSON.stringify(filesModified),
+            last_event: JSON.stringify({ type: 'error', context: sdkFailure.mode, message: sdkFailure.message }),
+            log_path: logger.logPath, tokens_used_so_far: tokensUsedSoFar, cost_so_far: costSoFar, updated_at: Date.now(),
+          });
+          logger.close();
+          callbacks.onComplete(manifestId, 'failed');
+          return;
+        }
+      } // end sdkRetryLoop
+    } // end outerLoop
 
     if (loopCount >= MAX_LOOPS) {
       emitAgentEvent({
