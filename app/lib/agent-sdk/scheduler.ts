@@ -235,6 +235,13 @@ export class SessionScheduler {
       .sort((a, b) => a.priority - b.priority || a.enqueuedAt - b.enqueuedAt);
   }
 
+  /** All pending entries with their full manifests — used by the 7F list API. */
+  getPendingManifests(): Array<{ entry: QueueEntry; manifest: TaskManifest }> {
+    return Array.from(this._pending.values())
+      .map(({ entry, manifest }) => ({ entry, manifest }))
+      .sort((a, b) => a.entry.priority - b.entry.priority || a.entry.enqueuedAt - b.entry.enqueuedAt);
+  }
+
   /** Reset singleton — test use only. */
   static _resetForTests(): void {
     SessionScheduler._instance = null;

@@ -27,7 +27,7 @@ import { execSync } from 'child_process';
 
 import { buildSystemPrompt } from './prompt-builder';
 import { mapEventToStatus } from './event-mapper';
-import { SessionLogger } from './session-logger';
+import { SessionLogger, registerLogger, deregisterLogger } from './session-logger';
 import { selectTools, isStubTool } from './tool-injector';
 import { checkWriteScope, resolveCwd } from './scope-enforcer';
 import { classifyStopReason, classifyError, RETRY_CONFIG, FailureMode } from './error-handler';
@@ -207,6 +207,7 @@ export async function runQuerySession(
   const effectiveCwd  = resolveCwd(sessionType, projectPath, manifestId);
 
   const logger = new SessionLogger(manifestId);
+  registerLogger(manifestId, logger);
   let status: JobStatus = 'spawning';
   let stepsCompleted = 0;
   let filesModified: string[] = [];
@@ -445,6 +446,7 @@ export async function runQuerySession(
           });
           updateSessionCost(manifestId, inputTokensTotal, outputTokensTotal, AGENT_COST_CONFIG.defaultModel);
           finalizeSessionCost(manifestId);
+          deregisterLogger(manifestId);
           logger.close();
           callbacks.onComplete(manifestId, 'failed');
           return;
@@ -522,6 +524,7 @@ export async function runQuerySession(
         });
         updateSessionCost(manifestId, inputTokensTotal, outputTokensTotal, AGENT_COST_CONFIG.defaultModel);
         finalizeSessionCost(manifestId);
+        deregisterLogger(manifestId);
         logger.close();
         callbacks.onComplete(manifestId, 'failed');
         return;
@@ -563,6 +566,7 @@ export async function runQuerySession(
           });
           updateSessionCost(manifestId, inputTokensTotal, outputTokensTotal, AGENT_COST_CONFIG.defaultModel);
           finalizeSessionCost(manifestId);
+          deregisterLogger(manifestId);
           logger.close();
           callbacks.onComplete(manifestId, 'failed');
           return;
@@ -601,6 +605,7 @@ export async function runQuerySession(
     });
 
     finalizeSessionCost(manifestId);
+    deregisterLogger(manifestId);
     logger.close();
     callbacks.onError(manifestId, error);
     return;
@@ -624,6 +629,7 @@ export async function runQuerySession(
   updateSessionCost(manifestId, inputTokensTotal, outputTokensTotal, AGENT_COST_CONFIG.defaultModel);
   finalizeSessionCost(manifestId);
 
+  deregisterLogger(manifestId);
   logger.close();
   callbacks.onComplete(manifestId, finalStatus);
 }

@@ -1,6 +1,6 @@
 # GREGORE LITE — STATUS
-**Last Updated:** March 2, 2026 — Sprint 7E complete: Concurrency scheduler (SessionScheduler singleton), priority queue (strategic_thread bypass → ghost, 6 tiers), max 8 concurrent sessions, token-bucket rate limiter (80% throttle, 60s rolling window), AEGIS worker-count bridge (updateWorkerCount → forceEvaluate), session_queue table, QueuePositionBadge component. 31/31 new scheduler tests passing. Zero regressions.
-**Phase:** Phase 7 — Self-Evolution Mode (Sprint 7E complete, 7F next)
+**Last Updated:** March 2, 2026 — Sprint 7F complete: Job Queue UI — SessionLogger registry (ring buffer exposed via module-level Map), 6 API routes (/api/agent-sdk/jobs, /jobs/:id, /jobs/:id/output, /jobs/:id/kill, /jobs/:id/restart, /api/agent-sdk/budget), 7 React components (JobQueue 2s polling, JobCard with kill confirmation, JobStatusBadge 9 status colors, LiveOutputPanel with scroll-lock, InterruptedSessionCard restart flow, PendingSessionCard queue position, BudgetSettingsPanel cap config), getPendingManifests() scheduler API. 39 test files / 863 tests passing. Zero TS errors.
+**Phase:** Phase 7 — Self-Evolution Mode (Sprint 7F complete, 7G next)
 
 ---
 **Previous:** Sprint 6G complete: Privacy Dashboard UI, 6 API routes (items/exclusions/log/watch-paths/status/purge), 5 React components (GhostStatusBadge, IndexedItemRow, ExclusionLog, IndexedItemsList, ExclusionRules, WatchPaths, PurgeAllDialog, PrivacyDashboard), cascade delete + purge-all, exclusion log retention cap, deleteGhostItem()  
@@ -710,7 +710,7 @@ Execution order: 7A → 7B → 7C → 7D → 7E → 7F → 7G → 7H (all sequen
 - **Desktop Commander async shell**: `start_process cmd.exe /c bat.bat` returns immediately (the PowerShell wrapper exits). Background process writes to redirect file; poll the output file directly to detect completion via the `Exit code:` sentinel line.
 - [x] **SPRINT 7D** — Cost accounting: token capture, session_costs table, pricing.yaml, live cost ticker, budget caps — **COMPLETE**
 - [x] **SPRINT 7E** — Concurrency scheduler: SessionScheduler singleton, priority queue (6 tiers, strategic_thread bypass), max 8 slots, token-bucket rate limiter (80% throttle), AEGIS updateWorkerCount bridge, session_queue table, QueuePositionBadge — **COMPLETE**
-- [ ] **SPRINT 7F** — Job queue UI: status display, live output toggle, cost ticker, action buttons, [Merge PR] placeholder
+- [x] **SPRINT 7F** — Job queue UI: SessionLogger registry, 6 API routes (/api/agent-sdk/jobs + /budget), 7 React components (JobQueue, JobCard, JobStatusBadge, LiveOutputPanel, InterruptedSessionCard, PendingSessionCard, BudgetSettingsPanel), kill confirmation dialog, [Merge PR] placeholder stub — **COMPLETE**
 - [ ] **SPRINT 7G** — SHIM hybrid: in-session tool, post-processing gate, 3× retry ceiling, SHIM_LOOP escalation
 - [ ] **SPRINT 7H** — Self-evolution: branch management, .gregignore, protected paths, git tools, GitHub PR API, CI polling, [Merge PR], Phase 7 certification
 

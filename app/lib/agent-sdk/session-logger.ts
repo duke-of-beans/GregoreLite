@@ -1,10 +1,15 @@
 /**
- * Session Logger — Phase 7A
+ * Session Logger — Phase 7A / 7F
  *
  * In-memory ring buffer (10,000 lines) for raw SDK session output.
  * For sessions running longer than 5 minutes, output also streams to a
  * temp file at os.tmpdir()/greglite-session-{manifestId}.log.
  * The temp file path is stored in job_state.log_path.
+ *
+ * Sprint 7F addition: module-level registry so the /api/agent-sdk/jobs/:id/output
+ * route can access the active SessionLogger for a running session without going
+ * through query.ts. query.ts calls registerLogger() on creation and
+ * deregisterLogger() on close.
  *
  * BLUEPRINT §4.3.2 — "Log buffer: 10,000 lines in memory, written to temp file
  *                     for sessions >5 minutes."
@@ -118,4 +123,24 @@ export class SessionLogger {
       this.tempFilePath = null;
     }
   }
+}
+
+// ─── Active logger registry (Sprint 7F) ───────────────────────────────────────
+//
+// query.ts calls registerLogger() immediately after `new SessionLogger(manifestId)`
+// and deregisterLogger() before each logger.close() call. This lets the
+// /api/agent-sdk/jobs/:id/output route read live output without polling files.
+
+const _activeLoggers = new Map<string, SessionLogger>();
+
+export function registerLogger(manifestId: string, logger: SessionLogger): void {
+  _activeLoggers.set(manifestId, logger);
+}
+
+export function getLogger(manifestId: string): SessionLogger | undefined {
+  return _activeLoggers.get(manifestId);
+}
+
+export function deregisterLogger(manifestId: string): void {
+  _activeLoggers.delete(manifestId);
 }

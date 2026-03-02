@@ -164,6 +164,13 @@ export function getJobState(manifestId: string): JobStateRow | null {
   return readJobState(manifestId);
 }
 
+// ─── Phase 7F: getPendingManifests ───────────────────────────────────────────
+
+/** Returns manifests currently waiting in the scheduler's in-memory priority queue. */
+export function getPendingManifests() {
+  return scheduler.getPendingManifests();
+}
+
 // ─── Phase 7A: markInterruptedOnBoot ─────────────────────────────────────────
 
 /**
