@@ -1,10 +1,5 @@
-feat(sprint-2c): AEGIS integration -- workload signaling, governor, status bar override
+sprint-4b(wip): gate UI, 423 enforcement, inference, API routes
 
-- app/lib/aegis/: types, client (HTTP port 8743), governor (5s poll + 5s anti-flap), public index
-- AEGISGovernor: determineProfile() pure fn, anti-flap dedup, start/stop/forceEvaluate
-- Public API: initAEGIS, shutdownAEGIS, getAEGISStatus, overrideAEGISProfile, updateAEGISState
-- Bootstrap wired: initAEGIS on boot, STARTUP signal sent, governor started
-- POST /api/aegis/override: manual profile override route, bypasses anti-flap, logs is_override=1
-- aegis.test.ts: 31 new tests covering determineProfile, AEGIS_PROFILE_MAP, governor, lifecycle
-- agent-sdk.test.ts: fix vi.hoisted() pattern for vi.mock() factory variable references
-- tsc: 0 errors | tests: 140/140 passing
+GatePanel + TriggerBadge + MandatoryOverlay + ContradictionView wired
+into ChatInterface and Header. POST /api/chat returns 423 when locked.
+inferStructuredTriggers replaces 3 stubs. approve/dismiss/override routes.

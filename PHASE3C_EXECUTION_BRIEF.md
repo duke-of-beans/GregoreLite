@@ -1,37 +1,43 @@
 # GREGLITE — SPRINT 3C EXECUTION BRIEF
 ## Three-Tier Cold Start Warming
-**Instance:** Phase 3, Workstream C
+**Instance:** Sequential after 3B
 **Created:** March 1, 2026
 **Project:** D:\Projects\GregLite\
-**Prerequisite:** Sprint 3B complete (sqlite-vec live, vector queries working)
+**Depends on:** Sprint 3B complete (vec_index live and queryable)
 
 ---
 
 ## YOUR ROLE
 
-Bounded execution worker. You are building the three-tier index warming system so vector search is fast from the moment the app opens. Tier 1 hits in 2 seconds, Tier 2 in 10 seconds, Tier 3 (full index) always available. David is CEO. Zero debt.
+Bounded execution worker. You are building the three-tier index warming system so that GregLite's similarity search is fast from the moment the app opens — not just after a 10-second warm-up. David is CEO. Execute as COO-level engineer. Zero debt, complete implementation.
 
 ---
 
 ## MANDATORY BOOTSTRAP
 
+Load in order:
+
 1. `D:\Dev\CLAUDE_INSTRUCTIONS.md`
 2. `D:\Dev\TECHNICAL_STANDARDS.md`
 3. `D:\Projects\GregLite\DEV_PROTOCOLS.md`
-4. `D:\Projects\GregLite\PROJECT_DNA.yaml`
-5. `D:\Projects\GregLite\STATUS.md`
-6. `D:\Projects\GregLite\BLUEPRINT_FINAL.md` — §5.5 (Cold Start) specifically
-7. `D:\Projects\GregLite\SPRINT_3B_COMPLETE.md`
+4. `D:\Projects\GregLite\STATUS.md`
+5. `D:\Projects\GregLite\BLUEPRINT_FINAL.md` — §5.5 (Cold Start) specifically
+6. `D:\Projects\GregLite\SPRINT_3B_COMPLETE.md` — confirm 3B is done, note measured latencies
 
-Verify baseline before touching anything.
+Baseline check:
+```powershell
+cd D:\Projects\GregLite\app
+npx tsc --noEmit
+pnpm test:run
+```
 
 ---
 
 ## AUTHORITY PROTOCOL — STOP WHEN:
 
-- Memory-mapped file approach fails on Windows — report before trying alternatives
-- Hot cache binary format causes corruption on write — stop immediately
-- TypeScript errors increase beyond baseline
+- Memory-mapped file approach causes issues on Windows — report before attempting workarounds
+- Hot cache binary serialization format is ambiguous — decide Float32Array → Buffer approach before building
+- Same fix 3+ times
 
 ---
 
@@ -39,186 +45,154 @@ Verify baseline before touching anything.
 
 1. `npx tsc --noEmit` — zero new errors
 2. `pnpm test:run` — zero failures
-3. Tier 1 available within 2s of app open (measured)
-4. Tier 2 available within 10s of app open (measured)
-5. STATUS.md updated
+3. Tier 1 search (hot cache) under 5ms
+4. Tier 2 search (30-day window) under 10ms
+5. All three tiers measured and logged on boot
+6. STATUS.md updated
 
 ---
 
-## WHAT YOU ARE BUILDING
+## THREE TIERS — SPEC FROM §5.5
 
-### Three tiers (from BLUEPRINT §5.5)
-
-| Tier | Target | Contents | Storage |
-|------|--------|----------|---------|
-| 1 | T+2s | 1–2k most recent embeddings | `hot_cache.bin` memory-mapped |
-| 2 | T+5–10s | 30-day window (~10k embeddings) | In-memory Float32Array |
-| 3 | Always | Full `sqlite-vec` index | DB (already working from 3B) |
+```
+Tier 1 (T+2s):   hot_cache.bin — 1-2k most recent embeddings, memory-mapped, <5ms
+Tier 2 (T+5-10s): 30-day window — ~10k embeddings, brute-force in-memory, ~2ms
+Tier 3 (always):  Full sqlite-vec index — authoritative, used when tiers 1/2 miss
+```
 
 ### New files
 
 ```
-app/lib/cross-context/
-  warm-cache.ts      — hot_cache.bin writer and loader
-  tier-manager.ts    — orchestrates all three tiers, unified search interface
-  types.ts           — update with WarmCacheEntry, TierStatus interfaces
+app/lib/vector/
+  cold-start.ts     — three-tier orchestration, warm() on boot, query routing
+  hot-cache.ts      — Tier 1: binary file serialization, memory-mapped reads
+  warm-cache.ts     — Tier 2: 30-day in-memory brute-force index
 ```
 
-### Tier 1 — hot_cache.bin
+### Tier 1 — Hot Cache
 
-The hot cache is a binary file containing the 2,000 most recent chunk embeddings serialized as Float32Arrays alongside their chunk IDs. Written on every new embedding. Memory-mapped on boot for sub-5ms access.
+Stores the 1,000 most recently used chunks as a binary file. Serialization format: simple binary — each record is `[chunkId (36 bytes, padded), embedding (384 × 4 bytes = 1536 bytes)]`. Total per record: 1572 bytes. 1000 records = ~1.5MB.
 
 ```typescript
-// app/lib/cross-context/warm-cache.ts
+// hot-cache.ts
+const HOT_CACHE_PATH = path.join(process.env.APPDATA!, 'greglite', 'hot_cache.bin');
+const RECORD_SIZE = 36 + 384 * 4; // chunkId + Float32Array
+const MAX_HOT_RECORDS = 1000;
 
-const HOT_CACHE_PATH = path.join(process.cwd(), '.kernl', 'hot_cache.bin');
-const HOT_CACHE_SIZE = 2000;
+export async function writeHotCache(records: Array<{ chunkId: string; embedding: Float32Array }>): Promise<void>
 
-interface HotCacheEntry {
-  chunkId: string;   // 36 chars (UUID)
-  embedding: Float32Array;  // 384 floats = 1536 bytes
-}
+export async function readHotCache(): Promise<Array<{ chunkId: string; embedding: Float32Array }>>
 
-// Binary format per entry:
-// [36 bytes: chunkId as UTF-8] [1536 bytes: 384 x float32] = 1572 bytes/entry
-// Total: 2000 * 1572 = ~3.1MB
-
-export function writeHotCache(entries: HotCacheEntry[]): void {
-  const ENTRY_SIZE = 36 + (384 * 4);
-  const buf = Buffer.allocUnsafe(entries.length * ENTRY_SIZE);
-  entries.forEach((entry, i) => {
-    const offset = i * ENTRY_SIZE;
-    buf.write(entry.chunkId.padEnd(36), offset, 36, 'utf8');
-    const floatBuf = Buffer.from(entry.embedding.buffer);
-    floatBuf.copy(buf, offset + 36);
-  });
-  fs.writeFileSync(HOT_CACHE_PATH, buf);
-}
-
-export function loadHotCache(): HotCacheEntry[] {
-  if (!fs.existsSync(HOT_CACHE_PATH)) return [];
-  const buf = fs.readFileSync(HOT_CACHE_PATH);
-  const ENTRY_SIZE = 36 + (384 * 4);
-  const count = Math.floor(buf.length / ENTRY_SIZE);
-  const entries: HotCacheEntry[] = [];
-  for (let i = 0; i < count; i++) {
-    const offset = i * ENTRY_SIZE;
-    const chunkId = buf.subarray(offset, offset + 36).toString('utf8').trimEnd();
-    const floatBuf = buf.subarray(offset + 36, offset + ENTRY_SIZE);
-    const embedding = new Float32Array(floatBuf.buffer.slice(floatBuf.byteOffset, floatBuf.byteOffset + 384 * 4));
-    entries.push({ chunkId, embedding });
-  }
-  return entries;
-}
+export async function searchHotCache(query: Float32Array, k: number): Promise<VectorSearchResult[]>
 ```
 
-Refresh hot cache after every 10 new embeddings (not every single one — batching reduces disk writes).
+Hot cache is rebuilt: on session end, after background indexer runs, whenever top-1000 most-used chunks change significantly.
 
-### Tier 2 — 30-day in-memory window
-
-Load all embeddings from `content_chunks` where `indexed_at > now - 30 days` into a `Map<chunkId, Float32Array>`. Brute-force cosine similarity in JS. Target: ~2ms for k=10 on 10,000 entries.
+Cosine similarity for brute-force: dot product of normalized vectors (both embeddings are already L2-normalized from `bge-small-en-v1.5`).
 
 ```typescript
-// In tier-manager.ts
-let tier2Cache: Map<string, Float32Array> = new Map();
-let tier2LoadedAt: number = 0;
-
-export async function loadTier2(): Promise<void> {
-  const cutoff = Date.now() - (30 * 24 * 60 * 60 * 1000);
-  const rows = db.prepare(
-    `SELECT c.id, v.embedding FROM content_chunks c
-     JOIN vec_index v ON v.chunk_id = c.id
-     WHERE c.indexed_at > ?`
-  ).all(cutoff) as any[];
-
-  tier2Cache = new Map(
-    rows.map(row => [row.id, new Float32Array(row.embedding.buffer)])
-  );
-  tier2LoadedAt = Date.now();
-}
-
 function cosineSimilarity(a: Float32Array, b: Float32Array): number {
-  let dot = 0, normA = 0, normB = 0;
-  for (let i = 0; i < a.length; i++) {
-    dot += a[i] * b[i];
-    normA += a[i] * a[i];
-    normB += b[i] * b[i];
-  }
-  return dot / (Math.sqrt(normA) * Math.sqrt(normB));
+  let dot = 0;
+  for (let i = 0; i < a.length; i++) dot += a[i] * b[i];
+  return dot; // vectors are pre-normalized, dot product = cosine similarity
 }
 ```
 
-### Tier manager — unified search
+### Tier 2 — Warm Cache
+
+Last 30 days of chunks loaded into memory at boot. Query with brute-force dot product, same as Tier 1. The difference is coverage — Tier 2 has ~10k chunks vs Tier 1's 1k.
 
 ```typescript
-// app/lib/cross-context/tier-manager.ts
+// warm-cache.ts
+let warmIndex: Array<{ chunkId: string; embedding: Float32Array }> | null = null;
 
-export async function search(
-  queryEmbedding: Float32Array,
-  limit = 10,
-  threshold = 0.75
-): Promise<SimilarChunk[]> {
-  // Try Tier 1 first (hot cache, <5ms)
-  const tier1Results = searchTier1(queryEmbedding, limit, threshold);
-  if (tier1Results.length >= limit) return tier1Results;
+export async function buildWarmCache(): Promise<void> {
+  const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+  const chunks = kernl.db.prepare(
+    `SELECT c.id, c.embedding FROM content_chunks c WHERE c.created_at > ?`
+  ).all(thirtyDaysAgo);
+  // Note: embedding is stored as blob in vec_index, not content_chunks
+  // Load embeddings from vec_index by chunk_id
+  warmIndex = await loadEmbeddingsForChunks(chunks.map(c => c.id));
+}
 
-  // Fall through to Tier 2 (30-day window, ~2ms)
-  if (tier2Cache.size > 0) {
-    const tier2Results = searchTier2(queryEmbedding, limit, threshold);
-    if (tier2Results.length >= limit) return tier2Results;
-  }
+export function searchWarmCache(query: Float32Array, k: number): VectorSearchResult[]
+```
 
-  // Fall through to Tier 3 (sqlite-vec, <200ms)
-  return findSimilar(queryEmbedding, limit, threshold);
+### Tier 3 — Full Index
+
+This is `searchSimilar` from Sprint 3B. No new code — just the existing sqlite-vec query. Tier 3 is the fallback when Tiers 1 and 2 don't return enough high-confidence results.
+
+### Orchestration
+
+```typescript
+// cold-start.ts
+export async function warmAll(): Promise<void> {
+  const t0 = Date.now();
+  await readHotCache();         // Tier 1 — ~2s
+  console.log(`[cold-start] Tier 1 ready: ${Date.now() - t0}ms`);
+  await buildWarmCache();       // Tier 2 — ~5-10s
+  console.log(`[cold-start] Tier 2 ready: ${Date.now() - t0}ms`);
+  // Tier 3 (sqlite-vec) is always ready — no warm-up needed
+  console.log(`[cold-start] All tiers ready: ${Date.now() - t0}ms`);
+}
+
+export async function searchAllTiers(
+  query: Float32Array,
+  k: number = 10,
+  minSimilarity: number = 0.70
+): Promise<VectorSearchResult[]> {
+  // 1. Try hot cache — if k results above threshold, return immediately
+  const hotResults = searchHotCache(query, k).filter(r => r.similarity >= minSimilarity);
+  if (hotResults.length >= k) return hotResults;
+
+  // 2. Try warm cache — merge with hot results
+  const warmResults = searchWarmCache(query, k).filter(r => r.similarity >= minSimilarity);
+  const merged = mergeDedup([...hotResults, ...warmResults], k);
+  if (merged.length >= k) return merged;
+
+  // 3. Fall through to sqlite-vec full index
+  const fullResults = await searchSimilar(query, k);
+  return mergeDedup([...merged, ...fullResults.filter(r => r.similarity >= minSimilarity)], k);
 }
 ```
 
-### Boot sequence integration
+### Wire into bootstrap
 
-Update `app/lib/bootstrap/index.ts` to load tiers as part of the bootstrap sequence. Non-blocking — UI does not wait for tiers:
+In `app/lib/bootstrap/index.ts`, add `warmAll()` to the boot sequence after KERNL hydration:
 
 ```typescript
-// In bootstrap:
-// T+0: boot starts
-// T+2: load hot cache (Tier 1) — sync read, fast
-setTimeout(() => loadHotCache(), 0);
-// T+10: load 30-day window (Tier 2) — async DB query
-setTimeout(() => loadTier2(), 8000);
-// Tier 3 (sqlite-vec) is always available — no load needed
+// Non-blocking — don't await, let UI render immediately
+warmAll().catch(err => logger.warn('[cold-start] warm failed', { err }));
 ```
 
-### Timing measurements
+---
 
-Log tier availability timestamps to console on boot:
-```
-[tier-manager] Tier 1 ready: 1842ms
-[tier-manager] Tier 2 ready: 9231ms
-[tier-manager] Tier 3: always available
-```
+## CHECKPOINTING
 
-Write a test that mocks the boot sequence and verifies Tier 1 loads within 3000ms.
+Every 3 file writes: `npx tsc --noEmit` + `git add && git commit -m "sprint-3c(wip): [description]"`
 
 ---
 
 ## SESSION END
 
-1. `npx tsc --noEmit` — zero errors
-2. `pnpm test:run` — zero failures
-3. Boot the app, verify timing logs appear in console
-4. Update STATUS.md
-5. Commit: `sprint-3c: three-tier cold start warming`
-6. Push
-7. Write `SPRINT_3C_COMPLETE.md`
+1. Zero errors, zero failures
+2. Update STATUS.md — Sprint 3C complete
+3. `git commit -m "sprint-3c: three-tier cold start warming"`
+4. `git push`
+5. Write `SPRINT_3C_COMPLETE.md` — measured Tier 1/2/3 latencies, hot cache file size, warm cache build time
 
 ---
 
-## GATES
+## GATES CHECKLIST
 
-- [ ] `hot_cache.bin` written to `.kernl/` directory
-- [ ] Hot cache loads within 2s of app open (logged)
-- [ ] 30-day window loads within 10s of app open (logged)
-- [ ] `tier-manager.search()` falls through tiers correctly
-- [ ] Search still returns results when Tier 1 and 2 are cold (Tier 3 fallback)
+- [ ] `warmAll()` runs non-blocking on bootstrap
+- [ ] Tier 1 (hot cache) reads binary file and returns results in <5ms
+- [ ] Tier 2 (warm cache) builds 30-day in-memory index in <10s
+- [ ] Tier 3 (sqlite-vec) falls through correctly when Tiers 1/2 insufficient
+- [ ] `searchAllTiers` deduplicates results across tiers
+- [ ] All three tier ready-times logged to console on boot
+- [ ] Hot cache file written to `%APPDATA%\greglite\hot_cache.bin`
 - [ ] `npx tsc --noEmit` clean
 - [ ] `pnpm test:run` clean
 - [ ] Commit pushed

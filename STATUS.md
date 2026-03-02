@@ -1,6 +1,6 @@
 # GREGORE LITE — STATUS
-**Last Updated:** March 1, 2026 — Sprint 4A COMPLETE  
-**Phase:** Phase 4 — Decision Gate system (Sprint 4B next)
+**Last Updated:** March 2, 2026 — Sprint 4B COMPLETE  
+**Phase:** Phase 4 — Decision Gate system (Sprint 4C next)
 
 ---
 
@@ -249,7 +249,7 @@ Execution order: 3A → 3B → 3C → (3D ∥ 3E) → 3F → 3G → 3H
 Execution order: 4A → 4B → 4C (all sequential)
 
 - [x] **SPRINT 4A** — Trigger detection (8 conditions, 5 live + 3 stubs) — **COMPLETE**
-- [ ] **SPRINT 4B** — UI panel + API lock enforcement + Haiku inference for 3 stubbed triggers
+- [x] **SPRINT 4B** — UI panel + API lock enforcement + Haiku inference for 3 stubbed triggers — **COMPLETE**
 - [ ] **SPRINT 4C** — Integration hardening, false positive calibration, Phase 4 certification
 
 ## Phase 4 Execution Briefs
@@ -287,6 +287,29 @@ Execution order: 4A → 4B → 4C (all sequential)
 - **n-gram test data quality**: `detectRepeatedQuestion` extracts unigrams + bigrams + trigrams after stop-word filtering. Any word shared across 3+ messages triggers it. Negative-case tests must use genuinely unique vocabulary per message — even "topic" appearing in 8 filler messages will correctly fire the detector.
 - **Stubs as `async Promise<false>`**: All 3 stubs return `Promise<false>` consistent with the live async detectors they'll replace. `analyze()` needs no refactor when Sprint 4B activates them.
 - **CMD `/d` flag for drive change**: `cd D:\path` fails silently in cmd when current drive differs. Must use `cd /d D:\path` to switch drives.
+
+## Sprint 4B Gate Results (COMPLETE — March 2, 2026)
+
+| Gate | Result |
+|------|--------|
+| tsc --noEmit | ✅ 0 errors |
+| pnpm test:run | ✅ 440/440 passing (23 new, 21 test files) |
+| Haiku inference (happy path + fail-open) | ✅ Verified (clean JSON, fenced JSON, bad JSON, API error, empty messages) |
+| Haiku — last 5 messages only | ✅ Verified |
+| 423 lock enforcement | ✅ getLockState integration verified |
+| logGateApproval — KERNL schema + call order | ✅ releaseLock fires after logDecision |
+| dismissCount store shape | ✅ init, setTrigger, setDismissCount, clearTrigger |
+| analyze() structured triggers | ✅ highTradeoff→high_tradeoff_count, multiProject→multi_project_touch, largeEstimate→large_build_estimate |
+| Sync triggers short-circuit Haiku | ✅ repeated_question fires before inference |
+| SPRINT_4B_COMPLETE.md | ✅ Written |
+| Conventional commit + push | ✅ Done |
+
+### Sprint 4B Key Discoveries
+
+- **vitest class constructor mock**: `vi.fn().mockImplementation(...)` produces a plain function — `new Anthropic()` throws `TypeError: ... is not a constructor`. Fix: use `class { messages = { create: mockCreate }; }` in the mock factory. vitest warning "did not use 'function' or 'class'" is the signal.
+- **dismissCount threading**: Count comes from the server's `getLockState()` via the fire-and-forget `setTrigger(result, dismissCount)` call. GatePanel reads it from Zustand — no extra client round-trips.
+- **Server/client KERNL boundary**: `logDecision()` is better-sqlite3 (Node.js only). Client components call API routes; `kernl-logger.ts` is server-side only. Never import it from a client component.
+- **NextResponse vs Response in safeHandler**: `safeHandler` return type is `Promise<NextResponse<unknown>>`. Bare `new Response(...)` causes a TypeScript error. Must use `NextResponse.json({ ... }, { status: 423 })`.
 
 ## Open Questions
 
