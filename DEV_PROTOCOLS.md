@@ -18,10 +18,11 @@ Every GregLite execution session must load two files from D:\Dev\ before writing
 ```
 1. D:\Dev\CLAUDE_INSTRUCTIONS.md
 2. D:\Dev\TECHNICAL_STANDARDS.md
-3. PROJECT_DNA.yaml (this repo)
-4. STATUS.md (this repo)
-5. BLUEPRINT_FINAL.md §relevant-phase (this repo)
-6. TypeScript build verify: npx tsc --noEmit
+3. D:\Dev\SUBAGENT_ROUTING_PROTOCOL.md  ← route Haiku/Sonnet/Opus per task block
+4. PROJECT_DNA.yaml (this repo)
+5. STATUS.md (this repo)
+6. BLUEPRINT_FINAL.md §relevant-phase (this repo)
+7. TypeScript build verify: npx tsc --noEmit
 ```
 
 ---

@@ -1,0 +1,653 @@
+
+> greglite@0.1.0 test:run D:\Projects\GregLite\app
+> vitest run
+
+
+[1m[46m RUN [49m[22m [36mv4.0.17 [39m[90mD:/Projects/GregLite/app[39m
+
+[90mstderr[2m | lib/ghost/__tests__/watcher-bridge.test.ts[2m > [22m[2mwatcher-bridge[2m > [22m[2mstartWatching[2m > [22m[2mdoes not throw when invoke fails
+[22m[39m[ghost] startWatching failed: Error: Tauri not available
+    at D:/Projects/GregLite/app/lib/ghost/__tests__/watcher-bridge.test.ts:135:42
+    at [90mfile:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:145:11
+    at [90mfile:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:915:26
+    at [90mfile:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:1243:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:1209:10[90m)[39m
+    at [90mfile:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:1653:37
+    at Traces.$ [90m(file:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/vitest@4.0.17_@opentelemetr_6311d9b92db8bd24cb6d85320592a23a/node_modules/[4mvitest[24m/dist/chunks/traces.CCmnQaNT.js:142:27[90m)[39m
+    at trace [90m(file:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/vitest@4.0.17_@opentelemetr_6311d9b92db8bd24cb6d85320592a23a/node_modules/[4mvitest[24m/dist/chunks/test.B8ej_ZHS.js:239:21[90m)[39m
+    at runTest [90m(file:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:1653:12[90m)[39m
+
+[90mstderr[2m | lib/ghost/__tests__/watcher-bridge.test.ts[2m > [22m[2mwatcher-bridge[2m > [22m[2mstopWatching[2m > [22m[2mdoes not throw when invoke fails
+[22m[39m[ghost] stopWatching failed: Error: Tauri not available
+    at D:/Projects/GregLite/app/lib/ghost/__tests__/watcher-bridge.test.ts:149:42
+    at [90mfile:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:145:11
+    at [90mfile:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:915:26
+    at [90mfile:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:1243:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:1209:10[90m)[39m
+    at [90mfile:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:1653:37
+    at Traces.$ [90m(file:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/vitest@4.0.17_@opentelemetr_6311d9b92db8bd24cb6d85320592a23a/node_modules/[4mvitest[24m/dist/chunks/traces.CCmnQaNT.js:142:27[90m)[39m
+    at trace [90m(file:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/vitest@4.0.17_@opentelemetr_6311d9b92db8bd24cb6d85320592a23a/node_modules/[4mvitest[24m/dist/chunks/test.B8ej_ZHS.js:239:21[90m)[39m
+    at runTest [90m(file:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:1653:12[90m)[39m
+
+ [32m✓[39m lib/__tests__/unit/hot-cache.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 106[2mms[22m[39m
+[90mstderr[2m | lib/agent-sdk/__tests__/cost-accounting.test.ts[2m > [22m[2mcalculateCost[2m > [22m[2mreturns 0 for unknown model (never crashes)
+[22m[39m[cost-calculator] No pricing for model: "unknown-model-xyz". Cost will be $0.00.
+
+[90mstderr[2m | lib/agent-sdk/__tests__/cost-accounting.test.ts[2m > [22m[2mgetPricingForModel[2m > [22m[2munknown model returns zero rates
+[22m[39m[cost-calculator] No pricing for model: "does-not-exist". Cost will be $0.00.
+
+ [31m❯[39m lib/agent-sdk/__tests__/cost-accounting.test.ts [2m([22m[2m33 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 58[2mms[22m[39m
+     [32m✓[39m returns correct USD for sonnet exact key[32m 5[2mms[22m[39m
+     [32m✓[39m returns correct USD for opus[32m 2[2mms[22m[39m
+     [32m✓[39m returns correct USD for haiku (versioned key exact match)[32m 1[2mms[22m[39m
+     [32m✓[39m resolves versioned model key via date-strip fallback[32m 1[2mms[22m[39m
+     [32m✓[39m returns 0 for unknown model (never crashes)[32m 3[2mms[22m[39m
+     [32m✓[39m returns 0 for zero tokens[32m 1[2mms[22m[39m
+[31m     [31m×[31m small token counts produce non-zero cost[39m[32m 12[2mms[22m[39m
+     [32m✓[39m exact key returns rates directly[32m 1[2mms[22m[39m
+     [32m✓[39m versioned key (YYYYMMDD suffix) falls back to short key[32m 2[2mms[22m[39m
+     [32m✓[39m unknown model returns zero rates[32m 2[2mms[22m[39m
+     [32m✓[39m calls db.prepare().run() with correct arguments[32m 4[2mms[22m[39m
+     [32m✓[39m accepts null projectId[32m 1[2mms[22m[39m
+     [32m✓[39m writes correct cost calculation to DB[32m 3[2mms[22m[39m
+     [32m✓[39m sets completed_at and updated_at[32m 1[2mms[22m[39m
+     [32m✓[39m returns ok when cost is below 80% of soft cap[32m 0[2mms[22m[39m
+     [32m✓[39m returns warn when cost is between 80% and 100% of soft cap[32m 0[2mms[22m[39m
+     [32m✓[39m returns soft_cap when cost equals or exceeds soft cap[32m 0[2mms[22m[39m
+     [32m✓[39m falls back to $2.00 soft cap when budget_config row is missing[32m 0[2mms[22m[39m
+     [32m✓[39m returns sum from session_costs query[32m 1[2mms[22m[39m
+     [32m✓[39m returns 0 when no sessions exist today[32m 0[2mms[22m[39m
+     [32m✓[39m returns 0 if DB throws[32m 1[2mms[22m[39m
+     [32m✓[39m returns true when daily total >= hard cap and no override[32m 2[2mms[22m[39m
+     [32m✓[39m returns false when daily total < hard cap[32m 0[2mms[22m[39m
+     [32m✓[39m returns false when override is active even if cap is exceeded[32m 0[2mms[22m[39m
+     [32m✓[39m setDailyOverride writes expiry at midnight UTC[32m 2[2mms[22m[39m
+     [32m✓[39m isDailyOverrideActive returns true for future expiry[32m 0[2mms[22m[39m
+     [32m✓[39m isDailyOverrideActive returns false for past expiry[32m 0[2mms[22m[39m
+     [32m✓[39m clearDailyOverride sets expiry to 0[32m 1[2mms[22m[39m
+     [32m✓[39m returns midnight UTC for today[32m 0[2mms[22m[39m
+     [32m✓[39m endOfTodayUtcMs is exactly 24h after startOfTodayUtcMs[32m 0[2mms[22m[39m
+     [32m✓[39m returns the parsed value from DB[32m 1[2mms[22m[39m
+     [32m✓[39m returns fallback when row is missing[32m 0[2mms[22m[39m
+     [32m✓[39m upserts key/value into budget_config[32m 1[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/decision-gate.test.ts [2m([22m[2m43 tests[22m[2m)[22m[32m 85[2mms[22m[39m
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstartGhost[2m > [22m[2mcalls all components in the correct startup order
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstartGhost[2m > [22m[2mcalls all components in the correct startup order
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstartGhost[2m > [22m[2memits state: "running" when all steps succeed
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstartGhost[2m > [22m[2memits state: "running" when all steps succeed
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstartGhost[2m > [22m[2memits state: "starting" then "running"
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstartGhost[2m > [22m[2memits state: "starting" then "running"
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstartGhost[2m > [22m[2mis idempotent — calling twice does not double-start components
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstartGhost[2m > [22m[2mis idempotent — calling twice does not double-start components
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mdegraded mode[2m > [22m[2mcontinues startup when one component throws
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstderr[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mdegraded mode[2m > [22m[2mcontinues startup when one component throws
+[22m[39m[ghost/lifecycle] Startup step "email-poller" failed: OAuth expired
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mdegraded mode[2m > [22m[2mcontinues startup when one component throws
+[22m[39m[ghost/lifecycle] Ghost started (state: degraded)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mdegraded mode[2m > [22m[2memits state: "degraded" when a component fails
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstderr[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mdegraded mode[2m > [22m[2memits state: "degraded" when a component fails
+[22m[39m[ghost/lifecycle] Startup step "watcher" failed: Tauri IPC unavailable
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mdegraded mode[2m > [22m[2memits state: "degraded" when a component fails
+[22m[39m[ghost/lifecycle] Ghost started (state: degraded)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mdegraded mode[2m > [22m[2memits ghost:error for the failing component
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstderr[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mdegraded mode[2m > [22m[2memits ghost:error for the failing component
+[22m[39m[ghost/lifecycle] Startup step "email-poller" failed: Connector auth failed
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mdegraded mode[2m > [22m[2memits ghost:error for the failing component
+[22m[39m[ghost/lifecycle] Ghost started (state: degraded)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mstops components in reverse startup order
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mstops components in reverse startup order
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mstops components in reverse startup order
+[22m[39m[ghost/lifecycle] Stopping Ghost...
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mstops components in reverse startup order
+[22m[39m[ghost/lifecycle] Ghost stopped
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2memits state: "stopped" after shutdown
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2memits state: "stopped" after shutdown
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+ [32m✓[39m lib/__tests__/unit/war-room.test.ts [2m([22m[2m21 tests[22m[2m)[22m[33m 546[2mms[22m[39m
+       [33m[2m✓[22m[39m maps completed → complete [33m 438[2mms[22m[39m
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2memits state: "stopped" after shutdown
+[22m[39m[ghost/lifecycle] Stopping Ghost...
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2memits state: "stopped" after shutdown
+[22m[39m[ghost/lifecycle] Ghost stopped
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mis idempotent — calling twice does not error
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mis idempotent — calling twice does not error
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mis idempotent — calling twice does not error
+[22m[39m[ghost/lifecycle] Stopping Ghost...
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mis idempotent — calling twice does not error
+[22m[39m[ghost/lifecycle] Ghost stopped
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mresolves within 5 seconds even if watcher hangs
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mresolves within 5 seconds even if watcher hangs
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mresolves within 5 seconds even if watcher hangs
+[22m[39m[ghost/lifecycle] Stopping Ghost...
+
+[90mstderr[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mresolves within 5 seconds even if watcher hangs
+[22m[39m[ghost/lifecycle] Shutdown timeout (5s) — forcing close
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mresolves within 5 seconds even if watcher hangs
+[22m[39m[ghost/lifecycle] Ghost stopped
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mpauses email poller and ingest queue
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mpauses email poller and ingest queue
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mpauses email poller and ingest queue
+[22m[39m[ghost/lifecycle] Pausing Ghost components...
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2memits state: "paused" after pause
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2memits state: "paused" after pause
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2memits state: "paused" after pause
+[22m[39m[ghost/lifecycle] Pausing Ghost components...
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mis idempotent — calling pauseGhost twice only pauses once
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mis idempotent — calling pauseGhost twice only pauses once
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mis idempotent — calling pauseGhost twice only pauses once
+[22m[39m[ghost/lifecycle] Pausing Ghost components...
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mresumes email poller and ingest queue
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mresumes email poller and ingest queue
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mresumes email poller and ingest queue
+[22m[39m[ghost/lifecycle] Pausing Ghost components...
+[ghost/lifecycle] Resuming Ghost components...
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2memits state: "running" after resume (no errors)
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2memits state: "running" after resume (no errors)
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mstarts all components in the correct order
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2memits state: "running" after resume (no errors)
+[22m[39m[ghost/lifecycle] Pausing Ghost components...
+[ghost/lifecycle] Resuming Ghost components...
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mis idempotent — calling resumeGhost when not paused is a no-op
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mis idempotent — calling resumeGhost when not paused is a no-op
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostRunning returns true after startGhost
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostRunning returns true after startGhost
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mstarts all components in the correct order
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostRunning returns false after stopGhost
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostRunning returns false after stopGhost
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostRunning returns false after stopGhost
+[22m[39m[ghost/lifecycle] Stopping Ghost...
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostRunning returns false after stopGhost
+[22m[39m[ghost/lifecycle] Ghost stopped
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostPaused returns false before any pause
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostPaused returns false before any pause
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostPaused returns true after pauseGhost
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostPaused returns true after pauseGhost
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostPaused returns true after pauseGhost
+[22m[39m[ghost/lifecycle] Pausing Ghost components...
+
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mresolves stopGhost within 5 seconds even when watcher hangs
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mresolves stopGhost within 5 seconds even when watcher hangs
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostPaused returns false after resumeGhost
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostPaused returns false after resumeGhost
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostPaused returns false after resumeGhost
+[22m[39m[ghost/lifecycle] Pausing Ghost components...
+[ghost/lifecycle] Resuming Ghost components...
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mrestartComponent[2m > [22m[2mcalls startFn after the 30-second delay
+[22m[39m[ghost/lifecycle] Scheduling restart for "test-component" in 30s...
+
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mresolves stopGhost within 5 seconds even when watcher hangs
+[22m[39m[ghost/lifecycle] Stopping Ghost...
+
+[90mstderr[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mresolves stopGhost within 5 seconds even when watcher hangs
+[22m[39m[ghost/lifecycle] Shutdown timeout (5s) — forcing close
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mrestartComponent[2m > [22m[2mcalls startFn after the 30-second delay
+[22m[39m[ghost/lifecycle] Component "test-component" restarted successfully
+
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mresolves stopGhost within 5 seconds even when watcher hangs
+[22m[39m[ghost/lifecycle] Ghost stopped
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mrestartComponent[2m > [22m[2mdoes not retry if first restart succeeds
+[22m[39m[ghost/lifecycle] Scheduling restart for "scorer" in 30s...
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mrestartComponent[2m > [22m[2mdoes not retry if first restart succeeds
+[22m[39m[ghost/lifecycle] Component "scorer" restarted successfully
+
+[90mstderr[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mrestartComponent[2m > [22m[2mdoes not retry if first restart succeeds
+[22m[39m[ghost/lifecycle] Component "scorer" already exhausted restart — staying degraded
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mrestartComponent[2m > [22m[2memits ghost:error if restart also fails
+[22m[39m[ghost/lifecycle] Scheduling restart for "watcher" in 30s...
+
+[90mstderr[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mrestartComponent[2m > [22m[2memits ghost:error if restart also fails
+[22m[39m[ghost/lifecycle] Component "watcher" restart failed: Still broken
+
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mcontinues startup when one component fails (degraded mode)
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstderr[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mcontinues startup when one component fails (degraded mode)
+[22m[39m[ghost/lifecycle] Startup step "email-poller" failed: OAuth expired
+
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mcontinues startup when one component fails (degraded mode)
+[22m[39m[ghost/lifecycle] Ghost started (state: degraded)
+
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mpauses all components on AEGIS PARALLEL_BUILD and resumes on resume
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mpauses all components on AEGIS PARALLEL_BUILD and resumes on resume
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+ [32m✓[39m lib/ghost/__tests__/lifecycle.test.ts [2m([22m[2m26 tests[22m[2m)[22m[33m 602[2mms[22m[39m
+       [33m[2m✓[22m[39m calls all components in the correct startup order [33m 507[2mms[22m[39m
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mpauses all components on AEGIS PARALLEL_BUILD and resumes on resume
+[22m[39m[ghost/lifecycle] Pausing Ghost components...
+[ghost/lifecycle] Resuming Ghost components...
+
+[90mstderr[2m | lib/__tests__/integration/phase5-integration.test.ts[2m > [22m[2mAgent SDK Gate[2m > [22m[2mjob marked FAILED when eos_required is true and health score < 70
+[22m[39m[EoS gate] Job downgraded to FAILED — health score [33m45[39m < 70
+
+ [32m✓[39m lib/__tests__/integration/phase5-integration.test.ts [2m([22m[2m31 tests[22m[2m)[22m[32m 94[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/indexer.test.ts [2m([22m[2m33 tests[22m[2m)[22m[33m 481[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/embeddings.test.ts [2m([22m[2m30 tests[22m[2m)[22m[33m 616[2mms[22m[39m
+[90mstdout[2m | lib/ghost/__tests__/watcher-bridge.test.ts[2m > [22m[2mAEGIS → Ghost integration[2m > [22m[2mcalls ghost_pause when AEGIS transitions to PARALLEL_BUILD
+[22m[39m[ghost/lifecycle] Pausing Ghost components...
+
+[90mstdout[2m | lib/ghost/__tests__/watcher-bridge.test.ts[2m > [22m[2mAEGIS → Ghost integration[2m > [22m[2mcalls ghost_resume when AEGIS transitions to IDLE
+[22m[39m[ghost/lifecycle] Resuming Ghost components...
+
+ [32m✓[39m lib/ghost/__tests__/watcher-bridge.test.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 866[2mms[22m[39m
+     [33m[2m✓[22m[39m calls ghost_pause when AEGIS transitions to PARALLEL_BUILD [33m 832[2mms[22m[39m
+ [32m✓[39m lib/ghost/__tests__/phase6-integration.test.ts [2m([22m[2m33 tests[22m[2m)[22m[33m 983[2mms[22m[39m
+     [33m[2m✓[22m[39m Tell me more path: addMessage content contains [GHOST CONTEXT - UNTRUSTED CONTENT] [33m 407[2mms[22m[39m
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mSidebar[2m > [22m[2mshould toggle sidebar open/closed
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mSidebar[2m > [22m[2mshould toggle sidebar open/closed
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mSidebar[2m > [22m[2mshould set sidebar width with clamping
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mSidebar[2m > [22m[2mshould set sidebar width with clamping
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mSidebar[2m > [22m[2mshould toggle sidebar collapsed state
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mSidebar[2m > [22m[2mshould toggle sidebar collapsed state
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mTheme[2m > [22m[2mshould set theme
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mTheme[2m > [22m[2mshould set theme
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mTheme[2m > [22m[2mshould cycle through themes on toggle
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mTheme[2m > [22m[2mshould cycle through themes on toggle
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mModal[2m > [22m[2mshould open modal with data
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mModal[2m > [22m[2mshould open modal with data
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mModal[2m > [22m[2mshould close modal and clear data
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mModal[2m > [22m[2mshould close modal and clear data
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mModal[2m > [22m[2mshould check if specific modal is open
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstdout[2m | lib/__tests__/unit/agent-sdk.test.ts[2m > [22m[2mAgent SDK public API[2m > [22m[2mspawn returns a jobId and queued=false for the first job
+[22m[39m[AgentSDK] Marked 1 stale job(s) INTERRUPTED on boot
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mModal[2m > [22m[2mshould check if specific modal is open
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mCommand Palette[2m > [22m[2mshould open and close command palette
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mCommand Palette[2m > [22m[2mshould open and close command palette
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mCommand Palette[2m > [22m[2mshould toggle command palette
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mCommand Palette[2m > [22m[2mshould toggle command palette
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mCommand Palette[2m > [22m[2mshould update command query
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mCommand Palette[2m > [22m[2mshould update command query
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mCommand Palette[2m > [22m[2mshould track recent commands
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mCommand Palette[2m > [22m[2mshould track recent commands
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mCommand Palette[2m > [22m[2mshould limit recent commands to 10
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mCommand Palette[2m > [22m[2mshould limit recent commands to 10
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mCommand Palette[2m > [22m[2mshould move duplicate command to front
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mCommand Palette[2m > [22m[2mshould move duplicate command to front
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mNotifications[2m > [22m[2mshould add notification
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+ [32m✓[39m lib/__tests__/unit/agent-sdk.test.ts [2m([22m[2m40 tests[22m[2m)[22m[32m 59[2mms[22m[39m
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mNotifications[2m > [22m[2mshould add notification
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mNotifications[2m > [22m[2mshould dismiss notification
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mNotifications[2m > [22m[2mshould dismiss notification
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mNotifications[2m > [22m[2mshould clear all notifications
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mNotifications[2m > [22m[2mshould clear all notifications
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mNotifications[2m > [22m[2mshould clear only dismissed notifications
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mNotifications[2m > [22m[2mshould clear only dismissed notifications
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mLoading States[2m > [22m[2mshould set global loading
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mLoading States[2m > [22m[2mshould set global loading
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mLoading States[2m > [22m[2mshould set area loading
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mLoading States[2m > [22m[2mshould set area loading
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mLoading States[2m > [22m[2mshould clear area loading
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mLoading States[2m > [22m[2mshould clear area loading
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mFocus Management[2m > [22m[2mshould set focused element
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mFocus Management[2m > [22m[2mshould set focused element
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mFocus Management[2m > [22m[2mshould clear focused element
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mFocus Management[2m > [22m[2mshould clear focused element
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mReset[2m > [22m[2mshould reset all UI state
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mReset[2m > [22m[2mshould reset all UI state
+[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
+
+ [32m✓[39m lib/__tests__/unit/ui-store.test.ts [2m([22m[2m24 tests[22m[2m)[22m[32m 53[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/eos/fp-tracker.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 52[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/aegis.test.ts [2m([22m[2m33 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/vector.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+ [32m✓[39m lib/agent-sdk/__tests__/error-handling.test.ts [2m([22m[2m38 tests[22m[2m)[22m[32m 88[2mms[22m[39m
+[90mstdout[2m | lib/__tests__/unit/cold-start.test.ts[2m > [22m[2mwarmAll()[2m > [22m[2mcalls readHotCache() before buildWarmCache()
+[22m[39m[cold-start] Tier 1 ready: 0ms
+
+[90mstdout[2m | lib/__tests__/unit/cold-start.test.ts[2m > [22m[2mwarmAll()[2m > [22m[2mcalls readHotCache() before buildWarmCache()
+[22m[39m[cold-start] Tier 2 ready: 2ms
+[cold-start] All tiers ready: 2ms
+
+[90mstdout[2m | lib/__tests__/unit/cold-start.test.ts[2m > [22m[2mwarmAll()[2m > [22m[2mcalls both readHotCache() and buildWarmCache() exactly once
+[22m[39m[cold-start] Tier 1 ready: 0ms
+
+[90mstdout[2m | lib/__tests__/unit/cold-start.test.ts[2m > [22m[2mwarmAll()[2m > [22m[2mcalls both readHotCache() and buildWarmCache() exactly once
+[22m[39m[cold-start] Tier 2 ready: 0ms
+[cold-start] All tiers ready: 0ms
+
+[90mstdout[2m | lib/__tests__/unit/cold-start.test.ts[2m > [22m[2mwarmAll()[2m > [22m[2mresolves without error when both tiers succeed
+[22m[39m[cold-start] Tier 1 ready: 0ms
+
+[90mstdout[2m | lib/__tests__/unit/cold-start.test.ts[2m > [22m[2mwarmAll()[2m > [22m[2mresolves without error when both tiers succeed
+[22m[39m[cold-start] Tier 2 ready: 1ms
+[cold-start] All tiers ready: 1ms
+
+[90mstdout[2m | lib/__tests__/unit/cold-start.test.ts[2m > [22m[2mwarmAll()[2m > [22m[2mpropagates rejection when buildWarmCache() fails
+[22m[39m[cold-start] Tier 1 ready: 0ms
+
+ [32m✓[39m lib/__tests__/unit/cold-start.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 37[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/shim/pattern-learner.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/kernl-project-store.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 59[2mms[22m[39m
+[90mstdout[2m | lib/__tests__/integration/phase4-integration.test.ts[2m > [22m[2mPerformance — sync analysis path timing[2m > [22m[2msync path (no Haiku) completes well under 100ms on 20-message conversation
+[22m[39m[perf] sync analyze() on 20-message conversation: 0ms
+
+[90mstdout[2m | lib/__tests__/integration/phase4-integration.test.ts[2m > [22m[2mPerformance — sync analysis path timing[2m > [22m[2mhaiku inference path is called only when all sync checks pass
+[22m[39m[perf] full analyze() path (sync + mocked Haiku): 0ms
+
+ [32m✓[39m lib/__tests__/integration/phase4-integration.test.ts [2m([22m[2m34 tests[22m[2m)[22m[32m 36[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/cross-context.test.ts [2m([22m[2m34 tests[22m[2m)[22m[32m 41[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/decision-gate-4b.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 31[2mms[22m[39m
+ [32m✓[39m lib/agent-sdk/__tests__/permission-matrix.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 40[2mms[22m[39m
+ [32m✓[39m lib/ghost/__tests__/scorer.test.ts [2m([22m[2m37 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+ [32m✓[39m lib/ghost/__tests__/privacy.test.ts [2m([22m[2m37 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/gate.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/proactive.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/suggestion-store.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 37[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/warm-cache.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/eos/character.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/context-provider.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m lib/__tests__/integration/phase3-integration.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/eos/patterns.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/eos/health-score.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/eos/batch.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/shim/job-context.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/artifacts/detector.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/artifacts/store.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m lib/agent-sdk/__tests__/cost-accounting.test.ts[2m > [22mcalculateCost[2m > [22msmall token counts produce non-zero cost
+[31m[1mAssertionError[22m: expected 0.003 to be close to 0.000003, received difference is 0.002997, but expected 5e-9[39m
+[36m [2m❯[22m lib/agent-sdk/__tests__/cost-accounting.test.ts:[2m127:18[22m[39m
+    [90m125| [39m    [35mconst[39m cost [33m=[39m [34mcalculateCost[39m([34m1_000[39m[33m,[39m [34m0[39m[33m,[39m [32m'claude-sonnet-4-5'[39m)[33m;[39m
+    [90m126| [39m    [34mexpect[39m(cost)[33m.[39m[34mtoBeGreaterThan[39m([34m0[39m)[33m;[39m
+    [90m127| [39m    [34mexpect[39m(cost)[33m.[39m[34mtoBeCloseTo[39m([34m0.000003[39m[33m,[39m [34m8[39m)[33m;[39m
+    [90m   | [39m                 [31m^[39m
+    [90m128| [39m  })[33m;[39m
+    [90m129| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m37 passed[39m[22m[90m (38)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m831 passed[39m[22m[90m (832)[39m
+[2m   Start at [22m 12:19:03
+[2m   Duration [22m 7.30s[2m (transform 12.29s, setup 23.98s, import 15.57s, tests 5.36s, environment 15ms)[22m
+
+ ELIFECYCLE  Command failed with exit code 1.

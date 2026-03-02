@@ -412,3 +412,38 @@ CREATE TABLE IF NOT EXISTS session_restarts (
 );
 
 CREATE INDEX IF NOT EXISTS idx_session_restarts_original ON session_restarts(original_manifest_id);
+
+-- ─── PHASE 7D: SESSION COSTS ──────────────────────────────────────────────────
+-- Per-session cost accounting. Created on spawn, updated on each checkpoint,
+-- finalised (completed_at set) on session end. Daily total derived via SUM query.
+CREATE TABLE IF NOT EXISTS session_costs (
+  manifest_id        TEXT    PRIMARY KEY REFERENCES manifests(id),
+  session_type       TEXT,
+  model              TEXT,
+  input_tokens       INTEGER DEFAULT 0,
+  output_tokens      INTEGER DEFAULT 0,
+  total_tokens       INTEGER DEFAULT 0,
+  estimated_cost_usd REAL    DEFAULT 0,
+  project_id         TEXT,
+  started_at         INTEGER,
+  completed_at       INTEGER,
+  updated_at         INTEGER NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_session_costs_started ON session_costs(started_at);
+CREATE INDEX IF NOT EXISTS idx_session_costs_project ON session_costs(project_id, started_at DESC);
+
+-- ─── PHASE 7D: BUDGET CONFIG ─────────────────────────────────────────────────
+-- Key/value store for spend limits. David updates via Settings UI (stub in 7F).
+-- Caps are read at spawn time — no code change needed when David adjusts limits.
+CREATE TABLE IF NOT EXISTS budget_config (
+  key        TEXT    PRIMARY KEY,
+  value      TEXT    NOT NULL,
+  updated_at INTEGER NOT NULL
+);
+
+-- Default cap rows — only inserted when they do not yet exist.
+INSERT OR IGNORE INTO budget_config (key, value, updated_at) VALUES
+  ('session_soft_cap_usd', '2.00',  unixepoch('now') * 1000),
+  ('session_hard_cap_usd', '10.00', unixepoch('now') * 1000),
+  ('daily_hard_cap_usd',   '15.00', unixepoch('now') * 1000);

@@ -18,7 +18,7 @@ All seven amendments from the Q&A session are incorporated below. This section i
 | 4 | Cowork replaced by Claude Agent SDK throughout | §4 Worker Sessions | Worker Sessions |
 | 5 | Ghost Thread has full disk + all email access | §6 Ghost Thread | Ghost Thread |
 | 6 | War Room is Phase 2; dependency fields required in Phase 1 schema | §4.1 Manifest Schema | Worker Sessions |
-| 7 | Self-Evolution Mode is in scope — Phase 5 | §7 Self-Evolution | Self-Evolution |
+| 7 | Self-Evolution Mode is in scope — Phase 7 | §7 Self-Evolution | Self-Evolution |
 | 8 | GregLite is single-model only — §8 renamed from Council Escalation to Decision Gate | §8 Decision Gate | System Identity + Decision Gate |
 | 9 | Phase 0 scaffold: explicit take/leave list from Gregore added | §13 Build Order | Build Order |
 

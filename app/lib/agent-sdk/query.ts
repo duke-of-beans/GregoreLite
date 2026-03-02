@@ -32,7 +32,8 @@ import { selectTools, isStubTool } from './tool-injector';
 import { checkWriteScope, resolveCwd } from './scope-enforcer';
 import { classifyStopReason, classifyError, RETRY_CONFIG, FailureMode } from './error-handler';
 import { getDatabase } from '../kernl/database';
-import { calculateCost } from '../services/pricing';
+import { calculateCost } from './cost-calculator';
+import { createSessionCost, updateSessionCost, finalizeSessionCost, getSessionCapStatus } from './cost-tracker';
 import { AGENT_COST_CONFIG } from './config';
 import type { TaskManifest, JobStatus, JobStateRow, StreamEvent, AgentEvent } from './types';
 
@@ -231,6 +232,14 @@ export async function runQuerySession(
 
   callbacks.onStatusChange(manifestId, status);
 
+  // Phase 7D: create session_costs row on spawn
+  createSessionCost(
+    manifestId,
+    AGENT_COST_CONFIG.defaultModel,
+    sessionType,
+    manifest.context.project_path ?? null,
+  );
+
   const emitAgentEvent = (event: AgentEvent): void => {
     const newStatus = mapEventToStatus(status, event);
     if (newStatus !== status) {
@@ -270,6 +279,20 @@ export async function runQuerySession(
       cost_so_far: costSoFar,
       updated_at: Date.now(),
     });
+
+    // Phase 7D: persist cost to session_costs on every checkpoint
+    updateSessionCost(manifestId, inputTokensTotal, outputTokensTotal, AGENT_COST_CONFIG.defaultModel);
+
+    // Phase 7D: emit soft-cap warning when session cost approaches the configured limit
+    const capStatus = getSessionCapStatus(costSoFar);
+    if (capStatus === 'warn' || capStatus === 'soft_cap') {
+      emitAgentEvent({
+        type: 'error_recoverable',
+        message: `Session cost approaching limit ($${costSoFar.toFixed(2)})`,
+        toolTrace: `cap_status:${capStatus}`,
+      });
+    }
+
     toolCallsSinceCheckpoint = 0;
     lastCheckpointAt = Date.now();
   };
@@ -374,7 +397,7 @@ export async function runQuerySession(
             if (sdkEvent.usage) {
               outputTokensTotal += sdkEvent.usage.output_tokens ?? 0;
               tokensUsedSoFar = inputTokensTotal + outputTokensTotal;
-              costSoFar = calculateCost(AGENT_COST_CONFIG.defaultModel, inputTokensTotal, outputTokensTotal);
+              costSoFar = calculateCost(inputTokensTotal, outputTokensTotal, AGENT_COST_CONFIG.defaultModel);
             }
             break;
           }
@@ -384,7 +407,7 @@ export async function runQuerySession(
               inputTokensTotal += sdkEvent.message.usage.input_tokens ?? 0;
               outputTokensTotal += sdkEvent.message.usage.output_tokens ?? 0;
               tokensUsedSoFar = inputTokensTotal + outputTokensTotal;
-              costSoFar = calculateCost(AGENT_COST_CONFIG.defaultModel, inputTokensTotal, outputTokensTotal);
+              costSoFar = calculateCost(inputTokensTotal, outputTokensTotal, AGENT_COST_CONFIG.defaultModel);
             }
             break;
           }
@@ -405,7 +428,7 @@ export async function runQuerySession(
       inputTokensTotal = finalMessage.usage.input_tokens ?? inputTokensTotal;
       outputTokensTotal = finalMessage.usage.output_tokens ?? outputTokensTotal;
       tokensUsedSoFar = inputTokensTotal + outputTokensTotal;
-      costSoFar = calculateCost(AGENT_COST_CONFIG.defaultModel, inputTokensTotal, outputTokensTotal);
+      costSoFar = calculateCost(inputTokensTotal, outputTokensTotal, AGENT_COST_CONFIG.defaultModel);
 
       if (finalMessage.stop_reason === 'end_turn') {
         const finalText    = extractTextContent(finalMessage.content);
@@ -420,6 +443,8 @@ export async function runQuerySession(
             last_event: JSON.stringify({ type: 'error', context: failureCheck.mode, message: failureCheck.message }),
             log_path: logger.logPath, tokens_used_so_far: tokensUsedSoFar, cost_so_far: costSoFar, updated_at: Date.now(),
           });
+          updateSessionCost(manifestId, inputTokensTotal, outputTokensTotal, AGENT_COST_CONFIG.defaultModel);
+          finalizeSessionCost(manifestId);
           logger.close();
           callbacks.onComplete(manifestId, 'failed');
           return;
@@ -495,6 +520,8 @@ export async function runQuerySession(
           last_event: JSON.stringify({ type: 'error', context: FailureMode.CONTEXT_LIMIT, message: failureMsg }),
           log_path: logger.logPath, tokens_used_so_far: tokensUsedSoFar, cost_so_far: costSoFar, updated_at: Date.now(),
         });
+        updateSessionCost(manifestId, inputTokensTotal, outputTokensTotal, AGENT_COST_CONFIG.defaultModel);
+        finalizeSessionCost(manifestId);
         logger.close();
         callbacks.onComplete(manifestId, 'failed');
         return;
@@ -534,6 +561,8 @@ export async function runQuerySession(
             last_event: JSON.stringify({ type: 'error', context: sdkFailure.mode, message: sdkFailure.message }),
             log_path: logger.logPath, tokens_used_so_far: tokensUsedSoFar, cost_so_far: costSoFar, updated_at: Date.now(),
           });
+          updateSessionCost(manifestId, inputTokensTotal, outputTokensTotal, AGENT_COST_CONFIG.defaultModel);
+          finalizeSessionCost(manifestId);
           logger.close();
           callbacks.onComplete(manifestId, 'failed');
           return;
@@ -571,6 +600,7 @@ export async function runQuerySession(
       updated_at: Date.now(),
     });
 
+    finalizeSessionCost(manifestId);
     logger.close();
     callbacks.onError(manifestId, error);
     return;
@@ -589,6 +619,10 @@ export async function runQuerySession(
     cost_so_far: costSoFar,
     updated_at: Date.now(),
   });
+
+  // Phase 7D: persist final cost and mark session complete
+  updateSessionCost(manifestId, inputTokensTotal, outputTokensTotal, AGENT_COST_CONFIG.defaultModel);
+  finalizeSessionCost(manifestId);
 
   logger.close();
   callbacks.onComplete(manifestId, finalStatus);

@@ -49,3 +49,11 @@ data/
 
 # Redis dumps
 dump.rdb
+
+# Tauri build artifacts
+src-tauri/target/
+
+# Test output files
+test-output.txt
+test-cost.txt
+test_output.txt

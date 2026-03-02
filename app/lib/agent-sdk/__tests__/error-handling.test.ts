@@ -7,7 +7,7 @@
  * Simulates all six failure modes per BLUEPRINT §4.3.4.
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
   detectContextLimit,
   detectImpossibleTask,

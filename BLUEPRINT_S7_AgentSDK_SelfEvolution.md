@@ -298,7 +298,7 @@ Protected paths enforced at filesystem tool layer (not prompt). Write attempts r
 
 **Total: 18 sessions, 6-8 days.**
 
-Phase 2 builds the Agent SDK foundation (7A-7F). Self-evolution (7H) and SHIM integration (7G) are Phase 5.
+Sprints 7A–7F build the Agent SDK foundation. Self-evolution (7H) and SHIM integration (7G) complete Phase 7.
 
 ---
 

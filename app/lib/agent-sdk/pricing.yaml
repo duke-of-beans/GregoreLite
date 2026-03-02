@@ -1,0 +1,59 @@
+# GregLite Agent SDK — Model Pricing
+# Edit this file to update prices without a code change.
+# Format: USD per 1 million tokens.
+# cost-calculator.ts watches this file and reloads on change.
+# Updated: March 2026
+#
+# Key lookup order in cost-calculator.ts:
+#   1. Exact key match (e.g. claude-sonnet-4-5-20250929)
+#   2. Strip trailing date suffix  (e.g. claude-sonnet-4-5)
+#   3. Warn + return 0.00 (never crash on unknown model)
+
+models:
+  # ── Claude Sonnet ──────────────────────────────────────────────────────────
+  claude-sonnet-4-5-20250929:
+    input_per_million: 3.00
+    output_per_million: 15.00
+  claude-sonnet-4-5:
+    input_per_million: 3.00
+    output_per_million: 15.00
+  claude-sonnet-4-20250514:
+    input_per_million: 3.00
+    output_per_million: 15.00
+  claude-sonnet-4:
+    input_per_million: 3.00
+    output_per_million: 15.00
+  claude-3-5-sonnet-20241022:
+    input_per_million: 3.00
+    output_per_million: 15.00
+
+  # ── Claude Opus ────────────────────────────────────────────────────────────
+  claude-opus-4-5-20251101:
+    input_per_million: 15.00
+    output_per_million: 75.00
+  claude-opus-4-5:
+    input_per_million: 15.00
+    output_per_million: 75.00
+  claude-opus-4-20250514:
+    input_per_million: 15.00
+    output_per_million: 75.00
+  claude-opus-4:
+    input_per_million: 15.00
+    output_per_million: 75.00
+
+  # ── Claude Haiku ───────────────────────────────────────────────────────────
+  claude-haiku-4-5-20251001:
+    input_per_million: 0.80
+    output_per_million: 4.00
+  claude-haiku-4-5:
+    input_per_million: 0.80
+    output_per_million: 4.00
+  claude-haiku-4-20250115:
+    input_per_million: 0.80
+    output_per_million: 4.00
+  claude-haiku-4:
+    input_per_million: 0.80
+    output_per_million: 4.00
+  claude-3-5-haiku-20241022:
+    input_per_million: 0.80
+    output_per_million: 4.00

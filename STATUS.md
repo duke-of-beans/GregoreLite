@@ -1,6 +1,6 @@
 # GREGORE LITE — STATUS
-**Last Updated:** March 2, 2026 — Sprint 7C complete: Error handling, failure modes, handoff reports, session restart. All 6 failure modes implemented (CONTEXT_LIMIT, TOOL_ERROR, NETWORK_ERROR, IMPOSSIBLE_TASK, APP_CRASH stub, SHIM_LOOP stub). 799/799 tests passing.
-**Phase:** Phase 7 — Self-Evolution Mode (Sprint 7C complete, 7D next)
+**Last Updated:** March 2, 2026 — Sprint 7D complete: Cost accounting, session_costs table, budget_config table, pricing.yaml, calculateCost(), cost-tracker DB layer, budget-enforcer (soft/hard caps, daily override), CostTicker/DailyBurnBadge/BudgetCapAlert components. Daily cap blocks new spawns, Override for Today expires at midnight UTC. 832/832 tests passing.
+**Phase:** Phase 7 — Self-Evolution Mode (Sprint 7D complete, 7E next)
 
 ---
 **Previous:** Sprint 6G complete: Privacy Dashboard UI, 6 API routes (items/exclusions/log/watch-paths/status/purge), 5 React components (GhostStatusBadge, IndexedItemRow, ExclusionLog, IndexedItemsList, ExclusionRules, WatchPaths, PurgeAllDialog, PrivacyDashboard), cascade delete + purge-all, exclusion log retention cap, deleteGhostItem()  
