@@ -25,6 +25,7 @@ import { AEGISStatus } from './AEGISStatus';
 import { SuggestionSlot } from './SuggestionSlot';
 import { EoSIssueRow } from './EoSIssueRow';
 import { scoreClass } from '@/lib/eos/score-class';
+import { GhostCardList } from '@/components/ghost/GhostCardList';
 
 // ─── Collapsed icon strip ─────────────────────────────────────────────────────
 
@@ -134,6 +135,9 @@ function PanelContent() {
       <div className="mx-4 h-px bg-[var(--shadow)] opacity-30" />
       <DecisionList />
       <div className="mx-4 h-px bg-[var(--shadow)] opacity-30" />
+
+      {/* Ghost suggestion cards — shown only when suggestions are active */}
+      <GhostCardList />
 
       {/* Quality section — always present; content depends on scan state */}
       <>

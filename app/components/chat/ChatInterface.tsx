@@ -28,6 +28,7 @@ import { useArtifactStore } from '@/lib/artifacts/store';
 import { syncArtifact } from '@/lib/artifacts/kernl-sync';
 import { useDecisionGateStore } from '@/lib/stores/decision-gate-store';
 import { GatePanel } from '@/components/decision-gate';
+import { useGhostStore } from '@/lib/stores/ghost-store';
 
 type ActiveTab = 'strategic' | 'workers' | 'warroom';
 
@@ -54,6 +55,7 @@ export function ChatInterface() {
 
   const { activeArtifact, setArtifact, clearArtifact } = useArtifactStore();
   const { trigger: gateTrigger } = useDecisionGateStore();
+  const { ghostContextActive, clearGhostContextActive, setActiveThreadId } = useGhostStore();
 
   // ── Keyboard shortcuts ───────────────────────────────────────────────────
   useEffect(() => {
@@ -97,6 +99,7 @@ export function ChatInterface() {
           );
           setMessages(restored);
           setConversationId(data.data.threadId);
+          setActiveThreadId(data.data.threadId);
         }
       } catch {
         // Non-fatal — start fresh
@@ -115,6 +118,8 @@ export function ChatInterface() {
 
     const messageText = input;
     setInput('');
+    // Ghost context is consumed when the user sends the next message
+    clearGhostContextActive();
 
     const userMessage: MessageProps = {
       role: 'user',
@@ -157,6 +162,7 @@ export function ChatInterface() {
 
       if (chatData?.conversationId && !conversationId) {
         setConversationId(chatData.conversationId);
+        setActiveThreadId(chatData.conversationId);
       }
 
       const responseContent: string = chatData?.content ?? data?.content ?? 'No response';
@@ -268,6 +274,41 @@ export function ChatInterface() {
               {/* Input bar */}
               <div className="border-t border-[var(--shadow)] bg-[var(--deep-space)] px-6 py-4 flex-shrink-0">
                 <div className="mx-auto max-w-4xl">
+                  {/* Ghost context active indicator */}
+                  {ghostContextActive && (
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        marginBottom: '8px',
+                        padding: '4px 8px',
+                        borderRadius: '4px',
+                        background: 'var(--ghost-card-bg, #1a1f2e)',
+                        border: '1px solid var(--ghost-card-border, #2a3040)',
+                      }}
+                    >
+                      <svg
+                        width="10" height="10" viewBox="0 0 20 20" fill="currentColor"
+                        style={{ color: 'var(--teal-400, #2dd4bf)', flexShrink: 0 }}
+                        aria-hidden
+                      >
+                        <path d="M10 3C5 3 1.73 7.11 1.05 9.78a1 1 0 000 .44C1.73 12.89 5 17 10 17s8.27-4.11 8.95-6.78a1 1 0 000-.44C18.27 7.11 15 3 10 3zm0 11a4 4 0 110-8 4 4 0 010 8zm0-6a2 2 0 100 4 2 2 0 000-4z" />
+                      </svg>
+                      <span style={{ fontSize: '10px', color: 'var(--teal-400, #2dd4bf)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        Ghost context active — {ghostContextActive.source}
+                      </span>
+                      <button
+                        onClick={clearGhostContextActive}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0 2px', color: 'var(--mist, #888)', fontSize: '12px', lineHeight: 1, flexShrink: 0 }}
+                        title="Dismiss Ghost context"
+                        aria-label="Dismiss Ghost context"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  )}
+
                   <div className="flex items-end gap-3">
                     <div className="flex-1">
                       <InputField

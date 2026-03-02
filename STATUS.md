@@ -1,5 +1,9 @@
 # GREGORE LITE — STATUS
-**Last Updated:** March 2, 2026 — Sprint 6G complete: Privacy Dashboard UI, 6 API routes (items/exclusions/log/watch-paths/status/purge), 5 React components (GhostStatusBadge, IndexedItemRow, ExclusionLog, IndexedItemsList, ExclusionRules, WatchPaths, PurgeAllDialog, PrivacyDashboard), cascade delete + purge-all, exclusion log retention cap, deleteGhostItem()  
+**Last Updated:** March 2, 2026 — Sprint 6H complete: Ghost context panel cards, Tell me more injection ([GHOST CONTEXT - UNTRUSTED CONTENT] label), Noted feedback, 4h auto-expire on render, GhostCardList with Tauri event listener, Ghost context active indicator in ChatInterface, activeThreadId bridged via ghost store
+**Phase:** Phase 6 — Ghost Thread (Sprint 6H complete, 6I next)
+
+---
+**Previous:** Sprint 6G complete: Privacy Dashboard UI, 6 API routes (items/exclusions/log/watch-paths/status/purge), 5 React components (GhostStatusBadge, IndexedItemRow, ExclusionLog, IndexedItemsList, ExclusionRules, WatchPaths, PurgeAllDialog, PrivacyDashboard), cascade delete + purge-all, exclusion log retention cap, deleteGhostItem()  
 **Phase:** Phase 6 — Ghost Thread (Sprint 6G complete, 6H next)
 
 ---
@@ -633,7 +637,7 @@ Execution order: 6A -> 6B -> 6C -> 6D -> 6E -> 6F -> 6G -> 6H -> 6I (all sequent
 - [x] **SPRINT 6E** — Interrupt scoring engine (6h cadence, BLUEPRINT §6.4 formula, 24h rolling cap, Haiku summaries) — **COMPLETE**
 - [x] **SPRINT 6F** — Ghost process lifecycle + IPC (7-step startup, 5s shutdown, AEGIS propagation, component restart, Zustand store) — **COMPLETE**
 - [x] **SPRINT 6G** — Privacy Dashboard UI (6 API routes, 8 React components, cascade delete, exclusion log retention cap, deleteGhostItem(), purge-all with Ghost restart) — **COMPLETE**
-- [ ] SPRINT 6H - Context panel Ghost cards (Tell me more injection, Noted, 4h auto-expire)
+- [x] **SPRINT 6H** — Ghost context panel cards (GhostCard, GhostCardList, GhostCardActions, Tell me more injection, Noted feedback, 4h auto-expire on render, Tauri event listener, Ghost context active indicator, activeThreadId bridge via ghost store) — **COMPLETE**
 - [ ] SPRINT 6I - Integration + Phase 6 certification (security audit, perf measurements, EoS self-scan)
 
 ## Phase 6 Source Notes
