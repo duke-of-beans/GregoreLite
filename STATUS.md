@@ -1,6 +1,6 @@
 # GREGORE LITE — STATUS
-**Last Updated:** March 2, 2026 — Sprint 6D complete: four-layer privacy exclusion engine, PII scanner (SSN/CC/API key/JWT), Layer 4 user rules with micromatch + 5-min cache, full audit log  
-**Phase:** Phase 6 — Ghost Thread (Sprint 6D complete, 6E next)
+**Last Updated:** March 2, 2026 — Sprint 6E complete: interrupt scoring engine, 6h cadence, BLUEPRINT §6.4 formula, 24h rolling cap with critical override, Claude Haiku summaries  
+**Phase:** Phase 6 — Ghost Thread (Sprint 6E complete, 6F next)
 
 ---
 
@@ -545,6 +545,41 @@ Execution order: 5A → 5B → 5C (all sequential)
 | SPRINT_6D_COMPLETE.md written | ✅ Done |
 | Conventional commit + push | ✅ Done |
 
+## Sprint 6E Gate Results (COMPLETE — March 2, 2026)
+
+| Gate | Result |
+|------|--------|
+| `npx tsc --noEmit` | ✅ 0 errors |
+| `pnpm test:run` | ✅ 677/677 passing (33 test files, 37 new) |
+| `ghost_indexed_items.critical` column | ✅ `ALTER TABLE ... ADD COLUMN IF NOT EXISTS critical INTEGER DEFAULT 0` |
+| `ghost_suggestion_feedback` table | ✅ action CHECK IN (dismissed/noted/expanded) |
+| `ghost_surfaced` table | ✅ 24h rolling window, expires_at + dismissed_at |
+| `app/lib/ghost/scorer/types.ts` | ✅ GhostCandidate, GhostSuggestion, ScorerConfig, DEFAULT_SCORER_CONFIG |
+| `app/lib/ghost/scorer/context.ts` | ✅ buildActiveContextVector() → Float32Array or null (idle guard) |
+| `app/lib/ghost/scorer/candidates.ts` | ✅ generateCandidates() — ghost-only filter, critical flag from DB |
+| `app/lib/ghost/scorer/scorer.ts` | ✅ BLUEPRINT §6.4 formula: similarity × recency × relevance × (1-penalty) × importance |
+| Recency boost | ✅ 1.0 ≤7d, linear decay to 0.5 at 90d, 0.5 beyond |
+| Relevance boost | ✅ 1.2 if source path under active project (Windows backslash normalised) |
+| Dismissal penalty | ✅ 0.2 × dismissals in last 30d, capped at 0.8 |
+| `app/lib/ghost/scorer/window.ts` | ✅ canSurface(), recordSurfaced(), dismissSurfaced(), criticalOverride() |
+| 24h cap | ✅ counts ALL surfaced (including dismissed) within windowMs |
+| Critical override | ✅ bypasses cap when similarity > 0.95 AND importanceBoost > 1.3 |
+| `app/lib/ghost/scorer/index.ts` | ✅ runScorer(), getActiveSuggestions(), dismissSuggestion(), startScorerSchedule() |
+| Haiku summary | ✅ `claude-haiku-4-5-20251001`, `[UNTRUSTED CONTENT]` in system prompt, fails open |
+| AEGIS pause guard | ✅ runScorer() no-ops on PARALLEL_BUILD / COUNCIL profiles |
+| scorer.test.ts — 37 tests | ✅ All 37 new passing |
+| STATUS.md updated | ✅ Done |
+| SPRINT_6E_COMPLETE.md written | ✅ Done |
+| Conventional commit + push | ✅ Done |
+
+### Sprint 6E Key Discoveries
+
+- **Vitest v4 class constructor mocks**: `vi.fn().mockImplementation(() => ({...}))` with an arrow function produces the warning "did not use 'function' or 'class'" and fails with `TypeError: ... is not a constructor` when called with `new`. Fix: use `vi.fn().mockImplementation(function() { return {...}; })` (regular function, not arrow) or a class literal. Arrow functions cannot be `new`-ed.
+- **mockReturnValueOnce queue bleed**: `mockReturnValueOnce` queues persist across tests unless explicitly cleared. A test that sets up two queued values but only consumes one (e.g., returns null early) leaves a stale value that poisons the next test's first DB call. Fix: `beforeEach(() => { mockGet.mockReset(); mockAll.mockReset(); ... })` — reset only the DB mocks, not the module-level `vi.mock()` implementations.
+- **vi.resetAllMocks() too aggressive**: `vi.resetAllMocks()` clears all mock implementations — including `getDatabase()`, `getLatestAegisSignal()`, and other module-level mocks. These go from returning default values to returning `undefined`, causing `Cannot read properties of undefined (reading 'prepare')`. Use per-mock `.mockReset()` targeted at only the mocks that can have queue bleed.
+- **Dynamic import mocking**: `await import('@/lib/embeddings/model')` inside `buildActiveContextVector()` is intercepted by `vi.mock('@/lib/embeddings/model', ...)` even though it's a dynamic import. Vitest hoists all `vi.mock()` calls before module evaluation — both static and dynamic imports from the same path get the mock.
+- **context.ts null path**: Returns null when (a) no thread has any messages (idle session) or (b) the most recent thread has no *assistant* messages. Tests for these paths must not leave unconsumed `mockReturnValueOnce` values in the queue — they bleed into the next test's thread query.
+
 ### Sprint 6D Key Discoveries
 
 - **Dotfile extension trap**: `path.parse('/project/.env')` returns `{ name: '.env', ext: '' }` — Node treats dotfiles as having an empty extension. The extension check must also test `parsed.base.toLowerCase()` directly against the exclusion set to catch `.env`, `.pem`, etc.
@@ -563,7 +598,7 @@ Execution order: 6A -> 6B -> 6C -> 6D -> 6E -> 6F -> 6G -> 6H -> 6I (all sequent
 - [x] **SPRINT 6B** — Gmail + Outlook OAuth connectors, delta sync, keychain, 15-min AEGIS-governed poller — **COMPLETE**
 - [x] **SPRINT 6C** — Unified ingest pipeline: type-aware chunker, batch embedder, AEGIS queue, ghost_indexed_items audit — **COMPLETE**
 - [x] **SPRINT 6D** — Privacy exclusion engine (4 layers: hard-coded, PII scanner, contextual, user rules) — **COMPLETE**
-- [ ] SPRINT 6E - Interrupt scoring engine (6h cadence, ranking formula, 24h cap, Claude haiku summaries)
+- [x] **SPRINT 6E** — Interrupt scoring engine (6h cadence, BLUEPRINT §6.4 formula, 24h rolling cap, Haiku summaries) — **COMPLETE**
 - [ ] SPRINT 6F - Ghost process lifecycle + IPC (startup order, shutdown, degraded components, AEGIS propagation)
 - [ ] SPRINT 6G - Privacy Dashboard UI (indexed items, cascade delete, exclusion rules, purge all)
 - [ ] SPRINT 6H - Context panel Ghost cards (Tell me more injection, Noted, 4h auto-expire)

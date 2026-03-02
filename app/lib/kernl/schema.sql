@@ -320,6 +320,35 @@ CREATE TABLE IF NOT EXISTS ghost_exclusion_log (
 CREATE INDEX IF NOT EXISTS idx_ghost_exclusion_log_source
   ON ghost_exclusion_log (source_type, logged_at DESC);
 
+-- ─── GHOST SCORER — Phase 6E ─────────────────────────────────────────────────
+-- critical flag on indexed items (set by Privacy Dashboard / Ghost card UI)
+ALTER TABLE ghost_indexed_items ADD COLUMN IF NOT EXISTS critical INTEGER DEFAULT 0;
+
+-- Feedback log: dismissed/noted/expanded actions per chunk
+CREATE TABLE IF NOT EXISTS ghost_suggestion_feedback (
+  id          TEXT PRIMARY KEY,
+  chunk_id    TEXT,
+  source_path TEXT,
+  action      TEXT CHECK(action IN ('dismissed', 'noted', 'expanded')),
+  logged_at   INTEGER NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_ghost_feedback_source
+  ON ghost_suggestion_feedback (source_path, logged_at DESC);
+
+-- Rolling window: tracks suggestions surfaced in the last 24h
+CREATE TABLE IF NOT EXISTS ghost_surfaced (
+  id           TEXT PRIMARY KEY,
+  chunk_id     TEXT NOT NULL,
+  score        REAL,
+  surfaced_at  INTEGER NOT NULL,
+  expires_at   INTEGER NOT NULL,   -- surfaced_at + 4 hours (auto-expire)
+  dismissed_at INTEGER
+);
+
+CREATE INDEX IF NOT EXISTS idx_ghost_surfaced_at
+  ON ghost_surfaced (surfaced_at DESC);
+
 -- ─── FTS VIRTUAL TABLE ───────────────────────────────────────────────────────
 CREATE VIRTUAL TABLE IF NOT EXISTS messages_fts USING fts5(
   content,
