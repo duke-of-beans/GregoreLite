@@ -1,6 +1,6 @@
 # GREGORE LITE — STATUS
-**Last Updated:** March 2, 2026 — Sprint 6E complete: interrupt scoring engine, 6h cadence, BLUEPRINT §6.4 formula, 24h rolling cap with critical override, Claude Haiku summaries  
-**Phase:** Phase 6 — Ghost Thread (Sprint 6E complete, 6F next)
+**Last Updated:** March 2, 2026 — Sprint 6F complete: Ghost process lifecycle + IPC, 7-step startup/shutdown orchestration, AEGIS propagation, component restart with 30s delay, Zustand ghost store  
+**Phase:** Phase 6 — Ghost Thread (Sprint 6F complete, 6G next)
 
 ---
 
@@ -580,6 +580,38 @@ Execution order: 5A → 5B → 5C (all sequential)
 - **Dynamic import mocking**: `await import('@/lib/embeddings/model')` inside `buildActiveContextVector()` is intercepted by `vi.mock('@/lib/embeddings/model', ...)` even though it's a dynamic import. Vitest hoists all `vi.mock()` calls before module evaluation — both static and dynamic imports from the same path get the mock.
 - **context.ts null path**: Returns null when (a) no thread has any messages (idle session) or (b) the most recent thread has no *assistant* messages. Tests for these paths must not leave unconsumed `mockReturnValueOnce` values in the queue — they bleed into the next test's thread query.
 
+## Sprint 6F Gate Results (COMPLETE — March 2, 2026)
+
+| Gate | Result |
+|------|--------|
+| `npx tsc --noEmit` | ✅ 0 errors |
+| `pnpm test:run` | ✅ 703/703 passing (34 test files, 26 new lifecycle tests) |
+| `app/lib/ghost/ipc.ts` | ✅ Node.js EventEmitter + Tauri emit_all best-effort |
+| `app/lib/ghost/status.ts` | ✅ GhostStatus type, singleton, updateGhostStatus(), addGhostStatusError() |
+| `app/lib/ghost/lifecycle.ts` | ✅ 7-step startup, reverse shutdown with 5s hard timeout, degraded mode |
+| `app/lib/ghost/index.ts` | ✅ Public barrel: startGhost, stopGhost, pauseGhost, resumeGhost, getGhostStatus |
+| `app/lib/stores/ghost-store.ts` | ✅ Zustand store: ghostStatus, ghostSuggestions + actions |
+| `app/lib/stores/index.ts` | ✅ useGhostStore exported |
+| `app/lib/aegis/index.ts` | ✅ switchProfile() calls pauseGhost()/resumeGhost() alongside ghostPause()/ghostResume() |
+| `app/lib/ghost/email/poller.ts` | ✅ pauseEmailPoller()/resumeEmailPoller() added (_explicitPause flag) |
+| `app/lib/ghost/ingest/index.ts` | ✅ pauseIngestQueue()/resumeIngestQueue() exported |
+| Component restart | ✅ restartComponent() — 30s delay, single retry, exhausted set |
+| Degraded mode | ✅ any startup step failure → errors[] populated, state: 'degraded' |
+| AEGIS propagation | ✅ PARALLEL_BUILD/COUNCIL → pauseGhost(); other profiles → resumeGhost() |
+| Shutdown timeout | ✅ 5s hard timeout via Promise.race() |
+| lifecycle.test.ts — 26 tests | ✅ startup order, shutdown order, degraded, pause/resume, restart |
+| STATUS.md updated | ✅ Done |
+| SPRINT_6F_COMPLETE.md written | ✅ Done |
+| Conventional commit + push | ✅ Done |
+
+### Sprint 6F Key Discoveries
+
+- **vi.resetModules() test pattern for module-level state**: lifecycle.ts has `_started` and `_paused` booleans that persist between tests in the same file. Solution: wrap each test group with `await freshLifecycle()` which calls `vi.resetModules()` then dynamic `await import('../lifecycle')` — each test gets a fresh module with zeroed state.
+- **getUserExclusions() is the cache-priming entry point**: `loadExclusions()` in `layer4.ts` is a private (non-exported) function. The public `getUserExclusions()` calls it internally and populates the 5-min cache. Lifecycle step 3 correctly calls the public function.
+- **Explicit vs AEGIS-signal pause**: email poller and ingest queue each have two independent pause mechanisms. AEGIS-signal pause (already present in 6A–6C) reads `getLatestAegisSignal()` on each poll tick. Explicit pause (6F) sets a module-level `_explicitPause` / `_paused` flag that short-circuits before the AEGIS check. Both must coexist cleanly.
+- **Promise.race() shutdown pattern**: `await Promise.race([shutdown(), setTimeout(5000)])` is the canonical 5s timeout. Individual component stop errors are caught inside `shutdown()` and logged as warnings — they do not abort the remaining shutdown steps.
+- **IPC architecture**: In Tauri, `emit_all()` broadcasts to WebView windows. In the Next.js server process (Node.js), a module-level `EventEmitter` handles server-side listeners. The `emit()` helper in `ipc.ts` fires both — Node.js synchronously, Tauri async via dynamic import (no-op outside Tauri).
+
 ### Sprint 6D Key Discoveries
 
 - **Dotfile extension trap**: `path.parse('/project/.env')` returns `{ name: '.env', ext: '' }` — Node treats dotfiles as having an empty extension. The extension check must also test `parsed.base.toLowerCase()` directly against the exclusion set to catch `.env`, `.pem`, etc.
@@ -599,7 +631,7 @@ Execution order: 6A -> 6B -> 6C -> 6D -> 6E -> 6F -> 6G -> 6H -> 6I (all sequent
 - [x] **SPRINT 6C** — Unified ingest pipeline: type-aware chunker, batch embedder, AEGIS queue, ghost_indexed_items audit — **COMPLETE**
 - [x] **SPRINT 6D** — Privacy exclusion engine (4 layers: hard-coded, PII scanner, contextual, user rules) — **COMPLETE**
 - [x] **SPRINT 6E** — Interrupt scoring engine (6h cadence, BLUEPRINT §6.4 formula, 24h rolling cap, Haiku summaries) — **COMPLETE**
-- [ ] SPRINT 6F - Ghost process lifecycle + IPC (startup order, shutdown, degraded components, AEGIS propagation)
+- [x] **SPRINT 6F** — Ghost process lifecycle + IPC (7-step startup, 5s shutdown, AEGIS propagation, component restart, Zustand store) — **COMPLETE**
 - [ ] SPRINT 6G - Privacy Dashboard UI (indexed items, cascade delete, exclusion rules, purge all)
 - [ ] SPRINT 6H - Context panel Ghost cards (Tell me more injection, Noted, 4h auto-expire)
 - [ ] SPRINT 6I - Integration + Phase 6 certification (security audit, perf measurements, EoS self-scan)

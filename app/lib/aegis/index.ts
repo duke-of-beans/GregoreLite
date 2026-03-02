@@ -14,6 +14,7 @@
 
 import { logAegisSignal } from '@/lib/kernl/aegis-store';
 import { ghostPause, ghostResume } from '@/lib/ghost/watcher-bridge';
+import { pauseGhost, resumeGhost } from '@/lib/ghost/lifecycle';
 import { AEGISGovernor } from './governor';
 import type { WorkloadProfile } from './types';
 
@@ -46,11 +47,15 @@ async function switchProfile(profile: WorkloadProfile): Promise<void> {
   }
   logAegisSignal(profile, undefined, false);
 
-  // Ghost Thread: pause during intensive profiles, resume otherwise
+  // Ghost Thread: pause during intensive profiles, resume otherwise.
+  // ghostPause/ghostResume → Tauri IPC (watcher-bridge, Rust side)
+  // pauseGhost/resumeGhost → Node.js lifecycle (email poller, ingest queue)
   if (GHOST_PAUSE_PROFILES.has(profile)) {
     await ghostPause();
+    pauseGhost();
   } else {
     await ghostResume();
+    resumeGhost();
   }
 }
 

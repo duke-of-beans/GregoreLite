@@ -15,6 +15,7 @@
 export { useConversationStore } from './conversation-store';
 export { useMessageStore } from './message-store';
 export { useUIStore } from './ui-store';
+export { useGhostStore } from './ghost-store';
 export {
   useSuggestionStore,
   selectSuggestionCount,

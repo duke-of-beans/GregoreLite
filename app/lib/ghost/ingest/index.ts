@@ -58,6 +58,23 @@ export function stopIngestQueue(): void {
   _queue.stop();
 }
 
+/**
+ * Explicitly pause queue processing.
+ * Called by the Ghost lifecycle manager on AEGIS profile changes.
+ * Items continue to be accepted; the backlog drains when resumed.
+ */
+export function pauseIngestQueue(): void {
+  _queue.pause();
+}
+
+/**
+ * Resume queue processing after an explicit pause.
+ * Idempotent — no-op if not paused.
+ */
+export function resumeIngestQueue(): void {
+  _queue.resume();
+}
+
 // ─── Public enqueuers ─────────────────────────────────────────────────────────
 
 /**

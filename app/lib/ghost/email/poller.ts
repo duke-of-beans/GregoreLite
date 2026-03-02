@@ -26,6 +26,13 @@ const ERROR_GATE_THRESHOLD = 5;
 
 let _pollInterval: ReturnType<typeof setInterval> | null = null;
 
+/**
+ * Explicit lifecycle pause flag (set by Ghost lifecycle manager).
+ * Distinct from the AEGIS-signal-based self-pause inside runPoll().
+ * When true, runPoll() returns immediately without polling.
+ */
+let _explicitPause = false;
+
 // ── Public API ────────────────────────────────────────────────────────────────
 
 /**
@@ -50,17 +57,39 @@ export function stopEmailPoller(): void {
     clearInterval(_pollInterval);
     _pollInterval = null;
   }
+  _explicitPause = false;
 }
 
-/** Whether the poller is currently active */
+/** Whether the poller interval is currently active */
 export function isPollerRunning(): boolean {
-  return _pollInterval !== null;
+  return _pollInterval !== null && !_explicitPause;
+}
+
+/**
+ * Explicitly pause polling (called by Ghost lifecycle manager on AEGIS profile change).
+ * The interval timer keeps running so the poller resumes naturally; each tick
+ * checks _explicitPause and returns early if set.
+ */
+export function pauseEmailPoller(): void {
+  _explicitPause = true;
+}
+
+/**
+ * Resume polling after an explicit pause.
+ * Idempotent — no-op if not paused.
+ */
+export function resumeEmailPoller(): void {
+  _explicitPause = false;
 }
 
 // ── Poll orchestration ────────────────────────────────────────────────────────
 
 async function runPoll(): Promise<void> {
-  // Skip if AEGIS is in a pause profile
+  // Skip if explicitly paused by the lifecycle manager
+  if (_explicitPause) {
+    return;
+  }
+  // Skip if AEGIS is in a pause profile (self-pause via signal read)
   if (isGhostPaused()) {
     return;
   }
