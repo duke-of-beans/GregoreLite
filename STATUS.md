@@ -1,5 +1,5 @@
 # GREGORE LITE — STATUS
-**Last Updated:** March 2, 2026 — Phase 4 COMPLETE  
+**Last Updated:** March 2, 2026 — Sprint 5A COMPLETE  
 **Phase:** Phase 5 — Quality Layer (SHIM + Eye of Sauron)
 
 ---
@@ -334,6 +334,53 @@ Execution order: 4A → 4B → 4C (all sequential)
 - **dismissCount threading**: Count comes from the server's `getLockState()` via the fire-and-forget `setTrigger(result, dismissCount)` call. GatePanel reads it from Zustand — no extra client round-trips.
 - **Server/client KERNL boundary**: `logDecision()` is better-sqlite3 (Node.js only). Client components call API routes; `kernl-logger.ts` is server-side only. Never import it from a client component.
 - **NextResponse vs Response in safeHandler**: `safeHandler` return type is `Promise<NextResponse<unknown>>`. Bare `new Response(...)` causes a TypeScript error. Must use `NextResponse.json({ ... }, { status: 423 })`.
+
+## Queued: Phase 5 — Quality Layer (after Phase 4 complete)
+
+Execution order: 5A → 5B → 5C (all sequential)
+
+- [x] **SPRINT 5A** — Eye of Sauron native integration — **COMPLETE** (527/527 tests, 0 tsc errors)
+- [ ] **SPRINT 5B** — SHIM PatternLearner migration + FP feedback UI (dismiss button, `/api/eos/fp`, quality section in context panel)
+- [ ] **SPRINT 5C** — Integration hardening, self-scan, PatternLearner seeding, War Room badge, Phase 5 certification
+
+## Sprint 5A Gate Results (COMPLETE — March 2, 2026)
+
+| Gate | Result |
+|------|--------|
+| tsc --noEmit | ✅ 0 errors |
+| pnpm test:run | ✅ 527/527 passing (27 test files, 53 new) |
+| app/lib/eos/ — 9 module files | ✅ types, character, patterns, batch, debt, health-score, fp-tracker, engine, index |
+| Character forensics (INVISIBLE_CHAR, HOMOGLYPH, SMART_QUOTE, GREEK_SEMICOLON, MIXED_INDENT) | ✅ Migrated from CharacterForensics.js |
+| Pattern precognition (MEMORY_LEAK, EVENT_LISTENER_LEAK) | ✅ Migrated from PatternPrecognition.js |
+| Health score formula: 100 − (critical×8) − (warning×2) − (cycles×10) | ✅ Clamped 0–100, 4 grades |
+| FP tracker — recordOccurrence, markFalsePositive, getSuppressedRules, getRuleStats | ✅ KERNL-backed, 20% threshold over last 100 |
+| KERNL schema — eos_fp_log, eos_reports tables | ✅ Added via ALTER TABLE IF NOT EXISTS |
+| KERNL schema — projects.health_score, projects.last_eos_scan | ✅ Added |
+| Agent SDK job-tracker hook | ✅ EoS quick scan fires after COMPLETED, persists health score |
+| EoS tests — character.test.ts (10), patterns.test.ts (10), batch.test.ts (6), health-score.test.ts (13), fp-tracker.test.ts (14) | ✅ 53 new tests |
+| SPRINT_5A_COMPLETE.md | ✅ Written |
+| STATUS.md updated | ✅ Done |
+| Conventional commit + push | ✅ Done |
+
+### Sprint 5A Key Discoveries
+
+- **exactOptionalPropertyTypes**: Building `HealthIssue` objects with `line: raw.line` fails when `raw.line` is `number | undefined` — optional properties cannot be assigned `undefined` directly. Pattern: build the base object then conditionally assign `if (raw.line !== undefined) issue.line = raw.line`.
+- **Rule migration decision matrix**: Applied the brief's 20% FP threshold heuristic when deciding what to port. CONSOLE_USAGE and MISSING_CONTRACT_METHODS both rejected because they produce false positives on virtually every TypeScript/React file. SauronDependencyGraph rejected because it reads npm package-lock.json, not source import cycles.
+- **Homoglyph context detection**: Cyrillic/Greek lookalikes inside string literals are legitimate user-facing text (i18n). The `isInStringOrComment()` helper prevents false positives on multilingual content — only flags homoglyphs in identifier/operator positions.
+- **Pre-existing TS6133 baseline fix**: `phase4-integration.test.ts` had an unused import alias (`releaseLock as realReleaseLock`) that blocked clean tsc baseline. Fixed before writing any Phase 5 code.
+
+## Phase 5 Execution Briefs
+
+| File | Sprint |
+|------|--------|
+| PHASE5A_EXECUTION_BRIEF.md | EoS integration |
+| PHASE5B_EXECUTION_BRIEF.md | PatternLearner + FP UI |
+| PHASE5C_EXECUTION_BRIEF.md | Integration + certification |
+
+## Source Projects
+
+- `D:\Projects\eye-of-sauron\` — migrate: engine core, CharacterForensics, PatternPrecognition, BatchProcessor, DependencyGraph, TechnicalDebtCalculator. Skip: server, CLI, reporters, schedulers, license manager.
+- `D:\Projects\SHIM\` — migrate: `src/ml/PatternLearner.ts` only. Skip: MLPredictor (stub), Redis/BullMQ coordination layer, MCP server.
 
 ## Open Questions
 

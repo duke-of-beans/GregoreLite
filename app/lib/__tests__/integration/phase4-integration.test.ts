@@ -60,7 +60,6 @@ vi.mock('@/lib/kernl/database', () => ({
 import { analyze, getDecisionLock } from '@/lib/decision-gate';
 import {
   acquireLock,
-  releaseLock as realReleaseLock,
   dismissLock,
   isMandatory,
   _resetLockState,

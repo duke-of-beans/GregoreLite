@@ -10,6 +10,7 @@
 import { getDatabase } from '../kernl/database';
 import type { TaskManifest, JobState, ResultReport } from './types';
 import { runOnce } from '../indexer';
+import { scan, persistHealthScore } from '../eos/index';
 
 // ─── Row shape matching schema.sql manifests table ────────────────────────────
 
@@ -128,12 +129,32 @@ export function writeResultReport(
   });
 
   // After a successful job, opportunistically index any new content
+  // and run an EoS health scan on the project path (fire-and-forget)
   if (state === 'COMPLETED') {
     setImmediate(() => {
       runOnce().catch((err: unknown) =>
         console.warn('[indexer] post-job run failed', { err })
       );
     });
+
+    // Look up project path + id from the manifest row for EoS wiring
+    const manifestRow = getManifestRow(manifestId);
+    const projectPath = manifestRow?.project_path ?? null;
+    if (projectPath) {
+      const projectRow = db
+        .prepare('SELECT id FROM projects WHERE path = ?')
+        .get(projectPath) as { id: string } | null;
+      const projectId = projectRow?.id ?? null;
+      setImmediate(() => {
+        scan(projectPath, 'quick', projectId ?? undefined)
+          .then((result) => {
+            if (projectId) persistHealthScore(projectId, result.healthScore);
+          })
+          .catch((err: unknown) =>
+            console.warn('[EoS] post-job scan failed', { err })
+          );
+      });
+    }
   }
 }
 

@@ -186,6 +186,43 @@ CREATE TABLE IF NOT EXISTS settings (
   updated_at INTEGER NOT NULL DEFAULT (unixepoch('now','subsec') * 1000)
 );
 
+-- ─── EYE OF SAURON — Phase 5A ────────────────────────────────────────────────
+
+-- health_score: 0–100 computed by EoS health score formula
+-- last_eos_scan: ISO datetime of last scan
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS health_score  REAL    DEFAULT NULL;
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS last_eos_scan TEXT    DEFAULT NULL;
+
+-- False-positive feedback log (rolling window for auto-suppression)
+CREATE TABLE IF NOT EXISTS eos_fp_log (
+  id          TEXT    PRIMARY KEY,
+  project_id  TEXT    NOT NULL,
+  rule_id     TEXT    NOT NULL,
+  file_path   TEXT    NOT NULL,
+  line        INTEGER,
+  is_fp       INTEGER NOT NULL DEFAULT 0,    -- 1 = user confirmed FP
+  created_at  TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_eos_fp_log_rule
+  ON eos_fp_log (project_id, rule_id, created_at DESC);
+
+-- Persisted scan reports (one row per scan run)
+CREATE TABLE IF NOT EXISTS eos_reports (
+  id            TEXT    PRIMARY KEY,
+  project_id    TEXT    NOT NULL,
+  health_score  REAL    NOT NULL,
+  issues_json   TEXT    NOT NULL,            -- JSON: HealthIssue[]
+  files_scanned INTEGER NOT NULL DEFAULT 0,
+  duration_ms   INTEGER NOT NULL DEFAULT 0,
+  suppressed    TEXT    NOT NULL DEFAULT '[]', -- JSON: string[] (suppressed rule IDs)
+  scan_mode     TEXT    NOT NULL DEFAULT 'quick' CHECK(scan_mode IN ('quick','deep')),
+  created_at    TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_eos_reports_project
+  ON eos_reports (project_id, created_at DESC);
+
 -- ─── FTS VIRTUAL TABLE ───────────────────────────────────────────────────────
 CREATE VIRTUAL TABLE IF NOT EXISTS messages_fts USING fts5(
   content,
