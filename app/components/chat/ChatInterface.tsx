@@ -26,6 +26,8 @@ import type { MessageProps } from './Message';
 import { detectArtifact } from '@/lib/artifacts/detector';
 import { useArtifactStore } from '@/lib/artifacts/store';
 import { syncArtifact } from '@/lib/artifacts/kernl-sync';
+import { useDecisionGateStore } from '@/lib/stores/decision-gate-store';
+import { GatePanel } from '@/components/decision-gate';
 
 type ActiveTab = 'strategic' | 'workers' | 'warroom';
 
@@ -51,6 +53,7 @@ export function ChatInterface() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('strategic');
 
   const { activeArtifact, setArtifact, clearArtifact } = useArtifactStore();
+  const { trigger: gateTrigger } = useDecisionGateStore();
 
   // ── Keyboard shortcuts ───────────────────────────────────────────────────
   useEffect(() => {
@@ -131,6 +134,21 @@ export function ChatInterface() {
           ...(conversationId && { conversationId }),
         }),
       });
+
+      if (response.status === 423) {
+        // Decision gate is active — the gate panel should already be visible
+        // from the Zustand store (set by the previous fire-and-forget analyze()).
+        // If somehow the store is empty (e.g. page reload), show a safe error.
+        const data = await response.json() as { error: string; reason?: string };
+        const errorMessage: MessageProps = {
+          role: 'assistant',
+          content: `⚠ Decision Gate active — ${data.reason ?? 'approve or dismiss the gate before continuing'}`,
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, errorMessage]);
+        setSendButtonState('normal');
+        return;
+      }
 
       if (!response.ok) throw new Error(`API error: ${response.statusText}`);
 
@@ -241,6 +259,11 @@ export function ChatInterface() {
                   <MessageList messages={messages} />
                 )}
               </div>
+
+              {/* Decision Gate panel — slides in above input, pushes it down */}
+              {gateTrigger && (
+                <GatePanel threadId={conversationId} trigger={gateTrigger} />
+              )}
 
               {/* Input bar */}
               <div className="border-t border-[var(--shadow)] bg-[var(--deep-space)] px-6 py-4 flex-shrink-0">

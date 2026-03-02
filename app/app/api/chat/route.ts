@@ -37,7 +37,7 @@ import { embed, persistEmbeddingsFull } from '@/lib/embeddings';
 import { recordUserActivity } from '@/lib/indexer';
 import { checkOnInput } from '@/lib/cross-context/proactive';
 import { useSuggestionStore } from '@/lib/stores/suggestion-store';
-import { analyze } from '@/lib/decision-gate';
+import { analyze, getDecisionLock } from '@/lib/decision-gate';
 import type { GateMessage } from '@/lib/decision-gate';
 import { useDecisionGateStore } from '@/lib/stores/decision-gate-store';
 
@@ -50,6 +50,17 @@ const client = new Anthropic();
  * Persists to KERNL SQLite and checkpoints after each response.
  */
 export const POST = safeHandler(async (request: Request) => {
+  // ── Decision Gate lock enforcement (§8 blueprint) ───────────────────────
+  // If a trigger fired from the previous response, the lock is active and
+  // all API calls must be blocked until David approves or overrides.
+  const lock = getDecisionLock();
+  if (lock.locked) {
+    return NextResponse.json(
+      { error: 'decision_locked', reason: lock.reason, trigger: lock.trigger },
+      { status: 423 },
+    );
+  }
+
   // Rate limiting
   const identifier = getRateLimitIdentifier(request);
   const rateLimit = rateLimiter.check(identifier);
@@ -175,7 +186,8 @@ export const POST = safeHandler(async (request: Request) => {
     analyze(fullConversation)
       .then((result) => {
         if (result.triggered) {
-          useDecisionGateStore.getState().setTrigger(result);
+          const { dismissCount } = getDecisionLock();
+          useDecisionGateStore.getState().setTrigger(result, dismissCount);
         }
       })
       .catch((err: unknown) =>
