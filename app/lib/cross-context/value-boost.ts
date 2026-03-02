@@ -1,23 +1,55 @@
 /**
- * Value Boost — Phase 3 stub (Sprint 3G)
+ * Value Boost — Phase 4 implementation
  *
- * Returns a weight multiplier for a chunk based on its "strategic value".
- * Phase 3: always 1.0.
- * Phase 4: will weight by criticality tags, usage frequency, and
- *           explicit "mark as critical" annotations from David.
+ * Returns a weight multiplier for a chunk based on whether its source thread
+ * contains a KERNL-logged decision. Chunks from "decided" threads carry more
+ * strategic weight — David explicitly reviewed and approved those paths.
+ *
+ * - 1.5× if the chunk's source thread has ≥1 logged decision in KERNL
+ * - 1.0× otherwise (neutral — no change to base score)
+ *
+ * Uses better-sqlite3 (synchronous) to stay compatible with the synchronous
+ * scoreCandidate() call site in surfacing.ts.
  *
  * @module lib/cross-context/value-boost
  */
 
+import { getDatabase } from '@/lib/kernl/database';
+
+/** Multiplier applied when a chunk originates from a decided thread. */
+const DECIDED_THREAD_BOOST = 1.5;
+
+interface ChunkSourceRow {
+  source_id: string;
+}
+
 /**
  * Returns the value boost multiplier for the given chunk.
- * Always 1.0 in Phase 3 — no premium weighting applied.
  *
- * @param _chunkId - chunk ID (reserved for Phase 4 lookup)
- * @returns multiplier in [1.0, 1.5] — currently always 1.0
+ * Queries content_chunks for the chunk's source_id, then checks the decisions
+ * table to see if any decision was logged against that thread. Falls back to
+ * 1.0 on any DB error or missing chunk (fail-open — never reduces scores).
+ *
+ * @param chunkId - content_chunks.id to look up
+ * @returns 1.5 if source thread has a logged decision, 1.0 otherwise
  */
-export function getValueBoost(_chunkId: string): number {
-  // Phase 4: query a `chunk_tags` table for criticality markers
-  // and return up to 1.5 for chunks David has explicitly flagged.
-  return 1.0;
+export function getValueBoost(chunkId: string): number {
+  try {
+    const db = getDatabase();
+
+    const chunk = db
+      .prepare('SELECT source_id FROM content_chunks WHERE id = ?')
+      .get(chunkId) as ChunkSourceRow | undefined;
+
+    if (!chunk?.source_id) return 1.0;
+
+    const hasDecision = db
+      .prepare('SELECT 1 FROM decisions WHERE thread_id = ? LIMIT 1')
+      .get(chunk.source_id);
+
+    return hasDecision ? DECIDED_THREAD_BOOST : 1.0;
+  } catch {
+    // Fail open — never penalise a chunk due to a DB lookup error
+    return 1.0;
+  }
 }

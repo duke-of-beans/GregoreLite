@@ -974,7 +974,7 @@ Gregore-UI-specific:
 
 **Phase 3 — Intelligence Layer** — ✅ COMPLETE (March 1, 2026). Vector index (sqlite-vec), embedding pipeline (bge-small-en-v1.5), three-tier cold start, background indexer (30-min cadence, AEGIS throttled), suggestion feedback + threshold calibration, already-built gate (Monaco diff modal), proactive surfacing (Zustand store, SuggestionCard, max-2 cap, 4h auto-expire). Performance: k=10 @ 1000 chunks = 1.66ms, hot cache = 2.36ms, 374/374 tests passing. See §5 and SPRINT_3H_COMPLETE.md.
 
-**Phase 4 — Council System** — Trigger detection, Council mode UI, decision records, escalation lock.
+**Phase 4 — Decision Gate** — ✅ COMPLETE (March 2, 2026). 8-condition trigger detection (5 live keyword/semantic + 3 Haiku NLP inference), non-modal GatePanel UI, HTTP 423 API lock enforcement, approve/dismiss/override flow, mandatory gate at 3 dismissals, KERNL decision logging, getValueBoost() wired to decisions table. False positive rate: 0/10 normal scenarios in integration testing. Sync analysis path: 1ms on 20-message conversation. 474/474 tests passing. See SPRINT_4A/4B/4C_COMPLETE.md.
 
 **Phase 5 — Quality Layer** — SHIM native integration, Eye of Sauron, quality gate enforcement.
 

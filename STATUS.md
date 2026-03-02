@@ -1,6 +1,6 @@
 # GREGORE LITE — STATUS
-**Last Updated:** March 2, 2026 — Sprint 4B COMPLETE  
-**Phase:** Phase 4 — Decision Gate system (Sprint 4C next)
+**Last Updated:** March 2, 2026 — Phase 4 COMPLETE  
+**Phase:** Phase 5 — Quality Layer (SHIM + Eye of Sauron)
 
 ---
 
@@ -250,7 +250,7 @@ Execution order: 4A → 4B → 4C (all sequential)
 
 - [x] **SPRINT 4A** — Trigger detection (8 conditions, 5 live + 3 stubs) — **COMPLETE**
 - [x] **SPRINT 4B** — UI panel + API lock enforcement + Haiku inference for 3 stubbed triggers — **COMPLETE**
-- [ ] **SPRINT 4C** — Integration hardening, false positive calibration, Phase 4 certification
+- [x] **SPRINT 4C** — Integration hardening, false positive calibration, Phase 4 certification — **COMPLETE**
 
 ## Phase 4 Execution Briefs
 
@@ -287,6 +287,30 @@ Execution order: 4A → 4B → 4C (all sequential)
 - **n-gram test data quality**: `detectRepeatedQuestion` extracts unigrams + bigrams + trigrams after stop-word filtering. Any word shared across 3+ messages triggers it. Negative-case tests must use genuinely unique vocabulary per message — even "topic" appearing in 8 filler messages will correctly fire the detector.
 - **Stubs as `async Promise<false>`**: All 3 stubs return `Promise<false>` consistent with the live async detectors they'll replace. `analyze()` needs no refactor when Sprint 4B activates them.
 - **CMD `/d` flag for drive change**: `cd D:\path` fails silently in cmd when current drive differs. Must use `cd /d D:\path` to switch drives.
+
+## Phase 4 Gate Results (COMPLETE — March 2, 2026)
+
+| Gate | Result |
+|------|--------|
+| tsc --noEmit | ✅ 0 errors |
+| pnpm test:run | ✅ 474/474 passing (22 test files) |
+| All 5 live triggers fire in integration tests | ✅ Verified |
+| 10 normal scenarios — no false positives | ✅ 0% FP rate |
+| 423 API lock enforcement | ✅ Verified |
+| Mandatory gate (3 dismissals) | ✅ Verified |
+| Override requires rationale ≥20 chars | ✅ Verified |
+| Approvals/overrides logged to KERNL | ✅ KERNL write-first ordering enforced |
+| getValueBoost() real implementation | ✅ Queries decisions table (1.5×) |
+| analyze() sync path < 100ms | ✅ 1ms on 20-message conversation |
+| BLUEPRINT_FINAL.md §13 updated | ✅ Phase 4 complete noted |
+| Phase 4 certification commit pushed | ✅ Done |
+
+### Phase 4 Key Discoveries (Sprint 4C)
+
+- **n-gram test data quality**: `detectRepeatedQuestion` fires on shared vocabulary across messages — even common words like "approach" in filler messages will trigger it. Integration test filler messages must use genuinely distinct phrasing per exchange.
+- **Exact phrase matching for low_confidence**: The detector requires the exact phrase `"i'm not sure"`, not approximate variants like `"not entirely sure"`. Approximate language reduces FPs in production; tests must use canonical phrases.
+- **Mocked releaseLock in lock machine tests**: When `releaseLock` is partially mocked via `vi.mock(async (importOriginal) => ({ ...actual, releaseLock: mockFn }))`, the real release behaviour is suppressed. Use `_resetLockState()` directly for lock state machine tests; reserve the `mockReleaseLock` for KERNL logger call-order assertions.
+- **getValueBoost() must stay synchronous**: better-sqlite3 is synchronous by design. Making `getValueBoost` async would require cascading `scoreCandidate()` → `rankAndFilter()` → all callers to also be async. The synchronous DB call pattern is correct for this module.
 
 ## Sprint 4B Gate Results (COMPLETE — March 2, 2026)
 

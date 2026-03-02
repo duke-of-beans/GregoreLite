@@ -1,5 +1,1 @@
-sprint-4b(wip): gate UI, 423 enforcement, inference, API routes
-
-GatePanel + TriggerBadge + MandatoryOverlay + ContradictionView wired
-into ChatInterface and Header. POST /api/chat returns 423 when locked.
-inferStructuredTriggers replaces 3 stubs. approve/dismiss/override routes.
+phase-4: complete -- decision gate, trigger detection, API lock, KERNL logging
