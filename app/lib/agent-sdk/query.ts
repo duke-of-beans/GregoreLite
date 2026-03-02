@@ -1,18 +1,19 @@
 /**
- * query.ts — Agent SDK Session Driver — Phase 7A
+ * query.ts — Agent SDK Session Driver — Phase 7A/7B
  *
  * Drives a bounded worker session from start to finish using the Anthropic SDK
  * with tool-use in an agentic loop. Maps SDK events to JobStatus transitions
  * per §4.3.2, checkpoints job_state every 5 tool calls OR 60 seconds.
  *
- * Tools injected: read_file, write_file, list_directory, run_command.
- * Phase 7B will add the full permission matrix; this sprint establishes the loop.
+ * Phase 7B: tools are injected via selectTools() from the permission matrix.
+ * Write scope is enforced by checkWriteScope() / scope-enforcer.ts.
+ * Stub tools return NOT_IMPLEMENTED until 7G/7H.
  *
- * BLUEPRINT §4.3.1, §4.3.2, §4.3.4, §7.10
+ * BLUEPRINT §4.3.1, §4.3.2, §4.3.3, §4.3.4, §7.10
  */
 
 import Anthropic from '@anthropic-ai/sdk';
-import type { MessageParam, Tool, ToolResultBlockParam } from '@anthropic-ai/sdk/resources';
+import type { MessageParam, ToolResultBlockParam } from '@anthropic-ai/sdk/resources';
 import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
@@ -20,6 +21,8 @@ import { execSync } from 'child_process';
 import { buildSystemPrompt } from './prompt-builder';
 import { mapEventToStatus } from './event-mapper';
 import { SessionLogger } from './session-logger';
+import { selectTools, isStubTool } from './tool-injector';
+import { checkWriteScope, resolveCwd } from './scope-enforcer';
 import { getDatabase } from '../kernl/database';
 import { calculateCost } from '../services/pricing';
 import { AGENT_COST_CONFIG } from './config';
@@ -32,76 +35,49 @@ const client = new Anthropic();
 const CHECKPOINT_EVERY_N_TOOL_CALLS = 5;
 const CHECKPOINT_EVERY_MS = 60_000; // 60 seconds
 
-// ─── Tool definitions ─────────────────────────────────────────────────────────
-
-const AGENT_TOOLS: Tool[] = [
-  {
-    name: 'read_file',
-    description: 'Read the contents of a file. Returns the file content as a string.',
-    input_schema: {
-      type: 'object' as const,
-      properties: {
-        path: { type: 'string', description: 'Absolute or project-relative file path.' },
-      },
-      required: ['path'],
-    },
-  },
-  {
-    name: 'write_file',
-    description: 'Write content to a file. Creates parent directories if needed.',
-    input_schema: {
-      type: 'object' as const,
-      properties: {
-        path: { type: 'string', description: 'Absolute or project-relative file path.' },
-        content: { type: 'string', description: 'Content to write.' },
-      },
-      required: ['path', 'content'],
-    },
-  },
-  {
-    name: 'list_directory',
-    description: 'List files and directories at a path. Returns JSON array of entries.',
-    input_schema: {
-      type: 'object' as const,
-      properties: {
-        path: { type: 'string', description: 'Directory path to list.' },
-        recursive: { type: 'boolean', description: 'Whether to recurse into subdirectories.' },
-      },
-      required: ['path'],
-    },
-  },
-  {
-    name: 'run_command',
-    description: 'Run a shell command in the project directory. Returns stdout + stderr.',
-    input_schema: {
-      type: 'object' as const,
-      properties: {
-        command: { type: 'string', description: 'Shell command to execute.' },
-        cwd: { type: 'string', description: 'Working directory (defaults to project_path).' },
-      },
-      required: ['command'],
-    },
-  },
-];
-
 // ─── Tool executor ────────────────────────────────────────────────────────────
 
 function executeTool(
   toolName: string,
   input: Record<string, unknown>,
-  projectPath: string,
-  allowedPaths: string[]
+  manifest: TaskManifest,
 ): string {
+  const projectPath = manifest.context.project_path;
+
   try {
+    // Stub tools — not yet implemented (7G/7H)
+    if (isStubTool(toolName)) {
+      return (
+        `NOT_IMPLEMENTED: The "${toolName}" tool is not yet available in this build. ` +
+        `It will be implemented in a future sprint. ` +
+        `Please use the available filesystem tools to accomplish this task.`
+      );
+    }
+
     switch (toolName) {
-      case 'read_file': {
-        const filePath = resolveAndValidatePath(String(input['path'] ?? ''), projectPath, allowedPaths, 'read');
+      case 'fs_read': {
+        const rawPath = String(input['path'] ?? '');
+        const filePath = path.isAbsolute(rawPath) ? rawPath : path.resolve(projectPath, rawPath);
         if (!fs.existsSync(filePath)) return `ERROR: File not found: ${filePath}`;
         return fs.readFileSync(filePath, 'utf8');
       }
 
-      case 'write_file': {
-        const filePath = resolveAndValidatePath(String(input['path'] ?? ''), projectPath, allowedPaths, 'write');
+      case 'fs_write': {
+        const rawPath = String(input['path'] ?? '');
+        const check = checkWriteScope(rawPath, manifest, false);
+        if (!check.allowed) return `ERROR: ${check.errorMessage}`;
+        const filePath = path.isAbsolute(rawPath) ? rawPath : path.resolve(projectPath, rawPath);
+        const content = String(input['content'] ?? '');
+        fs.mkdirSync(path.dirname(filePath), { recursive: true });
+        fs.writeFileSync(filePath, content, 'utf8');
+        return `OK: Wrote ${content.length} bytes to ${filePath}`;
+      }
+
+      case 'fs_write_docs_only': {
+        const rawPath = String(input['path'] ?? '');
+        const check = checkWriteScope(rawPath, manifest, true);
+        if (!check.allowed) return `ERROR: ${check.errorMessage}`;
+        const filePath = path.isAbsolute(rawPath) ? rawPath : path.resolve(projectPath, rawPath);
         const content = String(input['content'] ?? '');
         fs.mkdirSync(path.dirname(filePath), { recursive: true });
         fs.writeFileSync(filePath, content, 'utf8');
@@ -109,7 +85,8 @@ function executeTool(
       }
 
       case 'list_directory': {
-        const dirPath = resolveAndValidatePath(String(input['path'] ?? ''), projectPath, allowedPaths, 'read');
+        const rawPath = String(input['path'] ?? '');
+        const dirPath = path.isAbsolute(rawPath) ? rawPath : path.resolve(projectPath, rawPath);
         const recursive = input['recursive'] === true;
         const entries = listDir(dirPath, recursive);
         return JSON.stringify(entries);
@@ -133,32 +110,11 @@ function executeTool(
       }
 
       default:
-        return `ERROR: Unknown tool: ${toolName}`;
+        return `ERROR: Unknown tool: "${toolName}". This tool is not registered in the executor.`;
     }
   } catch (err) {
     return `ERROR: ${err instanceof Error ? err.message : String(err)}`;
   }
-}
-
-function resolveAndValidatePath(
-  inputPath: string,
-  projectPath: string,
-  allowedPaths: string[],
-  _mode: 'read' | 'write'
-): string {
-  const resolved = path.isAbsolute(inputPath)
-    ? inputPath
-    : path.resolve(projectPath, inputPath);
-
-  // For writes: validate against allowed paths list from manifest
-  if (_mode === 'write' && allowedPaths.length > 0) {
-    const normalised = resolved.replace(/\\/g, '/');
-    const allowed = allowedPaths.some((p) => normalised.startsWith(p.replace(/\\/g, '/')));
-    if (!allowed) {
-      throw new Error(`Write outside manifest scope: ${resolved}`);
-    }
-  }
-  return resolved;
 }
 
 function listDir(dirPath: string, recursive: boolean): string[] {
@@ -219,11 +175,13 @@ export async function runQuerySession(
   abortSignal: AbortSignal,
   callbacks: QueryCallbacks
 ): Promise<void> {
-  const manifestId = manifest.manifest_id;
+  const manifestId  = manifest.manifest_id;
   const projectPath = manifest.context.project_path;
-  const allowedWritePaths = manifest.context.files
-    .filter((f) => f.purpose === 'modify' || f.purpose === 'create')
-    .map((f) => (path.isAbsolute(f.path) ? f.path : path.resolve(projectPath, f.path)));
+  const sessionType = manifest.task.type;
+
+  // Phase 7B: inject tools from permission matrix; resolve effective CWD
+  const injectedTools = selectTools(sessionType, manifest);
+  const effectiveCwd  = resolveCwd(sessionType, projectPath, manifestId);
 
   const logger = new SessionLogger(manifestId);
   let status: JobStatus = 'spawning';
@@ -298,7 +256,7 @@ export async function runQuerySession(
   const messages: MessageParam[] = [
     {
       role: 'user',
-      content: `Begin execution. Project path: ${projectPath}. Task: ${manifest.task.title}\n\nDescription: ${manifest.task.description}`,
+      content: `Begin execution. Project path: ${projectPath}. Working directory: ${effectiveCwd}. Task: ${manifest.task.title}\n\nDescription: ${manifest.task.description}`,
     },
   ];
 
@@ -319,7 +277,7 @@ export async function runQuerySession(
         model: AGENT_COST_CONFIG.defaultModel,
         max_tokens: 8096,
         system: systemPrompt,
-        tools: AGENT_TOOLS,
+        tools: injectedTools,
         messages,
       });
 
@@ -445,11 +403,11 @@ export async function runQuerySession(
             parsedInput = block.input as Record<string, unknown>;
           }
 
-          const result = executeTool(block.name, parsedInput, projectPath, allowedWritePaths);
+          const result = executeTool(block.name, parsedInput, manifest);
           logger.append(`[tool_result] ${block.name}: ${result.slice(0, 200)}`);
 
-          // Track files modified
-          if (block.name === 'write_file' && parsedInput['path']) {
+          // Track files modified (fs_write and fs_write_docs_only are the write tools)
+          if ((block.name === 'fs_write' || block.name === 'fs_write_docs_only') && parsedInput['path']) {
             const writePath = String(parsedInput['path']);
             const resolved = path.isAbsolute(writePath)
               ? writePath

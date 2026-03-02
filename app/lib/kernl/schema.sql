@@ -387,3 +387,15 @@ CREATE TRIGGER IF NOT EXISTS messages_au AFTER UPDATE ON messages BEGIN
   INSERT INTO messages_fts(messages_fts, rowid, content) VALUES('delete', old.rowid, old.content);
   INSERT INTO messages_fts(rowid, content) VALUES (new.rowid, new.content);
 END;
+
+-- ─── PHASE 7B: SCOPE VIOLATIONS LOG ──────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS scope_violations (
+  id            TEXT    PRIMARY KEY,
+  manifest_id   TEXT    NOT NULL,
+  attempted_path TEXT   NOT NULL,
+  resolved_path  TEXT,
+  session_type   TEXT,
+  logged_at      INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_scope_violations_manifest ON scope_violations(manifest_id);
+CREATE INDEX IF NOT EXISTS idx_scope_violations_logged  ON scope_violations(logged_at);

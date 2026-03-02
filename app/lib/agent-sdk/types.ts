@@ -20,7 +20,7 @@ export type JobState =
 
 // ─── Task Types ───────────────────────────────────────────────────────────────
 
-export type TaskType = 'code' | 'test' | 'docs' | 'research' | 'deploy' | 'self_evolution';
+export type TaskType = 'code' | 'test' | 'docs' | 'research' | 'analysis' | 'deploy' | 'self_evolution';
 
 // ─── Task Manifest ────────────────────────────────────────────────────────────
 
@@ -137,6 +137,7 @@ export const TASK_PRIORITY: Record<TaskType, number> = {
   test: 70,
   docs: 40,
   research: 40,
+  analysis: 40,
   deploy: 60,
 };
 
@@ -145,4 +146,76 @@ export const TASK_PRIORITY: Record<TaskType, number> = {
 export interface TokenUsage {
   inputTokens: number;
   outputTokens: number;
+}
+
+// ─── Phase 7A: Agent SDK Core Types ───────────────────────────────────────────
+
+/** ManifestPayload: full manifest row + resolved arrays for the agent system prompt */
+export interface ManifestPayload {
+  manifest_id: string;
+  task_type: TaskType;
+  title: string;
+  description: string;
+  project_path: string;
+  success_criteria: string[];
+  files: TaskManifestFile[];
+  dependencies: string[];
+  is_self_evolution: boolean;
+  self_evolution_branch?: string;
+  target_component?: string;
+  goal_summary?: string;
+  quality_gates: {
+    shim_required: boolean;
+    eos_required: boolean;
+    tests_required: boolean;
+  };
+}
+
+/** JobStatus: values stored in job_state.status — lowercase to match DB CHECK constraint */
+export type JobStatus =
+  | 'spawning'
+  | 'running'
+  | 'working'
+  | 'validating'
+  | 'completed'
+  | 'failed'
+  | 'blocked'
+  | 'interrupted';
+
+/** AgentEvent: typed SDK event shapes relevant to our state machine */
+export type AgentEvent =
+  | { type: 'session_spawned';   manifestId: string; sessionId: string }
+  | { type: 'text_delta';        text: string }
+  | { type: 'tool_call';         toolName: string; toolUseId: string; inputSummary: string }
+  | { type: 'tool_result';       toolUseId: string; resultSummary: string; stepCount: number }
+  | { type: 'shim_validation';   score: number; issues: unknown[] }
+  | { type: 'error_recoverable'; message: string; toolTrace: string }
+  | { type: 'error_terminal';    message: string; context: string }
+  | { type: 'session_final';     resultSummary: string; totalTokens: number; costUsd: number }
+  | { type: 'session_killed';    manifestId: string }
+  | { type: 'session_interrupted'; manifestId: string };
+
+/** StreamEvent: what query.ts emits on the checkpoint channel */
+export interface StreamEvent {
+  manifestId: string;
+  agentEvent: AgentEvent;
+  jobStatus: JobStatus;
+  stepsCompleted: number;
+  filesModified: string[];
+  tokensUsedSoFar: number;
+  costSoFar: number;
+  timestamp: number;
+}
+
+/** JobStateRow: matches the job_state table schema */
+export interface JobStateRow {
+  manifest_id: string;
+  status: JobStatus;
+  steps_completed: number;
+  files_modified: string;     // JSON
+  last_event: string;         // JSON
+  log_path: string | null;
+  tokens_used_so_far: number;
+  cost_so_far: number;
+  updated_at: number;
 }

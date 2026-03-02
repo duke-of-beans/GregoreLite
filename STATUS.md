@@ -1,6 +1,6 @@
 # GREGORE LITE — STATUS
-**Last Updated:** March 2, 2026 — Sprint 7A complete: Agent SDK core (manifest injection, System Contract Header, query() wrapper, event streaming, job_state checkpointing). 5/5 live sessions passed. 736/736 tests passing.
-**Phase:** Phase 7 — Self-Evolution Mode (Sprint 7A complete, 7B next)
+**Last Updated:** March 2, 2026 — Sprint 7B complete: Permission matrix, tool injection, write scope enforcement. 6 session types fully gated, scope_violations table, 761/761 tests passing.
+**Phase:** Phase 7 — Self-Evolution Mode (Sprint 7B complete, 7C next)
 
 ---
 **Previous:** Sprint 6G complete: Privacy Dashboard UI, 6 API routes (items/exclusions/log/watch-paths/status/purge), 5 React components (GhostStatusBadge, IndexedItemRow, ExclusionLog, IndexedItemsList, ExclusionRules, WatchPaths, PurgeAllDialog, PrivacyDashboard), cascade delete + purge-all, exclusion log retention cap, deleteGhostItem()  
@@ -631,7 +631,7 @@ Execution order: 5A → 5B → 5C (all sequential)
 Execution order: 7A → 7B → 7C → 7D → 7E → 7F → 7G → 7H (all sequential)
 
 - [x] **SPRINT 7A** — Agent SDK core: manifest injection, System Contract Header, query() wrapper, event streaming, job_state checkpointing — **COMPLETE**
-- [ ] **SPRINT 7B** — Permission matrix: tool injection by session type, write scope enforcement, scope_violations log
+- [x] **SPRINT 7B** — Permission matrix: tool injection by session type, write scope enforcement, scope_violations log — **COMPLETE**
 - [ ] **SPRINT 7C** — Error handling + restart: all failure modes, exponential backoff, handoff reports, INTERRUPTED state
 
 ### Sprint 7A Gate Results
@@ -652,6 +652,29 @@ Execution order: 7A → 7B → 7C → 7D → 7E → 7F → 7G → 7H (all sequen
 | Schema ALTER TABLE migration fix | ✅ runMigrations() in database.ts (all phases 5A–7A) |
 | STATUS.md updated | ✅ Done |
 | SPRINT_7A_COMPLETE.md written | ✅ Done |
+| Conventional commit + push | ✅ Done |
+
+### Sprint 7B Gate Results
+
+| Gate | Result |
+|------|--------|
+| tsc --noEmit | ✅ 0 errors |
+| vitest run (full suite) | ✅ 761/761 passing (36 files, +25 new) |
+| code session tool set | ✅ fs_read, list_directory, fs_write, run_command, test_runner, shim_check |
+| test session tool set | ✅ fs_read, list_directory, fs_write, run_command, test_runner |
+| docs session tool set | ✅ fs_read, list_directory, fs_write_docs_only, markdown_linter |
+| research session (readOnly) | ✅ fs_read, list_directory, kernl_search_readonly — no write tools |
+| analysis session (readOnly) | ✅ fs_read, list_directory, shim_readonly_audit — no write tools |
+| self_evolution session | ✅ Full set + git_branch_tools, shim_check, test_runner |
+| Out-of-scope write → rejected | ✅ checkWriteScope() returns errorMessage |
+| Out-of-scope write → logged | ✅ scope_violations table via logScopeViolation() |
+| docs-only /docs enforcement | ✅ fs_write_docs_only rejects paths outside /docs |
+| Stub tools return NOT_IMPLEMENTED | ✅ All 6 stub tools descriptive error + sprint pointer |
+| _stub field stripped from SDK Tool | ✅ Not exposed to Anthropic API |
+| analysis added to TaskType | ✅ types.ts + TASK_PRIORITY updated |
+| scope_violations table in schema | ✅ CREATE TABLE IF NOT EXISTS + 2 indexes |
+| STATUS.md updated | ✅ Done |
+| SPRINT_7B_COMPLETE.md written | ✅ Done |
 | Conventional commit + push | ✅ Done |
 
 ### Sprint 7A Key Discoveries
