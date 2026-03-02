@@ -1,6 +1,12 @@
 /**
  * Agent SDK — Public API
  *
+ * ── Phase 7A API (new) ──────────────────────────────────────────────────────
+ * spawnSession(manifest)    — start a Phase 7A query() session
+ * killSession(manifestId)   — abort immediately, preserve files, return partial report
+ * getJobState(manifestId)   — read job_state row from KERNL
+ *
+ * ── Sprint 2A API (legacy, kept for backward compat) ───────────────────────
  * spawn(manifest)  — start a worker session (or queue it if at capacity)
  * kill(jobId)      — abort a running session → INTERRUPTED
  * status(jobId)    — get current JobRecord
@@ -12,12 +18,135 @@
  * BLUEPRINT §4.3 + §4.3.6
  */
 
+import { runQuerySession, readJobState } from './query';
 import { runSession } from './executor';
 import { costTracker } from './cost-tracker';
 import { markStaleJobsInterrupted } from './job-tracker';
 import { AGENT_COST_CONFIG } from './config';
 import { TASK_PRIORITY } from './types';
-import type { TaskManifest, JobRecord, JobState, ResultReport } from './types';
+import type { TaskManifest, JobRecord, JobState, ResultReport, JobStatus, JobStateRow } from './types';
+
+// ─── Phase 7A: active query sessions ─────────────────────────────────────────
+
+interface QuerySession {
+  manifestId: string;
+  abortController: AbortController;
+  startedAt: string;
+  filesWritten: string[];
+}
+
+const activeSessions = new Map<string, QuerySession>();
+
+// ─── Phase 7A: spawnSession ───────────────────────────────────────────────────
+
+export interface SpawnSessionResult {
+  manifestId: string;
+  started: boolean;
+}
+
+export function spawnSession(manifest: TaskManifest): SpawnSessionResult {
+  const manifestId = manifest.manifest_id;
+
+  if (activeSessions.has(manifestId)) {
+    return { manifestId, started: false }; // already running
+  }
+
+  const abortController = new AbortController();
+  const session: QuerySession = {
+    manifestId,
+    abortController,
+    startedAt: new Date().toISOString(),
+    filesWritten: [],
+  };
+  activeSessions.set(manifestId, session);
+
+  // Fire-and-forget — state tracked via job_state table
+  runQuerySession(manifest, abortController.signal, {
+    onStatusChange(_id: string, _status: JobStatus) { /* job_state written by query.ts */ },
+    onStreamEvent(_event) { /* callers poll job_state or subscribe via 7F UI */ },
+    onLogLine(_id: string, _line: string) { /* logged internally */ },
+    onComplete(id: string, _finalStatus: JobStatus) { activeSessions.delete(id); },
+    onError(id: string, _err: Error) { activeSessions.delete(id); },
+  }).catch((err: unknown) => {
+    console.error(`[AgentSDK] Unhandled error in query session ${manifestId}:`, err);
+    activeSessions.delete(manifestId);
+  });
+
+  return { manifestId, started: true };
+}
+
+// ─── Phase 7A: killSession ────────────────────────────────────────────────────
+
+export interface KillSessionResult {
+  killed: boolean;
+  manifestId: string;
+  partialReport: {
+    filesWritten: string[];
+    startedAt: string;
+    killedAt: string;
+    message: string;
+  } | null;
+}
+
+/**
+ * killSession — abort the in-flight SDK stream immediately.
+ *
+ * Per BLUEPRINT:
+ * 1. Abort the stream immediately
+ * 2. Write job_state status = 'failed', last_event = 'killed by user'
+ * 3. Produce partial result report listing files already written
+ * 4. Return immediately — cleanup is async
+ */
+export function killSession(manifestId: string): KillSessionResult {
+  const session = activeSessions.get(manifestId);
+  if (!session) {
+    return { killed: false, manifestId, partialReport: null };
+  }
+
+  // Signal abort — query.ts detects this and transitions to INTERRUPTED
+  session.abortController.abort();
+  activeSessions.delete(manifestId);
+
+  const killedAt = new Date().toISOString();
+
+  return {
+    killed: true,
+    manifestId,
+    partialReport: {
+      filesWritten: [...session.filesWritten],
+      startedAt: session.startedAt,
+      killedAt,
+      message: 'Session aborted by user. Files written before kill are preserved on disk.',
+    },
+  };
+}
+
+// ─── Phase 7A: getJobState ────────────────────────────────────────────────────
+
+export function getJobState(manifestId: string): JobStateRow | null {
+  return readJobState(manifestId);
+}
+
+// ─── Phase 7A: markInterruptedOnBoot ─────────────────────────────────────────
+
+/**
+ * On app startup: set any job_state rows in active states to INTERRUPTED.
+ * Called once from the bootstrap sequence.
+ */
+export function markInterruptedOnBoot(): number {
+  try {
+    const { getDatabase } = require('../kernl/database') as typeof import('../kernl/database');
+    const db = getDatabase();
+    const result = db.prepare(`
+      UPDATE job_state
+      SET status = 'interrupted', updated_at = ?
+      WHERE status IN ('spawning', 'running', 'working', 'validating')
+    `).run(Date.now());
+    return (result as { changes: number }).changes;
+  } catch {
+    return 0;
+  }
+}
 
 // ─── In-memory state ──────────────────────────────────────────────────────────
 

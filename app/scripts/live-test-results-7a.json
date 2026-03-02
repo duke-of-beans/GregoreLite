@@ -1,0 +1,76 @@
+{
+  "results": [
+    {
+      "name": "T1: File list task",
+      "passed": true,
+      "statusSequence": [
+        "spawning",
+        "running",
+        "working",
+        "completed"
+      ],
+      "stepsCompleted": 1,
+      "tokensUsed": 1959,
+      "costUsd": 0.007989,
+      "notes": []
+    },
+    {
+      "name": "T2: File count task",
+      "passed": true,
+      "statusSequence": [
+        "spawning",
+        "running",
+        "working",
+        "completed"
+      ],
+      "stepsCompleted": 1,
+      "tokensUsed": 2063,
+      "costUsd": 0.007497,
+      "notes": []
+    },
+    {
+      "name": "T3: Scope containment check",
+      "passed": true,
+      "statusSequence": [
+        "spawning",
+        "running",
+        "working",
+        "completed"
+      ],
+      "stepsCompleted": 1,
+      "tokensUsed": 1859,
+      "costUsd": 0.006501,
+      "notes": []
+    },
+    {
+      "name": "T4: Run command task",
+      "passed": true,
+      "statusSequence": [
+        "spawning",
+        "running",
+        "working",
+        "completed"
+      ],
+      "stepsCompleted": 5,
+      "tokensUsed": 2739,
+      "costUsd": 0.009609,
+      "notes": []
+    },
+    {
+      "name": "T5: Multi-step task",
+      "passed": true,
+      "statusSequence": [
+        "spawning",
+        "running",
+        "working",
+        "completed"
+      ],
+      "stepsCompleted": 1,
+      "tokensUsed": 1847,
+      "costUsd": 0.006717,
+      "notes": []
+    }
+  ],
+  "totalTokens": 10467,
+  "totalCost": 0.038313
+}

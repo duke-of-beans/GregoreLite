@@ -1,0 +1,554 @@
+/**
+ * query.ts — Agent SDK Session Driver — Phase 7A
+ *
+ * Drives a bounded worker session from start to finish using the Anthropic SDK
+ * with tool-use in an agentic loop. Maps SDK events to JobStatus transitions
+ * per §4.3.2, checkpoints job_state every 5 tool calls OR 60 seconds.
+ *
+ * Tools injected: read_file, write_file, list_directory, run_command.
+ * Phase 7B will add the full permission matrix; this sprint establishes the loop.
+ *
+ * BLUEPRINT §4.3.1, §4.3.2, §4.3.4, §7.10
+ */
+
+import Anthropic from '@anthropic-ai/sdk';
+import type { MessageParam, Tool, ToolResultBlockParam } from '@anthropic-ai/sdk/resources';
+import fs from 'fs';
+import path from 'path';
+import { execSync } from 'child_process';
+
+import { buildSystemPrompt } from './prompt-builder';
+import { mapEventToStatus } from './event-mapper';
+import { SessionLogger } from './session-logger';
+import { getDatabase } from '../kernl/database';
+import { calculateCost } from '../services/pricing';
+import { AGENT_COST_CONFIG } from './config';
+import type { TaskManifest, JobStatus, JobStateRow, StreamEvent, AgentEvent } from './types';
+
+const client = new Anthropic();
+
+// ─── Checkpoint intervals ─────────────────────────────────────────────────────
+
+const CHECKPOINT_EVERY_N_TOOL_CALLS = 5;
+const CHECKPOINT_EVERY_MS = 60_000; // 60 seconds
+
+// ─── Tool definitions ─────────────────────────────────────────────────────────
+
+const AGENT_TOOLS: Tool[] = [
+  {
+    name: 'read_file',
+    description: 'Read the contents of a file. Returns the file content as a string.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        path: { type: 'string', description: 'Absolute or project-relative file path.' },
+      },
+      required: ['path'],
+    },
+  },
+  {
+    name: 'write_file',
+    description: 'Write content to a file. Creates parent directories if needed.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        path: { type: 'string', description: 'Absolute or project-relative file path.' },
+        content: { type: 'string', description: 'Content to write.' },
+      },
+      required: ['path', 'content'],
+    },
+  },
+  {
+    name: 'list_directory',
+    description: 'List files and directories at a path. Returns JSON array of entries.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        path: { type: 'string', description: 'Directory path to list.' },
+        recursive: { type: 'boolean', description: 'Whether to recurse into subdirectories.' },
+      },
+      required: ['path'],
+    },
+  },
+  {
+    name: 'run_command',
+    description: 'Run a shell command in the project directory. Returns stdout + stderr.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        command: { type: 'string', description: 'Shell command to execute.' },
+        cwd: { type: 'string', description: 'Working directory (defaults to project_path).' },
+      },
+      required: ['command'],
+    },
+  },
+];
+
+// ─── Tool executor ────────────────────────────────────────────────────────────
+
+function executeTool(
+  toolName: string,
+  input: Record<string, unknown>,
+  projectPath: string,
+  allowedPaths: string[]
+): string {
+  try {
+    switch (toolName) {
+      case 'read_file': {
+        const filePath = resolveAndValidatePath(String(input['path'] ?? ''), projectPath, allowedPaths, 'read');
+        if (!fs.existsSync(filePath)) return `ERROR: File not found: ${filePath}`;
+        return fs.readFileSync(filePath, 'utf8');
+      }
+
+      case 'write_file': {
+        const filePath = resolveAndValidatePath(String(input['path'] ?? ''), projectPath, allowedPaths, 'write');
+        const content = String(input['content'] ?? '');
+        fs.mkdirSync(path.dirname(filePath), { recursive: true });
+        fs.writeFileSync(filePath, content, 'utf8');
+        return `OK: Wrote ${content.length} bytes to ${filePath}`;
+      }
+
+      case 'list_directory': {
+        const dirPath = resolveAndValidatePath(String(input['path'] ?? ''), projectPath, allowedPaths, 'read');
+        const recursive = input['recursive'] === true;
+        const entries = listDir(dirPath, recursive);
+        return JSON.stringify(entries);
+      }
+
+      case 'run_command': {
+        const command = String(input['command'] ?? '');
+        const cwd = input['cwd'] ? String(input['cwd']) : projectPath;
+        try {
+          const output = execSync(command, {
+            cwd,
+            timeout: 30_000,
+            encoding: 'utf8',
+            stdio: ['pipe', 'pipe', 'pipe'],
+          });
+          return output.trim() || '(no output)';
+        } catch (err) {
+          const execErr = err as { stdout?: string; stderr?: string; message?: string };
+          return `ERROR: ${execErr.stderr ?? execErr.stdout ?? execErr.message ?? String(err)}`.trim();
+        }
+      }
+
+      default:
+        return `ERROR: Unknown tool: ${toolName}`;
+    }
+  } catch (err) {
+    return `ERROR: ${err instanceof Error ? err.message : String(err)}`;
+  }
+}
+
+function resolveAndValidatePath(
+  inputPath: string,
+  projectPath: string,
+  allowedPaths: string[],
+  _mode: 'read' | 'write'
+): string {
+  const resolved = path.isAbsolute(inputPath)
+    ? inputPath
+    : path.resolve(projectPath, inputPath);
+
+  // For writes: validate against allowed paths list from manifest
+  if (_mode === 'write' && allowedPaths.length > 0) {
+    const normalised = resolved.replace(/\\/g, '/');
+    const allowed = allowedPaths.some((p) => normalised.startsWith(p.replace(/\\/g, '/')));
+    if (!allowed) {
+      throw new Error(`Write outside manifest scope: ${resolved}`);
+    }
+  }
+  return resolved;
+}
+
+function listDir(dirPath: string, recursive: boolean): string[] {
+  if (!fs.existsSync(dirPath)) return [];
+  const entries: string[] = [];
+  const items = fs.readdirSync(dirPath, { withFileTypes: true });
+  for (const item of items) {
+    const full = path.join(dirPath, item.name);
+    entries.push(full);
+    if (recursive && item.isDirectory()) {
+      entries.push(...listDir(full, true));
+    }
+  }
+  return entries;
+}
+
+// ─── job_state helpers ────────────────────────────────────────────────────────
+
+function upsertJobState(row: JobStateRow): void {
+  const db = getDatabase();
+  db.prepare(`
+    INSERT INTO job_state (
+      manifest_id, status, steps_completed, files_modified,
+      last_event, log_path, tokens_used_so_far, cost_so_far, updated_at
+    ) VALUES (
+      @manifest_id, @status, @steps_completed, @files_modified,
+      @last_event, @log_path, @tokens_used_so_far, @cost_so_far, @updated_at
+    )
+    ON CONFLICT(manifest_id) DO UPDATE SET
+      status             = excluded.status,
+      steps_completed    = excluded.steps_completed,
+      files_modified     = excluded.files_modified,
+      last_event         = excluded.last_event,
+      log_path           = excluded.log_path,
+      tokens_used_so_far = excluded.tokens_used_so_far,
+      cost_so_far        = excluded.cost_so_far,
+      updated_at         = excluded.updated_at
+  `).run(row);
+}
+
+export function readJobState(manifestId: string): JobStateRow | null {
+  const db = getDatabase();
+  return (db.prepare('SELECT * FROM job_state WHERE manifest_id = ?').get(manifestId) as JobStateRow) ?? null;
+}
+
+// ─── Main query driver ────────────────────────────────────────────────────────
+
+export interface QueryCallbacks {
+  onStatusChange: (manifestId: string, status: JobStatus) => void;
+  onStreamEvent: (event: StreamEvent) => void;
+  onLogLine: (manifestId: string, line: string) => void;
+  onComplete: (manifestId: string, status: JobStatus) => void;
+  onError: (manifestId: string, error: Error) => void;
+}
+
+export async function runQuerySession(
+  manifest: TaskManifest,
+  abortSignal: AbortSignal,
+  callbacks: QueryCallbacks
+): Promise<void> {
+  const manifestId = manifest.manifest_id;
+  const projectPath = manifest.context.project_path;
+  const allowedWritePaths = manifest.context.files
+    .filter((f) => f.purpose === 'modify' || f.purpose === 'create')
+    .map((f) => (path.isAbsolute(f.path) ? f.path : path.resolve(projectPath, f.path)));
+
+  const logger = new SessionLogger(manifestId);
+  let status: JobStatus = 'spawning';
+  let stepsCompleted = 0;
+  let filesModified: string[] = [];
+  let tokensUsedSoFar = 0;
+  let costSoFar = 0;
+  let toolCallsSinceCheckpoint = 0;
+  let lastCheckpointAt = Date.now();
+  let inputTokensTotal = 0;
+  let outputTokensTotal = 0;
+
+  // Initial job_state row
+  upsertJobState({
+    manifest_id: manifestId,
+    status,
+    steps_completed: 0,
+    files_modified: '[]',
+    last_event: JSON.stringify({ type: 'session_spawned' }),
+    log_path: null,
+    tokens_used_so_far: 0,
+    cost_so_far: 0,
+    updated_at: Date.now(),
+  });
+
+  callbacks.onStatusChange(manifestId, status);
+
+  const emitAgentEvent = (event: AgentEvent): void => {
+    const newStatus = mapEventToStatus(status, event);
+    if (newStatus !== status) {
+      status = newStatus;
+      callbacks.onStatusChange(manifestId, status);
+    }
+
+    const streamEvent: StreamEvent = {
+      manifestId,
+      agentEvent: event,
+      jobStatus: status,
+      stepsCompleted,
+      filesModified: [...filesModified],
+      tokensUsedSoFar,
+      costSoFar,
+      timestamp: Date.now(),
+    };
+    callbacks.onStreamEvent(streamEvent);
+  };
+
+  const shouldCheckpoint = (): boolean => {
+    return (
+      toolCallsSinceCheckpoint >= CHECKPOINT_EVERY_N_TOOL_CALLS ||
+      Date.now() - lastCheckpointAt >= CHECKPOINT_EVERY_MS
+    );
+  };
+
+  const writeCheckpoint = (): void => {
+    upsertJobState({
+      manifest_id: manifestId,
+      status,
+      steps_completed: stepsCompleted,
+      files_modified: JSON.stringify(filesModified),
+      last_event: JSON.stringify({ type: 'checkpoint', stepsCompleted }),
+      log_path: logger.logPath,
+      tokens_used_so_far: tokensUsedSoFar,
+      cost_so_far: costSoFar,
+      updated_at: Date.now(),
+    });
+    toolCallsSinceCheckpoint = 0;
+    lastCheckpointAt = Date.now();
+  };
+
+  const systemPrompt = buildSystemPrompt(manifest);
+  const messages: MessageParam[] = [
+    {
+      role: 'user',
+      content: `Begin execution. Project path: ${projectPath}. Task: ${manifest.task.title}\n\nDescription: ${manifest.task.description}`,
+    },
+  ];
+
+  try {
+    // Agentic tool-use loop
+    let loopCount = 0;
+    const MAX_LOOPS = 40; // safety ceiling — prevents runaway sessions
+
+    while (loopCount < MAX_LOOPS) {
+      loopCount++;
+
+      if (abortSignal.aborted) {
+        emitAgentEvent({ type: 'session_killed', manifestId });
+        break;
+      }
+
+      const stream = client.messages.stream({
+        model: AGENT_COST_CONFIG.defaultModel,
+        max_tokens: 8096,
+        system: systemPrompt,
+        tools: AGENT_TOOLS,
+        messages,
+      });
+
+      // Wire abort into the stream
+      const onAbort = (): void => { stream.controller.abort(); };
+      abortSignal.addEventListener('abort', onAbort, { once: true });
+
+      // Track pending tool_use block
+      let currentToolUseId: string | null = null;
+      let currentToolName: string | null = null;
+      let accumulatedInput = '';
+
+      for await (const sdkEvent of stream) {
+        if (abortSignal.aborted) break;
+
+        switch (sdkEvent.type) {
+          case 'content_block_start': {
+            const block = sdkEvent.content_block;
+            if (block.type === 'text') {
+              currentToolUseId = null;
+              currentToolName = null;
+              accumulatedInput = '';
+            } else if (block.type === 'tool_use') {
+              currentToolUseId = block.id;
+              currentToolName = block.name;
+              accumulatedInput = '';
+            }
+            break;
+          }
+
+          case 'content_block_delta': {
+            const delta = sdkEvent.delta;
+            if (delta.type === 'text_delta' && delta.text) {
+              logger.append(delta.text);
+              callbacks.onLogLine(manifestId, delta.text);
+              if (status === 'spawning') {
+                emitAgentEvent({ type: 'text_delta', text: delta.text });
+              }
+            } else if (delta.type === 'input_json_delta') {
+              accumulatedInput += delta.partial_json;
+            }
+            break;
+          }
+
+          case 'content_block_stop': {
+            if (currentToolUseId && currentToolName) {
+              const summary = accumulatedInput.length > 120
+                ? accumulatedInput.slice(0, 117) + '...'
+                : accumulatedInput;
+              logger.append(`[tool_call] ${currentToolName}: ${summary}`);
+              emitAgentEvent({
+                type: 'tool_call',
+                toolName: currentToolName,
+                toolUseId: currentToolUseId,
+                inputSummary: summary,
+              });
+              toolCallsSinceCheckpoint++;
+              if (shouldCheckpoint()) writeCheckpoint();
+            }
+            break;
+          }
+
+          case 'message_delta': {
+            if (sdkEvent.usage) {
+              outputTokensTotal += sdkEvent.usage.output_tokens ?? 0;
+              tokensUsedSoFar = inputTokensTotal + outputTokensTotal;
+              costSoFar = calculateCost(AGENT_COST_CONFIG.defaultModel, inputTokensTotal, outputTokensTotal);
+            }
+            break;
+          }
+
+          case 'message_start': {
+            if (sdkEvent.message.usage) {
+              inputTokensTotal += sdkEvent.message.usage.input_tokens ?? 0;
+              outputTokensTotal += sdkEvent.message.usage.output_tokens ?? 0;
+              tokensUsedSoFar = inputTokensTotal + outputTokensTotal;
+              costSoFar = calculateCost(AGENT_COST_CONFIG.defaultModel, inputTokensTotal, outputTokensTotal);
+            }
+            break;
+          }
+        }
+      }
+
+      abortSignal.removeEventListener('abort', onAbort);
+
+      if (abortSignal.aborted) {
+        emitAgentEvent({ type: 'session_killed', manifestId });
+        break;
+      }
+
+      // Get final message to check stop_reason and collect tool use blocks
+      const finalMessage = await stream.finalMessage();
+
+      // Update token counts from final message
+      inputTokensTotal = finalMessage.usage.input_tokens ?? inputTokensTotal;
+      outputTokensTotal = finalMessage.usage.output_tokens ?? outputTokensTotal;
+      tokensUsedSoFar = inputTokensTotal + outputTokensTotal;
+      costSoFar = calculateCost(AGENT_COST_CONFIG.defaultModel, inputTokensTotal, outputTokensTotal);
+
+      if (finalMessage.stop_reason === 'end_turn') {
+        // Session complete
+        emitAgentEvent({
+          type: 'session_final',
+          resultSummary: extractTextContent(finalMessage.content),
+          totalTokens: tokensUsedSoFar,
+          costUsd: costSoFar,
+        });
+        break;
+      }
+
+      if (finalMessage.stop_reason === 'tool_use') {
+        // Execute tools and build tool_result messages
+        const assistantContent = finalMessage.content;
+        messages.push({ role: 'assistant', content: assistantContent });
+
+        const toolResults: ToolResultBlockParam[] = [];
+
+        for (const block of assistantContent) {
+          if (block.type !== 'tool_use') continue;
+
+          let parsedInput: Record<string, unknown> = {};
+          if (typeof block.input === 'object' && block.input !== null) {
+            parsedInput = block.input as Record<string, unknown>;
+          }
+
+          const result = executeTool(block.name, parsedInput, projectPath, allowedWritePaths);
+          logger.append(`[tool_result] ${block.name}: ${result.slice(0, 200)}`);
+
+          // Track files modified
+          if (block.name === 'write_file' && parsedInput['path']) {
+            const writePath = String(parsedInput['path']);
+            const resolved = path.isAbsolute(writePath)
+              ? writePath
+              : path.resolve(projectPath, writePath);
+            if (!filesModified.includes(resolved)) {
+              filesModified.push(resolved);
+            }
+          }
+
+          stepsCompleted++;
+          emitAgentEvent({
+            type: 'tool_result',
+            toolUseId: block.id,
+            resultSummary: result.slice(0, 200),
+            stepCount: stepsCompleted,
+          });
+
+          toolResults.push({
+            type: 'tool_result',
+            tool_use_id: block.id,
+            content: result,
+          });
+        }
+
+        messages.push({ role: 'user', content: toolResults });
+
+        if (shouldCheckpoint()) writeCheckpoint();
+        continue; // next loop iteration
+      }
+
+      // Any other stop_reason (max_tokens, stop_sequence) — treat as completion
+      emitAgentEvent({
+        type: 'session_final',
+        resultSummary: `Session ended with stop_reason: ${finalMessage.stop_reason ?? 'unknown'}`,
+        totalTokens: tokensUsedSoFar,
+        costUsd: costSoFar,
+      });
+      break;
+    }
+
+    if (loopCount >= MAX_LOOPS) {
+      emitAgentEvent({
+        type: 'error_terminal',
+        message: `Session exceeded maximum loop count (${MAX_LOOPS})`,
+        context: 'safety_ceiling',
+      });
+    }
+  } catch (err) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    logger.append(`[error] ${error.message}`);
+
+    emitAgentEvent({
+      type: 'error_terminal',
+      message: error.message,
+      context: 'unhandled_exception',
+    });
+
+    // Final checkpoint on error
+    upsertJobState({
+      manifest_id: manifestId,
+      status,
+      steps_completed: stepsCompleted,
+      files_modified: JSON.stringify(filesModified),
+      last_event: JSON.stringify({ type: 'error', message: error.message }),
+      log_path: logger.logPath,
+      tokens_used_so_far: tokensUsedSoFar,
+      cost_so_far: costSoFar,
+      updated_at: Date.now(),
+    });
+
+    logger.close();
+    callbacks.onError(manifestId, error);
+    return;
+  }
+
+  // Final state write
+  const finalStatus = abortSignal.aborted ? 'interrupted' : status;
+  upsertJobState({
+    manifest_id: manifestId,
+    status: finalStatus,
+    steps_completed: stepsCompleted,
+    files_modified: JSON.stringify(filesModified),
+    last_event: JSON.stringify({ type: 'session_end', status: finalStatus }),
+    log_path: logger.logPath,
+    tokens_used_so_far: tokensUsedSoFar,
+    cost_so_far: costSoFar,
+    updated_at: Date.now(),
+  });
+
+  logger.close();
+  callbacks.onComplete(manifestId, finalStatus);
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function extractTextContent(content: Anthropic.ContentBlock[]): string {
+  return content
+    .filter((b): b is Anthropic.TextBlock => b.type === 'text')
+    .map((b) => b.text)
+    .join('\n')
+    .trim();
+}

@@ -1,6 +1,6 @@
 # GREGORE LITE — STATUS
-**Last Updated:** March 2, 2026 — PHASE 6 COMPLETE. Sprint 6I: 33-test integration suite (phase6-integration.test.ts), [UNTRUSTED CONTENT] security audit verified on all Ghost→Claude API paths, EoS self-scan 82/100 (303 files, no regression), performance measurements (JS startup <1ms, shutdown <1ms, all targets met), BLUEPRINT_FINAL.md §13 Phase 6 entry updated, 736/736 tests passing.
-**Phase:** Phase 7 — Self-Evolution Mode (next)
+**Last Updated:** March 2, 2026 — Sprint 7A complete: Agent SDK core (manifest injection, System Contract Header, query() wrapper, event streaming, job_state checkpointing). 5/5 live sessions passed. 736/736 tests passing.
+**Phase:** Phase 7 — Self-Evolution Mode (Sprint 7A complete, 7B next)
 
 ---
 **Previous:** Sprint 6G complete: Privacy Dashboard UI, 6 API routes (items/exclusions/log/watch-paths/status/purge), 5 React components (GhostStatusBadge, IndexedItemRow, ExclusionLog, IndexedItemsList, ExclusionRules, WatchPaths, PurgeAllDialog, PrivacyDashboard), cascade delete + purge-all, exclusion log retention cap, deleteGhostItem()  
@@ -625,6 +625,46 @@ Execution order: 5A → 5B → 5C (all sequential)
 - **Layer 4 cache invalidation**: 5-minute TTL stored as `_cacheTs` module variable. No explicit invalidation API needed — Privacy Dashboard (Sprint 6G) will call `removeExclusion()` which already clears the cache via `_cacheTs = 0`.
 
 ## ✅ PHASE 6 COMPLETE — Ghost Thread
+
+## Queued: Phase 7 — Self-Evolution Mode
+
+Execution order: 7A → 7B → 7C → 7D → 7E → 7F → 7G → 7H (all sequential)
+
+- [x] **SPRINT 7A** — Agent SDK core: manifest injection, System Contract Header, query() wrapper, event streaming, job_state checkpointing — **COMPLETE**
+- [ ] **SPRINT 7B** — Permission matrix: tool injection by session type, write scope enforcement, scope_violations log
+- [ ] **SPRINT 7C** — Error handling + restart: all failure modes, exponential backoff, handoff reports, INTERRUPTED state
+
+### Sprint 7A Gate Results
+
+| Gate | Result |
+|------|--------|
+| tsc --noEmit | ✅ 0 errors |
+| vitest run (full suite) | ✅ 736/736 passing (35 files) |
+| Live sessions (5/5) | ✅ All PASS — spawning → running → working → completed |
+| job_state table created | ✅ KERNL schema + runMigrations() |
+| System Contract Header (§4.3.1) | ✅ buildSystemPrompt() exact template |
+| event-mapper.ts (state machine) | ✅ Pure function, all transitions covered |
+| session-logger.ts (10K ring buffer) | ✅ Lazy temp file after 5 min |
+| query.ts (agentic loop) | ✅ MAX_LOOPS=40, checkpoint every 5 calls / 60s |
+| index.ts backward compat | ✅ Sprint 2A API preserved alongside Phase 7A API |
+| markInterruptedOnBoot() | ✅ running/working/validating → interrupted on startup |
+| killSession() partial report | ✅ AbortController abort + files_modified list |
+| Schema ALTER TABLE migration fix | ✅ runMigrations() in database.ts (all phases 5A–7A) |
+| STATUS.md updated | ✅ Done |
+| SPRINT_7A_COMPLETE.md written | ✅ Done |
+| Conventional commit + push | ✅ Done |
+
+### Sprint 7A Key Discoveries
+
+- **SQLite ALTER TABLE IF NOT EXISTS requires ≥3.37.0**: better-sqlite3 bundles an older SQLite. All `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` statements from phases 5A, 5B, 6C, 6E, and 7A were moved to `runMigrations()` in `database.ts` where each is wrapped in individual try/catch that swallows `duplicate column name` errors. Schema.sql now contains only `CREATE TABLE IF NOT EXISTS` and `CREATE INDEX IF NOT EXISTS` which are universally supported.
+- **jiti runner on Windows**: `node_modules/.bin/jiti` is a Unix shell script; use full path to `node_modules/.pnpm/jiti@2.6.1/node_modules/jiti/lib/jiti-cli.mjs` directly with `node.exe`. Use `node --env-file=.env.local` to inject environment variables from dotenv file without installing dotenv.
+- **better-sqlite3 singleton + partial schema**: When `_db.exec(schema)` throws mid-script, `_db` is already assigned. Subsequent `getDatabase()` calls return the partially-initialized DB silently. Pattern: fix the schema so `exec()` never throws rather than wrapping `exec()` in try/catch.
+- **Desktop Commander async shell**: `start_process cmd.exe /c bat.bat` returns immediately (the PowerShell wrapper exits). Background process writes to redirect file; poll the output file directly to detect completion via the `Exit code:` sentinel line.
+- [ ] **SPRINT 7D** — Cost accounting: token capture, session_costs table, pricing.yaml, live cost ticker, budget caps
+- [ ] **SPRINT 7E** — Concurrency scheduler: priority queue (8 slots), rate limiter, AEGIS session-count integration
+- [ ] **SPRINT 7F** — Job queue UI: status display, live output toggle, cost ticker, action buttons, [Merge PR] placeholder
+- [ ] **SPRINT 7G** — SHIM hybrid: in-session tool, post-processing gate, 3× retry ceiling, SHIM_LOOP escalation
+- [ ] **SPRINT 7H** — Self-evolution: branch management, .gregignore, protected paths, git tools, GitHub PR API, CI polling, [Merge PR], Phase 7 certification
 
 ## Queued: Phase 6 — Ghost Thread (after Phase 5 complete)
 

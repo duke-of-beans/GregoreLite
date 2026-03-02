@@ -190,8 +190,7 @@ CREATE TABLE IF NOT EXISTS settings (
 
 -- health_score: 0–100 computed by EoS health score formula
 -- last_eos_scan: ISO datetime of last scan
-ALTER TABLE projects ADD COLUMN IF NOT EXISTS health_score  REAL    DEFAULT NULL;
-ALTER TABLE projects ADD COLUMN IF NOT EXISTS last_eos_scan TEXT    DEFAULT NULL;
+-- Phase 5A column additions handled in database.ts runMigrations()
 
 -- False-positive feedback log (rolling window for auto-suppression)
 CREATE TABLE IF NOT EXISTS eos_fp_log (
@@ -255,7 +254,7 @@ CREATE INDEX IF NOT EXISTS idx_shim_improvements_pattern
   ON shim_improvements (pattern, recorded_at DESC);
 
 -- EoS health score at manifest spawn time (used for before/after delta)
-ALTER TABLE manifests ADD COLUMN IF NOT EXISTS shim_score_before REAL DEFAULT NULL;
+-- Phase 5B column addition handled in database.ts runMigrations()
 
 -- ─── GHOST EMAIL STATE — Phase 6B ────────────────────────────────────────────
 -- Per-account connector state: OAuth cursor, error counter, last sync time
@@ -275,8 +274,7 @@ CREATE INDEX IF NOT EXISTS idx_ghost_email_state_provider
 -- ─── GHOST INGEST — Phase 6C ─────────────────────────────────────────────────
 -- source_type already exists in content_chunks (Sprint 3A).
 -- Add source_path and source_account columns for Ghost provenance tracking.
-ALTER TABLE content_chunks ADD COLUMN IF NOT EXISTS source_path    TEXT;
-ALTER TABLE content_chunks ADD COLUMN IF NOT EXISTS source_account TEXT;
+-- Phase 6C column additions handled in database.ts runMigrations()
 
 -- Audit trail for the Privacy Dashboard (Sprint 6G). One row per ingest op.
 CREATE TABLE IF NOT EXISTS ghost_indexed_items (
@@ -322,7 +320,7 @@ CREATE INDEX IF NOT EXISTS idx_ghost_exclusion_log_source
 
 -- ─── GHOST SCORER — Phase 6E ─────────────────────────────────────────────────
 -- critical flag on indexed items (set by Privacy Dashboard / Ghost card UI)
-ALTER TABLE ghost_indexed_items ADD COLUMN IF NOT EXISTS critical INTEGER DEFAULT 0;
+-- Phase 6E column addition handled in database.ts runMigrations()
 
 -- Feedback log: dismissed/noted/expanded actions per chunk
 CREATE TABLE IF NOT EXISTS ghost_suggestion_feedback (
@@ -348,6 +346,27 @@ CREATE TABLE IF NOT EXISTS ghost_surfaced (
 
 CREATE INDEX IF NOT EXISTS idx_ghost_surfaced_at
   ON ghost_surfaced (surfaced_at DESC);
+
+-- ─── AGENT SDK JOB STATE — Phase 7A ─────────────────────────────────────────
+-- Fine-grained per-step state for active worker sessions.
+-- Checkpointed every 5 tool calls OR every 60 seconds.
+-- On restart: running/working/validating rows → INTERRUPTED.
+CREATE TABLE IF NOT EXISTS job_state (
+  manifest_id        TEXT PRIMARY KEY,
+  status             TEXT CHECK(status IN ('spawning','running','working','validating','completed','failed','blocked','interrupted')),
+  steps_completed    INTEGER DEFAULT 0,
+  files_modified     TEXT,       -- JSON array of paths
+  last_event         TEXT,       -- JSON of last SDK event for debugging
+  log_path           TEXT,       -- temp file path if session >5 min
+  tokens_used_so_far INTEGER DEFAULT 0,
+  cost_so_far        REAL DEFAULT 0,
+  updated_at         INTEGER NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_job_state_status ON job_state(status);
+
+-- Phase 7A: manifests column additions are handled in database.ts runMigrations()
+-- to avoid ALTER TABLE IF NOT EXISTS syntax which requires SQLite ≥3.37.0
 
 -- ─── FTS VIRTUAL TABLE ───────────────────────────────────────────────────────
 CREATE VIRTUAL TABLE IF NOT EXISTS messages_fts USING fts5(

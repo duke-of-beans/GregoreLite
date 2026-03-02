@@ -41,7 +41,52 @@ export function getDatabase(): Database.Database {
     _db.exec(INLINE_SCHEMA);
   }
 
+  // Run additive column migrations (ALTER TABLE ADD COLUMN).
+  // SQLite does not support IF NOT EXISTS in ALTER TABLE before v3.37.0.
+  // We catch "duplicate column name" errors (SQLITE_ERROR code 1) and treat
+  // them as success — idempotent on repeated startup.
+  runMigrations(_db);
+
   return _db;
+}
+
+/**
+ * Additive column migrations that cannot use IF NOT EXISTS.
+ * SQLite does not support ALTER TABLE ... ADD COLUMN IF NOT EXISTS before v3.37.0,
+ * and the better-sqlite3 bundled version is older than that.
+ * Each statement is attempted independently; duplicate-column errors are swallowed.
+ * Ordered by phase so dependencies are always satisfied.
+ */
+function runMigrations(db: Database.Database): void {
+  const alterStatements: string[] = [
+    // Phase 5A — EoS health score columns on projects
+    'ALTER TABLE projects ADD COLUMN health_score  REAL DEFAULT NULL',
+    'ALTER TABLE projects ADD COLUMN last_eos_scan TEXT DEFAULT NULL',
+    // Phase 5B — SHIM score baseline on manifests
+    'ALTER TABLE manifests ADD COLUMN shim_score_before REAL DEFAULT NULL',
+    // Phase 6C — Ghost provenance tracking on content_chunks
+    'ALTER TABLE content_chunks ADD COLUMN source_path    TEXT',
+    'ALTER TABLE content_chunks ADD COLUMN source_account TEXT',
+    // Phase 6E — critical flag on ghost_indexed_items
+    'ALTER TABLE ghost_indexed_items ADD COLUMN critical INTEGER DEFAULT 0',
+    // Phase 7A — Agent SDK self-evolution columns on manifests
+    'ALTER TABLE manifests ADD COLUMN target_component TEXT',
+    'ALTER TABLE manifests ADD COLUMN goal_summary     TEXT',
+    'ALTER TABLE manifests ADD COLUMN shim_score_after REAL DEFAULT NULL',
+  ];
+
+  for (const sql of alterStatements) {
+    try {
+      db.exec(sql);
+    } catch (err: unknown) {
+      // SQLite error message for duplicate column: "table X already has column named Y"
+      const msg = err instanceof Error ? err.message : String(err);
+      if (!msg.includes('duplicate column name') && !msg.includes('already has column')) {
+        throw err; // Unexpected error — re-throw
+      }
+      // Column already exists — silently continue
+    }
+  }
 }
 
 export function closeDatabase(): void {
