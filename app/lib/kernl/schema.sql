@@ -257,6 +257,21 @@ CREATE INDEX IF NOT EXISTS idx_shim_improvements_pattern
 -- EoS health score at manifest spawn time (used for before/after delta)
 ALTER TABLE manifests ADD COLUMN IF NOT EXISTS shim_score_before REAL DEFAULT NULL;
 
+-- ─── GHOST EMAIL STATE — Phase 6B ────────────────────────────────────────────
+-- Per-account connector state: OAuth cursor, error counter, last sync time
+CREATE TABLE IF NOT EXISTS ghost_email_state (
+  id            TEXT PRIMARY KEY,
+  provider      TEXT NOT NULL CHECK(provider IN ('gmail', 'outlook')),
+  account       TEXT NOT NULL,
+  last_sync_at  INTEGER,
+  history_cursor TEXT,       -- historyId for Gmail, delta link for Microsoft Graph
+  error_count   INTEGER DEFAULT 0,
+  connected_at  INTEGER
+);
+
+CREATE INDEX IF NOT EXISTS idx_ghost_email_state_provider
+  ON ghost_email_state (provider, account);
+
 -- ─── FTS VIRTUAL TABLE ───────────────────────────────────────────────────────
 CREATE VIRTUAL TABLE IF NOT EXISTS messages_fts USING fts5(
   content,

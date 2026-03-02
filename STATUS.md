@@ -1,6 +1,6 @@
 # GREGORE LITE — STATUS
-**Last Updated:** March 2, 2026 — Sprint 6A complete: Rust filesystem watcher, Ghost Thread eyes open  
-**Phase:** Phase 6 — Ghost Thread (Sprint 6A complete, 6B next)
+**Last Updated:** March 2, 2026 — Sprint 6B complete: Gmail + Outlook OAuth connectors, 15-minute AEGIS-governed poller  
+**Phase:** Phase 6 — Ghost Thread (Sprint 6B complete, 6C next)
 
 ---
 
@@ -461,6 +461,41 @@ Execution order: 5A → 5B → 5C (all sequential)
 - **rustup no default toolchain**: Fresh Windows dev environments may have no default toolchain. Run `rustup default stable` before any `cargo` commands.
 - **cmd shell required**: PowerShell doesn't support `&&` chaining. All shell commands with `&&` or `cargo`/`pnpm` must use `shell: "cmd"` in Desktop Commander.
 
+## Sprint 6B Gate Results (COMPLETE — March 2, 2026)
+
+| Gate | Result |
+|------|--------|
+| `npx tsc --noEmit` | ✅ 0 errors |
+| `pnpm test:run` | ✅ 603/603 passing (31 test files) |
+| OAuth flow — local redirect server port 47832 | ✅ `lib/ghost/email/oauth.ts` |
+| CSRF state nonce via `crypto.randomUUID()` | ✅ Enforced in `waitForAuthCode()` |
+| Tokens in OS keychain (keytar) + AES-256-GCM fallback | ✅ `lib/ghost/email/keychain.ts` |
+| Tokens never written to disk in plaintext | ✅ Vault fallback encrypts with machine key |
+| Gmail `history.list` delta sync (not full scan) | ✅ `GmailConnector.poll()` — cursor in KERNL settings |
+| Graph delta queries (not full mailbox scan) | ✅ `GraphConnector.poll()` — delta link in KERNL settings |
+| HTML stripped from email bodies | ✅ Regex-based `stripHtml()` (no new dep) |
+| `[UNTRUSTED CONTENT]` prefix on all body/attachment content | ✅ Enforced at connector layer |
+| Attachments: text-based + under 10MB → content populated | ✅ `INDEXABLE_MIME_TYPES` + `ATTACHMENT_MAX_BYTES` |
+| `ghost_email_state` table populated after first poll | ✅ `upsertEmailState()` in both connectors |
+| 15-minute poller starts/stops | ✅ `startEmailPoller()` / `stopEmailPoller()` |
+| AEGIS `PARALLEL_BUILD` / `COUNCIL` pauses poller | ✅ `isGhostPaused()` in `poller.ts` |
+| 5 consecutive errors → Decision Gate surfaced | ✅ `logDecision()` via `surfaceCredentialGate()` |
+| `noUncheckedIndexedAccess` compliance | ✅ `(arr[0] ?? '').trim()` pattern throughout |
+| STATUS.md updated | ✅ Done |
+| SPRINT_6B_COMPLETE.md written | ✅ Done |
+| Conventional commit + push | ✅ Done |
+
+### Sprint 6B Key Discoveries
+
+- **`@tauri-apps/plugin-shell` has no dev-environment types**: The shell plugin only resolves at Tauri runtime. `// @ts-expect-error` required on the dynamic import in `openInBrowser()`. The try-catch fallback to `child_process.exec` handles all non-Tauri environments (tests, dev server).
+- **`noUncheckedIndexedAccess` + `Array.split`**: `str.split(';')[0]` returns `string | undefined` under this flag, even after a length guard. All MIME base extraction must use `(str.split(';')[0] ?? '').trim()`. This pattern appears in both `isEligibleAttachment()` and `fetchAttachment()` across both connectors.
+- **Module-level variable narrowing**: TypeScript doesn't narrow `let x: T | null` assigned inside an `if` block when `x` is a module-level variable. `return x` after the assignment is still typed `T | null`. The `!` non-null assertion (`return x!`) is the correct fix — not restructuring into a local variable.
+- **Array destructuring with `noUncheckedIndexedAccess`**: `const [a, b, c] = str.split(':')` gives `string | undefined` for all three even after a `length !== 3` guard. Must cast: `const [a, b, c] = str.split(':') as [string, string, string]`.
+- **Graph delta `@removed` tombstones**: Delta query responses include deletion notifications where the item only has `@removed` + `id`. These must be filtered out before building `EmailMessage` objects — no tombstoning in the index.
+- **Graph delta link persistence**: The delta link is a full URL that must be stored verbatim. Appending `$expand=attachments` to the delta link for subsequent polls requires checking if the expansion is already present to avoid double-appending.
+- **Gmail `historyId` baseline**: `profiles.get()` returns a `historyId` representing the current state of the mailbox. Storing this on `connect()` means the first `poll()` only surfaces messages added *after* connect — correct behavior, no inbox flood.
+- **keytar Windows DPAPI**: keytar wraps Windows DPAPI and requires native compilation via `node-gyp`. In environments where keytar fails to load, the KERNL vault fallback using `crypto.scryptSync` + AES-256-GCM with machine key (`os.hostname() + VAULT_SALT`) activates transparently.
+
 ## Active: Phase 6 — Ghost Thread
 
 ## Queued: Phase 6 — Ghost Thread (after Phase 5 complete)
@@ -468,7 +503,8 @@ Execution order: 5A → 5B → 5C (all sequential)
 Execution order: 6A -> 6B -> 6C -> 6D -> 6E -> 6F -> 6G -> 6H -> 6I (all sequential)
 
 - [x] **SPRINT 6A** — Rust filesystem watcher (notify v6, 750ms/1500ms debounce, exclusions in Rust, Tauri IPC) — **COMPLETE**
-- [ ] SPRINT 6B - Email connectors Gmail + Outlook (OAuth, history.list, delta queries, keychain)
+- [x] **SPRINT 6B** — Gmail + Outlook OAuth connectors, delta sync, keychain, 15-min AEGIS-governed poller — **COMPLETE**
+- [ ] SPRINT 6C - Unified ingest pipeline (chunker, batch embedder, AEGIS queue, shared vec_index)
 - [ ] SPRINT 6C - Unified ingest pipeline (chunker, batch embedder, AEGIS queue, shared vec_index)
 - [ ] SPRINT 6D - Privacy exclusion engine (4 layers: hard-coded, PII scanner, contextual, user rules)
 - [ ] SPRINT 6E - Interrupt scoring engine (6h cadence, ranking formula, 24h cap, Claude haiku summaries)
