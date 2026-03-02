@@ -1,6 +1,6 @@
 # GREGORE LITE — STATUS
-**Last Updated:** March 1, 2026 — Phase 3 COMPLETE  
-**Phase:** Phase 4 — Decision Gate system (next)
+**Last Updated:** March 1, 2026 — Sprint 4A COMPLETE  
+**Phase:** Phase 4 — Decision Gate system (Sprint 4B next)
 
 ---
 
@@ -244,9 +244,53 @@ Execution order: 3A → 3B → 3C → (3D ∥ 3E) → 3F → 3G → 3H
 | PHASE3G_EXECUTION_BRIEF.md | Proactive surfacing UI |
 | PHASE3H_EXECUTION_BRIEF.md | Integration + hardening |
 
+## Queued: Phase 4 — Decision Gate (after Phase 3 complete)
+
+Execution order: 4A → 4B → 4C (all sequential)
+
+- [x] **SPRINT 4A** — Trigger detection (8 conditions, 5 live + 3 stubs) — **COMPLETE**
+- [ ] **SPRINT 4B** — UI panel + API lock enforcement + Haiku inference for 3 stubbed triggers
+- [ ] **SPRINT 4C** — Integration hardening, false positive calibration, Phase 4 certification
+
+## Phase 4 Execution Briefs
+
+| File | Sprint |
+|------|--------|
+| PHASE4A_EXECUTION_BRIEF.md | Trigger detection |
+| PHASE4B_EXECUTION_BRIEF.md | UI + API lock |
+| PHASE4C_EXECUTION_BRIEF.md | Integration + certification |
+
+## Sprint 4A Gate Results (COMPLETE — March 1, 2026)
+
+| Gate | Result |
+|------|--------|
+| tsc --noEmit | ✅ 0 errors |
+| pnpm test:run | ✅ 417/417 passing (20 test files, 43 new) |
+| decision-gate/types.ts | ✅ GateTrigger union, TriggerResult, DecisionLockState, GateMessage |
+| decision-gate/lock.ts | ✅ acquireLock, releaseLock, dismissLock, isMandatory, mandatory at count ≥ 3 |
+| repeated_question | ✅ Live — n-gram (uni+bi+tri), window=10, threshold=3 |
+| sacred_principle_risk | ✅ Live — 18-phrase exact match, window=5 |
+| irreversible_action | ✅ Live — 18 regex patterns, last assistant message only |
+| low_confidence | ✅ Live — 20 uncertainty phrases, ≥2 threshold |
+| contradicts_prior | ✅ Live — findSimilarChunks() ≥ 0.80, source_type = 'decision', fail-open |
+| high_tradeoff_count | 🔲 Stub — always false, Sprint 4B activates via Haiku |
+| multi_project_touch | 🔲 Stub — always false, Sprint 4B activates via Haiku |
+| large_build_estimate | 🔲 Stub — always false, Sprint 4B activates via Haiku |
+| decision-gate-store.ts | ✅ Zustand store, session-only (no persistence) |
+| chat route wired | ✅ Fire-and-forget analyze() after checkpoint(), setTrigger on match |
+| SPRINT_4A_COMPLETE.md | ✅ Written |
+| Conventional commit + push | ✅ Done |
+
+### Sprint 4A Key Discoveries
+
+- **`triggered()` helper pattern**: `analyze()` can't pass `result.trigger` (typed `GateTrigger | null`) to `acquireLock()` which requires `GateTrigger`. Solution: introduce `triggered(trigger: GateTrigger, reason: string): TriggerResult` helper that takes the concrete string literal — avoids non-null assertions, TypeScript satisfied.
+- **n-gram test data quality**: `detectRepeatedQuestion` extracts unigrams + bigrams + trigrams after stop-word filtering. Any word shared across 3+ messages triggers it. Negative-case tests must use genuinely unique vocabulary per message — even "topic" appearing in 8 filler messages will correctly fire the detector.
+- **Stubs as `async Promise<false>`**: All 3 stubs return `Promise<false>` consistent with the live async detectors they'll replace. `analyze()` needs no refactor when Sprint 4B activates them.
+- **CMD `/d` flag for drive change**: `cd D:\path` fails silently in cmd when current drive differs. Must use `cd /d D:\path` to switch drives.
+
 ## Open Questions
 
-None. Phase 3 briefs ready. Fire sequentially (3A→3B→3C, then 3D∥3E, then 3F→3G→3H) after Phase 2 complete.
+None.
 
 ## Blueprint Files
 

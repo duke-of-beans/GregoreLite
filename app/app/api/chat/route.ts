@@ -37,6 +37,9 @@ import { embed, persistEmbeddingsFull } from '@/lib/embeddings';
 import { recordUserActivity } from '@/lib/indexer';
 import { checkOnInput } from '@/lib/cross-context/proactive';
 import { useSuggestionStore } from '@/lib/stores/suggestion-store';
+import { analyze } from '@/lib/decision-gate';
+import type { GateMessage } from '@/lib/decision-gate';
+import { useDecisionGateStore } from '@/lib/stores/decision-gate-store';
 
 const client = new Anthropic();
 
@@ -158,6 +161,26 @@ export const POST = safeHandler(async (request: Request) => {
 
     // Continuity checkpoint after every assistant response (crash recovery)
     checkpoint(threadId, assistantMsg.id);
+
+    // Fire-and-forget decision gate analysis — does NOT delay chat response (§8 blueprint)
+    // Builds full conversation in GateMessage shape; analyze() runs 5 live triggers +
+    // 3 stubs. If triggered, result is pushed to Zustand for Sprint 4B UI panel.
+    const fullConversation: GateMessage[] = history
+      .map((m) => ({
+        role: m.role as GateMessage['role'],
+        content: m.content,
+      }))
+      .concat([{ role: 'assistant', content }]);
+
+    analyze(fullConversation)
+      .then((result) => {
+        if (result.triggered) {
+          useDecisionGateStore.getState().setTrigger(result);
+        }
+      })
+      .catch((err: unknown) =>
+        console.warn('[decision-gate] analyze failed', { err })
+      );
 
     // Fire-and-forget embedding — does NOT delay chat response (§5.1 blueprint)
     // Sprint 3B: persistEmbeddingsFull writes to content_chunks AND vec_index.
