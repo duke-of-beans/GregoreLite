@@ -18,6 +18,13 @@ import { embedBatch, isModelReady } from './embedder';
 import { writeChunks, writeAuditRow } from './writer';
 import { IngestQueue } from './queue';
 import { getDatabase } from '@/lib/kernl/database';
+import {
+  checkFilePath,
+  checkFileContent,
+  checkChunk,
+  checkEmail as checkEmailPrivacy,
+  logExclusion,
+} from '@/lib/ghost/privacy';
 import type { EmailMessage } from '@/lib/ghost/email/types';
 import type {
   IngestItem,
@@ -126,6 +133,13 @@ async function processItem(item: IngestItem): Promise<void> {
 }
 
 async function processFile(item: FileIngestItem): Promise<void> {
+  // Layer 1 + 3 + 4: path-level privacy check (before reading the file)
+  const pathCheck = checkFilePath(item.path);
+  if (pathCheck.excluded) {
+    logExclusion('file', item.path, pathCheck);
+    return;
+  }
+
   const fs = await import('fs/promises');
   let content: string;
   try {
@@ -135,12 +149,31 @@ async function processFile(item: FileIngestItem): Promise<void> {
     return;
   }
 
+  // Layer 1 content check (private key headers)
+  const contentCheck = checkFileContent(content);
+  if (contentCheck.excluded) {
+    logExclusion('file', item.path, contentCheck);
+    return;
+  }
+
   const rawChunks = chunkFile(content, item.ext);
   if (rawChunks.length === 0) return;
 
-  const embeddings = await embedBatch(rawChunks);
+  // Layer 2: PII scan per-chunk — filter out any that contain PII
+  const safeChunks: string[] = [];
+  for (const chunk of rawChunks) {
+    const piiCheck = checkChunk(chunk);
+    if (piiCheck.excluded) {
+      logExclusion('file', item.path, piiCheck);
+    } else {
+      safeChunks.push(chunk);
+    }
+  }
+  if (safeChunks.length === 0) return;
+
+  const embeddings = await embedBatch(safeChunks);
   const now = Date.now();
-  const chunkResults: ChunkResult[] = rawChunks.map((text, i) => ({
+  const chunkResults: ChunkResult[] = safeChunks.map((text, i) => ({
     chunkId: nanoid(),
     content: text,
     chunkIndex: i,
@@ -168,12 +201,32 @@ async function processFile(item: FileIngestItem): Promise<void> {
 
 async function processEmail(item: EmailIngestItem): Promise<void> {
   const { message, provider, account } = item;
+
+  // Layers 3 + 4: email-level privacy check (subject, sender, domain)
+  const emailCheck = checkEmailPrivacy(message);
+  if (emailCheck.excluded) {
+    logExclusion('email', message.id, emailCheck);
+    return;
+  }
+
   const rawChunks = chunkEmail(message.body);
   if (rawChunks.length === 0) return;
 
-  const embeddings = await embedBatch(rawChunks);
+  // Layer 2: PII scan per-chunk
+  const safeChunks: string[] = [];
+  for (const chunk of rawChunks) {
+    const piiCheck = checkChunk(chunk);
+    if (piiCheck.excluded) {
+      logExclusion('email', message.id, piiCheck);
+    } else {
+      safeChunks.push(chunk);
+    }
+  }
+  if (safeChunks.length === 0) return;
+
+  const embeddings = await embedBatch(safeChunks);
   const now = Date.now();
-  const chunkResults: ChunkResult[] = rawChunks.map((text, i) => ({
+  const chunkResults: ChunkResult[] = safeChunks.map((text, i) => ({
     chunkId: nanoid(),
     content: text,
     chunkIndex: i,

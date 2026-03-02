@@ -1,6 +1,6 @@
 # GREGORE LITE — STATUS
-**Last Updated:** March 2, 2026 — Sprint 6C complete: unified ingest pipeline, type-aware chunker, batch embedder, AEGIS-governed queue, ghost_indexed_items audit table  
-**Phase:** Phase 6 — Ghost Thread (Sprint 6C complete, 6D next)
+**Last Updated:** March 2, 2026 — Sprint 6D complete: four-layer privacy exclusion engine, PII scanner (SSN/CC/API key/JWT), Layer 4 user rules with micromatch + 5-min cache, full audit log  
+**Phase:** Phase 6 — Ghost Thread (Sprint 6D complete, 6E next)
 
 ---
 
@@ -524,6 +524,35 @@ Execution order: 5A → 5B → 5C (all sequential)
 - **Gmail `historyId` baseline**: `profiles.get()` returns a `historyId` representing the current state of the mailbox. Storing this on `connect()` means the first `poll()` only surfaces messages added *after* connect — correct behavior, no inbox flood.
 - **keytar Windows DPAPI**: keytar wraps Windows DPAPI and requires native compilation via `node-gyp`. In environments where keytar fails to load, the KERNL vault fallback using `crypto.scryptSync` + AES-256-GCM with machine key (`os.hostname() + VAULT_SALT`) activates transparently.
 
+## Sprint 6D Gate Results (COMPLETE — March 2, 2026)
+
+| Gate | Result |
+|------|--------|
+| `npx tsc --noEmit` | ✅ 0 errors |
+| `pnpm test:run` | ✅ 640/640 passing (32 test files, 37 new) |
+| `ghost_exclusions` table | ✅ `schema.sql` — type CHECK IN (path_glob/domain/sender/keyword/subject_contains) |
+| `ghost_exclusion_log` audit table | ✅ `schema.sql` — logs every exclusion with layer, reason, pattern, source_type |
+| `app/lib/ghost/privacy/types.ts` | ✅ `ExclusionResult`, `NOT_EXCLUDED`, `ExclusionType`, `GhostExclusion` |
+| `app/lib/ghost/privacy/luhn.ts` | ✅ Standard Luhn + false-positive filters (all-same-digit, sequential run) |
+| `app/lib/ghost/privacy/layer1.ts` | ✅ Path component walk + dotfile extension fix + content private-key headers |
+| `app/lib/ghost/privacy/layer2.ts` | ✅ SSN (adjacent-char heuristic), CC (Luhn), API keys (7 patterns), JWT |
+| `app/lib/ghost/privacy/layer3.ts` | ✅ Sensitive dir defaults + privileged email subject patterns |
+| `app/lib/ghost/privacy/layer4.ts` | ✅ DB-backed user rules, 5-min cache, micromatch glob (micromatch 4.0.8) |
+| `app/lib/ghost/privacy/index.ts` | ✅ `checkFilePath()`, `checkFileContent()`, `checkChunk()`, `checkEmail()`, `logExclusion()` |
+| Ingest pipeline wired | ✅ `ghost/ingest/index.ts` — path check → content check → per-chunk L2 before embed |
+| privacy.test.ts — 37 tests | ✅ All layers + Luhn covered |
+| STATUS.md updated | ✅ Done |
+| SPRINT_6D_COMPLETE.md written | ✅ Done |
+| Conventional commit + push | ✅ Done |
+
+### Sprint 6D Key Discoveries
+
+- **Dotfile extension trap**: `path.parse('/project/.env')` returns `{ name: '.env', ext: '' }` — Node treats dotfiles as having an empty extension. The extension check must also test `parsed.base.toLowerCase()` directly against the exclusion set to catch `.env`, `.pem`, etc.
+- **SSN heuristic over-reach**: Checking for any letter within 3 chars of the match caused `isLikelySSN()` to return `false` for `"SSN: 123-45-6789"` (the `N` in `SSN` is only 2 chars away). Reduced to 1-char adjacency check — only immediately touching letters suppress the match. `\b` word boundary in the regex handles true identifier false-positives.
+- **noUncheckedIndexedAccess + char access**: `text[i]` returns `string | undefined` under strict index checks. Array index access inside `isLikelySSN` required `(text[idx] ?? '')` wrapping even for single-char reads.
+- **micromatch as new dep**: Not already present. Added `micromatch@4.0.8` + `@types/micromatch` — zero-dependency glob matcher, ~15KB, correct choice for Layer 4 path_glob matching.
+- **Layer 4 cache invalidation**: 5-minute TTL stored as `_cacheTs` module variable. No explicit invalidation API needed — Privacy Dashboard (Sprint 6G) will call `removeExclusion()` which already clears the cache via `_cacheTs = 0`.
+
 ## Active: Phase 6 — Ghost Thread
 
 ## Queued: Phase 6 — Ghost Thread (after Phase 5 complete)
@@ -533,8 +562,7 @@ Execution order: 6A -> 6B -> 6C -> 6D -> 6E -> 6F -> 6G -> 6H -> 6I (all sequent
 - [x] **SPRINT 6A** — Rust filesystem watcher (notify v6, 750ms/1500ms debounce, exclusions in Rust, Tauri IPC) — **COMPLETE**
 - [x] **SPRINT 6B** — Gmail + Outlook OAuth connectors, delta sync, keychain, 15-min AEGIS-governed poller — **COMPLETE**
 - [x] **SPRINT 6C** — Unified ingest pipeline: type-aware chunker, batch embedder, AEGIS queue, ghost_indexed_items audit — **COMPLETE**
-- [ ] SPRINT 6D - Privacy exclusion engine (4 layers: hard-coded, PII scanner, contextual, user rules)
-- [ ] SPRINT 6D - Privacy exclusion engine (4 layers: hard-coded, PII scanner, contextual, user rules)
+- [x] **SPRINT 6D** — Privacy exclusion engine (4 layers: hard-coded, PII scanner, contextual, user rules) — **COMPLETE**
 - [ ] SPRINT 6E - Interrupt scoring engine (6h cadence, ranking formula, 24h cap, Claude haiku summaries)
 - [ ] SPRINT 6F - Ghost process lifecycle + IPC (startup order, shutdown, degraded components, AEGIS propagation)
 - [ ] SPRINT 6G - Privacy Dashboard UI (indexed items, cascade delete, exclusion rules, purge all)

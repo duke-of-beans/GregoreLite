@@ -293,6 +293,33 @@ CREATE TABLE IF NOT EXISTS ghost_indexed_items (
 CREATE INDEX IF NOT EXISTS idx_ghost_indexed_items_type
   ON ghost_indexed_items (source_type, indexed_at DESC);
 
+-- ─── GHOST PRIVACY ENGINE — Phase 6D ────────────────────────────────────────
+-- User-configurable exclusion rules (Layer 4)
+CREATE TABLE IF NOT EXISTS ghost_exclusions (
+  id         TEXT PRIMARY KEY,
+  type       TEXT NOT NULL CHECK(type IN ('path_glob','domain','sender','keyword','subject_contains')),
+  pattern    TEXT NOT NULL,
+  created_at INTEGER NOT NULL,
+  note       TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_ghost_exclusions_type
+  ON ghost_exclusions (type);
+
+-- Audit log — every exclusion decision written here for Privacy Dashboard
+CREATE TABLE IF NOT EXISTS ghost_exclusion_log (
+  id          TEXT PRIMARY KEY,
+  source_type TEXT,        -- 'file' | 'email'
+  source_path TEXT,
+  layer       INTEGER,
+  reason      TEXT,
+  pattern     TEXT,
+  logged_at   INTEGER NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_ghost_exclusion_log_source
+  ON ghost_exclusion_log (source_type, logged_at DESC);
+
 -- ─── FTS VIRTUAL TABLE ───────────────────────────────────────────────────────
 CREATE VIRTUAL TABLE IF NOT EXISTS messages_fts USING fts5(
   content,
