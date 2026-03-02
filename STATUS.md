@@ -1,6 +1,6 @@
 # GREGORE LITE — STATUS
-**Last Updated:** March 2, 2026 — Sprint 6B complete: Gmail + Outlook OAuth connectors, 15-minute AEGIS-governed poller  
-**Phase:** Phase 6 — Ghost Thread (Sprint 6B complete, 6C next)
+**Last Updated:** March 2, 2026 — Sprint 6C complete: unified ingest pipeline, type-aware chunker, batch embedder, AEGIS-governed queue, ghost_indexed_items audit table  
+**Phase:** Phase 6 — Ghost Thread (Sprint 6C complete, 6D next)
 
 ---
 
@@ -485,6 +485,34 @@ Execution order: 5A → 5B → 5C (all sequential)
 | SPRINT_6B_COMPLETE.md written | ✅ Done |
 | Conventional commit + push | ✅ Done |
 
+## Sprint 6C Gate Results (COMPLETE — March 2, 2026)
+
+| Gate | Result |
+|------|--------|
+| `npx tsc --noEmit` | ✅ 0 errors |
+| `pnpm test:run` | ✅ 603/603 passing (31 test files) |
+| `schema.sql` — `source_path` + `source_account` columns | ✅ `ALTER TABLE content_chunks ADD COLUMN IF NOT EXISTS` |
+| `ghost_indexed_items` audit table | ✅ Soft-delete column, indexed by `(source_type, indexed_at DESC)` |
+| `app/lib/ghost/ingest/types.ts` | ✅ `IngestItem`, `ChunkResult`, `GhostChunkMetadata`, `IngestStats` |
+| `app/lib/ghost/ingest/chunker.ts` | ✅ Code (600t, function-boundary, 50t overlap), doc (700t, para, 100t overlap), plain (600t, para, 100t overlap) |
+| `app/lib/ghost/ingest/embedder.ts` | ✅ Batches of 10, 100ms inter-batch delay, dynamic import of `embedText()` |
+| `app/lib/ghost/ingest/queue.ts` | ✅ `IngestQueue` — AEGIS-governed pause/resume, never-drop, 10k warning |
+| `app/lib/ghost/ingest/writer.ts` | ✅ `writeChunks()` + `writeAuditRow()` via better-sqlite3 transaction |
+| `app/lib/ghost/ingest/index.ts` | ✅ `ingestFile()`, `ingestEmail()`, `getIngestStats()`, `getQueueDepth()` |
+| `findSimilarChunks()` ghost filter | ✅ `includeGhost: boolean = false` param — Ghost excluded from Cross-Context suggestions by default |
+| Ghost metadata `source: 'ghost'` on all chunks | ✅ Written to `content_chunks.metadata` JSON |
+| STATUS.md updated | ✅ Done |
+| SPRINT_6C_COMPLETE.md written | ✅ Done |
+| Conventional commit + push | ✅ Done |
+
+### Sprint 6C Key Discoveries
+
+- **`source_type` already existed in `content_chunks`**: Phase 3 Sprint 3A schema included `CHECK(source_type IN ('conversation','file','email','email_attachment'))` — the Ghost types were already allowed. Only `source_path` and `source_account` needed adding via `ALTER TABLE ... ADD COLUMN IF NOT EXISTS`.
+- **No migrations directory**: The project appends `ALTER TABLE` statements directly to `schema.sql` and runs them idempotently via `_db.exec(schema)` on every `getDatabase()` call. SQLite 3.37+ supports `ADD COLUMN IF NOT EXISTS`. This is the correct pattern for this codebase.
+- **Ghost filter in `findSimilarChunks()`**: Ghost chunks sit in the same `vec_index` as Cross-Context chunks. The filter reads `content_chunks.metadata` JSON and checks `source === 'ghost'`. Malformed or null metadata is treated as non-ghost (safe default — never silently drops legitimate suggestions).
+- **Circular import chain**: `ghost/ingest/embedder.ts` → `lib/embeddings/model.ts` would create a cycle if statically imported. Dynamic `import('@/lib/embeddings/model')` inside `embedBatch()` breaks the chain cleanly — same pattern used in `vector/index.ts` for `embed()`.
+- **ONNX `embedText()` warm-up**: `_modelReady` flag in `embedder.ts` goes `true` on the first `embedBatch()` call. Before that, `getIngestStats().embeddingModelReady` returns `false` — accurate signal for the context panel status widget.
+
 ### Sprint 6B Key Discoveries
 
 - **`@tauri-apps/plugin-shell` has no dev-environment types**: The shell plugin only resolves at Tauri runtime. `// @ts-expect-error` required on the dynamic import in `openInBrowser()`. The try-catch fallback to `child_process.exec` handles all non-Tauri environments (tests, dev server).
@@ -504,8 +532,8 @@ Execution order: 6A -> 6B -> 6C -> 6D -> 6E -> 6F -> 6G -> 6H -> 6I (all sequent
 
 - [x] **SPRINT 6A** — Rust filesystem watcher (notify v6, 750ms/1500ms debounce, exclusions in Rust, Tauri IPC) — **COMPLETE**
 - [x] **SPRINT 6B** — Gmail + Outlook OAuth connectors, delta sync, keychain, 15-min AEGIS-governed poller — **COMPLETE**
-- [ ] SPRINT 6C - Unified ingest pipeline (chunker, batch embedder, AEGIS queue, shared vec_index)
-- [ ] SPRINT 6C - Unified ingest pipeline (chunker, batch embedder, AEGIS queue, shared vec_index)
+- [x] **SPRINT 6C** — Unified ingest pipeline: type-aware chunker, batch embedder, AEGIS queue, ghost_indexed_items audit — **COMPLETE**
+- [ ] SPRINT 6D - Privacy exclusion engine (4 layers: hard-coded, PII scanner, contextual, user rules)
 - [ ] SPRINT 6D - Privacy exclusion engine (4 layers: hard-coded, PII scanner, contextual, user rules)
 - [ ] SPRINT 6E - Interrupt scoring engine (6h cadence, ranking formula, 24h cap, Claude haiku summaries)
 - [ ] SPRINT 6F - Ghost process lifecycle + IPC (startup order, shutdown, degraded components, AEGIS propagation)

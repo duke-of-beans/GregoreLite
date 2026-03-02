@@ -272,6 +272,27 @@ CREATE TABLE IF NOT EXISTS ghost_email_state (
 CREATE INDEX IF NOT EXISTS idx_ghost_email_state_provider
   ON ghost_email_state (provider, account);
 
+-- ─── GHOST INGEST — Phase 6C ─────────────────────────────────────────────────
+-- source_type already exists in content_chunks (Sprint 3A).
+-- Add source_path and source_account columns for Ghost provenance tracking.
+ALTER TABLE content_chunks ADD COLUMN IF NOT EXISTS source_path    TEXT;
+ALTER TABLE content_chunks ADD COLUMN IF NOT EXISTS source_account TEXT;
+
+-- Audit trail for the Privacy Dashboard (Sprint 6G). One row per ingest op.
+CREATE TABLE IF NOT EXISTS ghost_indexed_items (
+  id            TEXT PRIMARY KEY,
+  source_type   TEXT NOT NULL,         -- 'file' | 'email'
+  source_path   TEXT,
+  source_account TEXT,
+  chunk_count   INTEGER DEFAULT 0,
+  indexed_at    INTEGER NOT NULL,
+  deleted       INTEGER DEFAULT 0,     -- soft delete for Privacy Dashboard
+  deleted_at    INTEGER
+);
+
+CREATE INDEX IF NOT EXISTS idx_ghost_indexed_items_type
+  ON ghost_indexed_items (source_type, indexed_at DESC);
+
 -- ─── FTS VIRTUAL TABLE ───────────────────────────────────────────────────────
 CREATE VIRTUAL TABLE IF NOT EXISTS messages_fts USING fts5(
   content,

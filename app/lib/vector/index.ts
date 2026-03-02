@@ -46,6 +46,7 @@ interface ChunkRow {
   content: string;
   source_type: string;
   source_id: string;
+  metadata: string | null;
 }
 
 // ─── Public API ───────────────────────────────────────────────────────────────
@@ -105,17 +106,24 @@ export async function deleteVector(chunkId: string): Promise<void> {
  *   2. Search vec_index for k nearest neighbours
  *   3. Filter results below minSimilarity threshold
  *   4. Enrich with content + source metadata from content_chunks
+ *   5. Exclude Ghost-sourced chunks unless includeGhost is true
  *
  * Uses dynamic import for embed() to break the circular module dep.
+ *
+ * Ghost chunks (metadata.source === 'ghost') are excluded by default because
+ * Ghost has its own surfacing path via the interrupt scorer (Sprint 6E).
+ * Pass includeGhost: true only from the Ghost interrupt scorer.
  *
  * @param queryText     Raw text to embed and search against
  * @param k             Number of candidates to retrieve (default 10)
  * @param minSimilarity Cosine similarity floor — results below this are dropped (default 0.70)
+ * @param includeGhost  Include Ghost-indexed chunks in results (default false)
  */
 export async function findSimilarChunks(
   queryText: string,
   k: number = 10,
-  minSimilarity: number = 0.7
+  minSimilarity: number = 0.7,
+  includeGhost: boolean = false
 ): Promise<
   Array<VectorSearchResult & { content: string; sourceType: string; sourceId: string }>
 > {
@@ -140,18 +148,29 @@ export async function findSimilarChunks(
 
     const chunk = db
       .prepare(
-        'SELECT content, source_type, source_id FROM content_chunks WHERE id = ?'
+        'SELECT content, source_type, source_id, metadata FROM content_chunks WHERE id = ?'
       )
       .get(result.chunkId) as ChunkRow | undefined;
 
-    if (chunk) {
-      enriched.push({
-        ...result,
-        content: chunk.content,
-        sourceType: chunk.source_type,
-        sourceId: chunk.source_id,
-      });
+    if (!chunk) continue;
+
+    // Ghost filter: skip Ghost-indexed chunks unless the caller explicitly opts in.
+    // Ghost chunks are identified by metadata.source === 'ghost'.
+    if (!includeGhost && chunk.metadata) {
+      try {
+        const meta = JSON.parse(chunk.metadata) as { source?: string };
+        if (meta.source === 'ghost') continue;
+      } catch {
+        // Malformed metadata — treat as non-ghost and include
+      }
     }
+
+    enriched.push({
+      ...result,
+      content: chunk.content,
+      sourceType: chunk.source_type,
+      sourceId: chunk.source_id,
+    });
   }
 
   return enriched;
