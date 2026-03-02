@@ -104,7 +104,7 @@ export interface ResultReport {
   };
   quality_results: {
     shim?: { score: number; issues: unknown[] };
-    eos?: { vulnerabilities: unknown[]; drifts: unknown[] };
+    eos?: { healthScore?: number; vulnerabilities: unknown[]; drifts: unknown[] };
   };
   tokens_used: number;
   cost_usd: number;

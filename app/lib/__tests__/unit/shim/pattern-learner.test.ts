@@ -29,13 +29,6 @@ mockDb.prepare.mockImplementation(() => ({
   get: vi.fn().mockReturnValue(null),
 }));
 
-// db.transaction must return an executable function
-const realDbGet = () => ({
-  all: vi.fn().mockReturnValue([]),
-  run: vi.fn(),
-  get: vi.fn().mockReturnValue(null),
-});
-
 vi.mock('@/lib/kernl/database', () => {
   const stmtFactory = () => ({
     all: vi.fn().mockReturnValue([]),

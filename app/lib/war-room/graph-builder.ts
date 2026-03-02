@@ -47,17 +47,31 @@ export async function buildGraph(): Promise<WarRoomGraph> {
 
   const rows = (await res.json()) as ManifestRow[];
 
-  const nodes: GraphNode[] = rows.map((row) => ({
-    id: row.id,
-    title: row.title ?? 'Untitled',
-    status: mapStatus(row.status),
-    taskType: row.task_type ?? 'unknown',
-    costUsd: row.cost_usd ?? undefined,
-    tokensUsed: row.tokens_used ?? undefined,
-    createdAt: row.created_at
-      ? new Date(row.created_at).getTime()
-      : Date.now(),
-  }));
+  const nodes: GraphNode[] = rows.map((row) => {
+    let eosScore: number | undefined;
+    if (row.result_report) {
+      try {
+        const report = JSON.parse(row.result_report) as {
+          quality_results?: { eos?: { healthScore?: number } };
+        };
+        const hs = report.quality_results?.eos?.healthScore;
+        if (typeof hs === 'number') eosScore = hs;
+      } catch {
+        // malformed JSON — skip
+      }
+    }
+
+    return {
+      id: row.id,
+      title: row.title ?? 'Untitled',
+      status: mapStatus(row.status),
+      taskType: row.task_type ?? 'unknown',
+      costUsd: row.cost_usd ?? undefined,
+      tokensUsed: row.tokens_used ?? undefined,
+      createdAt: row.created_at ? new Date(row.created_at).getTime() : Date.now(),
+      ...(eosScore !== undefined && { eosScore }),
+    };
+  });
 
   const edges: GraphEdge[] = [];
   for (const row of rows) {

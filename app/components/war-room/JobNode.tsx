@@ -10,6 +10,12 @@
 import { useEffect, useRef } from 'react';
 import type { GraphNode, NodeStatus } from '@/lib/war-room/types';
 
+function eosScoreColor(score: number): string {
+  if (score >= 80) return 'var(--success)';
+  if (score >= 60) return 'var(--warning)';
+  return 'var(--error)';
+}
+
 const STATUS_COLOR: Record<NodeStatus, string> = {
   pending:     'var(--shadow)',
   running:     'var(--cyan)',
@@ -94,9 +100,20 @@ export function JobNode({ node, position, width, height, selected, onClick }: Jo
         {/* Content */}
         <div className="war-room-node-content">
           <span className="war-room-node-title">{node.title}</span>
-          <span className="war-room-node-badge" style={{ color }}>
-            {STATUS_LABEL[node.status]}
-          </span>
+          <div className="flex items-center gap-1">
+            {node.status === 'complete' && node.eosScore !== undefined && (
+              <span
+                className="war-room-node-eos"
+                style={{ color: eosScoreColor(node.eosScore) }}
+                title={`EoS health score: ${node.eosScore}/100`}
+              >
+                {node.eosScore}
+              </span>
+            )}
+            <span className="war-room-node-badge" style={{ color }}>
+              {STATUS_LABEL[node.status]}
+            </span>
+          </div>
         </div>
       </div>
     </foreignObject>

@@ -1,6 +1,6 @@
 # GREGORE LITE — STATUS
-**Last Updated:** March 2, 2026 — Sprint 5B COMPLETE  
-**Phase:** Phase 5 — Quality Layer (SHIM + Eye of Sauron)
+**Last Updated:** March 2, 2026 — Phase 5 COMPLETE  
+**Phase:** Phase 6 — Ghost Thread (next)
 
 ---
 
@@ -340,8 +340,8 @@ Execution order: 4A → 4B → 4C (all sequential)
 Execution order: 5A → 5B → 5C (all sequential)
 
 - [x] **SPRINT 5A** — Eye of Sauron native integration — **COMPLETE** (527/527 tests, 0 tsc errors)
-- [ ] **SPRINT 5B** — SHIM PatternLearner migration + FP feedback UI (dismiss button, `/api/eos/fp`, quality section in context panel)
-- [ ] **SPRINT 5C** — Integration hardening, self-scan, PatternLearner seeding, War Room badge, Phase 5 certification
+- [x] **SPRINT 5B** — SHIM PatternLearner migration + FP feedback UI — **COMPLETE** (553/553 tests, 0 tsc errors)
+- [x] **SPRINT 5C** — Integration hardening, self-scan, PatternLearner seeding, War Room badge, Phase 5 certification — **COMPLETE** (584/584 tests, 0 tsc errors)
 
 ## Sprint 5A Gate Results (COMPLETE — March 2, 2026)
 
@@ -399,6 +399,33 @@ Execution order: 5A → 5B → 5C (all sequential)
 | Dismiss (×) button fires POST `/api/eos/fp` | ✅ EoSIssueRow.tsx |
 | FP route wired | ✅ `app/api/eos/fp/route.ts` |
 | persistScanReport writes eos_reports | ✅ Replaces bare persistHealthScore |
+
+## Phase 5 Gate Results (COMPLETE — March 2, 2026)
+
+| Gate | Result |
+|------|--------|
+| `npx tsc --noEmit` | ✅ 0 errors |
+| `pnpm test:run` | ✅ 584/584 passing (30 test files) |
+| EoS self-scan health score | ✅ 82/100 (Good) — 242 files, 208ms |
+| phase5-integration.test.ts — 31 tests | ✅ All passing |
+| EoS quality gate (eos_required + score<70 → FAILED) | ✅ Verified (integration test) |
+| result_report backfill for War Room | ✅ quality_results.eos.healthScore written |
+| EoS badge in JobNode.tsx | ✅ green/amber/red by scoreClass thresholds |
+| scoreClass utility extracted | ✅ lib/eos/score-class.ts (no React/DB deps) |
+| ContextPanel "No scan data" placeholder | ✅ Quality section always visible |
+| PatternLearner seeding script | ✅ scripts/seed-patterns.ts — 20 records |
+| EoS self-scan script | ✅ scripts/self-scan.ts |
+| BLUEPRINT_FINAL.md §13 updated | ✅ Phase 5 complete noted |
+| SPRINT_5C_COMPLETE.md | ✅ Written |
+| Phase 5 certification commit pushed | ✅ Done |
+
+### Phase 5 Key Discoveries (Sprint 5C)
+
+- **EoS scanner comment gotcha**: `detectMemoryLeaks` uses `content.includes('clearInterval')` to bail out early. Any comment containing the literal word "clearInterval" (e.g., "without clearInterval") causes the detector to skip the file. Test fixtures must never include the suppression keyword in any form — including comments.
+- **shim_improvements positional params**: `persistImprovement` calls `.run()` with 11 positional args, not a named-params object. Mocks that destructure `args[0]` as `{ id, pattern }` silently fail — use `const [id, pattern] = args as [string, string]` instead.
+- **scoreClass extracted to avoid migration chain**: Importing `scoreClass` from `ContextPanel` in tests pulls `lib/database/migrations/index.ts` which reads SQL files from disk that don't exist in test environments. Extracting to `lib/eos/score-class.ts` breaks the chain entirely.
+- **EoS deep mode catches test fixtures**: deep mode scans `*.test.ts` files. A `writeFileSync` string literal containing `setInterval(` inside a test file gets flagged as MEMORY_LEAK — it's a known false positive at score position 3 in the self-scan. The text-based scanner has no AST context.
+- **PatternLearner DB errors expected in scripts**: `scripts/seed-patterns.ts` logs `no such table: shim_improvements` because Phase 5 migrations have not been applied to the dev database yet. In-memory PatternLearner functions correctly; persistence resumes once migration 006 runs.
 
 ## Open Questions
 

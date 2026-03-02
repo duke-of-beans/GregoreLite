@@ -976,7 +976,7 @@ Gregore-UI-specific:
 
 **Phase 4 — Decision Gate** — ✅ COMPLETE (March 2, 2026). 8-condition trigger detection (5 live keyword/semantic + 3 Haiku NLP inference), non-modal GatePanel UI, HTTP 423 API lock enforcement, approve/dismiss/override flow, mandatory gate at 3 dismissals, KERNL decision logging, getValueBoost() wired to decisions table. False positive rate: 0/10 normal scenarios in integration testing. Sync analysis path: 1ms on 20-message conversation. 474/474 tests passing. See SPRINT_4A/4B/4C_COMPLETE.md.
 
-**Phase 5 — Quality Layer** — SHIM native integration, Eye of Sauron, quality gate enforcement.
+**Phase 5 — Quality Layer** — ✅ COMPLETE (March 2, 2026). Eye of Sauron: character forensics (INVISIBLE_CHAR, HOMOGLYPH, SMART_QUOTE, GREEK_SEMICOLON, MIXED_INDENT), pattern precognition (MEMORY_LEAK, EVENT_LISTENER_LEAK), health score formula (100 − critical×8 − warning×2 − cycles×10), FP tracker with 20% auto-suppression threshold. PatternLearner native migration (shim_patterns, shim_improvements tables, KERNL-backed persistence, predictSuccess before spawn). Quality gate: `eos_required=true` + score<70 downgrades manifest to FAILED. result_report backfill writes `quality_results.eos.healthScore` for War Room display. EoS badge on completed JobNode (green ≥80 / amber ≥60 / red <60). scoreClass utility extracted to `lib/eos/score-class.ts`. FP dismiss UI (EoSIssueRow × button, `/api/eos/fp` route). 22-test integration suite. Self-scan baseline: 82/100 health score, 242 files, 208ms. 584/584 tests passing. See SPRINT_5C_COMPLETE.md.
 
 **Phase 6 — Ghost Thread** — Full disk + email ingest, interrupt engine, context panel surface. Council Session 2 complete — see §6.
 

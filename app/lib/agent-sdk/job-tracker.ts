@@ -153,6 +153,40 @@ export function writeResultReport(
             if (projectId) persistScanReport(projectId, eosResult, 'quick');
             // Record improvement outcome with PatternLearner
             if (manifestRow) recordJobImprovement(manifestRow, eosResult);
+
+            // Backfill result_report.quality_results.eos with health score for War Room display
+            try {
+              const existingReport = manifestRow?.result_report
+                ? (JSON.parse(manifestRow.result_report) as Record<string, unknown>)
+                : {};
+              const updatedReport = {
+                ...existingReport,
+                quality_results: {
+                  ...((existingReport.quality_results as Record<string, unknown>) ?? {}),
+                  eos: { healthScore: eosResult.healthScore, vulnerabilities: [], drifts: [] },
+                },
+              };
+              db.prepare(
+                `UPDATE manifests SET result_report = ? WHERE id = ?`,
+              ).run(JSON.stringify(updatedReport), manifestId);
+            } catch {
+              // Non-critical — War Room badge just won't show
+            }
+
+            // EoS quality gate — downgrade COMPLETED → FAILED when score < 70
+            const qualityGates = manifestRow?.quality_gates
+              ? (JSON.parse(manifestRow.quality_gates) as { eos_required?: boolean })
+              : null;
+            if (qualityGates?.eos_required === true && eosResult.healthScore < 70) {
+              db.prepare(
+                `UPDATE manifests SET status = 'failed', updated_at = ? WHERE id = ?`,
+              ).run(Date.now(), manifestId);
+              console.warn(
+                '[EoS gate] Job downgraded to FAILED — health score',
+                eosResult.healthScore,
+                '< 70',
+              );
+            }
           })
           .catch((err: unknown) =>
             console.warn('[EoS] post-job scan failed', { err })

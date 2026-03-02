@@ -24,6 +24,7 @@ import { KERNLStatus } from './KERNLStatus';
 import { AEGISStatus } from './AEGISStatus';
 import { SuggestionSlot } from './SuggestionSlot';
 import { EoSIssueRow } from './EoSIssueRow';
+import { scoreClass } from '@/lib/eos/score-class';
 
 // ─── Collapsed icon strip ─────────────────────────────────────────────────────
 
@@ -75,14 +76,6 @@ function CollapsedStrip({ onExpand }: { onExpand: () => void }) {
 }
 
 // ─── Main panel ───────────────────────────────────────────────────────────────
-
-/** Map health score to a CSS class name for colour coding */
-function scoreClass(score: number): string {
-  if (score >= 90) return 'text-[var(--success)]';
-  if (score >= 70) return 'text-[var(--cyan)]';
-  if (score >= 50) return 'text-[var(--warning)]';
-  return 'text-[var(--error)]';
-}
 
 function PanelContent() {
   const { collapsed, toggleCollapsed, state } = useContextPanel();
@@ -142,20 +135,22 @@ function PanelContent() {
       <DecisionList />
       <div className="mx-4 h-px bg-[var(--shadow)] opacity-30" />
 
-      {/* Quality section — shown once at least one EoS scan has run */}
-      {state.eosSummary && (
-        <>
-          <div className="px-4 py-2">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-semibold uppercase tracking-widest text-[var(--mist)]">
-                Quality
-              </span>
+      {/* Quality section — always present; content depends on scan state */}
+      <>
+        <div className="px-4 py-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-[var(--mist)]">
+              Quality
+            </span>
+            {state.eosSummary && (
               <span className={`text-[11px] font-medium tabular-nums ${scoreClass(state.eosSummary.healthScore)}`}>
                 {state.eosSummary.healthScore}/100
               </span>
-            </div>
+            )}
           </div>
-          {visibleIssues.length > 0 ? (
+        </div>
+        {state.eosSummary ? (
+          visibleIssues.length > 0 ? (
             <>
               {visibleIssues.map((issue) => (
                 <EoSIssueRow
@@ -172,11 +167,13 @@ function PanelContent() {
               )}
             </>
           ) : (
-            <p className="px-4 pb-2 text-[11px] text-[var(--success)]">No issues detected</p>
-          )}
-          <div className="mx-4 h-px bg-[var(--shadow)] opacity-30" />
-        </>
-      )}
+            <p className="px-4 pb-2 text-[11px] text-[var(--success)]">✓ No issues detected</p>
+          )
+        ) : (
+          <p className="px-4 pb-2 text-[11px] text-[var(--mist)] italic">No scan data yet</p>
+        )}
+        <div className="mx-4 h-px bg-[var(--shadow)] opacity-30" />
+      </>
 
       {/* Status footer */}
       <div className="mt-auto border-t border-[var(--shadow)] py-2">

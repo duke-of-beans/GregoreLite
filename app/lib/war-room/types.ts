@@ -28,6 +28,7 @@ export interface GraphNode {
   costUsd?: number;
   tokensUsed?: number;
   createdAt: number;   // epoch ms
+  eosScore?: number;   // health score from EoS post-job scan (Sprint 5A/5C)
 }
 
 export interface GraphEdge {
