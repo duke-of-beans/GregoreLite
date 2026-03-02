@@ -5,8 +5,10 @@
  *   import { scan, scanFiles, getHealthScore } from '@/lib/eos'
  */
 
+import { nanoid } from 'nanoid';
 import { getDatabase } from '../kernl/database.js';
 import { scan as _scan, scanFiles as _scanFiles } from './engine.js';
+import type { EoSScanResult, ScanMode } from './types.js';
 
 export type { ScanMode, EoSScanResult, HealthIssue } from './types.js';
 export { computeHealthScore } from './health-score.js';
@@ -73,11 +75,47 @@ export function getHealthScore(projectId: string): StoredHealthScore | null {
 
 /**
  * Persist a health score back to KERNL after a scan completes.
- * Called by the job-tracker hook — not intended for direct use.
+ * @deprecated Use persistScanReport() which also writes to eos_reports.
  */
 export function persistHealthScore(projectId: string, score: number): void {
   const db = getDatabase();
   db.prepare(
     `UPDATE projects SET health_score = ?, last_eos_scan = datetime('now') WHERE id = ?`,
   ).run(score, projectId);
+}
+
+/**
+ * Persist a full scan result to KERNL:
+ *   1. Updates projects.health_score + projects.last_eos_scan
+ *   2. Inserts a new row into eos_reports for UI display
+ *
+ * Called by job-tracker after every post-COMPLETED scan.
+ */
+export function persistScanReport(
+  projectId: string,
+  result: EoSScanResult,
+  mode: ScanMode = 'quick',
+): void {
+  const db = getDatabase();
+
+  // Update cached score on the project row
+  db.prepare(
+    `UPDATE projects SET health_score = ?, last_eos_scan = datetime('now') WHERE id = ?`,
+  ).run(result.healthScore, projectId);
+
+  // Insert scan report for UI to display
+  db.prepare(`
+    INSERT INTO eos_reports
+      (id, project_id, health_score, issues_json, files_scanned, duration_ms, suppressed, scan_mode)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(
+    nanoid(),
+    projectId,
+    result.healthScore,
+    JSON.stringify(result.issues),
+    result.filesScanned,
+    result.durationMs,
+    JSON.stringify(result.suppressed),
+    mode,
+  );
 }

@@ -61,6 +61,7 @@ describe('ContextPanelState type conformance', () => {
       kernlStatus: 'indexing',
       aegisProfile: 'DEEP_FOCUS',
       pendingSuggestions: 3,
+      eosSummary: null,
     };
 
     expect(state.activeProject?.name).toBe('GregLite');

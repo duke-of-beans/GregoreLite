@@ -223,6 +223,40 @@ CREATE TABLE IF NOT EXISTS eos_reports (
 CREATE INDEX IF NOT EXISTS idx_eos_reports_project
   ON eos_reports (project_id, created_at DESC);
 
+-- ─── SHIM — Phase 5B ─────────────────────────────────────────────────────────
+
+-- Pattern learning table: persists PatternLearner.patterns Map across restarts
+CREATE TABLE IF NOT EXISTS shim_patterns (
+  id             TEXT    PRIMARY KEY,
+  description    TEXT    NOT NULL,
+  frequency      INTEGER DEFAULT 0,
+  success_rate   REAL    DEFAULT 0,
+  average_impact REAL    DEFAULT 0,
+  contexts       TEXT,   -- JSON: Array<{complexity, maintainability, linesOfCode}>
+  updated_at     INTEGER NOT NULL
+);
+
+-- Historical improvement log: one row per Agent SDK job COMPLETED
+CREATE TABLE IF NOT EXISTS shim_improvements (
+  id                    TEXT    PRIMARY KEY,
+  pattern               TEXT    NOT NULL,
+  complexity            REAL,
+  maintainability       REAL,
+  lines_of_code         INTEGER,
+  modification_type     TEXT,
+  impact_score          REAL,
+  success               INTEGER DEFAULT 0,  -- 0 = false, 1 = true
+  complexity_delta      REAL,
+  maintainability_delta REAL,
+  recorded_at           INTEGER NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_shim_improvements_pattern
+  ON shim_improvements (pattern, recorded_at DESC);
+
+-- EoS health score at manifest spawn time (used for before/after delta)
+ALTER TABLE manifests ADD COLUMN IF NOT EXISTS shim_score_before REAL DEFAULT NULL;
+
 -- ─── FTS VIRTUAL TABLE ───────────────────────────────────────────────────────
 CREATE VIRTUAL TABLE IF NOT EXISTS messages_fts USING fts5(
   content,

@@ -13,7 +13,9 @@ import {
   listThreads,
   getLatestAegisSignal,
 } from '@/lib/kernl';
-import type { ContextPanelState } from '@/lib/context/types';
+import { getDatabase } from '@/lib/kernl/database';
+import type { ContextPanelState, EoSHealthSummary, EoSIssueSummary } from '@/lib/context/types';
+import type { HealthIssue } from '@/lib/eos/types';
 
 export const dynamic = 'force-dynamic';
 
@@ -45,6 +47,51 @@ export async function GET(): Promise<NextResponse> {
     // AEGIS online state — stubbed false until Sprint 2C wires getAEGISStatus()
     const aegisOnline = false;
 
+    // EoS summary — latest scan report for the active project
+    let eosSummary: EoSHealthSummary | null = null;
+    if (activeProject) {
+      const db = getDatabase();
+      const reportRow = db
+        .prepare(
+          `SELECT health_score, issues_json, scan_mode, created_at
+           FROM eos_reports WHERE project_id = ?
+           ORDER BY created_at DESC LIMIT 1`,
+        )
+        .get(activeProject.id) as {
+          health_score: number;
+          issues_json: string;
+          scan_mode: string;
+          created_at: string;
+        } | null;
+
+      if (reportRow) {
+        let issues: HealthIssue[] = [];
+        try {
+          issues = JSON.parse(reportRow.issues_json) as HealthIssue[];
+        } catch {
+          // malformed JSON — show empty issues
+        }
+        const score = reportRow.health_score;
+        const grade: EoSHealthSummary['grade'] =
+          score >= 90 ? 'excellent' : score >= 70 ? 'good' : score >= 50 ? 'attention' : 'critical';
+
+        eosSummary = {
+          healthScore: score,
+          grade,
+          issues: issues.map(
+            (i): EoSIssueSummary => ({
+              ruleId: i.ruleId,
+              severity: i.severity,
+              message: i.message,
+              file: i.file,
+              ...(i.line !== undefined && { line: i.line }),
+            }),
+          ),
+          lastScannedAt: reportRow.created_at,
+        };
+      }
+    }
+
     const state: ContextPanelState = {
       activeProject: activeProject
         ? {
@@ -64,6 +111,7 @@ export async function GET(): Promise<NextResponse> {
       aegisProfile,
       aegisOnline,
       pendingSuggestions: 0,
+      eosSummary,
     };
 
     return NextResponse.json({ success: true, data: state });

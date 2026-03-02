@@ -1,5 +1,5 @@
 # GREGORE LITE — STATUS
-**Last Updated:** March 2, 2026 — Sprint 5A COMPLETE  
+**Last Updated:** March 2, 2026 — Sprint 5B COMPLETE  
 **Phase:** Phase 5 — Quality Layer (SHIM + Eye of Sauron)
 
 ---
@@ -381,6 +381,24 @@ Execution order: 5A → 5B → 5C (all sequential)
 
 - `D:\Projects\eye-of-sauron\` — migrate: engine core, CharacterForensics, PatternPrecognition, BatchProcessor, DependencyGraph, TechnicalDebtCalculator. Skip: server, CLI, reporters, schedulers, license manager.
 - `D:\Projects\SHIM\` — migrate: `src/ml/PatternLearner.ts` only. Skip: MLPredictor (stub), Redis/BullMQ coordination layer, MCP server.
+
+## Sprint 5B Gate Results
+
+| Gate | Result |
+|------|--------|
+| `npx tsc --noEmit` | ✅ 0 errors |
+| `pnpm test:run` | ✅ 553/553 passing (29 test files) |
+| PatternLearner migrated | ✅ `app/lib/shim/pattern-learner.ts` |
+| MLPredictor NOT migrated | ✅ Documented in SPRINT_5B_COMPLETE.md |
+| shim_patterns + shim_improvements tables | ✅ In schema.sql |
+| PatternLearner hydrates from KERNL | ✅ On construction |
+| recordImprovement after COMPLETED | ✅ Via improvement-log.ts |
+| predictSuccess before spawn | ✅ logPredictions() in executor.ts |
+| shim_score_before stored at spawn | ✅ storeShimScoreBefore() |
+| EoS issue rows in context panel | ✅ Quality section in ContextPanel.tsx |
+| Dismiss (×) button fires POST `/api/eos/fp` | ✅ EoSIssueRow.tsx |
+| FP route wired | ✅ `app/api/eos/fp/route.ts` |
+| persistScanReport writes eos_reports | ✅ Replaces bare persistHealthScore |
 
 ## Open Questions
 

@@ -19,6 +19,7 @@ import {
 import { costTracker } from './cost-tracker';
 import { AGENT_COST_CONFIG } from './config';
 import type { TaskManifest, JobRecord, ResultReport, TokenUsage } from './types';
+import { storeShimScoreBefore, logPredictions } from '../shim/improvement-log';
 
 const client = new Anthropic();
 
@@ -45,6 +46,10 @@ export async function runSession(
 
   // Write initial row to KERNL (SPAWNING already set by spawn() in index.ts)
   insertManifest(manifest);
+
+  // SHIM: store health score snapshot and log pattern predictions (fire-and-forget)
+  storeShimScoreBefore(jobId, manifest.context.project_path);
+  logPredictions(manifest.context.project_path, manifest.context.files?.length ?? 0);
 
   // Register with cost tracker — store returned sessionId for all subsequent calls
   const costSessionId = costTracker.startSession(AGENT_COST_CONFIG.defaultModel);

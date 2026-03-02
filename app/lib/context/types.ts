@@ -1,6 +1,21 @@
 // ContextPanel type definitions
 // Consumed by: context-provider.ts, API route, all context components
 
+export interface EoSIssueSummary {
+  ruleId: string;
+  severity: 'critical' | 'warning' | 'info';
+  message: string;
+  file: string;
+  line?: number;
+}
+
+export interface EoSHealthSummary {
+  healthScore: number;
+  grade: 'excellent' | 'good' | 'attention' | 'critical';
+  issues: EoSIssueSummary[];
+  lastScannedAt: string | null;
+}
+
 export interface KERNLProject {
   id: string;
   name: string;
@@ -29,6 +44,8 @@ export interface ContextPanelState {
   aegisOnline?: boolean;
   /** Always 0 until Phase 3 Cross-Context engine activates */
   pendingSuggestions: number;
+  /** Latest EoS scan result for the active project — null if no scan yet */
+  eosSummary: EoSHealthSummary | null;
 }
 
 export const DEFAULT_CONTEXT_STATE: ContextPanelState = {
@@ -40,4 +57,5 @@ export const DEFAULT_CONTEXT_STATE: ContextPanelState = {
   aegisProfile: 'IDLE',
   aegisOnline: false,
   pendingSuggestions: 0,
+  eosSummary: null,
 };

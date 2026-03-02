@@ -16,12 +16,14 @@ import {
   useContextPanel,
   useContextPanelProvider,
 } from '@/lib/context/context-provider';
+import { useState } from 'react';
 import { ProjectSection } from './ProjectSection';
 import { SessionSection } from './SessionSection';
 import { DecisionList } from './DecisionList';
 import { KERNLStatus } from './KERNLStatus';
 import { AEGISStatus } from './AEGISStatus';
 import { SuggestionSlot } from './SuggestionSlot';
+import { EoSIssueRow } from './EoSIssueRow';
 
 // ─── Collapsed icon strip ─────────────────────────────────────────────────────
 
@@ -74,8 +76,25 @@ function CollapsedStrip({ onExpand }: { onExpand: () => void }) {
 
 // ─── Main panel ───────────────────────────────────────────────────────────────
 
+/** Map health score to a CSS class name for colour coding */
+function scoreClass(score: number): string {
+  if (score >= 90) return 'text-[var(--success)]';
+  if (score >= 70) return 'text-[var(--cyan)]';
+  if (score >= 50) return 'text-[var(--warning)]';
+  return 'text-[var(--error)]';
+}
+
 function PanelContent() {
-  const { collapsed, toggleCollapsed } = useContextPanel();
+  const { collapsed, toggleCollapsed, state } = useContextPanel();
+  const [dismissedKeys, setDismissedKeys] = useState<Set<string>>(new Set());
+
+  const handleDismissed = (ruleId: string, file: string) => {
+    setDismissedKeys((prev) => new Set(prev).add(`${ruleId}:${file}`));
+  };
+
+  const visibleIssues = (state.eosSummary?.issues ?? [])
+    .filter((i) => !dismissedKeys.has(`${i.ruleId}:${i.file}`))
+    .slice(0, 5);
 
   // Cmd+B keyboard shortcut
   useEffect(() => {
@@ -122,6 +141,42 @@ function PanelContent() {
       <div className="mx-4 h-px bg-[var(--shadow)] opacity-30" />
       <DecisionList />
       <div className="mx-4 h-px bg-[var(--shadow)] opacity-30" />
+
+      {/* Quality section — shown once at least one EoS scan has run */}
+      {state.eosSummary && (
+        <>
+          <div className="px-4 py-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-[var(--mist)]">
+                Quality
+              </span>
+              <span className={`text-[11px] font-medium tabular-nums ${scoreClass(state.eosSummary.healthScore)}`}>
+                {state.eosSummary.healthScore}/100
+              </span>
+            </div>
+          </div>
+          {visibleIssues.length > 0 ? (
+            <>
+              {visibleIssues.map((issue) => (
+                <EoSIssueRow
+                  key={`${issue.ruleId}:${issue.file}:${issue.line ?? 0}`}
+                  issue={issue}
+                  projectId={state.activeProject?.id ?? ''}
+                  onDismissed={handleDismissed}
+                />
+              ))}
+              {(state.eosSummary.issues.length - dismissedKeys.size) > 5 && (
+                <p className="px-4 pb-1 text-[10px] text-[var(--mist)]">
+                  +{state.eosSummary.issues.length - dismissedKeys.size - 5} more issues
+                </p>
+              )}
+            </>
+          ) : (
+            <p className="px-4 pb-2 text-[11px] text-[var(--success)]">No issues detected</p>
+          )}
+          <div className="mx-4 h-px bg-[var(--shadow)] opacity-30" />
+        </>
+      )}
 
       {/* Status footer */}
       <div className="mt-auto border-t border-[var(--shadow)] py-2">

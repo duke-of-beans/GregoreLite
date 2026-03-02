@@ -10,7 +10,8 @@
 import { getDatabase } from '../kernl/database';
 import type { TaskManifest, JobState, ResultReport } from './types';
 import { runOnce } from '../indexer';
-import { scan, persistHealthScore } from '../eos/index';
+import { scan, persistScanReport } from '../eos/index';
+import { recordJobImprovement } from '../shim/improvement-log';
 
 // ─── Row shape matching schema.sql manifests table ────────────────────────────
 
@@ -33,6 +34,7 @@ export interface ManifestRow {
   result_report: string | null; // JSON
   tokens_used: number;
   cost_usd: number;
+  shim_score_before: number | null;
 }
 
 // ─── Insert a new manifest row (SPAWNING state) ───────────────────────────────
@@ -137,7 +139,7 @@ export function writeResultReport(
       );
     });
 
-    // Look up project path + id from the manifest row for EoS wiring
+    // Look up project path + id from the manifest row for EoS + SHIM wiring
     const manifestRow = getManifestRow(manifestId);
     const projectPath = manifestRow?.project_path ?? null;
     if (projectPath) {
@@ -147,8 +149,10 @@ export function writeResultReport(
       const projectId = projectRow?.id ?? null;
       setImmediate(() => {
         scan(projectPath, 'quick', projectId ?? undefined)
-          .then((result) => {
-            if (projectId) persistHealthScore(projectId, result.healthScore);
+          .then((eosResult) => {
+            if (projectId) persistScanReport(projectId, eosResult, 'quick');
+            // Record improvement outcome with PatternLearner
+            if (manifestRow) recordJobImprovement(manifestRow, eosResult);
           })
           .catch((err: unknown) =>
             console.warn('[EoS] post-job scan failed', { err })
