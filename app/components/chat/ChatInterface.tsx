@@ -38,6 +38,7 @@ import { registerBuiltins } from '@/lib/command-registry/commands';
 import { ThreadSearch, type SearchMatch } from './ThreadSearch';
 import { ChatHistoryPanel } from './ChatHistoryPanel';
 import { SettingsPanel } from '../settings/SettingsPanel';
+import { InspectorDrawer } from '../inspector/InspectorDrawer';
 
 type ActiveTab = 'strategic' | 'workers' | 'warroom';
 
@@ -65,6 +66,9 @@ export function ChatInterface() {
 
   // ── S9-13: Settings panel state ───────────────────────────────────────────
   const [settingsOpen, setSettingsOpen] = useState(false);
+
+  // ── S9-14: Inspector drawer state ─────────────────────────────────────────
+  const [inspectorOpen, setInspectorOpen] = useState(false);
 
   // ── In-thread search state (S9-08) ─────────────────────────────────────────
   const [searchOpen, setSearchOpen] = useState(false);
@@ -122,6 +126,11 @@ export function ChatInterface() {
       if (meta && e.key === ',') {
         e.preventDefault();
         setSettingsOpen((prev) => !prev);
+      }
+      // Cmd+I — open inspector drawer (S9-14)
+      if (meta && e.key === 'i') {
+        e.preventDefault();
+        setInspectorOpen((prev) => !prev);
       }
     };
     window.addEventListener('keydown', handler);
@@ -489,6 +498,12 @@ export function ChatInterface() {
       <SettingsPanel
         open={settingsOpen}
         onClose={() => setSettingsOpen(false)}
+      />
+
+      {/* S9-14: Inspector Drawer */}
+      <InspectorDrawer
+        open={inspectorOpen}
+        onClose={() => setInspectorOpen(false)}
       />
 
       <StatusBar />
