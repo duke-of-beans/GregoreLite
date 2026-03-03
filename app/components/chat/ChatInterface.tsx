@@ -1,20 +1,21 @@
 /**
- * ChatInterface Component — Sprint 2E update
+ * ChatInterface Component — Sprint S9-01 update
  *
- * Adds tab navigation: [★ Strategic] [⚙ Workers] [🗺 War Room]
- * Cmd+W opens War Room tab from anywhere in the app.
+ * Multi-thread tabs: per-tab state isolation via thread-tabs-store.
+ * Messages, conversationId, ghost context, and artifact are all per-tab.
+ * Tab navigation: [★ Strategic] [⚙ Workers] [🗺 War Room]
+ * Thread tab bar appears below main tabs when multiple strategic threads open.
+ *
+ * Cmd+W toggles War Room. Cmd+N creates new thread tab.
  *
  * Layout: 2-panel (thread only) ↔ 3-panel (thread + artifact) — CSS animated.
  * After each assistant response, runs artifact detection. If an artifact is
- * found it is written to Zustand store (opens ArtifactPanel) and synced to KERNL.
- *
- * Phase 1 foundation carries through; Phase 2D adds artifact layer;
- * Phase 2E adds War Room tab.
+ * found it is written to the active tab's state and synced to KERNL.
  */
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Header } from '../ui/Header';
 import { MessageList } from './MessageList';
 import { InputField } from './InputField';
@@ -24,11 +25,12 @@ import { JobQueue } from '../jobs/JobQueue';
 import { WarRoom } from '../war-room';
 import type { MessageProps } from './Message';
 import { detectArtifact } from '@/lib/artifacts/detector';
-import { useArtifactStore } from '@/lib/artifacts/store';
 import { syncArtifact } from '@/lib/artifacts/kernl-sync';
 import { useDecisionGateStore } from '@/lib/stores/decision-gate-store';
 import { GatePanel } from '@/components/decision-gate';
 import { useGhostStore } from '@/lib/stores/ghost-store';
+import { useThreadTabsStore, selectActiveTab } from '@/lib/stores/thread-tabs-store';
+import { ThreadTabBar } from './ThreadTabBar';
 
 type ActiveTab = 'strategic' | 'workers' | 'warroom';
 
@@ -46,16 +48,29 @@ const TABS: TabDef[] = [
 ];
 
 export function ChatInterface() {
-  const [messages, setMessages] = useState<MessageProps[]>([]);
   const [input, setInput] = useState('');
   const [sendButtonState, setSendButtonState] = useState<SendButtonState>('normal');
-  const [conversationId, setConversationId] = useState<string | null>(null);
-  const [restoring, setRestoring] = useState(true);
   const [activeTab, setActiveTab] = useState<ActiveTab>('strategic');
 
-  const { activeArtifact, setArtifact, clearArtifact } = useArtifactStore();
+  // Thread tabs store — per-tab state
+  const threadTab = useThreadTabsStore(selectActiveTab);
+  const initializeTabs = useThreadTabsStore((s) => s.initialize);
+  const tabInitializing = useThreadTabsStore((s) => s.initializing);
+  const appendMessage = useThreadTabsStore((s) => s.appendMessage);
+  const setTabConversationId = useThreadTabsStore((s) => s.setTabConversationId);
+  const setTabGhostContext = useThreadTabsStore((s) => s.setTabGhostContext);
+  const setTabArtifact = useThreadTabsStore((s) => s.setTabArtifact);
+  const createTab = useThreadTabsStore((s) => s.createTab);
+
   const { trigger: gateTrigger } = useDecisionGateStore();
-  const { ghostContextActive, clearGhostContextActive, setActiveThreadId } = useGhostStore();
+  const { setActiveThreadId } = useGhostStore();
+
+  // Sync ghost store's activeThreadId when thread tab changes
+  useEffect(() => {
+    if (threadTab?.conversationId) {
+      setActiveThreadId(threadTab.conversationId);
+    }
+  }, [threadTab?.conversationId, setActiveThreadId]);
 
   // ── Keyboard shortcuts ───────────────────────────────────────────────────
   useEffect(() => {
@@ -65,61 +80,39 @@ export function ChatInterface() {
         e.preventDefault();
         setActiveTab((prev) => (prev === 'warroom' ? 'strategic' : 'warroom'));
       }
+      if (meta && e.key === 'n') {
+        e.preventDefault();
+        void createTab();
+        setActiveTab('strategic');
+      }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, []);
+  }, [createTab]);
 
   // ── Boot sequence ────────────────────────────────────────────────────────
   useEffect(() => {
-    let cancelled = false;
+    // Fire bootstrap non-blocking
+    void fetch('/api/bootstrap', { method: 'POST' }).then((res) => {
+      if (!res.ok) console.warn('[boot] Bootstrap returned', res.status);
+      else res.json().then((d) => console.log('[boot] Bootstrap complete', d?.data?.coldStartMs + 'ms')).catch(() => null);
+    }).catch((err) => console.warn('[boot] Bootstrap fetch failed:', err));
 
-    async function bootSequence() {
-      // Fire bootstrap non-blocking
-      void fetch('/api/bootstrap', { method: 'POST' }).then((res) => {
-        if (!res.ok) console.warn('[boot] Bootstrap returned', res.status);
-        else res.json().then((d) => console.log('[boot] Bootstrap complete', d?.data?.coldStartMs + 'ms')).catch(() => null);
-      }).catch((err) => console.warn('[boot] Bootstrap fetch failed:', err));
-
-      // Restore last session
-      try {
-        const res = await fetch('/api/restore');
-        if (!res.ok) return;
-
-        const data = await res.json();
-        if (cancelled) return;
-
-        if (data?.data?.restored && data.data.messages?.length > 0) {
-          const restored: MessageProps[] = data.data.messages.map(
-            (m: { role: 'user' | 'assistant'; content: string; timestamp: number }) => ({
-              role: m.role,
-              content: m.content,
-              timestamp: new Date(m.timestamp),
-            }),
-          );
-          setMessages(restored);
-          setConversationId(data.data.threadId);
-          setActiveThreadId(data.data.threadId);
-        }
-      } catch {
-        // Non-fatal — start fresh
-      } finally {
-        if (!cancelled) setRestoring(false);
-      }
-    }
-
-    void bootSequence();
-    return () => { cancelled = true; };
-  }, []);
+    // Initialize thread tabs from KERNL
+    void initializeTabs();
+  }, [initializeTabs]);
 
   // ── Send message ─────────────────────────────────────────────────────────
-  const handleSubmit = async () => {
-    if (!input.trim()) return;
+  const handleSubmit = useCallback(async () => {
+    if (!input.trim() || !threadTab) return;
 
     const messageText = input;
+    const tabId = threadTab.id;
+    const conversationId = threadTab.conversationId;
+
     setInput('');
-    // Ghost context is consumed when the user sends the next message
-    clearGhostContextActive();
+    // Clear ghost context on send
+    setTabGhostContext(tabId, null);
 
     const userMessage: MessageProps = {
       role: 'user',
@@ -127,7 +120,7 @@ export function ChatInterface() {
       timestamp: new Date(),
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    appendMessage(tabId, userMessage);
     setSendButtonState('checking');
 
     try {
@@ -141,16 +134,13 @@ export function ChatInterface() {
       });
 
       if (response.status === 423) {
-        // Decision gate is active — the gate panel should already be visible
-        // from the Zustand store (set by the previous fire-and-forget analyze()).
-        // If somehow the store is empty (e.g. page reload), show a safe error.
         const data = await response.json() as { error: string; reason?: string };
         const errorMessage: MessageProps = {
           role: 'assistant',
           content: `⚠ Decision Gate active — ${data.reason ?? 'approve or dismiss the gate before continuing'}`,
           timestamp: new Date(),
         };
-        setMessages((prev) => [...prev, errorMessage]);
+        appendMessage(tabId, errorMessage);
         setSendButtonState('normal');
         return;
       }
@@ -161,7 +151,7 @@ export function ChatInterface() {
       const chatData = data?.data;
 
       if (chatData?.conversationId && !conversationId) {
-        setConversationId(chatData.conversationId);
+        setTabConversationId(tabId, chatData.conversationId);
         setActiveThreadId(chatData.conversationId);
       }
 
@@ -174,7 +164,7 @@ export function ChatInterface() {
         timestamp: new Date(),
       };
 
-      setMessages((prev) => [...prev, aiMessage]);
+      appendMessage(tabId, aiMessage);
       setSendButtonState('approved');
       setTimeout(() => setSendButtonState('normal'), 1500);
 
@@ -182,8 +172,7 @@ export function ChatInterface() {
       const artifact = detectArtifact(responseContent);
       if (artifact) {
         artifact.threadId = threadId;
-        setArtifact(artifact);
-        // Fire-and-forget KERNL sync — non-blocking
+        setTabArtifact(tabId, artifact);
         void syncArtifact(artifact, threadId);
       }
     } catch (error) {
@@ -192,19 +181,31 @@ export function ChatInterface() {
         content: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
         timestamp: new Date(),
       };
-      setMessages((prev) => [...prev, errorMessage]);
+      appendMessage(tabId, errorMessage);
       setSendButtonState('normal');
     }
-  };
+  }, [input, threadTab, appendMessage, setTabConversationId, setActiveThreadId, setTabGhostContext, setTabArtifact]);
 
   // ── Render ───────────────────────────────────────────────────────────────
+  const messages = threadTab?.messages ?? [];
+  const activeArtifact = threadTab?.artifact ?? null;
+  const ghostContextActive = threadTab?.ghostContextActive ?? null;
+  const restoring = tabInitializing || (threadTab?.restoring ?? false);
   const panelOpen = activeArtifact !== null && activeTab === 'strategic';
+
+  const clearArtifact = () => {
+    if (threadTab) setTabArtifact(threadTab.id, null);
+  };
+
+  const clearGhostContext = () => {
+    if (threadTab) setTabGhostContext(threadTab.id, null);
+  };
 
   return (
     <div className="flex h-screen w-full flex-col bg-[var(--deep-space)]">
       <Header />
 
-      {/* ── Tab bar ── */}
+      {/* ── Main tab bar ── */}
       <div className="flex items-center border-b border-[var(--shadow)] bg-[var(--elevated)] px-4 flex-shrink-0">
         {TABS.map((tab) => {
           const active = activeTab === tab.id;
@@ -255,6 +256,9 @@ export function ChatInterface() {
                 panelOpen ? 'w-[60%]' : 'w-full',
               ].join(' ')}
             >
+              {/* Thread tab bar — only when multiple tabs open */}
+              <ThreadTabBar />
+
               {/* Message list */}
               <div className="flex-1 overflow-hidden">
                 {restoring ? (
@@ -268,7 +272,7 @@ export function ChatInterface() {
 
               {/* Decision Gate panel — slides in above input, pushes it down */}
               {gateTrigger && (
-                <GatePanel threadId={conversationId} trigger={gateTrigger} />
+                <GatePanel threadId={threadTab?.conversationId ?? null} trigger={gateTrigger} />
               )}
 
               {/* Input bar */}
@@ -299,7 +303,7 @@ export function ChatInterface() {
                         Ghost context active — {ghostContextActive.source}
                       </span>
                       <button
-                        onClick={clearGhostContextActive}
+                        onClick={clearGhostContext}
                         style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0 2px', color: 'var(--mist, #888)', fontSize: '12px', lineHeight: 1, flexShrink: 0 }}
                         title="Dismiss Ghost context"
                         aria-label="Dismiss Ghost context"
