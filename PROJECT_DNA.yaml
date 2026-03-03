@@ -1,5 +1,5 @@
-# GREGORE LITE — PROJECT DNA
-# Version: 0.1.0 → 1.0.0 (Phase 8 in progress) | Created: February 28, 2026
+# GREGLITE PROJECT DNA
+# Version: 1.1.0 | Phase 9 COMPLETE | March 3, 2026
 # Feature Backlog: D:\Projects\GregLite\FEATURE_BACKLOG.md
 
 identity:
@@ -18,10 +18,10 @@ identity:
     - "LEAN-OUT — use existing tools, build only unique intelligence"
 
 current_state:
-  version: "0.1.0"
-  phase: "Pre-build — awaiting Council prompts and execution"
-  status: "Blueprint locked. Three Council sessions required before build."
-  scaffold_source: "D:\\Projects\\Gregore\\app\\ — copy, don't start from scratch"
+  version: "1.1.0"
+  phase: "Phase 9 COMPLETE — The Full Cockpit"
+  status: "All 22 Phase 9 sprints shipped. v1.1.0 tagged (ac634bd). Every keyboard shortcut wired. Complete cockpit."
+  git_tag: "v1.1.0"
 
 key_decisions:
   - date: "2026-02-28"

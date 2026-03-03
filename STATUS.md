@@ -1,8 +1,8 @@
 # GREGORE LITE — STATUS
-**Last Updated:** March 2, 2026 — Sprint 7H complete: Self-Evolution Mode — branch lifecycle (branch-manager, branch-namer, .gregignore, protected-paths), real git tools injected into self_evolution sessions (git_commit/status/diff), GitHub PR API (createPR, mergePR, pollCIStatus, PAT vault), self-evolution-orchestrator (runPreFlight + runPostProcessing), CI polling loop (30s × 20, fire-and-forget), [Merge PR] button with CI gate, jobs API + merge route, AgentJobView types. Phase 7 certification: tsc clean, 40 test files / 890 tests passed, EoS 82/100 (target ≥ 75), security audit APPROVED_WITH_WARNINGS (3 WARNs, 0 FAILs — shell quoting improved, PAT comment corrected, auth WARN logged for 8A).
-**Phase:** Phase 8 — Ship Prep: v1.0.0 (briefs written, ready to execute)
-**Feature Backlog:** FEATURE_BACKLOG.md — 21 items across 3 buckets
-**Phase 9 Blueprint:** PHASE9_BLUEPRINT.md — 22 sprints, 4 waves, ~55 new files, full parallel execution plan
+**Last Updated:** March 3, 2026 — Phase 9 "The Full Cockpit" COMPLETE. v1.1.0 tagged (ac634bd). 22 sprints across 4 waves: multi-thread tabs, command palette, notification display, status bar, morning briefing, Ghost Teach Me, manifest templates, in-thread search, EoS sparkline, cost breakdown, job retry/edit, chat history panel, settings panel, inspector drawer, push notifications/tray, decision browser, artifact library, KERNL health panel, project quick-switcher, edit/regenerate, memory modal deprecated. Every keyboard shortcut in KeyboardShortcuts.tsx now fires a real action. tsc clean, 40 files / 890 tests passing throughout.
+**Phase:** Phase 9 — The Full Cockpit: ✅ COMPLETE (v1.1.0, commit ac634bd)
+**Feature Backlog:** FEATURE_BACKLOG.md — 21 items, all completed or deprecated with rationale
+**Phase 9 Blueprint:** PHASE9_BLUEPRINT.md — 22 sprints executed, certified
 
 ---
 **Previous:** Sprint 6G complete: Privacy Dashboard UI, 6 API routes (items/exclusions/log/watch-paths/status/purge), 5 React components (GhostStatusBadge, IndexedItemRow, ExclusionLog, IndexedItemsList, ExclusionRules, WatchPaths, PurgeAllDialog, PrivacyDashboard), cascade delete + purge-all, exclusion log retention cap, deleteGhostItem()  
@@ -747,6 +747,21 @@ No external project to migrate. Phase 6 is greenfield.
 Ghost shares: content_chunks table, vec_index, bge-small-en-v1.5 embedding model (all from Phase 3).
 Ghost does NOT share: suggestion surfacing logic (has its own interrupt scorer).
 Critical security requirement: [UNTRUSTED CONTENT] label on every path Ghost content enters Claude API.
+
+## Phase Completion Record
+
+### Phase 8 — Ship Prep: v1.0.0 ✅ COMPLETE
+4 sprints: security hardening (execSync → execFileSync, OS keychain for PAT + API key, merge route HMAC auth), leak fixes (EventListener + setInterval), EoS FP suppression, NSIS installer, tauri-plugin-updater, build-installer.bat, first-run onboarding (4-step wizard), README rewrite. git tag v1.0.0.
+
+### Phase 9 — The Full Cockpit: v1.1.0 ✅ COMPLETE (commit ac634bd)
+22 sprints, 4 waves. Every keyboard shortcut in KeyboardShortcuts.tsx now fires a real action. tsc clean, 40 test files / 890 tests throughout.
+
+Wave 0 — Schema: manifest_templates, ghost_preferences tables.
+Wave 1 (parallel): multi-thread tabs (per-tab state isolation, Cmd+N), command palette (fuzzy search, full command registry), notification display (ToastStack, NotificationBell, all events wired), status bar (cost/jobs/AEGIS/KERNL live), morning briefing (auto-generated from KERNL, once per day), Ghost Teach Me (preferences table, scorer boost, Privacy Dashboard Preferences tab), manifest templates (save/picker/quick-spawn), in-thread search (Cmd+F, client highlight, FTS5 fallback), EoS sparkline (trend from eos_reports, delta, color thresholds), cost breakdown by project (today/week/all tabs), job retry/edit (Edit & Retry, superseded status), chat history panel (Cmd+[, search, load thread).
+Wave 2 (parallel): settings panel (theme, budget caps, AEGIS port, all sections), inspector drawer (5 tabs: Thread/KERNL/Quality/Jobs/Costs, Cmd+I), push notifications/tray (Windows native toasts, tray icon, escalated events), decision browser (filter, FTS, markdown export, thread links), artifact library (cross-session browse, Cmd+L), KERNL health panel (full DB stats), project quick-switcher (context panel popover + command palette), edit last message/regenerate (hover actions, Cmd+E/Cmd+R).
+Wave 3 (design): memory modal deprecated — Cmd+M removed, decision logged to KERNL, Cmd+K KERNL search + Cmd+D Decision Browser cover the use case.
+
+Sprint commits: S9-17 547516b, S9-18 c9fb77b, S9-19 d89b7ce, S9-20 9295f0e, S9-21 7859050, certification ac634bd.
 
 ## Open Questions
 
