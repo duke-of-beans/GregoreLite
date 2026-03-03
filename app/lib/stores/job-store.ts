@@ -12,6 +12,7 @@
 
 import { create } from 'zustand';
 import type { JobRecord } from '@/lib/agent-sdk/types';
+import { useUIStore } from '@/lib/stores/ui-store';
 
 const POLL_INTERVAL_MS = 2000;
 
@@ -55,7 +56,37 @@ export const useJobStore = create<JobStoreState>((set, get) => ({
       const res = await fetch('/api/jobs');
       if (!res.ok) throw new Error(`/api/jobs returned ${res.status}`);
       const body = await res.json();
-      set({ jobs: body.data ?? [], error: null });
+      const newJobs: JobRecord[] = body.data ?? [];
+      const prevJobs = get().jobs;
+
+      // S9-15: Detect state transitions → fire escalated notifications
+      for (const job of newJobs) {
+        const prev = prevJobs.find((p) => p.jobId === job.jobId);
+        if (!prev) continue;
+        const title = job.manifest.task.title;
+
+        // Job completed (CI passed / PR ready)
+        if (prev.state !== 'COMPLETED' && job.state === 'COMPLETED') {
+          useUIStore.getState().addNotification({
+            type: 'success',
+            title: `Job completed: ${title}`,
+            message: 'PR ready to merge',
+            escalate: true,
+          });
+        }
+
+        // Job permanently failed
+        if (prev.state !== 'FAILED' && job.state === 'FAILED') {
+          useUIStore.getState().addNotification({
+            type: 'error',
+            title: `Job failed: ${title}`,
+            message: 'Permanent failure — manual intervention required',
+            escalate: true,
+          });
+        }
+      }
+
+      set({ jobs: newJobs, error: null });
     } catch (err) {
       set({ error: err instanceof Error ? err.message : 'Failed to fetch jobs' });
     }

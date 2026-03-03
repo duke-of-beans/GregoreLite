@@ -28,10 +28,11 @@ export interface Notification {
   id: string;
   type: NotificationType;
   title: string;
-  message?: string;
-  duration?: number; // ms, undefined = persistent
+  message?: string | undefined;
+  duration?: number | undefined; // ms, undefined = persistent
   timestamp: number;
   dismissed: boolean;
+  escalate?: boolean | undefined; // S9-15: when true, fires native OS toast via tray-bridge
 }
 
 export interface SidebarState {

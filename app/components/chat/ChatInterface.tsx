@@ -39,6 +39,7 @@ import { ThreadSearch, type SearchMatch } from './ThreadSearch';
 import { ChatHistoryPanel } from './ChatHistoryPanel';
 import { SettingsPanel } from '../settings/SettingsPanel';
 import { InspectorDrawer } from '../inspector/InspectorDrawer';
+import { startTrayBridge, stopTrayBridge } from '@/lib/notifications/tray-bridge';
 
 type ActiveTab = 'strategic' | 'workers' | 'warroom';
 
@@ -160,6 +161,10 @@ export function ChatInterface() {
         }
       })
       .catch(() => null);
+
+    // S9-15: Start tray bridge (native notifications + badge)
+    startTrayBridge();
+    return () => { stopTrayBridge(); };
   }, [initializeTabs]);
 
   // ── S9-12: Load a conversation from history into a new tab ──────────────
