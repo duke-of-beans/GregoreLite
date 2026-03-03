@@ -41,6 +41,7 @@ import { SettingsPanel } from '../settings/SettingsPanel';
 import { InspectorDrawer } from '../inspector/InspectorDrawer';
 import { startTrayBridge, stopTrayBridge } from '@/lib/notifications/tray-bridge';
 import { DecisionBrowser } from '../decisions/DecisionBrowser';
+import { ArtifactLibrary } from '../artifacts/ArtifactLibrary';
 
 type ActiveTab = 'strategic' | 'workers' | 'warroom';
 
@@ -74,6 +75,9 @@ export function ChatInterface() {
 
   // ── S9-16: Decision Browser state ──────────────────────────────────────────
   const [decisionsOpen, setDecisionsOpen] = useState(false);
+
+  // ── S9-17: Artifact Library state ─────────────────────────────────────────
+  const [artifactLibraryOpen, setArtifactLibraryOpen] = useState(false);
 
   // ── In-thread search state (S9-08) ─────────────────────────────────────────
   const [searchOpen, setSearchOpen] = useState(false);
@@ -141,6 +145,11 @@ export function ChatInterface() {
       if (meta && e.key === 'd') {
         e.preventDefault();
         setDecisionsOpen((prev) => !prev);
+      }
+      // Cmd+L — open artifact library (S9-17)
+      if (meta && e.key === 'l') {
+        e.preventDefault();
+        setArtifactLibraryOpen((prev) => !prev);
       }
     };
     window.addEventListener('keydown', handler);
@@ -525,6 +534,17 @@ export function ChatInterface() {
         open={decisionsOpen}
         onClose={() => setDecisionsOpen(false)}
         onOpenThread={handleLoadThread}
+      />
+
+      {/* S9-17: Artifact Library */}
+      <ArtifactLibrary
+        open={artifactLibraryOpen}
+        onClose={() => setArtifactLibraryOpen(false)}
+        onSelectArtifact={(id) => {
+          // TODO: Phase 10 — load artifact into active tab by ID
+          console.log('[artifact-library] Selected artifact:', id);
+          setArtifactLibraryOpen(false);
+        }}
       />
 
       <StatusBar />

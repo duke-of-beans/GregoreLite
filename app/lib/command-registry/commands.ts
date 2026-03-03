@@ -186,6 +186,19 @@ export function registerBuiltins(): void {
       },
     },
 
+    // ── Artifact Library (S9-17) ────────────────────────────────────────────
+    {
+      id: 'app.artifactLibrary',
+      label: 'Browse Artifact Library',
+      category: 'Navigation',
+      shortcut: 'Cmd+L',
+      keywords: ['artifacts', 'library', 'browse', 'code', 'snippets', 'files'],
+      icon: '📦',
+      action: () => {
+        useUIStore.getState().openModal('artifact-library');
+      },
+    },
+
     // ── Chat History (S9-12) ───────────────────────────────────────────────
     {
       id: 'chat.history',

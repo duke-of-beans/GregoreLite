@@ -36,7 +36,18 @@ export function ArtifactPanel({ artifact, onClose }: ArtifactPanelProps) {
           <ArtifactToolbar artifact={artifact} inPanel />
         </div>
 
-        <PanelCloseButton onClose={onClose} />
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              document.dispatchEvent(new CustomEvent('greglite:open-artifact-library'));
+            }}
+            className="text-xs text-[var(--mist)] hover:text-[var(--frost)] transition-colors"
+            title="Browse Artifact Library (Cmd+L)"
+          >
+            Browse Library
+          </button>
+          <PanelCloseButton onClose={onClose} />
+        </div>
       </div>
 
       {/* ── Artifact content ─────────────────────────────── */}
