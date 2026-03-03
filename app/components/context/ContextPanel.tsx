@@ -26,6 +26,8 @@ import { SuggestionSlot } from './SuggestionSlot';
 import { EoSIssueRow } from './EoSIssueRow';
 import { scoreClass } from '@/lib/eos/score-class';
 import { GhostCardList } from '@/components/ghost/GhostCardList';
+import { EoSSparkLine } from './EoSSparkLine';
+import { EoSHistoryPanel } from './EoSHistoryPanel';
 
 // ─── Collapsed icon strip ─────────────────────────────────────────────────────
 
@@ -81,6 +83,7 @@ function CollapsedStrip({ onExpand }: { onExpand: () => void }) {
 function PanelContent() {
   const { collapsed, toggleCollapsed, state } = useContextPanel();
   const [dismissedKeys, setDismissedKeys] = useState<Set<string>>(new Set());
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   const handleDismissed = (ruleId: string, file: string) => {
     setDismissedKeys((prev) => new Set(prev).add(`${ruleId}:${file}`));
@@ -146,7 +149,14 @@ function PanelContent() {
             <span className="text-[10px] font-semibold uppercase tracking-widest text-[var(--mist)]">
               Quality
             </span>
-            {state.eosSummary && (
+            {state.eosSummary && state.activeProject && (
+              <EoSSparkLine
+                projectId={state.activeProject.id}
+                currentScore={state.eosSummary.healthScore}
+                onOpenHistory={() => setHistoryOpen(true)}
+              />
+            )}
+            {state.eosSummary && !state.activeProject && (
               <span className={`text-[11px] font-medium tabular-nums ${scoreClass(state.eosSummary.healthScore)}`}>
                 {state.eosSummary.healthScore}/100
               </span>
@@ -185,6 +195,14 @@ function PanelContent() {
         <AEGISStatus />
         <SuggestionSlot />
       </div>
+
+      {/* EoS History Panel (S9-09) — drawer on right side */}
+      {historyOpen && state.activeProject && (
+        <EoSHistoryPanel
+          projectId={state.activeProject.id}
+          onClose={() => setHistoryOpen(false)}
+        />
+      )}
     </aside>
   );
 }
