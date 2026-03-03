@@ -24,12 +24,13 @@ export function Header() {
     <header className="flex h-16 w-full items-center justify-between border-b border-[var(--shadow)] bg-[var(--deep-space)] px-6">
       {/* Logo Section */}
       <div className="flex items-center gap-3">
-        <div className="relative flex h-10 w-10 items-center justify-center">
-          <div className="breathe absolute inset-0 rounded-full bg-gradient-radial from-[var(--cyan)]/40 to-transparent" />
-          <div className="relative z-10 flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--cyan)] text-xl font-bold text-[var(--deep-space)]">
-            G
-          </div>
-        </div>
+        <img
+          src="/gregore-logo.png"
+          alt="Gregore"
+          className="h-8 w-8 rounded-lg"
+          width={32}
+          height={32}
+        />
         <span className="text-lg font-semibold tracking-tight text-[var(--ice-white)]">
           Gregore Lite
         </span>
