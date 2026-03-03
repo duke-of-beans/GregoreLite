@@ -194,6 +194,18 @@ export function registerBuiltins(): void {
         useUIStore.getState().openModal('kernl-search');
       },
     },
+
+    // ── Navigation (extras) ─────────────────────────────────────────────────
+    {
+      id: 'nav.briefing',
+      label: 'Morning Briefing',
+      category: 'Navigation',
+      keywords: ['morning', 'briefing', 'daily', 'summary', 'start day'],
+      icon: '☀️',
+      action: () => {
+        useUIStore.getState().openModal('morning-briefing');
+      },
+    },
   ];
 
   registerCommands(commands);

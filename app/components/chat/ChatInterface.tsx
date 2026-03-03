@@ -33,6 +33,7 @@ import { useThreadTabsStore, selectActiveTab } from '@/lib/stores/thread-tabs-st
 import { ThreadTabBar } from './ThreadTabBar';
 import { CommandPalette } from '../ui/CommandPalette';
 import { StatusBar } from '../ui/StatusBar';
+import { MorningBriefing } from '../morning-briefing/MorningBriefing';
 import { registerBuiltins } from '@/lib/command-registry/commands';
 
 type ActiveTab = 'strategic' | 'workers' | 'warroom';
@@ -54,6 +55,7 @@ export function ChatInterface() {
   const [input, setInput] = useState('');
   const [sendButtonState, setSendButtonState] = useState<SendButtonState>('normal');
   const [activeTab, setActiveTab] = useState<ActiveTab>('strategic');
+  const [showBriefing, setShowBriefing] = useState(false);
 
   // Thread tabs store — per-tab state
   const threadTab = useThreadTabsStore(selectActiveTab);
@@ -106,6 +108,16 @@ export function ChatInterface() {
 
     // Register command palette built-in commands
     registerBuiltins();
+
+    // Check if morning briefing should show
+    void fetch('/api/morning-briefing')
+      .then((res) => res.json())
+      .then((body) => {
+        if (body.data && !body.data.alreadyShown) {
+          setShowBriefing(true);
+        }
+      })
+      .catch(() => null);
   }, [initializeTabs]);
 
   // ── Send message ─────────────────────────────────────────────────────────
@@ -211,6 +223,11 @@ export function ChatInterface() {
     <div className="flex h-screen w-full flex-col bg-[var(--deep-space)]">
       <Header />
       <CommandPalette />
+
+      {/* ── Morning Briefing (shows on first cold start of the day) ── */}
+      {showBriefing && (
+        <MorningBriefing onDismiss={() => setShowBriefing(false)} />
+      )}
 
       {/* ── Main tab bar ── */}
       <div className="flex items-center border-b border-[var(--shadow)] bg-[var(--elevated)] px-4 flex-shrink-0">
