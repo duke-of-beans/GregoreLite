@@ -1,6 +1,8 @@
 # GREGORE LITE — STATUS
 **Last Updated:** March 2, 2026 — Sprint 7H complete: Self-Evolution Mode — branch lifecycle (branch-manager, branch-namer, .gregignore, protected-paths), real git tools injected into self_evolution sessions (git_commit/status/diff), GitHub PR API (createPR, mergePR, pollCIStatus, PAT vault), self-evolution-orchestrator (runPreFlight + runPostProcessing), CI polling loop (30s × 20, fire-and-forget), [Merge PR] button with CI gate, jobs API + merge route, AgentJobView types. Phase 7 certification: tsc clean, 40 test files / 890 tests passed, EoS 82/100 (target ≥ 75), security audit APPROVED_WITH_WARNINGS (3 WARNs, 0 FAILs — shell quoting improved, PAT comment corrected, auth WARN logged for 8A).
-**Phase:** Phase 7 — Self-Evolution Mode (ALL SPRINTS COMPLETE — Phase 7 certified)
+**Phase:** Phase 8 — Ship Prep: v1.0.0 (briefs written, ready to execute)
+**Feature Backlog:** FEATURE_BACKLOG.md — 21 items across 3 buckets
+**Phase 9 Blueprint:** PHASE9_BLUEPRINT.md — 22 sprints, 4 waves, ~55 new files, full parallel execution plan
 
 ---
 **Previous:** Sprint 6G complete: Privacy Dashboard UI, 6 API routes (items/exclusions/log/watch-paths/status/purge), 5 React components (GhostStatusBadge, IndexedItemRow, ExclusionLog, IndexedItemsList, ExclusionRules, WatchPaths, PurgeAllDialog, PrivacyDashboard), cascade delete + purge-all, exclusion log retention cap, deleteGhostItem()  
@@ -626,7 +628,18 @@ Execution order: 5A → 5B → 5C (all sequential)
 
 ## ✅ PHASE 6 COMPLETE — Ghost Thread
 
-## Queued: Phase 7 — Self-Evolution Mode
+## ✅ PHASE 7 COMPLETE — Self-Evolution Mode (commit 9b5789d, 890/890 tests, EoS 82/100)
+
+## Queued: Phase 8 — Ship Prep: v1.0.0
+
+Execution order: 8A → 8B → 8C → 8D (all sequential)
+
+- [ ] **SPRINT 8A** — Security hardening: execSync → execFileSync, OS keychain for GitHub PAT, merge route HMAC auth
+- [ ] **SPRINT 8B** — Leak fixes (executor.ts EventListener, rate-limiter.ts setInterval), EoS FP suppression, quality pass to EoS >= 85
+- [ ] **SPRINT 8C** — NSIS installer, tauri-plugin-updater, version 0.1.0 → 1.0.0, build-installer.bat, RELEASE_CHECKLIST.md
+- [ ] **SPRINT 8D** — First-run onboarding, README rewrite, Phase 8 certification, git tag v1.0.0
+
+## Queued: Phase 7 — Self-Evolution Mode (SUPERSEDED — COMPLETE)
 
 Execution order: 7A → 7B → 7C → 7D → 7E → 7F → 7G → 7H (all sequential)
 
