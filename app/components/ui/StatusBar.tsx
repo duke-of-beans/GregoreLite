@@ -11,11 +11,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useJobStore } from '@/lib/stores/job-store';
 import { useContextPanel } from '@/lib/context/context-provider';
+import { CostBreakdown } from '../agent-sdk/CostBreakdown';
 
 const COST_POLL_MS = 60_000;
 
 export function StatusBar() {
   const [costToday, setCostToday] = useState<number>(0);
+  const [costBreakdownOpen, setCostBreakdownOpen] = useState(false);
   const jobs = useJobStore((s) => s.jobs);
   const { state: ctx } = useContextPanel();
 
@@ -58,8 +60,7 @@ export function StatusBar() {
 
   // Click handlers — navigate to relevant panels
   const handleCostClick = () => {
-    // S9-10 cost breakdown will wire this. For now, open modal placeholder.
-    document.querySelector<HTMLButtonElement>('[data-tab="workers"]')?.click();
+    setCostBreakdownOpen(true);
   };
 
   const handleJobsClick = () => {
@@ -149,6 +150,11 @@ export function StatusBar() {
             {ctx.eosSummary.healthScore}/100
           </span>
         </div>
+      )}
+
+      {/* Cost Breakdown Modal (S9-10) */}
+      {costBreakdownOpen && (
+        <CostBreakdown onClose={() => setCostBreakdownOpen(false)} />
       )}
     </div>
   );
