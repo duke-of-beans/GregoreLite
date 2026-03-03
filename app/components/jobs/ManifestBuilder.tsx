@@ -5,21 +5,32 @@
  * Calls spawnJob() from the job store on submit — guarded by the
  * Already-Built Gate (Sprint 3F) before spawning.
  *
+ * Sprint 9-07: Added template picker, save-as-template, initialValues prop.
+ *
  * BLUEPRINT §4.3 + §5.4 (ManifestBuilder + Already-Built Gate)
  */
 
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useJobStore } from '@/lib/stores/job-store';
 import { buildManifest } from '@/lib/agent-sdk/manifest';
 import type { TaskManifest, TaskType } from '@/lib/agent-sdk/types';
 import { checkBeforeManifest } from '@/lib/cross-context/gate';
 import { recordOverride } from '@/lib/cross-context/override-tracker';
 import { AlreadyBuiltModal } from '@/components/cross-context/AlreadyBuiltModal';
+import { TemplatePickerPanel } from './TemplatePickerPanel';
 import type { GateMatch } from '@/lib/cross-context/gate';
 
 const TASK_TYPES: TaskType[] = ['code', 'test', 'docs', 'research', 'deploy', 'self_evolution'];
+
+export interface TemplateInitialValues {
+  task_type: TaskType;
+  title: string;
+  template_description: string;
+  success_criteria: string[];
+  project_path: string;
+}
 
 interface ManifestBuilderProps {
   /** Pre-populated from the active strategic thread */
@@ -27,17 +38,71 @@ interface ManifestBuilderProps {
   strategicThreadId: string;
   /** Called after successful spawn so parent can close the form */
   onSpawned?: (jobId: string, queued: boolean) => void;
+  /** Pre-fill form from a template */
+  initialValues?: TemplateInitialValues;
 }
 
-export function ManifestBuilder({ threadId, strategicThreadId, onSpawned }: ManifestBuilderProps) {
+export function ManifestBuilder({ threadId, strategicThreadId, onSpawned, initialValues }: ManifestBuilderProps) {
   const { spawnJob, loading } = useJobStore();
 
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [taskType, setTaskType] = useState<TaskType>('code');
-  const [projectPath, setProjectPath] = useState('D:\\Projects\\GregLite');
-  const [successCriteria, setSuccessCriteria] = useState('');
+  const [title, setTitle] = useState(initialValues?.title ?? '');
+  const [description, setDescription] = useState(initialValues?.template_description ?? '');
+  const [taskType, setTaskType] = useState<TaskType>(initialValues?.task_type ?? 'code');
+  const [projectPath, setProjectPath] = useState(initialValues?.project_path ?? 'D:\\Projects\\GregLite');
+  const [successCriteria, setSuccessCriteria] = useState(initialValues?.success_criteria?.join('\n') ?? '');
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [templatePanelOpen, setTemplatePanelOpen] = useState(false);
+  const [saveTemplateMode, setSaveTemplateMode] = useState(false);
+  const [templateName, setTemplateName] = useState('');
+  const [templateSaveMsg, setTemplateSaveMsg] = useState<string | null>(null);
+
+  // Apply initialValues when they change (template selected externally)
+  useEffect(() => {
+    if (initialValues) {
+      setTitle(initialValues.title);
+      setDescription(initialValues.template_description);
+      setTaskType(initialValues.task_type);
+      setProjectPath(initialValues.project_path);
+      setSuccessCriteria(initialValues.success_criteria.join('\n'));
+    }
+  }, [initialValues]);
+
+  const handleSelectTemplate = useCallback((template: {
+    task_type: TaskType; title: string; template_description: string;
+    success_criteria: string[]; project_path: string; id: string;
+  }) => {
+    setTitle(template.title);
+    setDescription(template.template_description);
+    setTaskType(template.task_type);
+    setProjectPath(template.project_path);
+    setSuccessCriteria(template.success_criteria.join('\n'));
+    void fetch(`/api/templates?use=${encodeURIComponent(template.id)}`);
+  }, []);
+
+  const handleSaveAsTemplate = useCallback(async () => {
+    if (!templateName.trim() || !title.trim()) return;
+    const criteria = successCriteria.split('\n').map((s) => s.trim()).filter(Boolean);
+    try {
+      const res = await fetch('/api/templates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: templateName.trim(),
+          task_type: taskType,
+          title: title.trim(),
+          template_description: description.trim(),
+          success_criteria: criteria.length > 0 ? criteria : ['Passes all tests'],
+          project_path: projectPath.trim(),
+        }),
+      });
+      if (res.ok) {
+        setTemplateSaveMsg('Template saved!');
+        setSaveTemplateMode(false);
+        setTemplateName('');
+        setTimeout(() => setTemplateSaveMsg(null), 2500);
+      }
+    } catch { /* best effort */ }
+  }, [templateName, title, description, taskType, projectPath, successCriteria]);
 
   // Gate state (Sprint 3F)
   const [gateMatches, setGateMatches] = useState<GateMatch[]>([]);
@@ -148,18 +213,35 @@ export function ManifestBuilder({ threadId, strategicThreadId, onSpawned }: Mani
         display: 'flex',
         flexDirection: 'column',
         gap: '12px',
+        position: 'relative',
       }}
     >
       <div
         style={{
-          fontSize: '11px',
-          fontWeight: 600,
-          color: 'var(--frost)',
-          letterSpacing: '0.08em',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
           marginBottom: '4px',
         }}
       >
-        NEW WORKER SESSION
+        <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--frost)', letterSpacing: '0.08em' }}>
+          NEW WORKER SESSION
+        </span>
+        <button
+          type="button"
+          onClick={() => setTemplatePanelOpen((o) => !o)}
+          style={{
+            background: 'none',
+            border: '1px solid var(--border)',
+            borderRadius: '3px',
+            cursor: 'pointer',
+            color: 'var(--accent)',
+            fontSize: '10px',
+            padding: '2px 8px',
+          }}
+        >
+          📋 Templates
+        </button>
       </div>
 
       {/* Task type */}
@@ -229,25 +311,97 @@ export function ManifestBuilder({ threadId, strategicThreadId, onSpawned }: Mani
         <div style={{ fontSize: '11px', color: 'var(--error)' }}>{submitError}</div>
       )}
 
-      {/* Submit */}
-      <button
-        type="submit"
-        disabled={loading}
-        style={{
-          background: loading ? 'var(--surface)' : 'var(--accent)',
-          border: '1px solid var(--accent)',
-          borderRadius: '4px',
-          color: loading ? 'var(--mist)' : 'var(--bg)',
-          cursor: loading ? 'not-allowed' : 'pointer',
-          fontSize: '12px',
-          fontWeight: 600,
-          padding: '8px 16px',
-          width: '100%',
-          transition: 'opacity 0.15s',
-        }}
-      >
-        {loading ? 'Spawning…' : 'Spawn Worker Session'}
-      </button>
+      {/* Template save success */}
+      {templateSaveMsg && (
+        <div style={{ fontSize: '11px', color: 'var(--accent)' }}>{templateSaveMsg}</div>
+      )}
+
+      {/* Action buttons */}
+      <div style={{ display: 'flex', gap: '8px' }}>
+        <button
+          type="submit"
+          disabled={loading}
+          style={{
+            flex: 1,
+            background: loading ? 'var(--surface)' : 'var(--accent)',
+            border: '1px solid var(--accent)',
+            borderRadius: '4px',
+            color: loading ? 'var(--mist)' : 'var(--bg)',
+            cursor: loading ? 'not-allowed' : 'pointer',
+            fontSize: '12px',
+            fontWeight: 600,
+            padding: '8px 16px',
+            transition: 'opacity 0.15s',
+          }}
+        >
+          {loading ? 'Spawning…' : 'Spawn Worker Session'}
+        </button>
+
+        {!saveTemplateMode ? (
+          <button
+            type="button"
+            onClick={() => setSaveTemplateMode(true)}
+            style={{
+              background: 'none',
+              border: '1px solid var(--border)',
+              borderRadius: '4px',
+              color: 'var(--mist)',
+              cursor: 'pointer',
+              fontSize: '10px',
+              padding: '8px 10px',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            Save as Template
+          </button>
+        ) : (
+          <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+            <input
+              type="text"
+              value={templateName}
+              onChange={(e) => setTemplateName(e.target.value)}
+              placeholder="Template name"
+              style={{ ...fieldStyle, width: '120px', fontSize: '10px' }}
+              autoFocus
+            />
+            <button
+              type="button"
+              onClick={() => void handleSaveAsTemplate()}
+              disabled={!templateName.trim()}
+              style={{
+                background: 'var(--accent)',
+                border: 'none',
+                borderRadius: '3px',
+                color: 'var(--bg)',
+                cursor: templateName.trim() ? 'pointer' : 'not-allowed',
+                fontSize: '10px',
+                fontWeight: 600,
+                padding: '4px 8px',
+                opacity: templateName.trim() ? 1 : 0.5,
+              }}
+            >
+              Save
+            </button>
+            <button
+              type="button"
+              onClick={() => { setSaveTemplateMode(false); setTemplateName(''); }}
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                color: 'var(--mist)', fontSize: '12px', padding: '0 4px',
+              }}
+            >
+              ✕
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Template picker panel (right drawer) */}
+      <TemplatePickerPanel
+        open={templatePanelOpen}
+        onClose={() => setTemplatePanelOpen(false)}
+        onSelect={handleSelectTemplate}
+      />
     </form>
 
     {/* Already-Built Gate modal (Sprint 3F) */}

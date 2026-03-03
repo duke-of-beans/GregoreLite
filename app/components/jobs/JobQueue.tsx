@@ -12,6 +12,7 @@
 import { useEffect } from 'react';
 import { useJobStore } from '@/lib/stores/job-store';
 import { JobCard } from './JobCard';
+import { QuickSpawnTemplates } from './QuickSpawnTemplates';
 
 export function JobQueue() {
   const { jobs, loading, error, startPolling, stopPolling } = useJobStore();
@@ -88,6 +89,9 @@ export function JobQueue() {
           {error}
         </div>
       )}
+
+      {/* ── Quick spawn from templates (Sprint 9-07) ─────────────────── */}
+      <QuickSpawnTemplates />
 
       {/* ── Scrollable job list ────────────────────────────────────────── */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '10px' }}>
