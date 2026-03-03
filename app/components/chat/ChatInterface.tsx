@@ -32,6 +32,7 @@ import { useGhostStore } from '@/lib/stores/ghost-store';
 import { useThreadTabsStore, selectActiveTab } from '@/lib/stores/thread-tabs-store';
 import { ThreadTabBar } from './ThreadTabBar';
 import { CommandPalette } from '../ui/CommandPalette';
+import { StatusBar } from '../ui/StatusBar';
 import { registerBuiltins } from '@/lib/command-registry/commands';
 
 type ActiveTab = 'strategic' | 'workers' | 'warroom';
@@ -354,6 +355,8 @@ export function ChatInterface() {
           </>
         )}
       </div>
+
+      <StatusBar />
     </div>
   );
 }
