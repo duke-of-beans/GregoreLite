@@ -186,6 +186,19 @@ export function registerBuiltins(): void {
       },
     },
 
+    // ── S9-13: Settings ───────────────────────────────────────────────────────
+    {
+      id: 'app.settings',
+      label: 'Open Settings',
+      category: 'Navigation',
+      shortcut: 'Cmd+,',
+      keywords: ['settings', 'preferences', 'config', 'theme', 'budget', 'aegis'],
+      icon: '⚙',
+      action: () => {
+        useUIStore.getState().openModal('settings');
+      },
+    },
+
     // ── KERNL ────────────────────────────────────────────────────────────────
     {
       id: 'kernl.decisions',

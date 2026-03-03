@@ -37,6 +37,7 @@ import { MorningBriefing } from '../morning-briefing/MorningBriefing';
 import { registerBuiltins } from '@/lib/command-registry/commands';
 import { ThreadSearch, type SearchMatch } from './ThreadSearch';
 import { ChatHistoryPanel } from './ChatHistoryPanel';
+import { SettingsPanel } from '../settings/SettingsPanel';
 
 type ActiveTab = 'strategic' | 'workers' | 'warroom';
 
@@ -61,6 +62,9 @@ export function ChatInterface() {
 
   // ── S9-12: Chat history panel state ─────────────────────────────────────────
   const [historyOpen, setHistoryOpen] = useState(false);
+
+  // ── S9-13: Settings panel state ───────────────────────────────────────────
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   // ── In-thread search state (S9-08) ─────────────────────────────────────────
   const [searchOpen, setSearchOpen] = useState(false);
@@ -113,6 +117,11 @@ export function ChatInterface() {
       if (meta && e.key === '[') {
         e.preventDefault();
         setHistoryOpen((prev) => !prev);
+      }
+      // Cmd+, — open settings panel (S9-13)
+      if (meta && e.key === ',') {
+        e.preventDefault();
+        setSettingsOpen((prev) => !prev);
       }
     };
     window.addEventListener('keydown', handler);
@@ -474,6 +483,12 @@ export function ChatInterface() {
         open={historyOpen}
         onClose={() => setHistoryOpen(false)}
         onLoadThread={handleLoadThread}
+      />
+
+      {/* S9-13: Settings Panel */}
+      <SettingsPanel
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
       />
 
       <StatusBar />
