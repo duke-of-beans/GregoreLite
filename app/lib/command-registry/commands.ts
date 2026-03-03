@@ -173,6 +173,19 @@ export function registerBuiltins(): void {
       },
     },
 
+    // ── Decision Browser (S9-16) ───────────────────────────────────────────
+    {
+      id: 'app.decisions',
+      label: 'Browse Decisions',
+      category: 'Navigation',
+      shortcut: 'Cmd+D',
+      keywords: ['decisions', 'browse', 'rationale', 'alternatives', 'impact'],
+      icon: '📋',
+      action: () => {
+        useUIStore.getState().openModal('decisions');
+      },
+    },
+
     // ── Chat History (S9-12) ───────────────────────────────────────────────
     {
       id: 'chat.history',

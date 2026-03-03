@@ -40,6 +40,7 @@ import { ChatHistoryPanel } from './ChatHistoryPanel';
 import { SettingsPanel } from '../settings/SettingsPanel';
 import { InspectorDrawer } from '../inspector/InspectorDrawer';
 import { startTrayBridge, stopTrayBridge } from '@/lib/notifications/tray-bridge';
+import { DecisionBrowser } from '../decisions/DecisionBrowser';
 
 type ActiveTab = 'strategic' | 'workers' | 'warroom';
 
@@ -70,6 +71,9 @@ export function ChatInterface() {
 
   // ── S9-14: Inspector drawer state ─────────────────────────────────────────
   const [inspectorOpen, setInspectorOpen] = useState(false);
+
+  // ── S9-16: Decision Browser state ──────────────────────────────────────────
+  const [decisionsOpen, setDecisionsOpen] = useState(false);
 
   // ── In-thread search state (S9-08) ─────────────────────────────────────────
   const [searchOpen, setSearchOpen] = useState(false);
@@ -132,6 +136,11 @@ export function ChatInterface() {
       if (meta && e.key === 'i') {
         e.preventDefault();
         setInspectorOpen((prev) => !prev);
+      }
+      // Cmd+D — open decision browser (S9-16)
+      if (meta && e.key === 'd') {
+        e.preventDefault();
+        setDecisionsOpen((prev) => !prev);
       }
     };
     window.addEventListener('keydown', handler);
@@ -509,6 +518,13 @@ export function ChatInterface() {
       <InspectorDrawer
         open={inspectorOpen}
         onClose={() => setInspectorOpen(false)}
+      />
+
+      {/* S9-16: Decision Browser */}
+      <DecisionBrowser
+        open={decisionsOpen}
+        onClose={() => setDecisionsOpen(false)}
+        onOpenThread={handleLoadThread}
       />
 
       <StatusBar />

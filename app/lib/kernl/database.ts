@@ -90,6 +90,18 @@ function runMigrations(db: Database.Database): void {
       // Column already exists — silently continue
     }
   }
+
+  // S9-16 — FTS5 virtual table for full-text search on decisions
+  try {
+    db.exec(`
+      CREATE VIRTUAL TABLE IF NOT EXISTS decisions_fts USING fts5(
+        title, rationale,
+        content='decisions', content_rowid='rowid'
+      );
+    `);
+  } catch {
+    // FTS table may already exist or fts5 may not be available
+  }
 }
 
 export function closeDatabase(): void {
