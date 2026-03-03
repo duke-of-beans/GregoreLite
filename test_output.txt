@@ -1,653 +1,1136 @@
 
-> greglite@0.1.0 test:run D:\Projects\GregLite\app
-> vitest run
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90mD:/Projects/GregLite[39m
 
-
-[1m[46m RUN [49m[22m [36mv4.0.17 [39m[90mD:/Projects/GregLite/app[39m
-
-[90mstderr[2m | lib/ghost/__tests__/watcher-bridge.test.ts[2m > [22m[2mwatcher-bridge[2m > [22m[2mstartWatching[2m > [22m[2mdoes not throw when invoke fails
+ [31m❯[39m app/lib/ghost/__tests__/scorer.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m app/lib/__tests__/unit/aegis.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m app/lib/__tests__/unit/agent-sdk.test.ts [2m([22m[2m0 test[22m[2m)[22m
+[90mstderr[2m | app/lib/ghost/__tests__/watcher-bridge.test.ts[2m > [22m[2mwatcher-bridge[2m > [22m[2mstartWatching[2m > [22m[2mdoes not throw when invoke fails
 [22m[39m[ghost] startWatching failed: Error: Tauri not available
     at D:/Projects/GregLite/app/lib/ghost/__tests__/watcher-bridge.test.ts:135:42
-    at [90mfile:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:145:11
-    at [90mfile:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:915:26
-    at [90mfile:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:1243:20
+    at file:///C:/Users/DKdKe/AppData/Local/npm-cache/_npx/69c381f8ad94b576/node_modules/[4m@vitest[24m/runner/dist/index.js:145:11
+    at file:///C:/Users/DKdKe/AppData/Local/npm-cache/_npx/69c381f8ad94b576/node_modules/[4m@vitest[24m/runner/dist/index.js:915:26
+    at file:///C:/Users/DKdKe/AppData/Local/npm-cache/_npx/69c381f8ad94b576/node_modules/[4m@vitest[24m/runner/dist/index.js:1243:20
     at new Promise (<anonymous>)
-    at runWithTimeout [90m(file:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:1209:10[90m)[39m
-    at [90mfile:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:1653:37
-    at Traces.$ [90m(file:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/vitest@4.0.17_@opentelemetr_6311d9b92db8bd24cb6d85320592a23a/node_modules/[4mvitest[24m/dist/chunks/traces.CCmnQaNT.js:142:27[90m)[39m
-    at trace [90m(file:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/vitest@4.0.17_@opentelemetr_6311d9b92db8bd24cb6d85320592a23a/node_modules/[4mvitest[24m/dist/chunks/test.B8ej_ZHS.js:239:21[90m)[39m
-    at runTest [90m(file:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:1653:12[90m)[39m
+    at runWithTimeout (file:///C:/Users/DKdKe/AppData/Local/npm-cache/_npx/69c381f8ad94b576/node_modules/[4m@vitest[24m/runner/dist/index.js:1209:10)
+    at file:///C:/Users/DKdKe/AppData/Local/npm-cache/_npx/69c381f8ad94b576/node_modules/[4m@vitest[24m/runner/dist/index.js:1653:37
+    at Traces.$ (file:///C:/Users/DKdKe/AppData/Local/npm-cache/_npx/69c381f8ad94b576/node_modules/[4mvitest[24m/dist/chunks/traces.CCmnQaNT.js:142:27)
+    at trace (file:///C:/Users/DKdKe/AppData/Local/npm-cache/_npx/69c381f8ad94b576/node_modules/[4mvitest[24m/dist/chunks/test.B8ej_ZHS.js:239:21)
+    at runTest (file:///C:/Users/DKdKe/AppData/Local/npm-cache/_npx/69c381f8ad94b576/node_modules/[4m@vitest[24m/runner/dist/index.js:1653:12)
 
-[90mstderr[2m | lib/ghost/__tests__/watcher-bridge.test.ts[2m > [22m[2mwatcher-bridge[2m > [22m[2mstopWatching[2m > [22m[2mdoes not throw when invoke fails
+[90mstderr[2m | app/lib/ghost/__tests__/watcher-bridge.test.ts[2m > [22m[2mwatcher-bridge[2m > [22m[2mstopWatching[2m > [22m[2mdoes not throw when invoke fails
 [22m[39m[ghost] stopWatching failed: Error: Tauri not available
     at D:/Projects/GregLite/app/lib/ghost/__tests__/watcher-bridge.test.ts:149:42
-    at [90mfile:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:145:11
-    at [90mfile:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:915:26
-    at [90mfile:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:1243:20
+    at file:///C:/Users/DKdKe/AppData/Local/npm-cache/_npx/69c381f8ad94b576/node_modules/[4m@vitest[24m/runner/dist/index.js:145:11
+    at file:///C:/Users/DKdKe/AppData/Local/npm-cache/_npx/69c381f8ad94b576/node_modules/[4m@vitest[24m/runner/dist/index.js:915:26
+    at file:///C:/Users/DKdKe/AppData/Local/npm-cache/_npx/69c381f8ad94b576/node_modules/[4m@vitest[24m/runner/dist/index.js:1243:20
     at new Promise (<anonymous>)
-    at runWithTimeout [90m(file:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:1209:10[90m)[39m
-    at [90mfile:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:1653:37
-    at Traces.$ [90m(file:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/vitest@4.0.17_@opentelemetr_6311d9b92db8bd24cb6d85320592a23a/node_modules/[4mvitest[24m/dist/chunks/traces.CCmnQaNT.js:142:27[90m)[39m
-    at trace [90m(file:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/vitest@4.0.17_@opentelemetr_6311d9b92db8bd24cb6d85320592a23a/node_modules/[4mvitest[24m/dist/chunks/test.B8ej_ZHS.js:239:21[90m)[39m
-    at runTest [90m(file:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:1653:12[90m)[39m
+    at runWithTimeout (file:///C:/Users/DKdKe/AppData/Local/npm-cache/_npx/69c381f8ad94b576/node_modules/[4m@vitest[24m/runner/dist/index.js:1209:10)
+    at file:///C:/Users/DKdKe/AppData/Local/npm-cache/_npx/69c381f8ad94b576/node_modules/[4m@vitest[24m/runner/dist/index.js:1653:37
+    at Traces.$ (file:///C:/Users/DKdKe/AppData/Local/npm-cache/_npx/69c381f8ad94b576/node_modules/[4mvitest[24m/dist/chunks/traces.CCmnQaNT.js:142:27)
+    at trace (file:///C:/Users/DKdKe/AppData/Local/npm-cache/_npx/69c381f8ad94b576/node_modules/[4mvitest[24m/dist/chunks/test.B8ej_ZHS.js:239:21)
+    at runTest (file:///C:/Users/DKdKe/AppData/Local/npm-cache/_npx/69c381f8ad94b576/node_modules/[4m@vitest[24m/runner/dist/index.js:1653:12)
 
- [32m✓[39m lib/__tests__/unit/hot-cache.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 106[2mms[22m[39m
-[90mstderr[2m | lib/agent-sdk/__tests__/cost-accounting.test.ts[2m > [22m[2mcalculateCost[2m > [22m[2mreturns 0 for unknown model (never crashes)
+ [31m❯[39m app/lib/__tests__/integration/phase4-integration.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m app/lib/__tests__/integration/phase5-integration.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m app/lib/__tests__/integration/phase3-integration.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m app/lib/ghost/__tests__/watcher-bridge.test.ts [2m([22m[2m19 tests[22m[2m | [22m[31m5 failed[39m[2m)[22m[32m 104[2mms[22m[39m
+       [32m✓[39m invokes ghost_start_watching with provided paths[32m 6[2mms[22m[39m
+       [32m✓[39m loads default paths from KERNL when no paths provided[32m 3[2mms[22m[39m
+       [32m✓[39m loads saved paths from KERNL when set[32m 1[2mms[22m[39m
+       [32m✓[39m falls back to defaults when fetch fails[32m 2[2mms[22m[39m
+       [32m✓[39m does not throw when invoke fails[32m 8[2mms[22m[39m
+       [32m✓[39m invokes ghost_stop_watching[32m 1[2mms[22m[39m
+       [32m✓[39m does not throw when invoke fails[32m 1[2mms[22m[39m
+       [32m✓[39m calls listen with ghost:file-changed event name[32m 1[2mms[22m[39m
+       [32m✓[39m returns an unlisten function[32m 1[2mms[22m[39m
+       [32m✓[39m calls handler when event fires[32m 1[2mms[22m[39m
+       [32m✓[39m invokes ghost_pause[32m 0[2mms[22m[39m
+       [32m✓[39m does not throw when invoke fails (non-Tauri env)[32m 0[2mms[22m[39m
+       [32m✓[39m invokes ghost_resume[32m 0[2mms[22m[39m
+       [32m✓[39m does not throw when invoke fails (non-Tauri env)[32m 0[2mms[22m[39m
+[31m     [31m×[31m calls ghost_pause when AEGIS transitions to PARALLEL_BUILD[39m[32m 20[2mms[22m[39m
+[31m     [31m×[31m calls ghost_pause when AEGIS transitions to COUNCIL[39m[32m 30[2mms[22m[39m
+[31m     [31m×[31m calls ghost_resume when AEGIS transitions to IDLE[39m[32m 7[2mms[22m[39m
+[31m     [31m×[31m calls ghost_resume when AEGIS transitions to DEEP_FOCUS[39m[32m 14[2mms[22m[39m
+[31m     [31m×[31m calls ghost_resume when AEGIS transitions to COWORK_BATCH[39m[32m 4[2mms[22m[39m
+ [31m❯[39m app/lib/__tests__/unit/war-room.test.ts [2m([22m[2m21 tests[22m[2m | [22m[31m21 failed[39m[2m)[22m[32m 199[2mms[22m[39m
+[31m       [31m×[31m maps completed → complete[39m[32m 17[2mms[22m[39m
+[31m       [31m×[31m maps spawning/working/validating → running[39m[32m 5[2mms[22m[39m
+[31m       [31m×[31m maps pending/failed/interrupted unchanged[39m[32m 5[2mms[22m[39m
+[31m       [31m×[31m falls back to "pending" for unknown status strings[39m[32m 7[2mms[22m[39m
+[31m       [31m×[31m builds edges from dependencies JSON array[39m[32m 7[2mms[22m[39m
+[31m       [31m×[31m builds diamond pattern edges correctly[39m[32m 11[2mms[22m[39m
+[31m       [31m×[31m handles malformed dependencies JSON gracefully (empty edges)[39m[32m 7[2mms[22m[39m
+[31m       [31m×[31m handles null dependencies gracefully[39m[32m 8[2mms[22m[39m
+[31m       [31m×[31m sets node title to "Untitled" when title is null[39m[32m 7[2mms[22m[39m
+[31m       [31m×[31m throws on non-OK fetch response[39m[32m 6[2mms[22m[39m
+[31m       [31m×[31m returns empty nodes and edges for empty manifests table[39m[32m 5[2mms[22m[39m
+[31m       [31m×[31m returns positions for every node[39m[32m 3[2mms[22m[39m
+[31m       [31m×[31m layouts left-to-right: node with no deps has smaller x[39m[32m 7[2mms[22m[39m
+[31m       [31m×[31m silently skips edges where an endpoint node is missing[39m[32m 15[2mms[22m[39m
+[31m       [31m×[31m returns fallback dimensions for empty position map[39m[32m 19[2mms[22m[39m
+[31m       [31m×[31m accounts for node dimensions and padding[39m[32m 6[2mms[22m[39m
+[31m     [31m×[31m fires onUpdate immediately on first tick[39m[32m 30[2mms[22m[39m
+[31m     [31m×[31m calls onError when fetch fails[39m[32m 8[2mms[22m[39m
+[31m     [31m×[31m does not call onUpdate again when graph is unchanged[39m[32m 13[2mms[22m[39m
+[31m     [31m×[31m calls onUpdate again when graph changes[39m[32m 3[2mms[22m[39m
+[31m     [31m×[31m stop() prevents further onUpdate calls[39m[32m 5[2mms[22m[39m
+[90mstderr[2m | app/lib/agent-sdk/__tests__/cost-accounting.test.ts[2m > [22m[2mcalculateCost[2m > [22m[2mreturns 0 for unknown model (never crashes)
 [22m[39m[cost-calculator] No pricing for model: "unknown-model-xyz". Cost will be $0.00.
 
-[90mstderr[2m | lib/agent-sdk/__tests__/cost-accounting.test.ts[2m > [22m[2mgetPricingForModel[2m > [22m[2munknown model returns zero rates
+[90mstderr[2m | app/lib/agent-sdk/__tests__/cost-accounting.test.ts[2m > [22m[2mgetPricingForModel[2m > [22m[2munknown model returns zero rates
 [22m[39m[cost-calculator] No pricing for model: "does-not-exist". Cost will be $0.00.
 
- [31m❯[39m lib/agent-sdk/__tests__/cost-accounting.test.ts [2m([22m[2m33 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 58[2mms[22m[39m
-     [32m✓[39m returns correct USD for sonnet exact key[32m 5[2mms[22m[39m
-     [32m✓[39m returns correct USD for opus[32m 2[2mms[22m[39m
+ [31m❯[39m app/lib/ghost/__tests__/lifecycle.test.ts [2m([22m[2m26 tests[22m[2m | [22m[31m26 failed[39m[2m)[22m[33m 446[2mms[22m[39m
+[31m       [31m×[31m calls all components in the correct startup order[39m[33m 318[2mms[22m[39m
+[31m       [31m×[31m emits state: "running" when all steps succeed[39m[32m 7[2mms[22m[39m
+[31m       [31m×[31m emits state: "starting" then "running"[39m[32m 5[2mms[22m[39m
+[31m       [31m×[31m is idempotent — calling twice does not double-start components[39m[32m 5[2mms[22m[39m
+[31m       [31m×[31m continues startup when one component throws[39m[32m 5[2mms[22m[39m
+[31m       [31m×[31m emits state: "degraded" when a component fails[39m[32m 5[2mms[22m[39m
+[31m       [31m×[31m emits ghost:error for the failing component[39m[32m 4[2mms[22m[39m
+[31m       [31m×[31m stops components in reverse startup order[39m[32m 4[2mms[22m[39m
+[31m       [31m×[31m emits state: "stopped" after shutdown[39m[32m 4[2mms[22m[39m
+[31m       [31m×[31m is idempotent — calling twice does not error[39m[32m 4[2mms[22m[39m
+[31m       [31m×[31m resolves within 5 seconds even if watcher hangs[39m[32m 4[2mms[22m[39m
+[31m       [31m×[31m pauses email poller and ingest queue[39m[32m 5[2mms[22m[39m
+[31m       [31m×[31m emits state: "paused" after pause[39m[32m 4[2mms[22m[39m
+[31m       [31m×[31m is idempotent — calling pauseGhost twice only pauses once[39m[32m 5[2mms[22m[39m
+[31m       [31m×[31m resumes email poller and ingest queue[39m[32m 5[2mms[22m[39m
+[31m       [31m×[31m emits state: "running" after resume (no errors)[39m[32m 5[2mms[22m[39m
+[31m       [31m×[31m is idempotent — calling resumeGhost when not paused is a no-op[39m[32m 5[2mms[22m[39m
+[31m       [31m×[31m isGhostRunning returns false before start[39m[32m 4[2mms[22m[39m
+[31m       [31m×[31m isGhostRunning returns true after startGhost[39m[32m 5[2mms[22m[39m
+[31m       [31m×[31m isGhostRunning returns false after stopGhost[39m[32m 4[2mms[22m[39m
+[31m       [31m×[31m isGhostPaused returns false before any pause[39m[32m 5[2mms[22m[39m
+[31m       [31m×[31m isGhostPaused returns true after pauseGhost[39m[32m 5[2mms[22m[39m
+[31m       [31m×[31m isGhostPaused returns false after resumeGhost[39m[32m 9[2mms[22m[39m
+[31m       [31m×[31m calls startFn after the 30-second delay[39m[32m 5[2mms[22m[39m
+[31m       [31m×[31m does not retry if first restart succeeds[39m[32m 5[2mms[22m[39m
+[31m       [31m×[31m emits ghost:error if restart also fails[39m[32m 4[2mms[22m[39m
+ [31m❯[39m app/lib/agent-sdk/__tests__/cost-accounting.test.ts [2m([22m[2m33 tests[22m[2m | [22m[31m10 failed[39m[2m)[22m[32m 103[2mms[22m[39m
+     [32m✓[39m returns correct USD for sonnet exact key[32m 4[2mms[22m[39m
+     [32m✓[39m returns correct USD for opus[32m 1[2mms[22m[39m
      [32m✓[39m returns correct USD for haiku (versioned key exact match)[32m 1[2mms[22m[39m
      [32m✓[39m resolves versioned model key via date-strip fallback[32m 1[2mms[22m[39m
      [32m✓[39m returns 0 for unknown model (never crashes)[32m 3[2mms[22m[39m
      [32m✓[39m returns 0 for zero tokens[32m 1[2mms[22m[39m
-[31m     [31m×[31m small token counts produce non-zero cost[39m[32m 12[2mms[22m[39m
+     [32m✓[39m small token counts produce non-zero cost[32m 1[2mms[22m[39m
      [32m✓[39m exact key returns rates directly[32m 1[2mms[22m[39m
-     [32m✓[39m versioned key (YYYYMMDD suffix) falls back to short key[32m 2[2mms[22m[39m
-     [32m✓[39m unknown model returns zero rates[32m 2[2mms[22m[39m
-     [32m✓[39m calls db.prepare().run() with correct arguments[32m 4[2mms[22m[39m
-     [32m✓[39m accepts null projectId[32m 1[2mms[22m[39m
-     [32m✓[39m writes correct cost calculation to DB[32m 3[2mms[22m[39m
-     [32m✓[39m sets completed_at and updated_at[32m 1[2mms[22m[39m
-     [32m✓[39m returns ok when cost is below 80% of soft cap[32m 0[2mms[22m[39m
+     [32m✓[39m versioned key (YYYYMMDD suffix) falls back to short key[32m 1[2mms[22m[39m
+     [32m✓[39m unknown model returns zero rates[32m 1[2mms[22m[39m
+[31m     [31m×[31m calls db.prepare().run() with correct arguments[39m[32m 48[2mms[22m[39m
+[31m     [31m×[31m accepts null projectId[39m[32m 1[2mms[22m[39m
+[31m     [31m×[31m writes correct cost calculation to DB[39m[32m 6[2mms[22m[39m
+[31m     [31m×[31m sets completed_at and updated_at[39m[32m 2[2mms[22m[39m
+     [32m✓[39m returns ok when cost is below 80% of soft cap[32m 1[2mms[22m[39m
      [32m✓[39m returns warn when cost is between 80% and 100% of soft cap[32m 0[2mms[22m[39m
-     [32m✓[39m returns soft_cap when cost equals or exceeds soft cap[32m 0[2mms[22m[39m
-     [32m✓[39m falls back to $2.00 soft cap when budget_config row is missing[32m 0[2mms[22m[39m
-     [32m✓[39m returns sum from session_costs query[32m 1[2mms[22m[39m
+     [32m✓[39m returns soft_cap when cost equals or exceeds soft cap[32m 1[2mms[22m[39m
+     [32m✓[39m falls back to $2.00 soft cap when budget_config row is missing[32m 1[2mms[22m[39m
+[31m     [31m×[31m returns sum from session_costs query[39m[32m 2[2mms[22m[39m
      [32m✓[39m returns 0 when no sessions exist today[32m 0[2mms[22m[39m
      [32m✓[39m returns 0 if DB throws[32m 1[2mms[22m[39m
-     [32m✓[39m returns true when daily total >= hard cap and no override[32m 2[2mms[22m[39m
-     [32m✓[39m returns false when daily total < hard cap[32m 0[2mms[22m[39m
-     [32m✓[39m returns false when override is active even if cap is exceeded[32m 0[2mms[22m[39m
-     [32m✓[39m setDailyOverride writes expiry at midnight UTC[32m 2[2mms[22m[39m
-     [32m✓[39m isDailyOverrideActive returns true for future expiry[32m 0[2mms[22m[39m
-     [32m✓[39m isDailyOverrideActive returns false for past expiry[32m 0[2mms[22m[39m
-     [32m✓[39m clearDailyOverride sets expiry to 0[32m 1[2mms[22m[39m
-     [32m✓[39m returns midnight UTC for today[32m 0[2mms[22m[39m
+[31m     [31m×[31m returns true when daily total >= hard cap and no override[39m[32m 8[2mms[22m[39m
+     [32m✓[39m returns false when daily total < hard cap[32m 1[2mms[22m[39m
+     [32m✓[39m returns false when override is active even if cap is exceeded[32m 1[2mms[22m[39m
+[31m     [31m×[31m setDailyOverride writes expiry at midnight UTC[39m[32m 2[2mms[22m[39m
+     [32m✓[39m isDailyOverrideActive returns true for future expiry[32m 1[2mms[22m[39m
+[31m     [31m×[31m isDailyOverrideActive returns false for past expiry[39m[32m 1[2mms[22m[39m
+[31m     [31m×[31m clearDailyOverride sets expiry to 0[39m[32m 1[2mms[22m[39m
+     [32m✓[39m returns midnight UTC for today[32m 1[2mms[22m[39m
      [32m✓[39m endOfTodayUtcMs is exactly 24h after startOfTodayUtcMs[32m 0[2mms[22m[39m
-     [32m✓[39m returns the parsed value from DB[32m 1[2mms[22m[39m
+     [32m✓[39m returns the parsed value from DB[32m 0[2mms[22m[39m
      [32m✓[39m returns fallback when row is missing[32m 0[2mms[22m[39m
-     [32m✓[39m upserts key/value into budget_config[32m 1[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/decision-gate.test.ts [2m([22m[2m43 tests[22m[2m)[22m[32m 85[2mms[22m[39m
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstartGhost[2m > [22m[2mcalls all components in the correct startup order
-[22m[39m[ghost/lifecycle] Starting Ghost...
-[ghost/lifecycle] Watch paths: (none configured)
+[31m     [31m×[31m upserts key/value into budget_config[39m[32m 4[2mms[22m[39m
+ [31m❯[39m app/lib/ghost/__tests__/phase6-integration.test.ts [2m([22m[2m33 tests[22m[2m | [22m[31m8 failed[39m[2m)[22m[33m 311[2mms[22m[39m
+[31m     [31m×[31m starts all components in the correct order[39m[32m 124[2mms[22m[39m
+[31m     [31m×[31m resolves stopGhost within 5 seconds even when watcher hangs[39m[32m 4[2mms[22m[39m
+[31m     [31m×[31m continues startup when one component fails (degraded mode)[39m[32m 5[2mms[22m[39m
+[31m     [31m×[31m pauses all components on AEGIS PARALLEL_BUILD and resumes on resume[39m[32m 5[2mms[22m[39m
+     [32m✓[39m excludes .env file (mirrors Rust should_exclude for dotenv files)[32m 1[2mms[22m[39m
+     [32m✓[39m excludes .pem file (mirrors Rust should_exclude for certificate files)[32m 0[2mms[22m[39m
+     [32m✓[39m does not exclude a normal .ts source file[32m 0[2mms[22m[39m
+     [32m✓[39m startWatching invokes ghost_start_watching with provided paths[32m 2[2mms[22m[39m
+     [32m✓[39m Layer 1: .pem file excluded before IO[32m 1[2mms[22m[39m
+     [32m✓[39m Layer 1: file in secrets/ dir excluded[32m 0[2mms[22m[39m
+     [32m✓[39m Layer 1: file with "password" in name excluded[32m 0[2mms[22m[39m
+     [32m✓[39m Layer 2: chunk containing SSN pattern excluded[32m 1[2mms[22m[39m
+     [32m✓[39m Layer 2: chunk with valid Luhn CC number excluded[32m 1[2mms[22m[39m
+     [32m✓[39m Layer 2: chunk with sk-xxx API key excluded[32m 0[2mms[22m[39m
+     [32m✓[39m Layer 2: chunk with invalid Luhn CC number NOT excluded[32m 0[2mms[22m[39m
+     [32m✓[39m Layer 3: email with attorney-client subject excluded[32m 0[2mms[22m[39m
+     [32m✓[39m Layer 4: user path_glob exclusion matches[32m 3[2mms[22m[39m
+     [32m✓[39m logExclusion writes audit row to ghost_exclusion_log[32m 33[2mms[22m[39m
+     [32m✓[39m writeChunks persists rows with metadata.source = "ghost"[32m 1[2mms[22m[39m
+     [32m✓[39m writeChunks calls upsertVector for each chunk[32m 2[2mms[22m[39m
+     [32m✓[39m Ghost chunks NOT returned by standard findSimilarChunks (includeGhost=false)[32m 1[2mms[22m[39m
+     [32m✓[39m Ghost chunks ARE returned when includeGhost=true[32m 1[2mms[22m[39m
+     [32m✓[39m buildActiveContextVector returns null when no active session (no threads)[32m 24[2mms[22m[39m
+     [32m✓[39m generateCandidates returns only Ghost-sourced chunks[32m 9[2mms[22m[39m
+     [32m✓[39m generateCandidates filters candidates below minSimilarity[32m 1[2mms[22m[39m
+     [32m✓[39m canSurface returns false after 2 suggestions in 24h window[32m 7[2mms[22m[39m
+     [32m✓[39m criticalOverride bypasses 24h cap when similarity > 0.95 AND importanceBoost > 1.3[32m 0[2mms[22m[39m
+[31m     [31m×[31m DELETE /api/ghost/items/:id cascades delete and returns 204[39m[32m 4[2mms[22m[39m
+[31m     [31m×[31m POST /api/ghost/exclusions adds rule and returns 201[39m[32m 2[2mms[22m[39m
+[31m     [31m×[31m POST /api/ghost/purge clears all ghost data and returns {ok: true}[39m[32m 3[2mms[22m[39m
+     [32m✓[39m Scorer path: Anthropic API call system prompt contains [UNTRUSTED CONTENT][32m 65[2mms[22m[39m
+[31m     [31m×[31m Tell me more path: addMessage content contains [GHOST CONTEXT - UNTRUSTED CONTENT][39m[32m 2[2mms[22m[39m
+     [32m✓[39m findSimilarChunks with includeGhost=false returns 0 results when all indexed chunks are Ghost[32m 1[2mms[22m[39m
+ [31m❯[39m app/lib/__tests__/unit/cold-start.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m app/lib/__tests__/unit/context-provider.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m app/lib/__tests__/unit/cross-context.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m app/lib/__tests__/unit/decision-gate-4b.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m app/lib/__tests__/unit/decision-gate.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m app/lib/__tests__/unit/embeddings.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m app/lib/__tests__/unit/gate.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m app/lib/__tests__/unit/hot-cache.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m app/lib/__tests__/unit/kernl-project-store.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m app/lib/__tests__/unit/indexer.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m app/lib/__tests__/unit/proactive.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m app/lib/__tests__/unit/suggestion-store.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m app/lib/__tests__/unit/ui-store.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m app/lib/__tests__/unit/vector.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m app/lib/__tests__/unit/warm-cache.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m app/lib/__tests__/unit/artifacts/detector.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m app/lib/__tests__/unit/eos/batch.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m app/lib/__tests__/unit/artifacts/store.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m app/lib/__tests__/unit/eos/character.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m app/lib/__tests__/unit/eos/fp-tracker.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m app/lib/__tests__/unit/eos/health-score.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m app/lib/__tests__/unit/eos/patterns.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m app/lib/__tests__/unit/shim/job-context.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m app/lib/__tests__/unit/shim/pattern-learner.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [32m✓[39m app/lib/ghost/__tests__/privacy.test.ts [2m([22m[2m37 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m app/lib/agent-sdk/__tests__/scheduler.test.ts [2m([22m[2m31 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m app/lib/agent-sdk/__tests__/permission-matrix.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+ [32m✓[39m app/lib/agent-sdk/__tests__/error-handling.test.ts [2m([22m[2m38 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Suites 30 [49m[22m[31m⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/scorer.test.ts[2m [ app/lib/ghost/__tests__/scorer.test.ts ][22m
+[31m[1mError[22m: Cannot find package '@/lib/ghost/scorer/scorer' imported from 'D:/Projects/GregLite/app/lib/ghost/__tests__/scorer.test.ts'[39m
+[36m [2m❯[22m app/lib/ghost/__tests__/scorer.test.ts:[2m55:1[22m[39m
+    [90m 53| [39m// ─── Import after mocks ────────────────────────────────────────────…
+    [90m 54| [39m
+    [90m 55| [39m[35mimport[39m {
+    [90m   | [39m[31m^[39m
+    [90m 56| [39m  computeRecencyBoost[33m,[39m
+    [90m 57| [39m  computeRelevanceBoost[33m,[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/integration/phase3-integration.test.ts[2m [ app/lib/__tests__/integration/phase3-integration.test.ts ][22m
+[31m[1mError[22m: Cannot find package '@/lib/embeddings' imported from 'D:/Projects/GregLite/app/lib/__tests__/integration/phase3-integration.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/integration/phase3-integration.test.ts:[2m109:1[22m[39m
+    [90m107| [39m// ── Imports ────────────────────────────────────────────────────────…
+    [90m108| [39m
+    [90m109| [39m[35mimport[39m { persistEmbeddingsFull } [35mfrom[39m [32m'@/lib/embeddings'[39m[33m;[39m
+    [90m   | [39m[31m^[39m
+    [90m110| [39m[35mimport[39m { recordFeedback } [35mfrom[39m [32m'@/lib/cross-context/feedback'[39m[33m;[39m
+    [90m111| [39mimport { isSuppressed, rankAndFilter } from '@/lib/cross-context/surfa…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/integration/phase4-integration.test.ts[2m [ app/lib/__tests__/integration/phase4-integration.test.ts ][22m
+[31m[1mError[22m: Cannot find package '@/lib/decision-gate' imported from 'D:/Projects/GregLite/app/lib/__tests__/integration/phase4-integration.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/integration/phase4-integration.test.ts:[2m60:1[22m[39m
+    [90m 58| [39m// ─── Imports (after mocks) ─────────────────────────────────────────…
+    [90m 59| [39m
+    [90m 60| [39m[35mimport[39m { analyze[33m,[39m getDecisionLock } [35mfrom[39m [32m'@/lib/decision-gate'[39m[33m;[39m
+    [90m   | [39m[31m^[39m
+    [90m 61| [39m[35mimport[39m {
+    [90m 62| [39m  acquireLock[33m,[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/integration/phase5-integration.test.ts[2m [ app/lib/__tests__/integration/phase5-integration.test.ts ][22m
+[31m[1mError[22m: Cannot find package '@/lib/eos/engine' imported from 'D:/Projects/GregLite/app/lib/__tests__/integration/phase5-integration.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/integration/phase5-integration.test.ts:[2m210:1[22m[39m
+    [90m208| [39m// ── Imports (after mocks) ──────────────────────────────────────────…
+    [90m209| [39m
+    [90m210| [39mimport { scan as realScan, scanFiles as realScanFiles } from '@/lib/eo…
+    [90m   | [39m[31m^[39m
+    [90m211| [39m[35mimport[39m { computeHealthScore } [35mfrom[39m [32m'@/lib/eos/health-score'[39m[33m;[39m
+    [90m212| [39m[35mimport[39m { computeDebt } [35mfrom[39m [32m'@/lib/eos/debt'[39m[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/aegis.test.ts[2m [ app/lib/__tests__/unit/aegis.test.ts ][22m
+[31m[1mError[22m: Cannot find package '@/lib/aegis/governor' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/aegis.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/aegis.test.ts:[2m31:1[22m[39m
+    [90m 29| [39m
+    [90m 30| [39m// ── Imports must come after vi.mock() declarations ─────────────────…
+    [90m 31| [39m[35mimport[39m { determineProfile[33m,[39m [33mAEGISGovernor[39m } [35mfrom[39m [32m'@/lib/aegis/governor'[39m[33m;[39m
+    [90m   | [39m[31m^[39m
+    [90m 32| [39mimport { AEGIS_PROFILE_MAP, type WorkloadProfile } from '@/lib/aegis/t…
+    [90m 33| [39m[35mimport[39m { initAEGIS[33m,[39m shutdownAEGIS[33m,[39m getAEGISStatus } [35mfrom[39m [32m'@/lib/aegis'[39m[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/agent-sdk.test.ts[2m [ app/lib/__tests__/unit/agent-sdk.test.ts ][22m
+[31m[1mError[22m: Cannot find package '@/lib/agent-sdk/types' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/agent-sdk.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/agent-sdk.test.ts:[2m43:1[22m[39m
+    [90m 41| [39m
+    [90m 42| [39m// ── Imports (after vi.mock declarations) ───────────────────────────…
+    [90m 43| [39m[35mimport[39m { [33mTASK_PRIORITY[39m }     [35mfrom[39m [32m'@/lib/agent-sdk/types'[39m[33m;[39m
+    [90m   | [39m[31m^[39m
+    [90m 44| [39m[35mimport[39m { [33mAGENT_COST_CONFIG[39m } [35mfrom[39m [32m'@/lib/agent-sdk/config'[39m[33m;[39m
+    [90m 45| [39m[35mimport[39m {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/cold-start.test.ts[2m [ app/lib/__tests__/unit/cold-start.test.ts ][22m
+[31m[1mError[22m: Cannot find package '@/lib/vector/cold-start' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/cold-start.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/cold-start.test.ts:[2m47:1[22m[39m
+    [90m 45| [39m}))[33m;[39m
+    [90m 46| [39m
+    [90m 47| [39mimport { warmAll, searchAllTiers, mergeDedup } from '@/lib/vector/cold…
+    [90m   | [39m[31m^[39m
+    [90m 48| [39m[35mimport[39m type { [33mVectorSearchResult[39m } [35mfrom[39m [32m'@/lib/vector/types'[39m[33m;[39m
+    [90m 49| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/context-provider.test.ts[2m [ app/lib/__tests__/unit/context-provider.test.ts ][22m
+[31m[1mError[22m: Cannot find package '@/lib/context/types' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/context-provider.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/context-provider.test.ts:[2m14:1[22m[39m
+    [90m 12| [39m
+    [90m 13| [39m[35mimport[39m { describe[33m,[39m it[33m,[39m expect } [35mfrom[39m [32m'vitest'[39m[33m;[39m
+    [90m 14| [39m[35mimport[39m {
+    [90m   | [39m[31m^[39m
+    [90m 15| [39m  [33mDEFAULT_CONTEXT_STATE[39m[33m,[39m
+    [90m 16| [39m  type [33mContextPanelState[39m[33m,[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/cross-context.test.ts[2m [ app/lib/__tests__/unit/cross-context.test.ts ][22m
+[31m[1mError[22m: Cannot find package '@/lib/cross-context/thresholds' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/cross-context.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/cross-context.test.ts:[2m55:1[22m[39m
+    [90m 53| [39m// ───────────────────────────────────────────────────────────────────…
+    [90m 54| [39m
+    [90m 55| [39mimport { clamp, loadThresholds, saveThresholds, adjustThreshold, DEFAU…
+    [90m   | [39m[31m^[39m
+    [90m 56| [39mimport { recordFeedback, insertSuggestion } from '@/lib/cross-context/…
+    [90m 57| [39mimport { getRecencyFactor, getDismissalPenalty, isSuppressed, rankAndF…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/decision-gate-4b.test.ts[2m [ app/lib/__tests__/unit/decision-gate-4b.test.ts ][22m
+[31m[1mError[22m: Cannot find package '@/lib/decision-gate/inference' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/decision-gate-4b.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/decision-gate-4b.test.ts:[2m47:1[22m[39m
+    [90m 45| [39m// ─── Imports (after mocks) ─────────────────────────────────────────…
+    [90m 46| [39m
+    [90m 47| [39mimport { inferStructuredTriggers } from '@/lib/decision-gate/inference…
+    [90m   | [39m[31m^[39m
+    [90m 48| [39m[35mimport[39m { logGateApproval } [35mfrom[39m [32m'@/lib/decision-gate/kernl-logger'[39m[33m;[39m
+    [90m 49| [39mimport { useDecisionGateStore } from '@/lib/stores/decision-gate-store…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/decision-gate.test.ts[2m [ app/lib/__tests__/unit/decision-gate.test.ts ][22m
+[31m[1mError[22m: Cannot find package '@/lib/decision-gate/trigger-detector' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/decision-gate.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/decision-gate.test.ts:[2m10:1[22m[39m
+    [90m  8| [39m
+    [90m  9| [39m[35mimport[39m { describe[33m,[39m it[33m,[39m expect[33m,[39m beforeEach[33m,[39m vi } [35mfrom[39m [32m'vitest'[39m[33m;[39m
+    [90m 10| [39m[35mimport[39m {
+    [90m   | [39m[31m^[39m
+    [90m 11| [39m  detectRepeatedQuestion[33m,[39m
+    [90m 12| [39m  detectSacredPrincipleRisk[33m,[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/embeddings.test.ts[2m [ app/lib/__tests__/unit/embeddings.test.ts ][22m
+[31m[1mError[22m: Cannot find package '@/lib/embeddings/chunker' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/embeddings.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/embeddings.test.ts:[2m62:1[22m[39m
+    [90m 60| [39m})[33m;[39m
+    [90m 61| [39m
+    [90m 62| [39m[35mimport[39m { chunkText[33m,[39m [33mMIN_CHARS[39m } [35mfrom[39m [32m'@/lib/embeddings/chunker'[39m[33m;[39m
+    [90m   | [39m[31m^[39m
+    [90m 63| [39m[35mimport[39m { [33mMODEL_ID[39m[33m,[39m [33mMODEL_DIMENSION[39m } [35mfrom[39m [32m'@/lib/embeddings/model'[39m[33m;[39m
+    [90m 64| [39m[35mimport[39m {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/gate.test.ts[2m [ app/lib/__tests__/unit/gate.test.ts ][22m
+[31m[1mError[22m: Cannot find package '@/lib/cross-context/gate' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/gate.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/gate.test.ts:[2m71:1[22m[39m
+    [90m 69| [39m// ── Imports ────────────────────────────────────────────────────────…
+    [90m 70| [39m
+    [90m 71| [39m[35mimport[39m { checkBeforeManifest } [35mfrom[39m [32m'@/lib/cross-context/gate'[39m[33m;[39m
+    [90m   | [39m[31m^[39m
+    [90m 72| [39mimport { getOverrideCount, recordOverride } from '@/lib/cross-context/…
+    [90m 73| [39m[35mimport[39m type { [33mTaskManifest[39m } [35mfrom[39m [32m'@/lib/agent-sdk/types'[39m[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/hot-cache.test.ts[2m [ app/lib/__tests__/unit/hot-cache.test.ts ][22m
+[31m[1mError[22m: Cannot find package '@/lib/vector/hot-cache' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/hot-cache.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/hot-cache.test.ts:[2m39:1[22m[39m
+    [90m 37| [39m}))[33m;[39m
+    [90m 38| [39m
+    [90m 39| [39m[35mimport[39m {
+    [90m   | [39m[31m^[39m
+    [90m 40| [39m  writeHotCache[33m,[39m
+    [90m 41| [39m  readHotCache[33m,[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/indexer.test.ts[2m [ app/lib/__tests__/unit/indexer.test.ts ][22m
+[31m[1mError[22m: Cannot find package '@/lib/indexer/budget' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/indexer.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/indexer.test.ts:[2m84:1[22m[39m
+    [90m 82| [39m// ───────────────────────────────────────────────────────────────────…
+    [90m 83| [39m
+    [90m 84| [39m[35mimport[39m { [33mBudgetEnforcer[39m } [35mfrom[39m [32m'@/lib/indexer/budget'[39m[33m;[39m
+    [90m   | [39m[31m^[39m
+    [90m 85| [39m[35mimport[39m { getThrottle } [35mfrom[39m [32m'@/lib/indexer/aegis-throttle'[39m[33m;[39m
+    [90m 86| [39m[35mimport[39m {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/kernl-project-store.test.ts[2m [ app/lib/__tests__/unit/kernl-project-store.test.ts ][22m
+[31m[1mError[22m: Cannot find package '@/lib/kernl/project-store' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/kernl-project-store.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/kernl-project-store.test.ts:[2m90:1[22m[39m
+    [90m 88| [39m
+    [90m 89| [39m[90m// Imports must come AFTER vi.mock() declarations[39m
+    [90m 90| [39m[35mimport[39m {
+    [90m   | [39m[31m^[39m
+    [90m 91| [39m  createProject[33m,[39m
+    [90m 92| [39m  getProject[33m,[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/proactive.test.ts[2m [ app/lib/__tests__/unit/proactive.test.ts ][22m
+[31m[1mError[22m: Cannot find package '@/lib/cross-context/proactive' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/proactive.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/proactive.test.ts:[2m34:1[22m[39m
+    [90m 32| [39mvi.mock('@/lib/cross-context/feedback', () => ({ insertSuggestion: moc…
+    [90m 33| [39m
+    [90m 34| [39m[35mimport[39m { checkOnInput } [35mfrom[39m [32m'@/lib/cross-context/proactive'[39m[33m;[39m
+    [90m   | [39m[31m^[39m
+    [90m 35| [39m
+    [90m 36| [39m// ── Helpers ────────────────────────────────────────────────────────…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/suggestion-store.test.ts[2m [ app/lib/__tests__/unit/suggestion-store.test.ts ][22m
+[31m[1mError[22m: Cannot find package '@/lib/stores/suggestion-store' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/suggestion-store.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/suggestion-store.test.ts:[2m9:1[22m[39m
+    [90m  7| [39m
+    [90m  8| [39mimport { describe, it, expect, beforeEach, vi, afterEach } from 'vites…
+    [90m  9| [39mimport { useSuggestionStore, selectSuggestionCount, selectSuggestions …
+    [90m   | [39m[31m^[39m
+    [90m 10| [39m[35mimport[39m type { [33mSuggestion[39m } [35mfrom[39m [32m'@/lib/cross-context/types'[39m[33m;[39m
+    [90m 11| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/ui-store.test.ts[2m [ app/lib/__tests__/unit/ui-store.test.ts ][22m
+[31m[1mError[22m: Cannot find package '@/lib/stores/ui-store' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/ui-store.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/ui-store.test.ts:[2m9:1[22m[39m
+    [90m  7| [39m
+    [90m  8| [39m[35mimport[39m { describe[33m,[39m it[33m,[39m expect[33m,[39m beforeEach } [35mfrom[39m [32m'vitest'[39m[33m;[39m
+    [90m  9| [39m[35mimport[39m { useUIStore } [35mfrom[39m [32m'@/lib/stores/ui-store'[39m[33m;[39m
+    [90m   | [39m[31m^[39m
+    [90m 10| [39m
+    [90m 11| [39m[34mdescribe[39m([32m'UIStore'[39m[33m,[39m () [33m=>[39m {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/vector.test.ts[2m [ app/lib/__tests__/unit/vector.test.ts ][22m
+[31m[1mError[22m: Cannot find package '@/lib/vector' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/vector.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/vector.test.ts:[2m62:1[22m[39m
+    [90m 60| [39m
+    [90m 61| [39m// ── Imports (after all vi.mock() calls) ────────────────────────────…
+    [90m 62| [39m[35mimport[39m {
+    [90m   | [39m[31m^[39m
+    [90m 63| [39m  upsertVector[33m,[39m
+    [90m 64| [39m  searchSimilar[33m,[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/warm-cache.test.ts[2m [ app/lib/__tests__/unit/warm-cache.test.ts ][22m
+[31m[1mError[22m: Cannot find package '@/lib/vector/warm-cache' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/warm-cache.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/warm-cache.test.ts:[2m40:1[22m[39m
+    [90m 38| [39m}))[33m;[39m
+    [90m 39| [39m
+    [90m 40| [39m[35mimport[39m {
+    [90m   | [39m[31m^[39m
+    [90m 41| [39m  buildWarmCache[33m,[39m
+    [90m 42| [39m  searchWarmCache[33m,[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/artifacts/detector.test.ts[2m [ app/lib/__tests__/unit/artifacts/detector.test.ts ][22m
+[31m[1mError[22m: Cannot find package '@/lib/artifacts/detector' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/artifacts/detector.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/artifacts/detector.test.ts:[2m7:1[22m[39m
+    [90m  5| [39m
+    [90m  6| [39m[35mimport[39m { describe[33m,[39m it[33m,[39m expect } [35mfrom[39m [32m'vitest'[39m[33m;[39m
+    [90m  7| [39m[35mimport[39m { detectArtifact } [35mfrom[39m [32m'@/lib/artifacts/detector'[39m[33m;[39m
+    [90m   | [39m[31m^[39m
+    [90m  8| [39m
+    [90m  9| [39m[34mdescribe[39m([32m'detectArtifact'[39m[33m,[39m () [33m=>[39m {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/artifacts/store.test.ts[2m [ app/lib/__tests__/unit/artifacts/store.test.ts ][22m
+[31m[1mError[22m: Cannot find package '@/lib/artifacts/store' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/artifacts/store.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/artifacts/store.test.ts:[2m7:1[22m[39m
+    [90m  5| [39m
+    [90m  6| [39m[35mimport[39m { describe[33m,[39m it[33m,[39m expect[33m,[39m beforeEach } [35mfrom[39m [32m'vitest'[39m[33m;[39m
+    [90m  7| [39m[35mimport[39m { useArtifactStore } [35mfrom[39m [32m'@/lib/artifacts/store'[39m[33m;[39m
+    [90m   | [39m[31m^[39m
+    [90m  8| [39m[35mimport[39m type { [33mArtifact[39m } [35mfrom[39m [32m'@/lib/artifacts/types'[39m[33m;[39m
+    [90m  9| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/eos/batch.test.ts[2m [ app/lib/__tests__/unit/eos/batch.test.ts ][22m
+[31m[1mError[22m: Cannot find package '@/lib/eos/batch' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/eos/batch.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/eos/batch.test.ts:[2m2:1[22m[39m
+    [90m  1| [39m[35mimport[39m { describe[33m,[39m it[33m,[39m expect } [35mfrom[39m [32m'vitest'[39m[33m;[39m
+    [90m  2| [39m[35mimport[39m { processBatch } [35mfrom[39m [32m'@/lib/eos/batch'[39m[33m;[39m
+    [90m   | [39m[31m^[39m
+    [90m  3| [39m
+    [90m  4| [39m[34mdescribe[39m([32m'processBatch'[39m[33m,[39m () [33m=>[39m {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[24/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/eos/character.test.ts[2m [ app/lib/__tests__/unit/eos/character.test.ts ][22m
+[31m[1mError[22m: Cannot find package '@/lib/eos/character' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/eos/character.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/eos/character.test.ts:[2m2:1[22m[39m
+    [90m  1| [39m[35mimport[39m { describe[33m,[39m it[33m,[39m expect } [35mfrom[39m [32m'vitest'[39m[33m;[39m
+    [90m  2| [39m[35mimport[39m { analyzeCharacters } [35mfrom[39m [32m'@/lib/eos/character'[39m[33m;[39m
+    [90m   | [39m[31m^[39m
+    [90m  3| [39m
+    [90m  4| [39m[34mdescribe[39m([32m'analyzeCharacters'[39m[33m,[39m () [33m=>[39m {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[25/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/eos/fp-tracker.test.ts[2m [ app/lib/__tests__/unit/eos/fp-tracker.test.ts ][22m
+[31m[1mError[22m: Cannot find package '@/lib/eos/fp-tracker' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/eos/fp-tracker.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/eos/fp-tracker.test.ts:[2m87:1[22m[39m
+    [90m 85| [39m
+    [90m 86| [39m[90m// Imports AFTER vi.mock declarations[39m
+    [90m 87| [39mimport { recordOccurrence, markFalsePositive, getSuppressedRules, getR…
+    [90m   | [39m[31m^[39m
+    [90m 88| [39m
+    [90m 89| [39m[35mconst[39m [33mPROJECT[39m [33m=[39m [32m'proj-1'[39m[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[26/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/eos/health-score.test.ts[2m [ app/lib/__tests__/unit/eos/health-score.test.ts ][22m
+[31m[1mError[22m: Cannot find package '@/lib/eos/health-score' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/eos/health-score.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/eos/health-score.test.ts:[2m2:1[22m[39m
+    [90m  1| [39m[35mimport[39m { describe[33m,[39m it[33m,[39m expect } [35mfrom[39m [32m'vitest'[39m[33m;[39m
+    [90m  2| [39m[35mimport[39m { computeHealthScore } [35mfrom[39m [32m'@/lib/eos/health-score'[39m[33m;[39m
+    [90m   | [39m[31m^[39m
+    [90m  3| [39m[35mimport[39m type { [33mHealthIssue[39m } [35mfrom[39m [32m'@/lib/eos/types'[39m[33m;[39m
+    [90m  4| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[27/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/eos/patterns.test.ts[2m [ app/lib/__tests__/unit/eos/patterns.test.ts ][22m
+[31m[1mError[22m: Cannot find package '@/lib/eos/patterns' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/eos/patterns.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/eos/patterns.test.ts:[2m2:1[22m[39m
+    [90m  1| [39m[35mimport[39m { describe[33m,[39m it[33m,[39m expect } [35mfrom[39m [32m'vitest'[39m[33m;[39m
+    [90m  2| [39mimport { detectMemoryLeaks, detectEventListenerLeaks } from '@/lib/eos…
+    [90m   | [39m[31m^[39m
+    [90m  3| [39m
+    [90m  4| [39m[34mdescribe[39m([32m'detectMemoryLeaks'[39m[33m,[39m () [33m=>[39m {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[28/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/shim/job-context.test.ts[2m [ app/lib/__tests__/unit/shim/job-context.test.ts ][22m
+[31m[1mError[22m: Cannot find package '@/lib/shim/job-context' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/shim/job-context.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/shim/job-context.test.ts:[2m9:1[22m[39m
+    [90m  7| [39m
+    [90m  8| [39m[35mimport[39m { describe[33m,[39m it[33m,[39m expect } [35mfrom[39m [32m'vitest'[39m[33m;[39m
+    [90m  9| [39mimport { extractContext, extractContextFromScore } from '@/lib/shim/jo…
+    [90m   | [39m[31m^[39m
+    [90m 10| [39m[35mimport[39m type { [33mTaskManifest[39m } [35mfrom[39m [32m'@/lib/agent-sdk/types'[39m[33m;[39m
+    [90m 11| [39m[35mimport[39m type { [33mEoSScanResult[39m } [35mfrom[39m [32m'@/lib/eos/types'[39m[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[29/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/shim/pattern-learner.test.ts[2m [ app/lib/__tests__/unit/shim/pattern-learner.test.ts ][22m
+[31m[1mError[22m: Cannot find package '@/lib/shim/pattern-learner' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/shim/pattern-learner.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/shim/pattern-learner.test.ts:[2m47:1[22m[39m
+    [90m 45| [39m// ─── Import after mock registration ────────────────────────────────…
+    [90m 46| [39m
+    [90m 47| [39mimport { PatternLearner, _resetPatternLearner } from '@/lib/shim/patte…
+    [90m   | [39m[31m^[39m
+    [90m 48| [39m[35mimport[39m type { [33mHistoricalImprovement[39m } [35mfrom[39m [32m'@/lib/shim/types'[39m[33m;[39m
+    [90m 49| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[30/100]⎯[22m[39m
+
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 70 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m app/lib/agent-sdk/__tests__/cost-accounting.test.ts[2m > [22mcreateSessionCost[2m > [22mcalls db.prepare().run() with correct arguments
+[31m[1mSqliteError[22m: FOREIGN KEY constraint failed[39m
+[36m [2m❯[22m Module.createSessionCost app/lib/agent-sdk/cost-tracker.ts:[2m71:6[22m[39m
+    [90m 69| [39m       total_tokens, estimated_cost_usd, project_id, started_at, updat…
+    [90m 70| [39m    VALUES (?, ?, ?, 0, 0, 0, 0.0, ?, ?, ?)
+    [90m 71| [39m  `[39m)[33m.[39m[34mrun[39m(manifestId[33m,[39m sessionType[33m,[39m model[33m,[39m projectId[33m,[39m now[33m,[39m now)[33m;[39m
+    [90m   | [39m     [31m^[39m
+    [90m 72| [39m}
+    [90m 73| [39m
+[90m [2m❯[22m app/lib/agent-sdk/__tests__/cost-accounting.test.ts:[2m156:5[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[31/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/agent-sdk/__tests__/cost-accounting.test.ts[2m > [22mcreateSessionCost[2m > [22maccepts null projectId
+[31m[1mSqliteError[22m: FOREIGN KEY constraint failed[39m
+[36m [2m❯[22m Module.createSessionCost app/lib/agent-sdk/cost-tracker.ts:[2m71:6[22m[39m
+    [90m 69| [39m       total_tokens, estimated_cost_usd, project_id, started_at, updat…
+    [90m 70| [39m    VALUES (?, ?, ?, 0, 0, 0, 0.0, ?, ?, ?)
+    [90m 71| [39m  `[39m)[33m.[39m[34mrun[39m(manifestId[33m,[39m sessionType[33m,[39m model[33m,[39m projectId[33m,[39m now[33m,[39m now)[33m;[39m
+    [90m   | [39m     [31m^[39m
+    [90m 72| [39m}
+    [90m 73| [39m
+[90m [2m❯[22m app/lib/agent-sdk/__tests__/cost-accounting.test.ts:[2m169:5[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[32/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/agent-sdk/__tests__/cost-accounting.test.ts[2m > [22mupdateSessionCost[2m > [22mwrites correct cost calculation to DB
+[31m[1mAssertionError[22m: expected "vi.fn()" to be called with arguments: [ 100000, 50000, 150000, …(3) ][90m
+
+Number of calls: [1m0[22m
+[31m[39m
+[36m [2m❯[22m app/lib/agent-sdk/__tests__/cost-accounting.test.ts:[2m181:21[22m[39m
+    [90m179| [39m    updateSessionCost('manifest-1', 100_000, 50_000, 'claude-sonnet-4-…
+    [90m180| [39m    // Expected cost: (100k / 1M * 3.00) + (50k / 1M * 15.00) = $0.30 …
+    [90m181| [39m    [34mexpect[39m(mockRun)[33m.[39m[34mtoHaveBeenCalledWith[39m(
+    [90m   | [39m                    [31m^[39m
+    [90m182| [39m      [34m100_000[39m[33m,[39m    [90m// input_tokens[39m
+    [90m183| [39m      [34m50_000[39m[33m,[39m     [90m// output_tokens[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[33/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/agent-sdk/__tests__/cost-accounting.test.ts[2m > [22mfinalizeSessionCost[2m > [22msets completed_at and updated_at
+[31m[1mAssertionError[22m: expected "vi.fn()" to be called with arguments: [ Any<Number>, Any<Number>, …(1) ][90m
+
+Number of calls: [1m0[22m
+[31m[39m
+[36m [2m❯[22m app/lib/agent-sdk/__tests__/cost-accounting.test.ts:[2m195:21[22m[39m
+    [90m193| [39m  [34mit[39m([32m'sets completed_at and updated_at'[39m[33m,[39m () [33m=>[39m {
+    [90m194| [39m    [34mfinalizeSessionCost[39m([32m'manifest-1'[39m)[33m;[39m
+    [90m195| [39m    [34mexpect[39m(mockRun)[33m.[39m[34mtoHaveBeenCalledWith[39m(
+    [90m   | [39m                    [31m^[39m
+    [90m196| [39m      expect[33m.[39m[34many[39m([33mNumber[39m)[33m,[39m [90m// completed_at[39m
+    [90m197| [39m      expect[33m.[39m[34many[39m([33mNumber[39m)[33m,[39m [90m// updated_at[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[34/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/agent-sdk/__tests__/cost-accounting.test.ts[2m > [22mgetDailyTotalUsd[2m > [22mreturns sum from session_costs query
+[31m[1mAssertionError[22m: expected +0 to be close to 7.42, received difference is 7.42, but expected 0.000049999999999999996[39m
+[36m [2m❯[22m app/lib/agent-sdk/__tests__/cost-accounting.test.ts:[2m238:19[22m[39m
+    [90m236| [39m    mockGet[33m.[39m[34mmockReturnValue[39m({ total[33m:[39m [34m7.42[39m })[33m;[39m
+    [90m237| [39m    [35mconst[39m total [33m=[39m [34mgetDailyTotalUsd[39m()[33m;[39m
+    [90m238| [39m    [34mexpect[39m(total)[33m.[39m[34mtoBeCloseTo[39m([34m7.42[39m[33m,[39m [34m4[39m)[33m;[39m
+    [90m   | [39m                  [31m^[39m
+    [90m239| [39m    [90m// Verify the query includes a started_at filter[39m
+    [90m240| [39m    const sql = ((mockPrepare.mock.calls as unknown[][])[0] ?? [])[0] …
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[35/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/agent-sdk/__tests__/cost-accounting.test.ts[2m > [22misDailyCapReached[2m > [22mreturns true when daily total >= hard cap and no override
+[31m[1mAssertionError[22m: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2m❯[22m app/lib/agent-sdk/__tests__/cost-accounting.test.ts:[2m267:33[22m[39m
+    [90m265| [39m      [33m.[39m[34mmockReturnValueOnce[39m({ value[33m:[39m [32m'15.00'[39m }) [90m// daily_hard_cap_usd[39m
+    [90m266| [39m      [33m.[39m[34mmockReturnValueOnce[39m({ total[33m:[39m [34m15.50[39m })[33m;[39m  [90m// SUM query[39m
+    [90m267| [39m    [34mexpect[39m([34misDailyCapReached[39m())[33m.[39m[34mtoBe[39m([35mtrue[39m)[33m;[39m
+    [90m   | [39m                                [31m^[39m
+    [90m268| [39m  })[33m;[39m
+    [90m269| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[36/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/agent-sdk/__tests__/cost-accounting.test.ts[2m > [22mOverride for Today[2m > [22msetDailyOverride writes expiry at midnight UTC
+[31m[1mAssertionError[22m: expected "vi.fn()" to be called with arguments: [ 'daily_override_expires_at', …(2) ][90m
+
+Number of calls: [1m0[22m
+[31m[39m
+[36m [2m❯[22m app/lib/agent-sdk/__tests__/cost-accounting.test.ts:[2m291:21[22m[39m
+    [90m289| [39m  [34mit[39m([32m'setDailyOverride writes expiry at midnight UTC'[39m[33m,[39m () [33m=>[39m {
+    [90m290| [39m    [34msetDailyOverride[39m()[33m;[39m
+    [90m291| [39m    [34mexpect[39m(mockRun)[33m.[39m[34mtoHaveBeenCalledWith[39m(
+    [90m   | [39m                    [31m^[39m
+    [90m292| [39m      [32m'daily_override_expires_at'[39m[33m,[39m
+    [90m293| [39m      expect[33m.[39m[34mstringMatching[39m([36m/^\d+$/[39m)[33m,[39m [90m// expiry timestamp as string[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[37/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/agent-sdk/__tests__/cost-accounting.test.ts[2m > [22mOverride for Today[2m > [22misDailyOverrideActive returns false for past expiry
+[31m[1mAssertionError[22m: expected true to be false // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+[36m [2m❯[22m app/lib/agent-sdk/__tests__/cost-accounting.test.ts:[2m310:37[22m[39m
+    [90m308| [39m    [35mconst[39m pastMs [33m=[39m [33mDate[39m[33m.[39m[34mnow[39m() [33m-[39m [34m1_000[39m[33m;[39m
+    [90m309| [39m    mockGet[33m.[39m[34mmockReturnValue[39m({ value[33m:[39m [33mString[39m(pastMs) })[33m;[39m
+    [90m310| [39m    [34mexpect[39m([34misDailyOverrideActive[39m())[33m.[39m[34mtoBe[39m([35mfalse[39m)[33m;[39m
+    [90m   | [39m                                    [31m^[39m
+    [90m311| [39m  })[33m;[39m
+    [90m312| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[38/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/agent-sdk/__tests__/cost-accounting.test.ts[2m > [22mOverride for Today[2m > [22mclearDailyOverride sets expiry to 0
+[31m[1mAssertionError[22m: expected "vi.fn()" to be called with arguments: [ 'daily_override_expires_at', …(2) ][90m
+
+Number of calls: [1m0[22m
+[31m[39m
+[36m [2m❯[22m app/lib/agent-sdk/__tests__/cost-accounting.test.ts:[2m315:21[22m[39m
+    [90m313| [39m  [34mit[39m([32m'clearDailyOverride sets expiry to 0'[39m[33m,[39m () [33m=>[39m {
+    [90m314| [39m    [34mclearDailyOverride[39m()[33m;[39m
+    [90m315| [39m    expect(mockRun).toHaveBeenCalledWith('daily_override_expires_at', …
+    [90m   | [39m                    [31m^[39m
+    [90m316| [39m  })[33m;[39m
+    [90m317| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[39/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/agent-sdk/__tests__/cost-accounting.test.ts[2m > [22msetBudgetConfig[2m > [22mupserts key/value into budget_config
+[31m[1mAssertionError[22m: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string[39m
+[36m [2m❯[22m app/lib/agent-sdk/__tests__/cost-accounting.test.ts:[2m353:17[22m[39m
+    [90m351| [39m    [34msetBudgetConfig[39m([32m'daily_hard_cap_usd'[39m[33m,[39m [32m'20.00'[39m)[33m;[39m
+    [90m352| [39m    const sql = ((mockPrepare.mock.calls as unknown[][])[0] ?? [])[0] …
+    [90m353| [39m    [34mexpect[39m(sql)[33m.[39m[34mtoContain[39m([32m'INSERT INTO budget_config'[39m)[33m;[39m
+    [90m   | [39m                [31m^[39m
+    [90m354| [39m    expect(mockRun).toHaveBeenCalledWith('daily_hard_cap_usd', '20.00'…
+    [90m355| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[40/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/lifecycle.test.ts[2m > [22mGhost Lifecycle[2m > [22mstartGhost[2m > [22mcalls all components in the correct startup order
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/lifecycle.test.ts[2m > [22mGhost Lifecycle[2m > [22mstartGhost[2m > [22memits state: "running" when all steps succeed
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/lifecycle.test.ts[2m > [22mGhost Lifecycle[2m > [22mstartGhost[2m > [22memits state: "starting" then "running"
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/lifecycle.test.ts[2m > [22mGhost Lifecycle[2m > [22mstartGhost[2m > [22mis idempotent — calling twice does not double-start components
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/lifecycle.test.ts[2m > [22mGhost Lifecycle[2m > [22mdegraded mode[2m > [22mcontinues startup when one component throws
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/lifecycle.test.ts[2m > [22mGhost Lifecycle[2m > [22mdegraded mode[2m > [22memits state: "degraded" when a component fails
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/lifecycle.test.ts[2m > [22mGhost Lifecycle[2m > [22mdegraded mode[2m > [22memits ghost:error for the failing component
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/lifecycle.test.ts[2m > [22mGhost Lifecycle[2m > [22mstopGhost[2m > [22mstops components in reverse startup order
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/lifecycle.test.ts[2m > [22mGhost Lifecycle[2m > [22mstopGhost[2m > [22memits state: "stopped" after shutdown
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/lifecycle.test.ts[2m > [22mGhost Lifecycle[2m > [22mstopGhost[2m > [22mis idempotent — calling twice does not error
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/lifecycle.test.ts[2m > [22mGhost Lifecycle[2m > [22mstopGhost[2m > [22mresolves within 5 seconds even if watcher hangs
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/lifecycle.test.ts[2m > [22mGhost Lifecycle[2m > [22mpauseGhost / resumeGhost[2m > [22mpauses email poller and ingest queue
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/lifecycle.test.ts[2m > [22mGhost Lifecycle[2m > [22mpauseGhost / resumeGhost[2m > [22memits state: "paused" after pause
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/lifecycle.test.ts[2m > [22mGhost Lifecycle[2m > [22mpauseGhost / resumeGhost[2m > [22mis idempotent — calling pauseGhost twice only pauses once
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/lifecycle.test.ts[2m > [22mGhost Lifecycle[2m > [22mpauseGhost / resumeGhost[2m > [22mresumes email poller and ingest queue
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/lifecycle.test.ts[2m > [22mGhost Lifecycle[2m > [22mpauseGhost / resumeGhost[2m > [22memits state: "running" after resume (no errors)
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/lifecycle.test.ts[2m > [22mGhost Lifecycle[2m > [22mpauseGhost / resumeGhost[2m > [22mis idempotent — calling resumeGhost when not paused is a no-op
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/lifecycle.test.ts[2m > [22mGhost Lifecycle[2m > [22mstate flags[2m > [22misGhostRunning returns false before start
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/lifecycle.test.ts[2m > [22mGhost Lifecycle[2m > [22mstate flags[2m > [22misGhostRunning returns true after startGhost
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/lifecycle.test.ts[2m > [22mGhost Lifecycle[2m > [22mstate flags[2m > [22misGhostRunning returns false after stopGhost
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/lifecycle.test.ts[2m > [22mGhost Lifecycle[2m > [22mstate flags[2m > [22misGhostPaused returns false before any pause
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/lifecycle.test.ts[2m > [22mGhost Lifecycle[2m > [22mstate flags[2m > [22misGhostPaused returns true after pauseGhost
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/lifecycle.test.ts[2m > [22mGhost Lifecycle[2m > [22mstate flags[2m > [22misGhostPaused returns false after resumeGhost
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/lifecycle.test.ts[2m > [22mGhost Lifecycle[2m > [22mrestartComponent[2m > [22mcalls startFn after the 30-second delay
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/lifecycle.test.ts[2m > [22mGhost Lifecycle[2m > [22mrestartComponent[2m > [22mdoes not retry if first restart succeeds
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/lifecycle.test.ts[2m > [22mGhost Lifecycle[2m > [22mrestartComponent[2m > [22memits ghost:error if restart also fails
+[31m[1mError[22m: Cannot find package '@/lib/vector' imported from 'D:/Projects/GregLite/app/lib/ghost/ingest/writer.ts'[39m
+[36m [2m❯[22m app/lib/ghost/ingest/writer.ts:[2m9:1[22m[39m
+    [90m  7| [39m
+    [90m  8| [39m[35mimport[39m { getDatabase } [35mfrom[39m [32m'@/lib/kernl/database'[39m[33m;[39m
+    [90m  9| [39m[35mimport[39m { upsertVector } [35mfrom[39m [32m'@/lib/vector'[39m[33m;[39m
+    [90m   | [39m[31m^[39m
+    [90m 10| [39m[35mimport[39m type { [33mChunkResult[39m[33m,[39m [33mGhostChunkMetadata[39m } [35mfrom[39m [32m'./types'[39m[33m;[39m
+    [90m 11| [39m
+[90m [2m❯[22m app/lib/ghost/ingest/index.ts:[2m18:1[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[41/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/phase6-integration.test.ts[2m > [22mGhost Lifecycle — integration[2m > [22mstarts all components in the correct order
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/phase6-integration.test.ts[2m > [22mGhost Lifecycle — integration[2m > [22mresolves stopGhost within 5 seconds even when watcher hangs
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/phase6-integration.test.ts[2m > [22mGhost Lifecycle — integration[2m > [22mcontinues startup when one component fails (degraded mode)
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/phase6-integration.test.ts[2m > [22mGhost Lifecycle — integration[2m > [22mpauses all components on AEGIS PARALLEL_BUILD and resumes on resume
+[31m[1mError[22m: Cannot find package '@/lib/kernl/decision-store' imported from 'D:/Projects/GregLite/app/lib/ghost/email/poller.ts'[39m
+[36m [2m❯[22m app/lib/ghost/email/poller.ts:[2m13:1[22m[39m
+    [90m 11| [39m[35mimport[39m { getLatestAegisSignal } [35mfrom[39m [32m'@/lib/kernl/aegis-store'[39m[33m;[39m
+    [90m 12| [39m[35mimport[39m { getDatabase } [35mfrom[39m [32m'@/lib/kernl/database'[39m[33m;[39m
+    [90m 13| [39m[35mimport[39m { logDecision } [35mfrom[39m [32m'@/lib/kernl/decision-store'[39m[33m;[39m
+    [90m   | [39m[31m^[39m
+    [90m 14| [39m
+    [90m 15| [39m// ── Constants ──────────────────────────────────────────────────────…
+[90m [2m❯[22m app/lib/ghost/lifecycle.ts:[2m32:1[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[42/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/phase6-integration.test.ts[2m > [22mPrivacy Dashboard API[2m > [22mDELETE /api/ghost/items/:id cascades delete and returns 204
+[31m[1mError[22m: Cannot find package '@/app/api/ghost/items/route' imported from 'D:/Projects/GregLite/app/lib/ghost/__tests__/phase6-integration.test.ts'[39m
+[36m [2m❯[22m app/lib/ghost/__tests__/phase6-integration.test.ts:[2m501:24[22m[39m
+    [90m499| [39m[34mdescribe[39m([32m'Privacy Dashboard API'[39m[33m,[39m () [33m=>[39m {
+    [90m500| [39m  it('DELETE /api/ghost/items/:id cascades delete and returns 204', as…
+    [90m501| [39m    [35mconst[39m { [33mDELETE[39m } [33m=[39m [35mawait[39m [35mimport[39m([32m'@/app/api/ghost/items/route'[39m)[33m;[39m
+    [90m   | [39m                       [31m^[39m
+    [90m502| [39m    const req = new NextRequest('http://localhost/api/ghost/items?id=i…
+    [90m503| [39m      method[33m:[39m [32m'DELETE'[39m[33m,[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[43/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/phase6-integration.test.ts[2m > [22mPrivacy Dashboard API[2m > [22mPOST /api/ghost/exclusions adds rule and returns 201
+[31m[1mError[22m: Cannot find package '@/app/api/ghost/exclusions/route' imported from 'D:/Projects/GregLite/app/lib/ghost/__tests__/phase6-integration.test.ts'[39m
+[36m [2m❯[22m app/lib/ghost/__tests__/phase6-integration.test.ts:[2m513:22[22m[39m
+    [90m511| [39m
+    [90m512| [39m  it('POST /api/ghost/exclusions adds rule and returns 201', async () …
+    [90m513| [39m    [35mconst[39m { [33mPOST[39m } [33m=[39m [35mawait[39m [35mimport[39m([32m'@/app/api/ghost/exclusions/route'[39m)[33m;[39m
+    [90m   | [39m                     [31m^[39m
+    [90m514| [39m    const req = new NextRequest('http://localhost/api/ghost/exclusions…
+    [90m515| [39m      method[33m:[39m [32m'POST'[39m[33m,[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[44/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/phase6-integration.test.ts[2m > [22mPrivacy Dashboard API[2m > [22mPOST /api/ghost/purge clears all ghost data and returns {ok: true}
+[31m[1mError[22m: Cannot find package '@/app/api/ghost/purge/route' imported from 'D:/Projects/GregLite/app/lib/ghost/__tests__/phase6-integration.test.ts'[39m
+[36m [2m❯[22m app/lib/ghost/__tests__/phase6-integration.test.ts:[2m531:22[22m[39m
+    [90m529| [39m    [90m// Return empty ghost chunks so the loop is a no-op[39m
+    [90m530| [39m    mockAll[33m.[39m[34mmockReturnValueOnce[39m([])[33m;[39m [90m// ghostChunks query[39m
+    [90m531| [39m    [35mconst[39m { [33mPOST[39m } [33m=[39m [35mawait[39m [35mimport[39m([32m'@/app/api/ghost/purge/route'[39m)[33m;[39m
+    [90m   | [39m                     [31m^[39m
+    [90m532| [39m
+    [90m533| [39m    [35mconst[39m res [33m=[39m [35mawait[39m [33mPOST[39m()[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[45/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/phase6-integration.test.ts[2m > [22mSecurity Audit — [UNTRUSTED CONTENT] boundary[2m > [22mTell me more path: addMessage content contains [GHOST CONTEXT - UNTRUSTED CONTENT]
+[31m[1mError[22m: Cannot find package '@/app/api/ghost/inject/route' imported from 'D:/Projects/GregLite/app/lib/ghost/__tests__/phase6-integration.test.ts'[39m
+[36m [2m❯[22m app/lib/ghost/__tests__/phase6-integration.test.ts:[2m608:22[22m[39m
+    [90m606| [39m    mockGet.mockReturnValueOnce({ content: 'Some ghost file content fo…
+    [90m607| [39m
+    [90m608| [39m    [35mconst[39m { [33mPOST[39m } [33m=[39m [35mawait[39m [35mimport[39m([32m'@/app/api/ghost/inject/route'[39m)[33m;[39m
+    [90m   | [39m                     [31m^[39m
+    [90m609| [39m    [35mconst[39m req [33m=[39m [35mnew[39m [33mRequest[39m([32m'http://localhost/api/ghost/inject'[39m[33m,[39m {
+    [90m610| [39m      method[33m:[39m [32m'POST'[39m[33m,[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[46/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/watcher-bridge.test.ts[2m > [22mAEGIS → Ghost integration[2m > [22mcalls ghost_pause when AEGIS transitions to PARALLEL_BUILD
+[31m[1mError[22m: Cannot find package '@/lib/aegis/index' imported from 'D:/Projects/GregLite/app/lib/ghost/__tests__/watcher-bridge.test.ts'[39m
+[36m [2m❯[22m app/lib/ghost/__tests__/watcher-bridge.test.ts:[2m233:38[22m[39m
+    [90m231| [39m  it('calls ghost_pause when AEGIS transitions to PARALLEL_BUILD', asy…
+    [90m232| [39m    [90m// Import AEGIS and trigger a profile override[39m
+    [90m233| [39m    [35mconst[39m { overrideAEGISProfile } [33m=[39m [35mawait[39m [35mimport[39m([32m'@/lib/aegis/index'[39m)[33m;[39m
+    [90m   | [39m                                     [31m^[39m
+    [90m234| [39m    [35mawait[39m [34moverrideAEGISProfile[39m([32m'PARALLEL_BUILD'[39m)[33m;[39m
+    [90m235| [39m    [34mexpect[39m(mocks[33m.[39minvoke)[33m.[39m[34mtoHaveBeenCalledWith[39m([32m'ghost_pause'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[47/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/watcher-bridge.test.ts[2m > [22mAEGIS → Ghost integration[2m > [22mcalls ghost_pause when AEGIS transitions to COUNCIL
+[31m[1mError[22m: Cannot find package '@/lib/aegis/index' imported from 'D:/Projects/GregLite/app/lib/ghost/__tests__/watcher-bridge.test.ts'[39m
+[36m [2m❯[22m app/lib/ghost/__tests__/watcher-bridge.test.ts:[2m239:38[22m[39m
+    [90m237| [39m
+    [90m238| [39m  it('calls ghost_pause when AEGIS transitions to COUNCIL', async () =…
+    [90m239| [39m    [35mconst[39m { overrideAEGISProfile } [33m=[39m [35mawait[39m [35mimport[39m([32m'@/lib/aegis/index'[39m)[33m;[39m
+    [90m   | [39m                                     [31m^[39m
+    [90m240| [39m    [35mawait[39m [34moverrideAEGISProfile[39m([32m'COUNCIL'[39m)[33m;[39m
+    [90m241| [39m    [34mexpect[39m(mocks[33m.[39minvoke)[33m.[39m[34mtoHaveBeenCalledWith[39m([32m'ghost_pause'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[48/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/watcher-bridge.test.ts[2m > [22mAEGIS → Ghost integration[2m > [22mcalls ghost_resume when AEGIS transitions to IDLE
+[31m[1mError[22m: Cannot find package '@/lib/aegis/index' imported from 'D:/Projects/GregLite/app/lib/ghost/__tests__/watcher-bridge.test.ts'[39m
+[36m [2m❯[22m app/lib/ghost/__tests__/watcher-bridge.test.ts:[2m245:38[22m[39m
+    [90m243| [39m
+    [90m244| [39m  [34mit[39m([32m'calls ghost_resume when AEGIS transitions to IDLE'[39m[33m,[39m [35masync[39m () [33m=>[39m {
+    [90m245| [39m    [35mconst[39m { overrideAEGISProfile } [33m=[39m [35mawait[39m [35mimport[39m([32m'@/lib/aegis/index'[39m)[33m;[39m
+    [90m   | [39m                                     [31m^[39m
+    [90m246| [39m    [35mawait[39m [34moverrideAEGISProfile[39m([32m'IDLE'[39m)[33m;[39m
+    [90m247| [39m    [34mexpect[39m(mocks[33m.[39minvoke)[33m.[39m[34mtoHaveBeenCalledWith[39m([32m'ghost_resume'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[49/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/watcher-bridge.test.ts[2m > [22mAEGIS → Ghost integration[2m > [22mcalls ghost_resume when AEGIS transitions to DEEP_FOCUS
+[31m[1mError[22m: Cannot find package '@/lib/aegis/index' imported from 'D:/Projects/GregLite/app/lib/ghost/__tests__/watcher-bridge.test.ts'[39m
+[36m [2m❯[22m app/lib/ghost/__tests__/watcher-bridge.test.ts:[2m251:38[22m[39m
+    [90m249| [39m
+    [90m250| [39m  it('calls ghost_resume when AEGIS transitions to DEEP_FOCUS', async …
+    [90m251| [39m    [35mconst[39m { overrideAEGISProfile } [33m=[39m [35mawait[39m [35mimport[39m([32m'@/lib/aegis/index'[39m)[33m;[39m
+    [90m   | [39m                                     [31m^[39m
+    [90m252| [39m    [35mawait[39m [34moverrideAEGISProfile[39m([32m'DEEP_FOCUS'[39m)[33m;[39m
+    [90m253| [39m    [34mexpect[39m(mocks[33m.[39minvoke)[33m.[39m[34mtoHaveBeenCalledWith[39m([32m'ghost_resume'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[50/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/ghost/__tests__/watcher-bridge.test.ts[2m > [22mAEGIS → Ghost integration[2m > [22mcalls ghost_resume when AEGIS transitions to COWORK_BATCH
+[31m[1mError[22m: Cannot find package '@/lib/aegis/index' imported from 'D:/Projects/GregLite/app/lib/ghost/__tests__/watcher-bridge.test.ts'[39m
+[36m [2m❯[22m app/lib/ghost/__tests__/watcher-bridge.test.ts:[2m257:38[22m[39m
+    [90m255| [39m
+    [90m256| [39m  it('calls ghost_resume when AEGIS transitions to COWORK_BATCH', asyn…
+    [90m257| [39m    [35mconst[39m { overrideAEGISProfile } [33m=[39m [35mawait[39m [35mimport[39m([32m'@/lib/aegis/index'[39m)[33m;[39m
+    [90m   | [39m                                     [31m^[39m
+    [90m258| [39m    [35mawait[39m [34moverrideAEGISProfile[39m([32m'COWORK_BATCH'[39m)[33m;[39m
+    [90m259| [39m    [34mexpect[39m(mocks[33m.[39minvoke)[33m.[39m[34mtoHaveBeenCalledWith[39m([32m'ghost_resume'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[51/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/war-room.test.ts[2m > [22mgraph-builder[2m > [22mbuildGraph()[2m > [22mmaps completed → complete
+[31m[1mError[22m: Cannot find package '@/lib/war-room/graph-builder' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/war-room.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/war-room.test.ts:[2m63:30[22m[39m
+    [90m 61| [39m    [34mit[39m([32m'maps completed → complete'[39m[33m,[39m [35masync[39m () [33m=>[39m {
+    [90m 62| [39m      [34mmakeFetchOk[39m([[34mrow[39m({ status[33m:[39m [32m'completed'[39m })])[33m;[39m
+    [90m 63| [39m      const { buildGraph } = await import('@/lib/war-room/graph-builde…
+    [90m   | [39m                             [31m^[39m
+    [90m 64| [39m      [35mconst[39m g [33m=[39m [35mawait[39m [34mbuildGraph[39m()[33m;[39m
+    [90m 65| [39m      [34mexpect[39m(g[33m.[39mnodes[[34m0[39m][33m?.[39mstatus)[33m.[39m[34mtoBe[39m([32m'complete'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[52/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/war-room.test.ts[2m > [22mgraph-builder[2m > [22mbuildGraph()[2m > [22mmaps spawning/working/validating → running
+[31m[1mError[22m: Cannot find package '@/lib/war-room/graph-builder' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/war-room.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/war-room.test.ts:[2m69:30[22m[39m
+    [90m 67| [39m
+    [90m 68| [39m    [34mit[39m([32m'maps spawning/working/validating → running'[39m[33m,[39m [35masync[39m () [33m=>[39m {
+    [90m 69| [39m      const { buildGraph } = await import('@/lib/war-room/graph-builde…
+    [90m   | [39m                             [31m^[39m
+    [90m 70| [39m
+    [90m 71| [39m      [35mfor[39m ([35mconst[39m raw [35mof[39m [[32m'spawning'[39m[33m,[39m [32m'working'[39m[33m,[39m [32m'validating'[39m]) {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[53/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/war-room.test.ts[2m > [22mgraph-builder[2m > [22mbuildGraph()[2m > [22mmaps pending/failed/interrupted unchanged
+[31m[1mError[22m: Cannot find package '@/lib/war-room/graph-builder' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/war-room.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/war-room.test.ts:[2m79:30[22m[39m
+    [90m 77| [39m
+    [90m 78| [39m    [34mit[39m([32m'maps pending/failed/interrupted unchanged'[39m[33m,[39m [35masync[39m () [33m=>[39m {
+    [90m 79| [39m      const { buildGraph } = await import('@/lib/war-room/graph-builde…
+    [90m   | [39m                             [31m^[39m
+    [90m 80| [39m
+    [90m 81| [39m      [35mfor[39m ([35mconst[39m s [35mof[39m [[32m'pending'[39m[33m,[39m [32m'failed'[39m[33m,[39m [32m'interrupted'[39m] [35mas[39m [35mconst[39m) {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[54/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/war-room.test.ts[2m > [22mgraph-builder[2m > [22mbuildGraph()[2m > [22mfalls back to "pending" for unknown status strings
+[31m[1mError[22m: Cannot find package '@/lib/war-room/graph-builder' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/war-room.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/war-room.test.ts:[2m90:30[22m[39m
+    [90m 88| [39m    it('falls back to "pending" for unknown status strings', async () …
+    [90m 89| [39m      [34mmakeFetchOk[39m([[34mrow[39m({ status[33m:[39m [32m'bogus-state'[39m })])[33m;[39m
+    [90m 90| [39m      const { buildGraph } = await import('@/lib/war-room/graph-builde…
+    [90m   | [39m                             [31m^[39m
+    [90m 91| [39m      [35mconst[39m g [33m=[39m [35mawait[39m [34mbuildGraph[39m()[33m;[39m
+    [90m 92| [39m      [34mexpect[39m(g[33m.[39mnodes[[34m0[39m][33m?.[39mstatus)[33m.[39m[34mtoBe[39m([32m'pending'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[55/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/war-room.test.ts[2m > [22mgraph-builder[2m > [22mbuildGraph()[2m > [22mbuilds edges from dependencies JSON array
+[31m[1mError[22m: Cannot find package '@/lib/war-room/graph-builder' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/war-room.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/war-room.test.ts:[2m100:30[22m[39m
+    [90m 98| [39m        [34mrow[39m({ id[33m:[39m [32m'b'[39m[33m,[39m dependencies[33m:[39m [32m'["a"]'[39m })[33m,[39m
+    [90m 99| [39m      ])[33m;[39m
+    [90m100| [39m      const { buildGraph } = await import('@/lib/war-room/graph-builde…
+    [90m   | [39m                             [31m^[39m
+    [90m101| [39m      [35mconst[39m g [33m=[39m [35mawait[39m [34mbuildGraph[39m()[33m;[39m
+    [90m102| [39m      [34mexpect[39m(g[33m.[39medges)[33m.[39m[34mtoHaveLength[39m([34m1[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[56/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/war-room.test.ts[2m > [22mgraph-builder[2m > [22mbuildGraph()[2m > [22mbuilds diamond pattern edges correctly
+[31m[1mError[22m: Cannot find package '@/lib/war-room/graph-builder' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/war-room.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/war-room.test.ts:[2m113:30[22m[39m
+    [90m111| [39m        [34mrow[39m({ id[33m:[39m [32m'd'[39m[33m,[39m dependencies[33m:[39m [32m'["b","c"]'[39m })[33m,[39m
+    [90m112| [39m      ])[33m;[39m
+    [90m113| [39m      const { buildGraph } = await import('@/lib/war-room/graph-builde…
+    [90m   | [39m                             [31m^[39m
+    [90m114| [39m      [35mconst[39m g [33m=[39m [35mawait[39m [34mbuildGraph[39m()[33m;[39m
+    [90m115| [39m      [34mexpect[39m(g[33m.[39medges)[33m.[39m[34mtoHaveLength[39m([34m4[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[57/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/war-room.test.ts[2m > [22mgraph-builder[2m > [22mbuildGraph()[2m > [22mhandles malformed dependencies JSON gracefully (empty edges)
+[31m[1mError[22m: Cannot find package '@/lib/war-room/graph-builder' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/war-room.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/war-room.test.ts:[2m124:30[22m[39m
+    [90m122| [39m    it('handles malformed dependencies JSON gracefully (empty edges)',…
+    [90m123| [39m      [34mmakeFetchOk[39m([[34mrow[39m({ dependencies[33m:[39m [32m'not-valid-json'[39m })])[33m;[39m
+    [90m124| [39m      const { buildGraph } = await import('@/lib/war-room/graph-builde…
+    [90m   | [39m                             [31m^[39m
+    [90m125| [39m      [35mconst[39m g [33m=[39m [35mawait[39m [34mbuildGraph[39m()[33m;[39m
+    [90m126| [39m      [34mexpect[39m(g[33m.[39medges)[33m.[39m[34mtoHaveLength[39m([34m0[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[58/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/war-room.test.ts[2m > [22mgraph-builder[2m > [22mbuildGraph()[2m > [22mhandles null dependencies gracefully
+[31m[1mError[22m: Cannot find package '@/lib/war-room/graph-builder' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/war-room.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/war-room.test.ts:[2m131:30[22m[39m
+    [90m129| [39m    [34mit[39m([32m'handles null dependencies gracefully'[39m[33m,[39m [35masync[39m () [33m=>[39m {
+    [90m130| [39m      [34mmakeFetchOk[39m([[34mrow[39m({ dependencies[33m:[39m [35mnull[39m })])[33m;[39m
+    [90m131| [39m      const { buildGraph } = await import('@/lib/war-room/graph-builde…
+    [90m   | [39m                             [31m^[39m
+    [90m132| [39m      [35mconst[39m g [33m=[39m [35mawait[39m [34mbuildGraph[39m()[33m;[39m
+    [90m133| [39m      [34mexpect[39m(g[33m.[39medges)[33m.[39m[34mtoHaveLength[39m([34m0[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[59/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/war-room.test.ts[2m > [22mgraph-builder[2m > [22mbuildGraph()[2m > [22msets node title to "Untitled" when title is null
+[31m[1mError[22m: Cannot find package '@/lib/war-room/graph-builder' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/war-room.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/war-room.test.ts:[2m138:30[22m[39m
+    [90m136| [39m    it('sets node title to "Untitled" when title is null', async () =>…
+    [90m137| [39m      [34mmakeFetchOk[39m([[34mrow[39m({ title[33m:[39m [35mnull[39m })])[33m;[39m
+    [90m138| [39m      const { buildGraph } = await import('@/lib/war-room/graph-builde…
+    [90m   | [39m                             [31m^[39m
+    [90m139| [39m      [35mconst[39m g [33m=[39m [35mawait[39m [34mbuildGraph[39m()[33m;[39m
+    [90m140| [39m      [34mexpect[39m(g[33m.[39mnodes[[34m0[39m][33m?.[39mtitle)[33m.[39m[34mtoBe[39m([32m'Untitled'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[60/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/war-room.test.ts[2m > [22mgraph-builder[2m > [22mbuildGraph()[2m > [22mthrows on non-OK fetch response
+[31m[1mError[22m: Cannot find package '@/lib/war-room/graph-builder' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/war-room.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/war-room.test.ts:[2m145:30[22m[39m
+    [90m143| [39m    [34mit[39m([32m'throws on non-OK fetch response'[39m[33m,[39m [35masync[39m () [33m=>[39m {
+    [90m144| [39m      [34mmakeFetchFail[39m([34m503[39m)[33m;[39m
+    [90m145| [39m      const { buildGraph } = await import('@/lib/war-room/graph-builde…
+    [90m   | [39m                             [31m^[39m
+    [90m146| [39m      [35mawait[39m [34mexpect[39m([34mbuildGraph[39m())[33m.[39mrejects[33m.[39m[34mtoThrow[39m([32m'503'[39m)[33m;[39m
+    [90m147| [39m    })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[61/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/war-room.test.ts[2m > [22mgraph-builder[2m > [22mbuildGraph()[2m > [22mreturns empty nodes and edges for empty manifests table
+[31m[1mError[22m: Cannot find package '@/lib/war-room/graph-builder' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/war-room.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/war-room.test.ts:[2m151:30[22m[39m
+    [90m149| [39m    it('returns empty nodes and edges for empty manifests table', asyn…
+    [90m150| [39m      [34mmakeFetchOk[39m([])[33m;[39m
+    [90m151| [39m      const { buildGraph } = await import('@/lib/war-room/graph-builde…
+    [90m   | [39m                             [31m^[39m
+    [90m152| [39m      [35mconst[39m g [33m=[39m [35mawait[39m [34mbuildGraph[39m()[33m;[39m
+    [90m153| [39m      [34mexpect[39m(g[33m.[39mnodes)[33m.[39m[34mtoHaveLength[39m([34m0[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[62/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/war-room.test.ts[2m > [22mgraph-builder[2m > [22mlayoutGraph()[2m > [22mreturns positions for every node
+[31m[1mError[22m: Cannot find package '@/lib/war-room/graph-builder' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/war-room.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/war-room.test.ts:[2m160:31[22m[39m
+    [90m158| [39m  [34mdescribe[39m([32m'layoutGraph()'[39m[33m,[39m () [33m=>[39m {
+    [90m159| [39m    [34mit[39m([32m'returns positions for every node'[39m[33m,[39m [35masync[39m () [33m=>[39m {
+    [90m160| [39m      const { layoutGraph } = await import('@/lib/war-room/graph-build…
+    [90m   | [39m                              [31m^[39m
+    [90m161| [39m      [35mconst[39m graph[33m:[39m [33mWarRoomGraph[39m [33m=[39m {
+    [90m162| [39m        nodes[33m:[39m [
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[63/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/war-room.test.ts[2m > [22mgraph-builder[2m > [22mlayoutGraph()[2m > [22mlayouts left-to-right: node with no deps has smaller x
+[31m[1mError[22m: Cannot find package '@/lib/war-room/graph-builder' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/war-room.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/war-room.test.ts:[2m174:31[22m[39m
+    [90m172| [39m
+    [90m173| [39m    it('layouts left-to-right: node with no deps has smaller x', async…
+    [90m174| [39m      const { layoutGraph } = await import('@/lib/war-room/graph-build…
+    [90m   | [39m                              [31m^[39m
+    [90m175| [39m      [35mconst[39m graph[33m:[39m [33mWarRoomGraph[39m [33m=[39m {
+    [90m176| [39m        nodes[33m:[39m [
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[64/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/war-room.test.ts[2m > [22mgraph-builder[2m > [22mlayoutGraph()[2m > [22msilently skips edges where an endpoint node is missing
+[31m[1mError[22m: Cannot find package '@/lib/war-room/graph-builder' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/war-room.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/war-room.test.ts:[2m188:31[22m[39m
+    [90m186| [39m
+    [90m187| [39m    it('silently skips edges where an endpoint node is missing', async…
+    [90m188| [39m      const { layoutGraph } = await import('@/lib/war-room/graph-build…
+    [90m   | [39m                              [31m^[39m
+    [90m189| [39m      [35mconst[39m graph[33m:[39m [33mWarRoomGraph[39m [33m=[39m {
+    [90m190| [39m        nodes[33m:[39m [
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[65/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/war-room.test.ts[2m > [22mgraph-builder[2m > [22mcomputeCanvasSize()[2m > [22mreturns fallback dimensions for empty position map
+[31m[1mError[22m: Cannot find package '@/lib/war-room/graph-builder' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/war-room.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/war-room.test.ts:[2m204:37[22m[39m
+    [90m202| [39m  [34mdescribe[39m([32m'computeCanvasSize()'[39m[33m,[39m () [33m=>[39m {
+    [90m203| [39m    it('returns fallback dimensions for empty position map', async () …
+    [90m204| [39m      const { computeCanvasSize } = await import('@/lib/war-room/graph…
+    [90m   | [39m                                    [31m^[39m
+    [90m205| [39m      [35mconst[39m size [33m=[39m [34mcomputeCanvasSize[39m({})[33m;[39m
+    [90m206| [39m      [34mexpect[39m(size[33m.[39mwidth)[33m.[39m[34mtoBeGreaterThanOrEqual[39m([34m400[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[66/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/war-room.test.ts[2m > [22mgraph-builder[2m > [22mcomputeCanvasSize()[2m > [22maccounts for node dimensions and padding
+[31m[1mError[22m: Cannot find package '@/lib/war-room/graph-builder' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/war-room.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/war-room.test.ts:[2m211:62[22m[39m
+    [90m209| [39m
+    [90m210| [39m    [34mit[39m([32m'accounts for node dimensions and padding'[39m[33m,[39m [35masync[39m () [33m=>[39m {
+    [90m211| [39m      const { computeCanvasSize, NODE_WIDTH, NODE_HEIGHT } = await imp…
+    [90m   | [39m                                                             [31m^[39m
+    [90m212| [39m      [35mconst[39m positions [33m=[39m { a[33m:[39m { x[33m:[39m [34m200[39m[33m,[39m y[33m:[39m [34m100[39m } }[33m;[39m
+    [90m213| [39m      [35mconst[39m size [33m=[39m [34mcomputeCanvasSize[39m(positions)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[67/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/war-room.test.ts[2m > [22mstartWarRoomPolling()[2m > [22mfires onUpdate immediately on first tick
+[31m[1mError[22m: Cannot find package '@/lib/war-room/poller' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/war-room.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/war-room.test.ts:[2m234:37[22m[39m
+    [90m232| [39m  [34mit[39m([32m'fires onUpdate immediately on first tick'[39m[33m,[39m [35masync[39m () [33m=>[39m {
+    [90m233| [39m    [34mmakeFetchOk[39m([[34mrow[39m()])[33m;[39m
+    [90m234| [39m    const { startWarRoomPolling } = await import('@/lib/war-room/polle…
+    [90m   | [39m                                    [31m^[39m
+    [90m235| [39m    [35mconst[39m onUpdate [33m=[39m vi[33m.[39m[34mfn[39m()[33m;[39m
+    [90m236| [39m    [35mconst[39m stop [33m=[39m [34mstartWarRoomPolling[39m(onUpdate)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[68/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/war-room.test.ts[2m > [22mstartWarRoomPolling()[2m > [22mcalls onError when fetch fails
+[31m[1mError[22m: Cannot find package '@/lib/war-room/poller' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/war-room.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/war-room.test.ts:[2m247:37[22m[39m
+    [90m245| [39m  [34mit[39m([32m'calls onError when fetch fails'[39m[33m,[39m [35masync[39m () [33m=>[39m {
+    [90m246| [39m    [34mmakeFetchFail[39m()[33m;[39m
+    [90m247| [39m    const { startWarRoomPolling } = await import('@/lib/war-room/polle…
+    [90m   | [39m                                    [31m^[39m
+    [90m248| [39m    [35mconst[39m onError [33m=[39m vi[33m.[39m[34mfn[39m()[33m;[39m
+    [90m249| [39m    [35mconst[39m stop [33m=[39m [34mstartWarRoomPolling[39m(vi[33m.[39m[34mfn[39m()[33m,[39m onError)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[69/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/war-room.test.ts[2m > [22mstartWarRoomPolling()[2m > [22mdoes not call onUpdate again when graph is unchanged
+[31m[1mError[22m: Cannot find package '@/lib/war-room/poller' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/war-room.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/war-room.test.ts:[2m262:37[22m[39m
+    [90m260| [39m    [34mmakeFetchOk[39m(rows)[33m;[39m [90m// second poll tick — same data[39m
+    [90m261| [39m
+    [90m262| [39m    const { startWarRoomPolling } = await import('@/lib/war-room/polle…
+    [90m   | [39m                                    [31m^[39m
+    [90m263| [39m    [35mconst[39m onUpdate [33m=[39m vi[33m.[39m[34mfn[39m()[33m;[39m
+    [90m264| [39m    [35mconst[39m stop [33m=[39m [34mstartWarRoomPolling[39m(onUpdate)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[70/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/war-room.test.ts[2m > [22mstartWarRoomPolling()[2m > [22mcalls onUpdate again when graph changes
+[31m[1mError[22m: Cannot find package '@/lib/war-room/poller' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/war-room.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/war-room.test.ts:[2m282:37[22m[39m
+    [90m280| [39m    [34mmakeFetchOk[39m([[34mrow[39m({ status[33m:[39m [32m'completed'[39m })])[33m;[39m
+    [90m281| [39m
+    [90m282| [39m    const { startWarRoomPolling } = await import('@/lib/war-room/polle…
+    [90m   | [39m                                    [31m^[39m
+    [90m283| [39m    [35mconst[39m onUpdate [33m=[39m vi[33m.[39m[34mfn[39m()[33m;[39m
+    [90m284| [39m    [35mconst[39m stop [33m=[39m [34mstartWarRoomPolling[39m(onUpdate)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[71/100]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/lib/__tests__/unit/war-room.test.ts[2m > [22mstartWarRoomPolling()[2m > [22mstop() prevents further onUpdate calls
+[31m[1mError[22m: Cannot find package '@/lib/war-room/poller' imported from 'D:/Projects/GregLite/app/lib/__tests__/unit/war-room.test.ts'[39m
+[36m [2m❯[22m app/lib/__tests__/unit/war-room.test.ts:[2m299:37[22m[39m
+    [90m297| [39m    [34mmakeFetchOk[39m([[34mrow[39m({ status[33m:[39m [32m'failed'[39m })])[33m;[39m
+    [90m298| [39m
+    [90m299| [39m    const { startWarRoomPolling } = await import('@/lib/war-room/polle…
+    [90m   | [39m                                    [31m^[39m
+    [90m300| [39m    [35mconst[39m onUpdate [33m=[39m vi[33m.[39m[34mfn[39m()[33m;[39m
+    [90m301| [39m    [35mconst[39m stop [33m=[39m [34mstartWarRoomPolling[39m(onUpdate)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[72/100]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m35 failed[39m[22m[2m | [22m[1m[32m4 passed[39m[22m[90m (39)[39m
+[2m      Tests [22m [1m[31m70 failed[39m[22m[2m | [22m[1m[32m193 passed[39m[22m[90m (263)[39m
+[2m   Start at [22m 13:22:02
+[2m   Duration [22m 4.61s[2m (transform 3.17s, setup 0ms, import 2.98s, tests 1.26s, environment 12ms)[22m
 
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstartGhost[2m > [22m[2mcalls all components in the correct startup order
-[22m[39m[ghost/lifecycle] Ghost started (state: running)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstartGhost[2m > [22m[2memits state: "running" when all steps succeed
-[22m[39m[ghost/lifecycle] Starting Ghost...
-[ghost/lifecycle] Watch paths: (none configured)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstartGhost[2m > [22m[2memits state: "running" when all steps succeed
-[22m[39m[ghost/lifecycle] Ghost started (state: running)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstartGhost[2m > [22m[2memits state: "starting" then "running"
-[22m[39m[ghost/lifecycle] Starting Ghost...
-[ghost/lifecycle] Watch paths: (none configured)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstartGhost[2m > [22m[2memits state: "starting" then "running"
-[22m[39m[ghost/lifecycle] Ghost started (state: running)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstartGhost[2m > [22m[2mis idempotent — calling twice does not double-start components
-[22m[39m[ghost/lifecycle] Starting Ghost...
-[ghost/lifecycle] Watch paths: (none configured)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstartGhost[2m > [22m[2mis idempotent — calling twice does not double-start components
-[22m[39m[ghost/lifecycle] Ghost started (state: running)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mdegraded mode[2m > [22m[2mcontinues startup when one component throws
-[22m[39m[ghost/lifecycle] Starting Ghost...
-[ghost/lifecycle] Watch paths: (none configured)
-
-[90mstderr[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mdegraded mode[2m > [22m[2mcontinues startup when one component throws
-[22m[39m[ghost/lifecycle] Startup step "email-poller" failed: OAuth expired
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mdegraded mode[2m > [22m[2mcontinues startup when one component throws
-[22m[39m[ghost/lifecycle] Ghost started (state: degraded)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mdegraded mode[2m > [22m[2memits state: "degraded" when a component fails
-[22m[39m[ghost/lifecycle] Starting Ghost...
-[ghost/lifecycle] Watch paths: (none configured)
-
-[90mstderr[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mdegraded mode[2m > [22m[2memits state: "degraded" when a component fails
-[22m[39m[ghost/lifecycle] Startup step "watcher" failed: Tauri IPC unavailable
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mdegraded mode[2m > [22m[2memits state: "degraded" when a component fails
-[22m[39m[ghost/lifecycle] Ghost started (state: degraded)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mdegraded mode[2m > [22m[2memits ghost:error for the failing component
-[22m[39m[ghost/lifecycle] Starting Ghost...
-[ghost/lifecycle] Watch paths: (none configured)
-
-[90mstderr[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mdegraded mode[2m > [22m[2memits ghost:error for the failing component
-[22m[39m[ghost/lifecycle] Startup step "email-poller" failed: Connector auth failed
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mdegraded mode[2m > [22m[2memits ghost:error for the failing component
-[22m[39m[ghost/lifecycle] Ghost started (state: degraded)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mstops components in reverse startup order
-[22m[39m[ghost/lifecycle] Starting Ghost...
-[ghost/lifecycle] Watch paths: (none configured)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mstops components in reverse startup order
-[22m[39m[ghost/lifecycle] Ghost started (state: running)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mstops components in reverse startup order
-[22m[39m[ghost/lifecycle] Stopping Ghost...
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mstops components in reverse startup order
-[22m[39m[ghost/lifecycle] Ghost stopped
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2memits state: "stopped" after shutdown
-[22m[39m[ghost/lifecycle] Starting Ghost...
-[ghost/lifecycle] Watch paths: (none configured)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2memits state: "stopped" after shutdown
-[22m[39m[ghost/lifecycle] Ghost started (state: running)
-
- [32m✓[39m lib/__tests__/unit/war-room.test.ts [2m([22m[2m21 tests[22m[2m)[22m[33m 546[2mms[22m[39m
-       [33m[2m✓[22m[39m maps completed → complete [33m 438[2mms[22m[39m
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2memits state: "stopped" after shutdown
-[22m[39m[ghost/lifecycle] Stopping Ghost...
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2memits state: "stopped" after shutdown
-[22m[39m[ghost/lifecycle] Ghost stopped
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mis idempotent — calling twice does not error
-[22m[39m[ghost/lifecycle] Starting Ghost...
-[ghost/lifecycle] Watch paths: (none configured)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mis idempotent — calling twice does not error
-[22m[39m[ghost/lifecycle] Ghost started (state: running)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mis idempotent — calling twice does not error
-[22m[39m[ghost/lifecycle] Stopping Ghost...
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mis idempotent — calling twice does not error
-[22m[39m[ghost/lifecycle] Ghost stopped
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mresolves within 5 seconds even if watcher hangs
-[22m[39m[ghost/lifecycle] Starting Ghost...
-[ghost/lifecycle] Watch paths: (none configured)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mresolves within 5 seconds even if watcher hangs
-[22m[39m[ghost/lifecycle] Ghost started (state: running)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mresolves within 5 seconds even if watcher hangs
-[22m[39m[ghost/lifecycle] Stopping Ghost...
-
-[90mstderr[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mresolves within 5 seconds even if watcher hangs
-[22m[39m[ghost/lifecycle] Shutdown timeout (5s) — forcing close
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mresolves within 5 seconds even if watcher hangs
-[22m[39m[ghost/lifecycle] Ghost stopped
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mpauses email poller and ingest queue
-[22m[39m[ghost/lifecycle] Starting Ghost...
-[ghost/lifecycle] Watch paths: (none configured)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mpauses email poller and ingest queue
-[22m[39m[ghost/lifecycle] Ghost started (state: running)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mpauses email poller and ingest queue
-[22m[39m[ghost/lifecycle] Pausing Ghost components...
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2memits state: "paused" after pause
-[22m[39m[ghost/lifecycle] Starting Ghost...
-[ghost/lifecycle] Watch paths: (none configured)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2memits state: "paused" after pause
-[22m[39m[ghost/lifecycle] Ghost started (state: running)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2memits state: "paused" after pause
-[22m[39m[ghost/lifecycle] Pausing Ghost components...
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mis idempotent — calling pauseGhost twice only pauses once
-[22m[39m[ghost/lifecycle] Starting Ghost...
-[ghost/lifecycle] Watch paths: (none configured)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mis idempotent — calling pauseGhost twice only pauses once
-[22m[39m[ghost/lifecycle] Ghost started (state: running)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mis idempotent — calling pauseGhost twice only pauses once
-[22m[39m[ghost/lifecycle] Pausing Ghost components...
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mresumes email poller and ingest queue
-[22m[39m[ghost/lifecycle] Starting Ghost...
-[ghost/lifecycle] Watch paths: (none configured)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mresumes email poller and ingest queue
-[22m[39m[ghost/lifecycle] Ghost started (state: running)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mresumes email poller and ingest queue
-[22m[39m[ghost/lifecycle] Pausing Ghost components...
-[ghost/lifecycle] Resuming Ghost components...
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2memits state: "running" after resume (no errors)
-[22m[39m[ghost/lifecycle] Starting Ghost...
-[ghost/lifecycle] Watch paths: (none configured)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2memits state: "running" after resume (no errors)
-[22m[39m[ghost/lifecycle] Ghost started (state: running)
-
-[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mstarts all components in the correct order
-[22m[39m[ghost/lifecycle] Starting Ghost...
-[ghost/lifecycle] Watch paths: (none configured)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2memits state: "running" after resume (no errors)
-[22m[39m[ghost/lifecycle] Pausing Ghost components...
-[ghost/lifecycle] Resuming Ghost components...
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mis idempotent — calling resumeGhost when not paused is a no-op
-[22m[39m[ghost/lifecycle] Starting Ghost...
-[ghost/lifecycle] Watch paths: (none configured)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mis idempotent — calling resumeGhost when not paused is a no-op
-[22m[39m[ghost/lifecycle] Ghost started (state: running)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostRunning returns true after startGhost
-[22m[39m[ghost/lifecycle] Starting Ghost...
-[ghost/lifecycle] Watch paths: (none configured)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostRunning returns true after startGhost
-[22m[39m[ghost/lifecycle] Ghost started (state: running)
-
-[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mstarts all components in the correct order
-[22m[39m[ghost/lifecycle] Ghost started (state: running)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostRunning returns false after stopGhost
-[22m[39m[ghost/lifecycle] Starting Ghost...
-[ghost/lifecycle] Watch paths: (none configured)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostRunning returns false after stopGhost
-[22m[39m[ghost/lifecycle] Ghost started (state: running)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostRunning returns false after stopGhost
-[22m[39m[ghost/lifecycle] Stopping Ghost...
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostRunning returns false after stopGhost
-[22m[39m[ghost/lifecycle] Ghost stopped
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostPaused returns false before any pause
-[22m[39m[ghost/lifecycle] Starting Ghost...
-[ghost/lifecycle] Watch paths: (none configured)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostPaused returns false before any pause
-[22m[39m[ghost/lifecycle] Ghost started (state: running)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostPaused returns true after pauseGhost
-[22m[39m[ghost/lifecycle] Starting Ghost...
-[ghost/lifecycle] Watch paths: (none configured)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostPaused returns true after pauseGhost
-[22m[39m[ghost/lifecycle] Ghost started (state: running)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostPaused returns true after pauseGhost
-[22m[39m[ghost/lifecycle] Pausing Ghost components...
-
-[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mresolves stopGhost within 5 seconds even when watcher hangs
-[22m[39m[ghost/lifecycle] Starting Ghost...
-[ghost/lifecycle] Watch paths: (none configured)
-
-[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mresolves stopGhost within 5 seconds even when watcher hangs
-[22m[39m[ghost/lifecycle] Ghost started (state: running)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostPaused returns false after resumeGhost
-[22m[39m[ghost/lifecycle] Starting Ghost...
-[ghost/lifecycle] Watch paths: (none configured)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostPaused returns false after resumeGhost
-[22m[39m[ghost/lifecycle] Ghost started (state: running)
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostPaused returns false after resumeGhost
-[22m[39m[ghost/lifecycle] Pausing Ghost components...
-[ghost/lifecycle] Resuming Ghost components...
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mrestartComponent[2m > [22m[2mcalls startFn after the 30-second delay
-[22m[39m[ghost/lifecycle] Scheduling restart for "test-component" in 30s...
-
-[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mresolves stopGhost within 5 seconds even when watcher hangs
-[22m[39m[ghost/lifecycle] Stopping Ghost...
-
-[90mstderr[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mresolves stopGhost within 5 seconds even when watcher hangs
-[22m[39m[ghost/lifecycle] Shutdown timeout (5s) — forcing close
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mrestartComponent[2m > [22m[2mcalls startFn after the 30-second delay
-[22m[39m[ghost/lifecycle] Component "test-component" restarted successfully
-
-[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mresolves stopGhost within 5 seconds even when watcher hangs
-[22m[39m[ghost/lifecycle] Ghost stopped
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mrestartComponent[2m > [22m[2mdoes not retry if first restart succeeds
-[22m[39m[ghost/lifecycle] Scheduling restart for "scorer" in 30s...
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mrestartComponent[2m > [22m[2mdoes not retry if first restart succeeds
-[22m[39m[ghost/lifecycle] Component "scorer" restarted successfully
-
-[90mstderr[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mrestartComponent[2m > [22m[2mdoes not retry if first restart succeeds
-[22m[39m[ghost/lifecycle] Component "scorer" already exhausted restart — staying degraded
-
-[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mrestartComponent[2m > [22m[2memits ghost:error if restart also fails
-[22m[39m[ghost/lifecycle] Scheduling restart for "watcher" in 30s...
-
-[90mstderr[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mrestartComponent[2m > [22m[2memits ghost:error if restart also fails
-[22m[39m[ghost/lifecycle] Component "watcher" restart failed: Still broken
-
-[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mcontinues startup when one component fails (degraded mode)
-[22m[39m[ghost/lifecycle] Starting Ghost...
-[ghost/lifecycle] Watch paths: (none configured)
-
-[90mstderr[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mcontinues startup when one component fails (degraded mode)
-[22m[39m[ghost/lifecycle] Startup step "email-poller" failed: OAuth expired
-
-[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mcontinues startup when one component fails (degraded mode)
-[22m[39m[ghost/lifecycle] Ghost started (state: degraded)
-
-[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mpauses all components on AEGIS PARALLEL_BUILD and resumes on resume
-[22m[39m[ghost/lifecycle] Starting Ghost...
-[ghost/lifecycle] Watch paths: (none configured)
-
-[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mpauses all components on AEGIS PARALLEL_BUILD and resumes on resume
-[22m[39m[ghost/lifecycle] Ghost started (state: running)
-
- [32m✓[39m lib/ghost/__tests__/lifecycle.test.ts [2m([22m[2m26 tests[22m[2m)[22m[33m 602[2mms[22m[39m
-       [33m[2m✓[22m[39m calls all components in the correct startup order [33m 507[2mms[22m[39m
-[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mpauses all components on AEGIS PARALLEL_BUILD and resumes on resume
-[22m[39m[ghost/lifecycle] Pausing Ghost components...
-[ghost/lifecycle] Resuming Ghost components...
-
-[90mstderr[2m | lib/__tests__/integration/phase5-integration.test.ts[2m > [22m[2mAgent SDK Gate[2m > [22m[2mjob marked FAILED when eos_required is true and health score < 70
-[22m[39m[EoS gate] Job downgraded to FAILED — health score [33m45[39m < 70
-
- [32m✓[39m lib/__tests__/integration/phase5-integration.test.ts [2m([22m[2m31 tests[22m[2m)[22m[32m 94[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/indexer.test.ts [2m([22m[2m33 tests[22m[2m)[22m[33m 481[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/embeddings.test.ts [2m([22m[2m30 tests[22m[2m)[22m[33m 616[2mms[22m[39m
-[90mstdout[2m | lib/ghost/__tests__/watcher-bridge.test.ts[2m > [22m[2mAEGIS → Ghost integration[2m > [22m[2mcalls ghost_pause when AEGIS transitions to PARALLEL_BUILD
-[22m[39m[ghost/lifecycle] Pausing Ghost components...
-
-[90mstdout[2m | lib/ghost/__tests__/watcher-bridge.test.ts[2m > [22m[2mAEGIS → Ghost integration[2m > [22m[2mcalls ghost_resume when AEGIS transitions to IDLE
-[22m[39m[ghost/lifecycle] Resuming Ghost components...
-
- [32m✓[39m lib/ghost/__tests__/watcher-bridge.test.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 866[2mms[22m[39m
-     [33m[2m✓[22m[39m calls ghost_pause when AEGIS transitions to PARALLEL_BUILD [33m 832[2mms[22m[39m
- [32m✓[39m lib/ghost/__tests__/phase6-integration.test.ts [2m([22m[2m33 tests[22m[2m)[22m[33m 983[2mms[22m[39m
-     [33m[2m✓[22m[39m Tell me more path: addMessage content contains [GHOST CONTEXT - UNTRUSTED CONTENT] [33m 407[2mms[22m[39m
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mSidebar[2m > [22m[2mshould toggle sidebar open/closed
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mSidebar[2m > [22m[2mshould toggle sidebar open/closed
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mSidebar[2m > [22m[2mshould set sidebar width with clamping
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mSidebar[2m > [22m[2mshould set sidebar width with clamping
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mSidebar[2m > [22m[2mshould toggle sidebar collapsed state
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mSidebar[2m > [22m[2mshould toggle sidebar collapsed state
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mTheme[2m > [22m[2mshould set theme
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mTheme[2m > [22m[2mshould set theme
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mTheme[2m > [22m[2mshould cycle through themes on toggle
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mTheme[2m > [22m[2mshould cycle through themes on toggle
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mModal[2m > [22m[2mshould open modal with data
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mModal[2m > [22m[2mshould open modal with data
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mModal[2m > [22m[2mshould close modal and clear data
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mModal[2m > [22m[2mshould close modal and clear data
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mModal[2m > [22m[2mshould check if specific modal is open
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstdout[2m | lib/__tests__/unit/agent-sdk.test.ts[2m > [22m[2mAgent SDK public API[2m > [22m[2mspawn returns a jobId and queued=false for the first job
-[22m[39m[AgentSDK] Marked 1 stale job(s) INTERRUPTED on boot
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mModal[2m > [22m[2mshould check if specific modal is open
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mCommand Palette[2m > [22m[2mshould open and close command palette
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mCommand Palette[2m > [22m[2mshould open and close command palette
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mCommand Palette[2m > [22m[2mshould toggle command palette
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mCommand Palette[2m > [22m[2mshould toggle command palette
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mCommand Palette[2m > [22m[2mshould update command query
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mCommand Palette[2m > [22m[2mshould update command query
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mCommand Palette[2m > [22m[2mshould track recent commands
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mCommand Palette[2m > [22m[2mshould track recent commands
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mCommand Palette[2m > [22m[2mshould limit recent commands to 10
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mCommand Palette[2m > [22m[2mshould limit recent commands to 10
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mCommand Palette[2m > [22m[2mshould move duplicate command to front
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mCommand Palette[2m > [22m[2mshould move duplicate command to front
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mNotifications[2m > [22m[2mshould add notification
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
- [32m✓[39m lib/__tests__/unit/agent-sdk.test.ts [2m([22m[2m40 tests[22m[2m)[22m[32m 59[2mms[22m[39m
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mNotifications[2m > [22m[2mshould add notification
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mNotifications[2m > [22m[2mshould dismiss notification
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mNotifications[2m > [22m[2mshould dismiss notification
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mNotifications[2m > [22m[2mshould clear all notifications
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mNotifications[2m > [22m[2mshould clear all notifications
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mNotifications[2m > [22m[2mshould clear only dismissed notifications
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mNotifications[2m > [22m[2mshould clear only dismissed notifications
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mLoading States[2m > [22m[2mshould set global loading
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mLoading States[2m > [22m[2mshould set global loading
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mLoading States[2m > [22m[2mshould set area loading
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mLoading States[2m > [22m[2mshould set area loading
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mLoading States[2m > [22m[2mshould clear area loading
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mLoading States[2m > [22m[2mshould clear area loading
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mFocus Management[2m > [22m[2mshould set focused element
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mFocus Management[2m > [22m[2mshould set focused element
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mFocus Management[2m > [22m[2mshould clear focused element
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mFocus Management[2m > [22m[2mshould clear focused element
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mReset[2m > [22m[2mshould reset all UI state
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
-[90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mReset[2m > [22m[2mshould reset all UI state
-[22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
-
- [32m✓[39m lib/__tests__/unit/ui-store.test.ts [2m([22m[2m24 tests[22m[2m)[22m[32m 53[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/eos/fp-tracker.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 52[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/aegis.test.ts [2m([22m[2m33 tests[22m[2m)[22m[32m 45[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/vector.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 39[2mms[22m[39m
- [32m✓[39m lib/agent-sdk/__tests__/error-handling.test.ts [2m([22m[2m38 tests[22m[2m)[22m[32m 88[2mms[22m[39m
-[90mstdout[2m | lib/__tests__/unit/cold-start.test.ts[2m > [22m[2mwarmAll()[2m > [22m[2mcalls readHotCache() before buildWarmCache()
-[22m[39m[cold-start] Tier 1 ready: 0ms
-
-[90mstdout[2m | lib/__tests__/unit/cold-start.test.ts[2m > [22m[2mwarmAll()[2m > [22m[2mcalls readHotCache() before buildWarmCache()
-[22m[39m[cold-start] Tier 2 ready: 2ms
-[cold-start] All tiers ready: 2ms
-
-[90mstdout[2m | lib/__tests__/unit/cold-start.test.ts[2m > [22m[2mwarmAll()[2m > [22m[2mcalls both readHotCache() and buildWarmCache() exactly once
-[22m[39m[cold-start] Tier 1 ready: 0ms
-
-[90mstdout[2m | lib/__tests__/unit/cold-start.test.ts[2m > [22m[2mwarmAll()[2m > [22m[2mcalls both readHotCache() and buildWarmCache() exactly once
-[22m[39m[cold-start] Tier 2 ready: 0ms
-[cold-start] All tiers ready: 0ms
-
-[90mstdout[2m | lib/__tests__/unit/cold-start.test.ts[2m > [22m[2mwarmAll()[2m > [22m[2mresolves without error when both tiers succeed
-[22m[39m[cold-start] Tier 1 ready: 0ms
-
-[90mstdout[2m | lib/__tests__/unit/cold-start.test.ts[2m > [22m[2mwarmAll()[2m > [22m[2mresolves without error when both tiers succeed
-[22m[39m[cold-start] Tier 2 ready: 1ms
-[cold-start] All tiers ready: 1ms
-
-[90mstdout[2m | lib/__tests__/unit/cold-start.test.ts[2m > [22m[2mwarmAll()[2m > [22m[2mpropagates rejection when buildWarmCache() fails
-[22m[39m[cold-start] Tier 1 ready: 0ms
-
- [32m✓[39m lib/__tests__/unit/cold-start.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 37[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/shim/pattern-learner.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 34[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/kernl-project-store.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 59[2mms[22m[39m
-[90mstdout[2m | lib/__tests__/integration/phase4-integration.test.ts[2m > [22m[2mPerformance — sync analysis path timing[2m > [22m[2msync path (no Haiku) completes well under 100ms on 20-message conversation
-[22m[39m[perf] sync analyze() on 20-message conversation: 0ms
-
-[90mstdout[2m | lib/__tests__/integration/phase4-integration.test.ts[2m > [22m[2mPerformance — sync analysis path timing[2m > [22m[2mhaiku inference path is called only when all sync checks pass
-[22m[39m[perf] full analyze() path (sync + mocked Haiku): 0ms
-
- [32m✓[39m lib/__tests__/integration/phase4-integration.test.ts [2m([22m[2m34 tests[22m[2m)[22m[32m 36[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/cross-context.test.ts [2m([22m[2m34 tests[22m[2m)[22m[32m 41[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/decision-gate-4b.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 31[2mms[22m[39m
- [32m✓[39m lib/agent-sdk/__tests__/permission-matrix.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 40[2mms[22m[39m
- [32m✓[39m lib/ghost/__tests__/scorer.test.ts [2m([22m[2m37 tests[22m[2m)[22m[32m 33[2mms[22m[39m
- [32m✓[39m lib/ghost/__tests__/privacy.test.ts [2m([22m[2m37 tests[22m[2m)[22m[32m 27[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/gate.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 27[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/proactive.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 25[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/suggestion-store.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 37[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/warm-cache.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 24[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/eos/character.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 20[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/context-provider.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 17[2mms[22m[39m
- [32m✓[39m lib/__tests__/integration/phase3-integration.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 25[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/eos/patterns.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 17[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/eos/health-score.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 11[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/eos/batch.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 11[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/shim/job-context.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 14[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/artifacts/detector.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 11[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/artifacts/store.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 10[2mms[22m[39m
-
-[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
-
-[41m[1m FAIL [22m[49m lib/agent-sdk/__tests__/cost-accounting.test.ts[2m > [22mcalculateCost[2m > [22msmall token counts produce non-zero cost
-[31m[1mAssertionError[22m: expected 0.003 to be close to 0.000003, received difference is 0.002997, but expected 5e-9[39m
-[36m [2m❯[22m lib/agent-sdk/__tests__/cost-accounting.test.ts:[2m127:18[22m[39m
-    [90m125| [39m    [35mconst[39m cost [33m=[39m [34mcalculateCost[39m([34m1_000[39m[33m,[39m [34m0[39m[33m,[39m [32m'claude-sonnet-4-5'[39m)[33m;[39m
-    [90m126| [39m    [34mexpect[39m(cost)[33m.[39m[34mtoBeGreaterThan[39m([34m0[39m)[33m;[39m
-    [90m127| [39m    [34mexpect[39m(cost)[33m.[39m[34mtoBeCloseTo[39m([34m0.000003[39m[33m,[39m [34m8[39m)[33m;[39m
-    [90m   | [39m                 [31m^[39m
-    [90m128| [39m  })[33m;[39m
-    [90m129| [39m})[33m;[39m
-
-[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
-
-
-[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m37 passed[39m[22m[90m (38)[39m
-[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m831 passed[39m[22m[90m (832)[39m
-[2m   Start at [22m 12:19:03
-[2m   Duration [22m 7.30s[2m (transform 12.29s, setup 23.98s, import 15.57s, tests 5.36s, environment 15ms)[22m
-
- ELIFECYCLE  Command failed with exit code 1.

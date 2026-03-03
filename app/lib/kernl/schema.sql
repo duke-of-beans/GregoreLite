@@ -488,3 +488,39 @@ CREATE INDEX IF NOT EXISTS idx_shim_session_log_manifest
 
 CREATE INDEX IF NOT EXISTS idx_shim_session_log_file
   ON shim_session_log (file_path, logged_at DESC);
+
+-- ─── PHASE 9: MANIFEST TEMPLATES ─────────────────────────────────────────────
+-- Saved ManifestBuilder templates for recurring jobs. One row per template.
+-- use_count incremented on each spawn from this template.
+CREATE TABLE IF NOT EXISTS manifest_templates (
+  id                   TEXT    PRIMARY KEY,
+  name                 TEXT    NOT NULL UNIQUE,
+  description          TEXT,
+  task_type            TEXT    NOT NULL,
+  title                TEXT    NOT NULL,
+  template_description TEXT    NOT NULL,
+  success_criteria     TEXT    NOT NULL,  -- JSON array of strings
+  project_path         TEXT    NOT NULL,
+  use_count            INTEGER DEFAULT 0,
+  created_at           INTEGER NOT NULL,
+  updated_at           INTEGER NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_manifest_templates_task
+  ON manifest_templates (task_type);
+
+-- ─── PHASE 9: GHOST PREFERENCES ──────────────────────────────────────────────
+-- Positive reinforcement preferences for Ghost scorer. Each row boosts the
+-- score of Ghost cards matching the source_type (or all if NULL).
+-- Exclusions always win over preferences — layer order preserved.
+CREATE TABLE IF NOT EXISTS ghost_preferences (
+  id           TEXT    PRIMARY KEY,
+  source_type  TEXT,              -- 'file' | 'email' | NULL (any)
+  topic_hint   TEXT    NOT NULL,  -- e.g. "GHM competitor intelligence"
+  boost_factor REAL    DEFAULT 1.5,  -- multiplier applied to ghost scorer
+  created_at   INTEGER NOT NULL,
+  use_count    INTEGER DEFAULT 0  -- incremented when preference fires
+);
+
+CREATE INDEX IF NOT EXISTS idx_ghost_preferences_source
+  ON ghost_preferences (source_type);
