@@ -6,12 +6,13 @@ import { ExclusionLog } from './ExclusionLog';
 import { ExclusionRules } from './ExclusionRules';
 import { GhostStatusBadge } from './GhostStatusBadge';
 import { IndexedItemsList } from './IndexedItemsList';
+import { PreferencesPanel } from './PreferencesPanel';
 import { PurgeAllDialog } from './PurgeAllDialog';
 import { WatchPaths } from './WatchPaths';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type TabId = 'indexed' | 'exclusions' | 'watch-paths' | 'activity-log';
+type TabId = 'indexed' | 'exclusions' | 'preferences' | 'watch-paths' | 'activity-log';
 
 interface Tab {
   id: TabId;
@@ -21,6 +22,7 @@ interface Tab {
 const TABS: Tab[] = [
   { id: 'indexed',      label: 'Indexed items'     },
   { id: 'exclusions',   label: 'Exclusion rules'   },
+  { id: 'preferences',  label: 'Preferences'       },
   { id: 'watch-paths',  label: 'Watch paths'       },
   { id: 'activity-log', label: 'Activity log'      },
 ];
@@ -148,6 +150,10 @@ export function PrivacyDashboard({ onClose }: PrivacyDashboardProps) {
 
         {activeTab === 'exclusions' && (
           <ExclusionRules />
+        )}
+
+        {activeTab === 'preferences' && (
+          <PreferencesPanel key={refreshKey} />
         )}
 
         {activeTab === 'watch-paths' && (

@@ -23,6 +23,7 @@ import { scoreCandidate } from './scorer';
 import { canSurface, recordSurfaced, dismissSurfaced, criticalOverride } from './window';
 import { getLatestAegisSignal } from '@/lib/kernl/aegis-store';
 import { getDatabase } from '@/lib/kernl/database';
+import { getPreferencesBySourceType, incrementUseCount } from '@/lib/ghost/preferences-store';
 import type { GhostSuggestion } from './types';
 import { DEFAULT_SCORER_CONFIG } from './types';
 
@@ -124,8 +125,21 @@ export async function runScorer(): Promise<void> {
   const now = Date.now();
 
   // Score and sort all candidates (descending)
+  // After base scoring, apply ghost_preferences boost if matching source_type
   const scored = candidates
-    .map((c) => ({ ...c, finalScore: scoreCandidate(c, now) }))
+    .map((c) => {
+      let finalScore = scoreCandidate(c, now);
+      const prefs = getPreferencesBySourceType(c.sourceType);
+      if (prefs.length > 0) {
+        // Use the highest boost_factor among matching preferences
+        const maxBoost = Math.max(...prefs.map((p) => p.boost_factor));
+        finalScore *= maxBoost;
+        // Increment use_count for the first matching preference
+        const first = prefs[0];
+        if (first) incrementUseCount(first.id);
+      }
+      return { ...c, finalScore };
+    })
     .sort((a, b) => b.finalScore - a.finalScore);
 
   for (const candidate of scored) {

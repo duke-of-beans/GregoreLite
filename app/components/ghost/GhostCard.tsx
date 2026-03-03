@@ -16,8 +16,10 @@
  * Score indicator shown only when score > 0.90.
  */
 
+import { useState } from 'react';
 import type { GhostSuggestion } from '@/lib/ghost/scorer/types';
 import { GhostCardActions } from './GhostCardActions';
+import { TeachGhostDrawer } from './TeachGhostDrawer';
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
@@ -102,12 +104,17 @@ interface GhostCardProps {
 }
 
 export function GhostCard({ suggestion, threadId }: GhostCardProps) {
+  const [teachOpen, setTeachOpen] = useState(false);
+
   const truncatedSource =
     suggestion.source.length > 50
       ? suggestion.source.slice(0, 47) + '…'
       : suggestion.source;
 
   const showHighRelevance = suggestion.score > 0.90;
+
+  // Extract source_type from the source label prefix ("File: ..." or "Email: ...")
+  const sourceType = suggestion.source.startsWith('Email') ? 'email' : 'file';
 
   const cardStyle: React.CSSProperties = {
     ...cardBase,
@@ -146,7 +153,19 @@ export function GhostCard({ suggestion, threadId }: GhostCardProps) {
       </p>
 
       {/* Action buttons */}
-      <GhostCardActions suggestion={suggestion} threadId={threadId} />
+      <GhostCardActions
+        suggestion={suggestion}
+        threadId={threadId}
+        onTeach={() => setTeachOpen((o) => !o)}
+      />
+
+      {/* Teach Ghost micro-drawer */}
+      {teachOpen && (
+        <TeachGhostDrawer
+          sourceType={sourceType}
+          onClose={() => setTeachOpen(false)}
+        />
+      )}
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { handleTellMeMore, handleNoted } from '@/lib/ghost/card-actions';
 interface GhostCardActionsProps {
   suggestion: GhostSuggestion;
   threadId: string | null;
+  onTeach: () => void;
 }
 
 const btnBase: React.CSSProperties = {
@@ -18,7 +19,7 @@ const btnBase: React.CSSProperties = {
   padding: '2px 7px',
 };
 
-export function GhostCardActions({ suggestion, threadId }: GhostCardActionsProps) {
+export function GhostCardActions({ suggestion, threadId, onTeach }: GhostCardActionsProps) {
   return (
     <div style={{ display: 'flex', gap: '6px', marginTop: '6px' }}>
       <button
@@ -34,6 +35,13 @@ export function GhostCardActions({ suggestion, threadId }: GhostCardActionsProps
         title="Dismiss this suggestion"
       >
         Noted
+      </button>
+      <button
+        onClick={onTeach}
+        style={{ ...btnBase, color: 'var(--amber, #f59e0b)' }}
+        title="Teach Ghost to surface more like this"
+      >
+        📌 Teach Ghost
       </button>
     </div>
   );
