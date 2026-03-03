@@ -10,6 +10,7 @@
 import { useDecisionGateStore } from '@/lib/stores/decision-gate-store';
 import { TriggerBadge } from '@/components/decision-gate';
 import { useUIStore } from '@/lib/stores/ui-store';
+import { NotificationBell } from './NotificationBell';
 
 export function Header() {
   const { trigger: gateTrigger } = useDecisionGateStore();
@@ -34,9 +35,11 @@ export function Header() {
         </span>
       </div>
 
-      {/* Right section: gate badge + command palette */}
+      {/* Right section: gate badge + notifications + command palette */}
       <div className="flex items-center gap-3">
         {gateTrigger && <TriggerBadge />}
+
+        <NotificationBell />
 
         <button
           onClick={handleCommandPalette}
