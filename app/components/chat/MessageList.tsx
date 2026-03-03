@@ -1,9 +1,10 @@
 /**
- * MessageList Component
- * 
+ * MessageList Component — Sprint S9-08 update
+ *
  * Scrollable container for all messages with auto-scroll to bottom.
- * Part of Phase 5.0 P0 Foundation.
- * 
+ * Now accepts highlightQuery + activeMatchIndex for in-thread search.
+ * When activeMatchIndex changes, scrolls to the matching message.
+ *
  * Spec: docs/UI_UX_FINAL_DIRECTION.md Part 1.1
  */
 
@@ -11,20 +12,60 @@
 
 import { useEffect, useRef } from 'react';
 import { Message, type MessageProps } from './Message';
+import type { SearchMatch } from './ThreadSearch';
 
 export interface MessageListProps {
   messages: MessageProps[];
+  /** Current search query — passed to each Message for highlighting */
+  highlightQuery?: string | undefined;
+  /** Which messages matched the search (by message index) */
+  searchMatches?: SearchMatch[] | undefined;
+  /** Index into searchMatches[] for the currently active match */
+  activeMatchIdx?: number | undefined;
 }
 
-export function MessageList({ messages }: MessageListProps) {
+export function MessageList({
+  messages,
+  highlightQuery,
+  searchMatches,
+  activeMatchIdx,
+}: MessageListProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom when new messages arrive
+  // Auto-scroll to bottom when new messages arrive (only when not searching)
   useEffect(() => {
-    if (scrollRef.current) {
+    if (!highlightQuery && scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, highlightQuery]);
+
+  // Scroll to active match when it changes
+  useEffect(() => {
+    if (
+      highlightQuery &&
+      searchMatches &&
+      searchMatches.length > 0 &&
+      activeMatchIdx !== undefined &&
+      scrollRef.current
+    ) {
+      const match = searchMatches[activeMatchIdx];
+      if (!match) return;
+
+      const el = scrollRef.current.querySelector(
+        `[data-active-match="true"]`,
+      );
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }, [highlightQuery, searchMatches, activeMatchIdx]);
+
+  // Build a Set of message indices that are matches for fast lookup
+  const matchIndices = new Set(searchMatches?.map((m) => m.messageIndex));
+  const activeMessageIndex =
+    searchMatches && activeMatchIdx !== undefined
+      ? searchMatches[activeMatchIdx]?.messageIndex
+      : undefined;
 
   return (
     <div
@@ -56,6 +97,12 @@ export function MessageList({ messages }: MessageListProps) {
               role={message.role}
               content={message.content}
               timestamp={message.timestamp}
+              highlightQuery={
+                highlightQuery && matchIndices.has(index)
+                  ? highlightQuery
+                  : undefined
+              }
+              isActiveMatch={index === activeMessageIndex}
             />
           ))}
         </div>

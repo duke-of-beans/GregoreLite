@@ -208,11 +208,40 @@ export interface MessageProps {
   role: 'user' | 'assistant';
   content: string;
   timestamp?: Date | undefined;
+  /** When set, matching substrings are wrapped in <mark> for search highlight */
+  highlightQuery?: string | undefined;
+  /** Whether this message is the active search match (for scroll-to) */
+  isActiveMatch?: boolean | undefined;
+}
+
+// ─── Highlight helper ─────────────────────────────────────────────────────────
+
+function highlightText(text: string, query: string): React.ReactNode {
+  if (!query) return text;
+  const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const parts = text.split(new RegExp(`(${escaped})`, 'gi'));
+  return parts.map((part, i) =>
+    part.toLowerCase() === query.toLowerCase() ? (
+      <mark
+        key={i}
+        style={{
+          background: 'var(--amber, #f59e0b)',
+          color: 'var(--deep-space, #0d1117)',
+          borderRadius: '2px',
+          padding: '0 1px',
+        }}
+      >
+        {part}
+      </mark>
+    ) : (
+      part
+    ),
+  );
 }
 
 // ─── Message ──────────────────────────────────────────────────────────────────
 
-export function Message({ role, content, timestamp }: MessageProps) {
+export function Message({ role, content, timestamp, highlightQuery, isActiveMatch }: MessageProps) {
   const isUser = role === 'user';
 
   return (
@@ -220,6 +249,8 @@ export function Message({ role, content, timestamp }: MessageProps) {
       className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'}`}
       role="article"
       aria-label={`${isUser ? 'User' : 'AI'} message`}
+      data-active-match={isActiveMatch ? 'true' : undefined}
+      style={isActiveMatch ? { scrollMarginTop: '80px' } : undefined}
     >
       <div
         className={`max-w-[80%] rounded-lg p-4 ${
@@ -231,16 +262,25 @@ export function Message({ role, content, timestamp }: MessageProps) {
         {/* Message content */}
         {isUser ? (
           // User messages: plain pre-wrap (no need to parse markdown)
-          <p className="m-0 whitespace-pre-wrap break-words text-sm">{content}</p>
+          <p className="m-0 whitespace-pre-wrap break-words text-sm">
+            {highlightQuery ? highlightText(content, highlightQuery) : content}
+          </p>
         ) : (
           // Assistant messages: full markdown rendering
           <div className="prose prose-invert prose-sm max-w-none">
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              components={markdownComponents}
-            >
-              {content}
-            </ReactMarkdown>
+            {highlightQuery ? (
+              // When searching, render as highlighted plain text to ensure match visibility
+              <p className="m-0 whitespace-pre-wrap break-words text-sm">
+                {highlightText(content, highlightQuery)}
+              </p>
+            ) : (
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={markdownComponents}
+              >
+                {content}
+              </ReactMarkdown>
+            )}
           </div>
         )}
 

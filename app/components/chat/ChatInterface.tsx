@@ -35,6 +35,7 @@ import { CommandPalette } from '../ui/CommandPalette';
 import { StatusBar } from '../ui/StatusBar';
 import { MorningBriefing } from '../morning-briefing/MorningBriefing';
 import { registerBuiltins } from '@/lib/command-registry/commands';
+import { ThreadSearch, type SearchMatch } from './ThreadSearch';
 
 type ActiveTab = 'strategic' | 'workers' | 'warroom';
 
@@ -56,6 +57,12 @@ export function ChatInterface() {
   const [sendButtonState, setSendButtonState] = useState<SendButtonState>('normal');
   const [activeTab, setActiveTab] = useState<ActiveTab>('strategic');
   const [showBriefing, setShowBriefing] = useState(false);
+
+  // ── In-thread search state (S9-08) ─────────────────────────────────────────
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchMatches, setSearchMatches] = useState<SearchMatch[]>([]);
+  const [activeMatchIdx, setActiveMatchIdx] = useState(0);
 
   // Thread tabs store — per-tab state
   const threadTab = useThreadTabsStore(selectActiveTab);
@@ -90,10 +97,17 @@ export function ChatInterface() {
         void createTab();
         setActiveTab('strategic');
       }
+      // Cmd+F — open in-thread search (only in strategic tab)
+      if (meta && e.key === 'f') {
+        e.preventDefault();
+        if (activeTab === 'strategic') {
+          setSearchOpen(true);
+        }
+      }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [createTab]);
+  }, [createTab, activeTab]);
 
   // ── Boot sequence ────────────────────────────────────────────────────────
   useEffect(() => {
@@ -204,6 +218,23 @@ export function ChatInterface() {
     }
   }, [input, threadTab, appendMessage, setTabConversationId, setActiveThreadId, setTabGhostContext, setTabArtifact]);
 
+  // ── Search callbacks (S9-08) ──────────────────────────────────────────────
+  const handleSearchChange = useCallback(
+    (query: string, matches: SearchMatch[], activeIdx: number) => {
+      setSearchQuery(query);
+      setSearchMatches(matches);
+      setActiveMatchIdx(activeIdx);
+    },
+    [],
+  );
+
+  const handleSearchClose = useCallback(() => {
+    setSearchOpen(false);
+    setSearchQuery('');
+    setSearchMatches([]);
+    setActiveMatchIdx(0);
+  }, []);
+
   // ── Render ───────────────────────────────────────────────────────────────
   const messages = threadTab?.messages ?? [];
   const activeArtifact = threadTab?.artifact ?? null;
@@ -284,6 +315,15 @@ export function ChatInterface() {
               {/* Thread tab bar — only when multiple tabs open */}
               <ThreadTabBar />
 
+              {/* In-thread search bar (S9-08) — slides in below tab bar */}
+              <ThreadSearch
+                open={searchOpen}
+                onClose={handleSearchClose}
+                messages={messages}
+                threadId={threadTab?.kernlThreadId ?? null}
+                onSearchChange={handleSearchChange}
+              />
+
               {/* Message list */}
               <div className="flex-1 overflow-hidden">
                 {restoring ? (
@@ -291,7 +331,12 @@ export function ChatInterface() {
                     Restoring session…
                   </div>
                 ) : (
-                  <MessageList messages={messages} />
+                  <MessageList
+                    messages={messages}
+                    highlightQuery={searchQuery || undefined}
+                    searchMatches={searchMatches.length > 0 ? searchMatches : undefined}
+                    activeMatchIdx={activeMatchIdx}
+                  />
                 )}
               </div>
 
