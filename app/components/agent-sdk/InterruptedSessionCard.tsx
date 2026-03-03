@@ -19,9 +19,11 @@ interface InterruptedSessionCardProps {
   job: AgentJobView;
   onDismiss: (manifestId: string) => void;
   onRestarted: () => void; // triggers queue refresh
+  /** S9-11: Open ManifestBuilder pre-filled for edit & retry */
+  onEditRetry?: (job: AgentJobView) => void;
 }
 
-export function InterruptedSessionCard({ job, onDismiss, onRestarted }: InterruptedSessionCardProps) {
+export function InterruptedSessionCard({ job, onDismiss, onRestarted, onEditRetry }: InterruptedSessionCardProps) {
   const [restarting, setRestarting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -145,6 +147,23 @@ export function InterruptedSessionCard({ job, onDismiss, onRestarted }: Interrup
         >
           Dismiss
         </button>
+        {onEditRetry && (
+          <button
+            onClick={() => onEditRetry(job)}
+            disabled={restarting}
+            style={{
+              background: 'none',
+              border: '1px solid var(--accent)',
+              borderRadius: '4px',
+              color: 'var(--accent)',
+              cursor: 'pointer',
+              fontSize: '11px',
+              padding: '5px 10px',
+            }}
+          >
+            ✏ Edit &amp; Retry
+          </button>
+        )}
       </div>
     </div>
   );

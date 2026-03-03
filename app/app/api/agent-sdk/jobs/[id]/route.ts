@@ -41,6 +41,8 @@ export async function GET(_req: NextRequest, { params }: RouteParams) {
         filesModified: state?.files_modified ? JSON.parse(state.files_modified) : [],
         lastEvent: state?.last_event ? JSON.parse(state.last_event) : null,
         logPath: state?.log_path ?? null,
+        description: row.description ?? null,
+        projectPath: row.project_path ?? null,
         tokensUsedSoFar: state?.tokens_used_so_far ?? 0,
         costSoFar: state?.cost_so_far ?? 0,
       },

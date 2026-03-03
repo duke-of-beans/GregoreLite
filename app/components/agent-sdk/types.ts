@@ -27,6 +27,10 @@ export interface AgentJobView {
   filesModified: string[];
   lastEvent: unknown | null;
   logPath: string | null;
+  /** S9-11: Original manifest description for edit & retry */
+  description: string | null;
+  /** S9-11: Original project path for edit & retry */
+  projectPath: string | null;
   tokensUsedSoFar: number;
   costSoFar: number;
   // scheduler fields (pending sessions only)

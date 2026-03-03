@@ -46,9 +46,11 @@ interface JobCardProps {
   job: AgentJobView;
   softCapUsd: number;
   onKilled: () => void;
+  /** S9-11: Open ManifestBuilder pre-filled for edit & retry */
+  onEditRetry?: (job: AgentJobView) => void;
 }
 
-export function JobCard({ job, softCapUsd, onKilled }: JobCardProps) {
+export function JobCard({ job, softCapUsd, onKilled, onEditRetry }: JobCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [confirmKill, setConfirmKill] = useState(false);
   const [killing, setKilling] = useState(false);
@@ -322,6 +324,23 @@ export function JobCard({ job, softCapUsd, onKilled }: JobCardProps) {
           >
             {expanded ? 'Hide Output ▲' : 'View Output ▼'}
           </button>
+          {/* S9-11: Edit & Retry for failed jobs */}
+          {job.status === 'failed' && onEditRetry && (
+            <button
+              onClick={() => onEditRetry(job)}
+              style={{
+                background: 'none',
+                border: '1px solid var(--accent)',
+                borderRadius: '3px',
+                color: 'var(--accent)',
+                cursor: 'pointer',
+                fontSize: '10px',
+                padding: '3px 8px',
+              }}
+            >
+              ✏ Edit &amp; Retry
+            </button>
+          )}
           {/* [Merge PR] — Sprint 7H: functional, CI-gated */}
           {isSelfEvolutionComplete && !merged && (
             <button

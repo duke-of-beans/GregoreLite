@@ -20,8 +20,11 @@ import { JobCard } from './JobCard';
 import { PendingSessionCard } from './PendingSessionCard';
 import { InterruptedSessionCard } from './InterruptedSessionCard';
 import { BudgetSettingsPanel } from './BudgetSettingsPanel';
+import { ManifestBuilder } from '@/components/jobs/ManifestBuilder';
+import type { TemplateInitialValues } from '@/components/jobs/ManifestBuilder';
 import type { AgentJobView } from './types';
 import { ACTIVE_STATUSES } from './types';
+import type { TaskType } from '@/lib/agent-sdk/types';
 
 const POLL_MS = 2000;
 const RECENT_LIMIT = 8;
@@ -37,6 +40,8 @@ export function JobQueue() {
   const [showBudget, setShowBudget] = useState(false);
   // Dismissed interrupted sessions (UI-only dismissal)
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
+  // S9-11: Edit & Retry modal state
+  const [editRetryJob, setEditRetryJob] = useState<AgentJobView | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const fetchJobs = useCallback(async () => {
@@ -64,6 +69,30 @@ export function JobQueue() {
       if (json.data?.daily_hard_cap_usd != null) setDailyCap(json.data.daily_hard_cap_usd);
     } catch { /* non-fatal */ }
   }, []);
+
+  // S9-11: Build initial values for ManifestBuilder from a failed/interrupted job
+  const editRetryInitialValues: TemplateInitialValues | undefined = editRetryJob
+    ? {
+        task_type: (editRetryJob.taskType as TaskType) ?? 'code',
+        title: editRetryJob.title,
+        template_description: editRetryJob.description ?? '',
+        success_criteria: ['Passes all tests'],
+        project_path: editRetryJob.projectPath ?? 'D:\\Projects\\GregLite',
+      }
+    : undefined;
+
+  function handleEditRetrySpawned(newJobId: string) {
+    if (editRetryJob) {
+      // Mark original as superseded, pointing to the new job
+      void fetch(`/api/agent-sdk/jobs/${editRetryJob.manifestId}/supersede`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ replacedByManifestId: newJobId }),
+      });
+    }
+    setEditRetryJob(null);
+    fetchJobs();
+  }
 
   useEffect(() => {
     fetchJobs();
@@ -228,6 +257,7 @@ export function JobQueue() {
                 job={job}
                 onDismiss={(id) => setDismissed((prev) => new Set([...prev, id]))}
                 onRestarted={fetchJobs}
+                onEditRetry={setEditRetryJob}
               />
             ))}
           </Section>
@@ -242,11 +272,65 @@ export function JobQueue() {
                 job={job}
                 softCapUsd={DEFAULT_SOFT_CAP}
                 onKilled={fetchJobs}
+                onEditRetry={setEditRetryJob}
               />
             ))}
           </Section>
         )}
       </div>
+
+      {/* ── S9-11: Edit & Retry modal ────────────────────────────────── */}
+      {editRetryJob && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 200,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'rgba(0,0,0,0.5)',
+          }}
+          onClick={() => setEditRetryJob(null)}
+        >
+          <div
+            style={{
+              background: 'var(--bg)',
+              border: '1px solid var(--border)',
+              borderRadius: '8px',
+              padding: '16px',
+              width: '480px',
+              maxHeight: '80vh',
+              overflowY: 'auto',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
+              <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--frost)' }}>
+                ✏ Edit &amp; Retry
+              </span>
+              <button
+                onClick={() => setEditRetryJob(null)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--mist)',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                }}
+              >
+                ×
+              </button>
+            </div>
+            <ManifestBuilder
+              threadId={editRetryJob.manifestId}
+              strategicThreadId={editRetryJob.manifestId}
+              {...(editRetryInitialValues ? { initialValues: editRetryInitialValues } : {})}
+              onSpawned={handleEditRetrySpawned}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

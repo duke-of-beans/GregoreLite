@@ -93,6 +93,23 @@ export function transitionState(manifestId: string, state: JobState): void {
   });
 }
 
+// ─── Mark a job as superseded (used by Edit & Retry — S9-11) ─────────────────
+
+export function markSuperseded(manifestId: string, replacedByManifestId: string): void {
+  const db = getDatabase();
+  db.prepare(`
+    UPDATE manifests
+    SET status = 'superseded',
+        result_report = json_set(COALESCE(result_report, '{}'), '$.superseded_by', @replaced_by),
+        updated_at = @updated_at
+    WHERE id = @id
+  `).run({
+    replaced_by: replacedByManifestId,
+    updated_at: Date.now(),
+    id: manifestId,
+  });
+}
+
 // ─── Update token usage (called on each streaming chunk with usage data) ──────
 
 export function updateUsage(manifestId: string, tokensUsed: number, costUsd: number): void {
