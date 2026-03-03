@@ -173,6 +173,19 @@ export function registerBuiltins(): void {
       },
     },
 
+    // ── Chat History (S9-12) ───────────────────────────────────────────────
+    {
+      id: 'chat.history',
+      label: 'Browse Chat History',
+      category: 'Navigation',
+      shortcut: 'Cmd+[',
+      keywords: ['chat', 'history', 'conversations', 'browse', 'past', 'threads'],
+      icon: '📜',
+      action: () => {
+        useUIStore.getState().openModal('chat-history');
+      },
+    },
+
     // ── KERNL ────────────────────────────────────────────────────────────────
     {
       id: 'kernl.decisions',

@@ -36,6 +36,7 @@ import { StatusBar } from '../ui/StatusBar';
 import { MorningBriefing } from '../morning-briefing/MorningBriefing';
 import { registerBuiltins } from '@/lib/command-registry/commands';
 import { ThreadSearch, type SearchMatch } from './ThreadSearch';
+import { ChatHistoryPanel } from './ChatHistoryPanel';
 
 type ActiveTab = 'strategic' | 'workers' | 'warroom';
 
@@ -58,6 +59,9 @@ export function ChatInterface() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('strategic');
   const [showBriefing, setShowBriefing] = useState(false);
 
+  // ── S9-12: Chat history panel state ─────────────────────────────────────────
+  const [historyOpen, setHistoryOpen] = useState(false);
+
   // ── In-thread search state (S9-08) ─────────────────────────────────────────
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -72,6 +76,7 @@ export function ChatInterface() {
   const setTabConversationId = useThreadTabsStore((s) => s.setTabConversationId);
   const setTabGhostContext = useThreadTabsStore((s) => s.setTabGhostContext);
   const setTabArtifact = useThreadTabsStore((s) => s.setTabArtifact);
+  const setTabMessages = useThreadTabsStore((s) => s.setTabMessages);
   const createTab = useThreadTabsStore((s) => s.createTab);
 
   const { trigger: gateTrigger } = useDecisionGateStore();
@@ -104,6 +109,11 @@ export function ChatInterface() {
           setSearchOpen(true);
         }
       }
+      // Cmd+[ — open chat history panel (S9-12)
+      if (meta && e.key === '[') {
+        e.preventDefault();
+        setHistoryOpen((prev) => !prev);
+      }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
@@ -133,6 +143,47 @@ export function ChatInterface() {
       })
       .catch(() => null);
   }, [initializeTabs]);
+
+  // ── S9-12: Load a conversation from history into a new tab ──────────────
+  const handleLoadThread = useCallback(async (conversationId: string) => {
+    // If current tab has no messages, reuse it; otherwise create a new tab
+    const currentTab = useThreadTabsStore.getState().getActiveTab();
+    let targetTabId: string;
+
+    if (currentTab && currentTab.messages.length === 0 && !currentTab.conversationId) {
+      targetTabId = currentTab.id;
+    } else {
+      const newTab = await createTab('Loaded Thread');
+      targetTabId = newTab.id;
+    }
+
+    // Set conversation ID on the tab
+    setTabConversationId(targetTabId, conversationId);
+
+    // Fetch conversation detail (includes messages) and populate the tab
+    try {
+      const res = await fetch(`/api/conversations/${conversationId}`);
+      if (res.ok) {
+        const body = await res.json() as {
+          data?: {
+            messages?: Array<{ id: string; role: string; content: string; createdAt: string; model?: string; tokens?: number; cost?: number }>;
+          };
+        };
+        if (body.data?.messages) {
+          const msgs: MessageProps[] = body.data.messages.map((m) => ({
+            role: m.role as 'user' | 'assistant',
+            content: m.content,
+            timestamp: new Date(m.createdAt),
+          }));
+          setTabMessages(targetTabId, msgs);
+        }
+      }
+    } catch (err) {
+      console.warn('[chat-history] Failed to load messages:', err);
+    }
+
+    setActiveTab('strategic');
+  }, [createTab, setTabConversationId, setTabMessages]);
 
   // ── Send message ─────────────────────────────────────────────────────────
   const handleSubmit = useCallback(async () => {
@@ -417,6 +468,13 @@ export function ChatInterface() {
           </>
         )}
       </div>
+
+      {/* S9-12: Chat History Panel */}
+      <ChatHistoryPanel
+        open={historyOpen}
+        onClose={() => setHistoryOpen(false)}
+        onLoadThread={handleLoadThread}
+      />
 
       <StatusBar />
     </div>
