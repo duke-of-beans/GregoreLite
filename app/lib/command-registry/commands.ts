@@ -186,6 +186,19 @@ export function registerBuiltins(): void {
       },
     },
 
+    // ── Project Quick-Switcher (S9-19) ──────────────────────────────────────
+    {
+      id: 'project.switch',
+      label: 'Switch Project…',
+      category: 'Navigation',
+      keywords: ['project', 'switch', 'change', 'active'],
+      icon: '📁',
+      action: () => {
+        // Dispatch event that ProjectSection listens for to open the switcher
+        document.dispatchEvent(new CustomEvent('greglite:open-project-switcher'));
+      },
+    },
+
     // ── Artifact Library (S9-17) ────────────────────────────────────────────
     {
       id: 'app.artifactLibrary',
