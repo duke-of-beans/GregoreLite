@@ -1,0 +1,200 @@
+/**
+ * Built-in Commands — Sprint S9-02
+ *
+ * All day-1 command definitions. Registered on app boot via registerBuiltins().
+ * Actions reference store methods or navigation helpers.
+ */
+
+import { registerCommands, type CommandDef } from './index';
+import { useUIStore } from '@/lib/stores/ui-store';
+import { useThreadTabsStore } from '@/lib/stores/thread-tabs-store';
+
+/**
+ * Register all built-in commands. Called once on app boot (e.g. in layout or
+ * ChatInterface mount). Safe to call multiple times — commands overwrite by id.
+ */
+export function registerBuiltins(): void {
+  const commands: CommandDef[] = [
+    // ── Navigation ──────────────────────────────────────────────────────────
+    {
+      id: 'nav.strategic',
+      label: 'Switch to Strategic',
+      category: 'Navigation',
+      keywords: ['strategic', 'chat', 'main', 'thread'],
+      icon: '★',
+      action: () => {
+        document.querySelector<HTMLButtonElement>('[data-tab="strategic"]')?.click();
+      },
+    },
+    {
+      id: 'nav.workers',
+      label: 'Switch to Workers',
+      category: 'Navigation',
+      shortcut: 'Cmd+Shift+W',
+      keywords: ['workers', 'jobs', 'queue', 'shim'],
+      icon: '⚙',
+      action: () => {
+        document.querySelector<HTMLButtonElement>('[data-tab="workers"]')?.click();
+      },
+    },
+    {
+      id: 'nav.warroom',
+      label: 'Switch to War Room',
+      category: 'Navigation',
+      shortcut: 'Cmd+W',
+      keywords: ['war room', 'dependencies', 'graph', 'map'],
+      icon: '🗺',
+      action: () => {
+        document.querySelector<HTMLButtonElement>('[data-tab="warroom"]')?.click();
+      },
+    },
+
+    // ── Thread ───────────────────────────────────────────────────────────────
+    {
+      id: 'thread.new',
+      label: 'New Thread',
+      category: 'Thread',
+      shortcut: 'Cmd+N',
+      keywords: ['new', 'thread', 'tab', 'create'],
+      icon: '+',
+      action: () => {
+        useThreadTabsStore.getState().createTab();
+      },
+    },
+    {
+      id: 'thread.close',
+      label: 'Close Current Thread',
+      category: 'Thread',
+      keywords: ['close', 'thread', 'tab', 'remove'],
+      icon: '×',
+      action: () => {
+        const store = useThreadTabsStore.getState();
+        if (store.activeTabId) store.closeTab(store.activeTabId);
+      },
+      available: () => useThreadTabsStore.getState().tabs.length > 1,
+    },
+    {
+      id: 'thread.rename',
+      label: 'Rename Thread',
+      category: 'Thread',
+      keywords: ['rename', 'thread', 'title', 'tab'],
+      icon: '✎',
+      action: () => {
+        const tabId = useThreadTabsStore.getState().activeTabId;
+        if (tabId) {
+          document
+            .querySelector<HTMLSpanElement>(`[data-tab-id="${tabId}"] .tab-title`)
+            ?.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
+        }
+      },
+    },
+
+    // ── Jobs ─────────────────────────────────────────────────────────────────
+    {
+      id: 'jobs.spawn',
+      label: 'Spawn Job',
+      category: 'Jobs',
+      keywords: ['spawn', 'job', 'manifest', 'task', 'shim'],
+      icon: '🚀',
+      action: () => {
+        useUIStore.getState().openModal('manifest-builder');
+      },
+      available: () => {
+        const el = document.querySelector(
+          '[data-tab="strategic"].active, [data-tab="strategic"][aria-selected="true"]'
+        );
+        return el !== null;
+      },
+    },
+    {
+      id: 'jobs.viewall',
+      label: 'View All Jobs',
+      category: 'Jobs',
+      keywords: ['jobs', 'queue', 'workers', 'view'],
+      icon: '📋',
+      action: () => {
+        document.querySelector<HTMLButtonElement>('[data-tab="workers"]')?.click();
+      },
+    },
+
+    // ── Ghost ────────────────────────────────────────────────────────────────
+    {
+      id: 'ghost.privacy',
+      label: 'Open Privacy Dashboard',
+      category: 'Ghost',
+      keywords: ['privacy', 'ghost', 'dashboard', 'sources'],
+      icon: '👻',
+      action: () => {
+        useUIStore.getState().openModal('privacy-dashboard');
+      },
+    },
+    {
+      id: 'ghost.context',
+      label: 'Open Context Library',
+      category: 'Ghost',
+      keywords: ['context', 'library', 'ghost', 'intelligence'],
+      icon: '📚',
+      action: () => {
+        useUIStore.getState().setSidebarOpen(true);
+      },
+    },
+
+    // ── Settings ─────────────────────────────────────────────────────────────
+    {
+      id: 'settings.open',
+      label: 'Open Settings',
+      category: 'Settings',
+      shortcut: 'Cmd+,',
+      keywords: ['settings', 'preferences', 'config'],
+      icon: '⚙',
+      action: () => {
+        useUIStore.getState().openModal('settings');
+      },
+    },
+    {
+      id: 'settings.theme',
+      label: 'Toggle Theme',
+      category: 'Settings',
+      keywords: ['theme', 'dark', 'light', 'toggle', 'mode'],
+      icon: '🌗',
+      action: () => {
+        useUIStore.getState().toggleTheme();
+      },
+    },
+    {
+      id: 'settings.inspector',
+      label: 'Open Inspector',
+      category: 'Settings',
+      shortcut: 'Cmd+I',
+      keywords: ['inspector', 'debug', 'drawer'],
+      icon: '🔍',
+      action: () => {
+        useUIStore.getState().openModal('inspector');
+      },
+    },
+
+    // ── KERNL ────────────────────────────────────────────────────────────────
+    {
+      id: 'kernl.decisions',
+      label: 'Browse Decisions',
+      category: 'KERNL',
+      keywords: ['decisions', 'browse', 'history', 'kernl'],
+      icon: '⚖',
+      action: () => {
+        useUIStore.getState().openModal('decision-browser');
+      },
+    },
+    {
+      id: 'kernl.search',
+      label: 'Search KERNL',
+      category: 'KERNL',
+      keywords: ['search', 'kernl', 'decisions', 'patterns', 'find'],
+      icon: '🔎',
+      action: () => {
+        useUIStore.getState().openModal('kernl-search');
+      },
+    },
+  ];
+
+  registerCommands(commands);
+}

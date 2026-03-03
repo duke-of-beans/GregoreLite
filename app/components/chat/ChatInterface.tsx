@@ -31,6 +31,8 @@ import { GatePanel } from '@/components/decision-gate';
 import { useGhostStore } from '@/lib/stores/ghost-store';
 import { useThreadTabsStore, selectActiveTab } from '@/lib/stores/thread-tabs-store';
 import { ThreadTabBar } from './ThreadTabBar';
+import { CommandPalette } from '../ui/CommandPalette';
+import { registerBuiltins } from '@/lib/command-registry/commands';
 
 type ActiveTab = 'strategic' | 'workers' | 'warroom';
 
@@ -100,6 +102,9 @@ export function ChatInterface() {
 
     // Initialize thread tabs from KERNL
     void initializeTabs();
+
+    // Register command palette built-in commands
+    registerBuiltins();
   }, [initializeTabs]);
 
   // ── Send message ─────────────────────────────────────────────────────────
@@ -204,6 +209,7 @@ export function ChatInterface() {
   return (
     <div className="flex h-screen w-full flex-col bg-[var(--deep-space)]">
       <Header />
+      <CommandPalette />
 
       {/* ── Main tab bar ── */}
       <div className="flex items-center border-b border-[var(--shadow)] bg-[var(--elevated)] px-4 flex-shrink-0">
@@ -212,11 +218,12 @@ export function ChatInterface() {
           return (
             <button
               key={tab.id}
+              data-tab={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={[
                 'flex items-center gap-1.5 px-3 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px',
                 active
-                  ? 'border-[var(--cyan)] text-[var(--ice-white)]'
+                  ? 'border-[var(--cyan)] text-[var(--ice-white)] active'
                   : 'border-transparent text-[var(--mist)] hover:text-[var(--frost)]',
               ].join(' ')}
               aria-selected={active}

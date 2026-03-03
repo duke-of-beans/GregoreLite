@@ -9,13 +9,14 @@
 
 import { useDecisionGateStore } from '@/lib/stores/decision-gate-store';
 import { TriggerBadge } from '@/components/decision-gate';
+import { useUIStore } from '@/lib/stores/ui-store';
 
 export function Header() {
   const { trigger: gateTrigger } = useDecisionGateStore();
+  const toggleCommandPalette = useUIStore((s) => s.toggleCommandPalette);
 
   const handleCommandPalette = () => {
-    // TODO: Implement command palette (Phase 6)
-    console.log('[Header] Command palette triggered (Cmd+K)');
+    toggleCommandPalette();
   };
 
   return (
