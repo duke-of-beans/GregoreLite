@@ -9,7 +9,10 @@ import { useState, useEffect } from 'react';
 
 interface KernlStats {
   dbSizeMB: number;
+  totalTables: number;
   totalThreads: number;
+  totalMessages: number;
+  totalDecisions: number;
   totalChunks: number;
   lastIndexerRun: number | null;
   lastBackup: number | null;
@@ -50,8 +53,11 @@ export function KernlTab() {
 
   const rows = [
     { label: 'Database Size', value: `${stats.dbSizeMB} MB` },
-    { label: 'Total Threads', value: String(stats.totalThreads) },
-    { label: 'Total Chunks Indexed', value: stats.totalChunks.toLocaleString() },
+    { label: 'Total Tables', value: String(stats.totalTables) },
+    { label: 'Total Threads', value: stats.totalThreads.toLocaleString() },
+    { label: 'Total Messages', value: stats.totalMessages.toLocaleString() },
+    { label: 'Total Decisions', value: stats.totalDecisions.toLocaleString() },
+    { label: 'Chunks Indexed', value: stats.totalChunks.toLocaleString() },
     { label: 'Last Indexer Run', value: stats.lastIndexerRun ? relativeTime(stats.lastIndexerRun) : 'Never' },
     { label: 'Last Backup', value: stats.lastBackup ? relativeTime(stats.lastBackup) : 'Never' },
   ];
