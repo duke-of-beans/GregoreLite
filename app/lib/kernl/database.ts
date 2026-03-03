@@ -102,6 +102,25 @@ function runMigrations(db: Database.Database): void {
   } catch {
     // FTS table may already exist or fts5 may not be available
   }
+
+  // S9-21 — Log Memory Modal deprecation decision (idempotent via fixed ID)
+  try {
+    db.exec(`
+      INSERT OR IGNORE INTO decisions (id, thread_id, category, title, rationale, alternatives, impact, created_at)
+      VALUES (
+        'decision-s9-21-memory-modal-deprecated',
+        NULL,
+        'ui',
+        'Memory Modal deprecated in favor of command palette KERNL search',
+        'Cmd+M was originally intended as a standalone memory surface. After Phase 9, this functionality is fully covered by: (1) Command palette KERNL search (Cmd+K → kernl.search, kernl.decisions) which provides quick access to any KERNL content, and (2) Decision Browser (Cmd+D) which provides filtered, full-text-searchable browsing of all decisions with rationale and alternatives. A separate Memory Modal would duplicate these surfaces with no additional value. Cmd+M removed from KeyboardShortcuts.tsx; Cmd+D and Cmd+L added in its place.',
+        '["Keep Cmd+M as alias for Decision Browser","Build Memory Modal as unified KERNL+Decision+Artifact search","Defer to Phase 10"]',
+        'low',
+        ${Date.now()}
+      );
+    `);
+  } catch {
+    // Decision already exists — silently continue
+  }
 }
 
 export function closeDatabase(): void {

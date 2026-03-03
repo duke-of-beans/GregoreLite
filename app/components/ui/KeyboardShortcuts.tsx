@@ -33,7 +33,8 @@ const shortcuts = [
     items: [
       { keys: ['Enter'], description: 'Send message' },
       { keys: ['Shift', 'Enter'], description: 'New line in message' },
-      { keys: ['Cmd', 'M'], description: 'Open memory modal (when available)' },
+      { keys: ['Cmd', 'D'], description: 'Browse decisions' },
+      { keys: ['Cmd', 'L'], description: 'Browse artifact library' },
       { keys: ['Cmd', 'E'], description: 'Edit last message' },
       { keys: ['Cmd', 'R'], description: 'Regenerate response' },
     ],
