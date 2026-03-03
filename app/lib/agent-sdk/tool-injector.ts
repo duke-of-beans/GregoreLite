@@ -166,26 +166,56 @@ const TOOL_DEFINITIONS: Record<string, Tool & { _stub?: true }> = {
     },
   },
 
-  git_branch_tools: {
-    _stub: true,
-    name: 'git_branch_tools',
+  // Sprint 7H: real git tools (local operations only — no GitHub API from agent side)
+  git_commit: {
+    name: 'git_commit',
     description:
-      'Perform git branch operations: create, checkout, push, merge, or open a PR. ' +
-      '(NOT IMPLEMENTED — available in Sprint 7H)',
+      'Stage specific files and create a git commit in the project repository. ' +
+      'Only files within the manifest files[] scope may be staged. ' +
+      'Returns the commit hash on success.',
     input_schema: {
       type: 'object' as const,
       properties: {
-        action: {
+        message: {
           type: 'string',
-          enum: ['create', 'checkout', 'push', 'merge', 'status', 'open_pr'],
-          description: 'Branch operation to perform.',
+          description: 'Commit message. Should be concise and describe what changed.',
         },
-        branch_name: { type: 'string', description: 'Target branch name.' },
-        base_branch:  { type: 'string', description: 'Base branch for create/merge/pr.' },
-        pr_title:     { type: 'string', description: 'Pull request title (for open_pr).' },
-        pr_body:      { type: 'string', description: 'Pull request body (for open_pr).' },
+        files: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'File paths to stage. Must be within manifest scope.',
+        },
       },
-      required: ['action'],
+      required: ['message', 'files'],
+    },
+  },
+
+  git_status: {
+    name: 'git_status',
+    description:
+      'Show the working tree status (modified, staged, untracked files). ' +
+      'Returns short-format git status output.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {},
+      required: [],
+    },
+  },
+
+  git_diff: {
+    name: 'git_diff',
+    description:
+      'Show file diffs. Returns staged diff (--cached) first, then unstaged diff. ' +
+      'Optionally scope to a specific file path.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        path: {
+          type: 'string',
+          description: 'Optional: limit diff to this file path.',
+        },
+      },
+      required: [],
     },
   },
 };

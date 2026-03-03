@@ -13,6 +13,10 @@ export interface AgentJobView {
   status: string;
   isSelfEvolution: boolean;
   selfEvolutionBranch: string | null;
+  /** Sprint 7H: GitHub PR number (null until PR is created post-completion) */
+  prNumber: number | null;
+  /** Sprint 7H: CI gate result — null = pending/unknown, true = passed, false = failed */
+  ciPassed: boolean | null;
   createdAt: string;   // ISO
   updatedAt: number;   // epoch ms
   tokensUsed: number;

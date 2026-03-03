@@ -1,0 +1,8 @@
+# GregLite self-evolution exclusions
+# Add paths here to prevent self-evolution sessions from targeting them
+# Supports glob patterns (micromatch)
+
+app/lib/kernl/migrations/
+.env*
+*.secret
+pricing.yaml

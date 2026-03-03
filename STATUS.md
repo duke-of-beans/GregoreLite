@@ -1,6 +1,6 @@
 # GREGORE LITE — STATUS
-**Last Updated:** March 2, 2026 — Sprint 7G complete: SHIM Hybrid Integration — local quality analyser (tsc + ESLint + LOC, max 100pts), shim_check in-session tool, 3× retry ceiling (configurable via budget_config), SHIM_LOOP escalation to strategic thread with [Continue Anyway]/[Kill Session] action buttons, post-processing gate (code/self_evolution sessions only, score < 70 → FAILED), shim_session_log table, /api/agent-sdk/jobs/:id/unblock route. Permission-matrix test updated (shim_check promoted from stub). 39 test files / 860 passed (3 pre-existing timeouts: watcher-bridge, war-room). Zero TS errors.
-**Phase:** Phase 7 — Self-Evolution Mode (Sprint 7G complete, 7H next)
+**Last Updated:** March 2, 2026 — Sprint 7H complete: Self-Evolution Mode — branch lifecycle (branch-manager, branch-namer, .gregignore, protected-paths), real git tools injected into self_evolution sessions (git_commit/status/diff), GitHub PR API (createPR, mergePR, pollCIStatus, PAT vault), self-evolution-orchestrator (runPreFlight + runPostProcessing), CI polling loop (30s × 20, fire-and-forget), [Merge PR] button with CI gate, jobs API + merge route, AgentJobView types. Phase 7 certification: tsc clean, 40 test files / 890 tests passed, EoS 82/100 (target ≥ 75), security audit APPROVED_WITH_WARNINGS (3 WARNs, 0 FAILs — shell quoting improved, PAT comment corrected, auth WARN logged for 8A).
+**Phase:** Phase 7 — Self-Evolution Mode (ALL SPRINTS COMPLETE — Phase 7 certified)
 
 ---
 **Previous:** Sprint 6G complete: Privacy Dashboard UI, 6 API routes (items/exclusions/log/watch-paths/status/purge), 5 React components (GhostStatusBadge, IndexedItemRow, ExclusionLog, IndexedItemsList, ExclusionRules, WatchPaths, PurgeAllDialog, PrivacyDashboard), cascade delete + purge-all, exclusion log retention cap, deleteGhostItem()  
@@ -659,13 +659,13 @@ Execution order: 7A → 7B → 7C → 7D → 7E → 7F → 7G → 7H (all sequen
 | Gate | Result |
 |------|--------|
 | tsc --noEmit | ✅ 0 errors |
-| vitest run (full suite) | ✅ 761/761 passing (36 files, +25 new) |
+| vitest run (full suite) | ✅ 890/890 passing (40 files, +29 new Sprint 7H tests) |
 | code session tool set | ✅ fs_read, list_directory, fs_write, run_command, test_runner, shim_check |
 | test session tool set | ✅ fs_read, list_directory, fs_write, run_command, test_runner |
 | docs session tool set | ✅ fs_read, list_directory, fs_write_docs_only, markdown_linter |
 | research session (readOnly) | ✅ fs_read, list_directory, kernl_search_readonly — no write tools |
 | analysis session (readOnly) | ✅ fs_read, list_directory, shim_readonly_audit — no write tools |
-| self_evolution session | ✅ Full set + git_branch_tools, shim_check, test_runner |
+| self_evolution session | ✅ Full set + git_commit, git_status, git_diff, shim_check, test_runner (7H real tools) |
 | Out-of-scope write → rejected | ✅ checkWriteScope() returns errorMessage |
 | Out-of-scope write → logged | ✅ scope_violations table via logScopeViolation() |
 | docs-only /docs enforcement | ✅ fs_write_docs_only rejects paths outside /docs |
@@ -711,8 +711,8 @@ Execution order: 7A → 7B → 7C → 7D → 7E → 7F → 7G → 7H (all sequen
 - [x] **SPRINT 7D** — Cost accounting: token capture, session_costs table, pricing.yaml, live cost ticker, budget caps — **COMPLETE**
 - [x] **SPRINT 7E** — Concurrency scheduler: SessionScheduler singleton, priority queue (6 tiers, strategic_thread bypass), max 8 slots, token-bucket rate limiter (80% throttle), AEGIS updateWorkerCount bridge, session_queue table, QueuePositionBadge — **COMPLETE**
 - [x] **SPRINT 7F** — Job queue UI: SessionLogger registry, 6 API routes (/api/agent-sdk/jobs + /budget), 7 React components (JobQueue, JobCard, JobStatusBadge, LiveOutputPanel, InterruptedSessionCard, PendingSessionCard, BudgetSettingsPanel), kill confirmation dialog, [Merge PR] placeholder stub — **COMPLETE**
-- [ ] **SPRINT 7G** — SHIM hybrid: in-session tool, post-processing gate, 3× retry ceiling, SHIM_LOOP escalation
-- [ ] **SPRINT 7H** — Self-evolution: branch management, .gregignore, protected paths, git tools, GitHub PR API, CI polling, [Merge PR], Phase 7 certification
+- [x] **SPRINT 7G** — SHIM hybrid: in-session tool, post-processing gate, 3× retry ceiling, SHIM_LOOP escalation — **COMPLETE**
+- [x] **SPRINT 7H** — Self-evolution: branch management, .gregignore, protected paths, git tools (git_commit/status/diff), GitHub PR API, CI polling, [Merge PR] with CI gate, Phase 7 certification (EoS 82, 40 files / 890 tests, tsc clean, security APPROVED_WITH_WARNINGS) — **COMPLETE**
 
 ## Queued: Phase 6 — Ghost Thread (after Phase 5 complete)
 

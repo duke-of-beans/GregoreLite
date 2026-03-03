@@ -27,6 +27,12 @@ import { TASK_PRIORITY } from './types';
 import type { TaskManifest, JobRecord, JobState, ResultReport, JobStatus, JobStateRow } from './types';
 import { scheduler } from './scheduler';
 import { isDailyCapReached } from './budget-enforcer';
+// Sprint 7H: self-evolution orchestrator hooks
+import {
+  runPreFlight,
+  runPostProcessing,
+  type SelfEvolutionConfig,
+} from './self-evolution/self-evolution-orchestrator';
 
 // ─── Phase 7A: active query sessions ─────────────────────────────────────────
 
@@ -38,6 +44,11 @@ interface QuerySession {
 }
 
 const activeSessions = new Map<string, QuerySession>();
+
+// Sprint 7H: self-evolution config map (manifestId → SelfEvolutionConfig)
+// Populated by spawnSelfEvolutionSession before scheduler.enqueue — guarantees
+// the config is available when _startQuerySession fires (may be synchronous).
+const _selfEvolutionConfigs = new Map<string, SelfEvolutionConfig>();
 
 // ─── Phase 7A: spawnSession ───────────────────────────────────────────────────
 
@@ -103,12 +114,88 @@ function _startQuerySession(
     onStatusChange(_id: string, _status: JobStatus) { /* job_state written by query.ts */ },
     onStreamEvent(_event) { /* callers poll job_state or subscribe via 7F UI */ },
     onLogLine(_id: string, _line: string) { /* logged internally */ },
-    onComplete(id: string, _finalStatus: JobStatus) { _complete(id); },
-    onError(id: string, _err: Error) { _complete(id); },
+    onComplete(id: string, _finalStatus: JobStatus) {
+      // Sprint 7H: self-evolution post-processing (tests → PR → CI poll)
+      const seConfig = _selfEvolutionConfigs.get(id);
+      if (seConfig) {
+        _selfEvolutionConfigs.delete(id);
+        void runPostProcessing(id, seConfig)
+          .catch((err: unknown) =>
+            console.error('[AgentSDK] Self-evolution post-processing error:', err),
+          )
+          .finally(() => _complete(id));
+      } else {
+        _complete(id);
+      }
+    },
+    onError(id: string, _err: Error) {
+      // Ensure self-evolution config is cleaned up on error path
+      _selfEvolutionConfigs.delete(id);
+      _complete(id);
+    },
   }).catch((err: unknown) => {
     console.error(`[AgentSDK] Unhandled error in query session ${manifestId}:`, err);
     _complete(manifestId);
   });
+}
+
+// ─── Phase 7H: spawnSelfEvolutionSession ─────────────────────────────────────
+
+export interface SelfEvolutionSpawnOptions {
+  /** Absolute path to the git repo root. Required for branch management. */
+  repoRoot: string;
+  /** GitHub owner (e.g. 'acme'). If omitted, PR creation is skipped. */
+  githubOwner?: string;
+  /** GitHub repo name (e.g. 'greglite'). If omitted, PR creation is skipped. */
+  githubRepo?: string;
+}
+
+/**
+ * spawnSelfEvolutionSession — wraps spawnSession with self-evolution lifecycle.
+ *
+ * 1. runPreFlight  — verify clean repo, create self-evolve branch.
+ * 2. scheduler.enqueue — session runs normally under query.ts.
+ * 3. runPostProcessing — (wired in _startQuerySession.onComplete) local tests
+ *    → git push → createPR → CI polling → [Merge PR] button activation.
+ *
+ * Throws on pre-flight failure (dirty repo, branch conflict) — these are
+ * surfaced to the caller before any DB/session state is created.
+ */
+export function spawnSelfEvolutionSession(
+  manifest: TaskManifest,
+  opts: SelfEvolutionSpawnOptions,
+): SpawnSessionResult {
+  if (manifest.task.type !== 'self_evolution') {
+    throw new Error(
+      `spawnSelfEvolutionSession: manifest.task.type must be 'self_evolution', ` +
+      `got '${manifest.task.type}'`,
+    );
+  }
+
+  if (isDailyCapReached()) {
+    throw new Error('Daily cost cap reached. No new sessions until tomorrow UTC.');
+  }
+
+  // Pre-flight may throw — caller must handle (dirty repo, branch exists, etc.)
+  runPreFlight(manifest, opts.repoRoot);
+
+  const config: SelfEvolutionConfig = {
+    repoRoot: opts.repoRoot,
+    ...(opts.githubOwner !== undefined && { githubOwner: opts.githubOwner }),
+    ...(opts.githubRepo  !== undefined && { githubRepo:  opts.githubRepo  }),
+  };
+
+  // Store config BEFORE enqueue — _startQuerySession may fire synchronously
+  // when a scheduler slot is immediately available.
+  _selfEvolutionConfigs.set(manifest.manifest_id, config);
+
+  const result = scheduler.enqueue(manifest, _startQuerySession);
+  return {
+    manifestId: manifest.manifest_id,
+    started: result.started,
+    queued: result.queued,
+    queuePosition: result.queuePosition,
+  };
 }
 
 // ─── Phase 7A: killSession ────────────────────────────────────────────────────

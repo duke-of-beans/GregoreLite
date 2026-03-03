@@ -53,6 +53,9 @@ export function JobCard({ job, softCapUsd, onKilled }: JobCardProps) {
   const [confirmKill, setConfirmKill] = useState(false);
   const [killing, setKilling] = useState(false);
   const [killError, setKillError] = useState<string | null>(null);
+  const [merging, setMerging] = useState(false);
+  const [mergeError, setMergeError] = useState<string | null>(null);
+  const [merged, setMerged] = useState(false);
   const [elapsed, setElapsed] = useState(() => elapsedLabel(job.updatedAt));
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -60,6 +63,15 @@ export function JobCard({ job, softCapUsd, onKilled }: JobCardProps) {
   const isKillable = KILLABLE_STATUSES.has(job.status);
   const isCompleted = job.status === 'completed';
   const isSelfEvolutionComplete = isCompleted && job.isSelfEvolution;
+
+  // [Merge PR] button states (Sprint 7H)
+  // ciPassed === null → CI still running / no repo config → show disabled "Awaiting CI…"
+  // ciPassed === true → CI passed → show active "Merge PR ↑"
+  // ciPassed === false → CI failed → show error state
+  const mergeReady = isSelfEvolutionComplete && job.ciPassed === true && !merged;
+  const mergeAwaitingCI = isSelfEvolutionComplete && job.prNumber !== null && job.ciPassed === null;
+  const mergeCIFailed = isSelfEvolutionComplete && job.ciPassed === false;
+
   const icon = TASK_ICONS[job.taskType] ?? '·';
 
   // Live elapsed ticker for active sessions
@@ -70,6 +82,28 @@ export function JobCard({ job, softCapUsd, onKilled }: JobCardProps) {
     }, 1000);
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [isActive, job.updatedAt]);
+
+  async function handleMergePR(e: React.MouseEvent) {
+    e.stopPropagation();
+    if (!mergeReady || merging) return;
+    setMerging(true);
+    setMergeError(null);
+    try {
+      const res = await fetch(`/api/agent-sdk/jobs/${job.manifestId}/merge`, {
+        method: 'POST',
+      });
+      const body = await res.json() as { data?: { merged: boolean }; error?: string };
+      if (!res.ok) throw new Error(body.error ?? `HTTP ${res.status}`);
+      if (body.data?.merged) {
+        setMerged(true);
+        onKilled(); // trigger a refresh of the job list
+      }
+    } catch (err) {
+      setMergeError(err instanceof Error ? err.message : 'Merge failed');
+    } finally {
+      setMerging(false);
+    }
+  }
 
   async function handleConfirmKill() {
     setKilling(true);
@@ -288,22 +322,65 @@ export function JobCard({ job, softCapUsd, onKilled }: JobCardProps) {
           >
             {expanded ? 'Hide Output ▲' : 'View Output ▼'}
           </button>
-          {isSelfEvolutionComplete && (
+          {/* [Merge PR] — Sprint 7H: functional, CI-gated */}
+          {isSelfEvolutionComplete && !merged && (
             <button
-              title="Merge PR (available in Sprint 7H)"
+              onClick={mergeReady ? handleMergePR : undefined}
+              disabled={!mergeReady || merging}
+              title={
+                mergeReady
+                  ? `Merge PR #${job.prNumber ?? ''} (squash)`
+                  : mergeCIFailed
+                  ? 'CI failed — cannot merge'
+                  : mergeAwaitingCI
+                  ? `PR #${job.prNumber} — awaiting CI…`
+                  : 'Awaiting PR creation…'
+              }
               style={{
-                background: 'none',
-                border: '1px solid var(--border)',
+                background: mergeReady ? 'var(--accent)' : 'none',
+                border: `1px solid ${
+                  mergeCIFailed ? 'var(--error)' :
+                  mergeReady    ? 'var(--accent)' :
+                  'var(--border)'
+                }`,
                 borderRadius: '3px',
-                color: 'var(--mist)',
-                cursor: 'not-allowed',
+                color: mergeReady
+                  ? '#fff'
+                  : mergeCIFailed
+                  ? 'var(--error)'
+                  : 'var(--mist)',
+                cursor: mergeReady && !merging ? 'pointer' : 'not-allowed',
                 fontSize: '10px',
                 padding: '3px 8px',
-                opacity: 0.5,
+                opacity: (!mergeReady && !mergeCIFailed) ? 0.5 : 1,
               }}
             >
-              Merge PR
+              {merging
+                ? 'Merging…'
+                : mergeCIFailed
+                ? 'CI Failed'
+                : mergeAwaitingCI
+                ? `PR #${job.prNumber} ⏳`
+                : mergeReady
+                ? `Merge PR #${job.prNumber} ↑`
+                : 'Awaiting PR…'}
             </button>
+          )}
+          {isSelfEvolutionComplete && merged && (
+            <span
+              style={{
+                fontSize: '10px',
+                color: 'var(--success)',
+                padding: '3px 8px',
+              }}
+            >
+              ✓ Merged
+            </span>
+          )}
+          {mergeError && (
+            <span style={{ fontSize: '10px', color: 'var(--error)' }}>
+              {mergeError}
+            </span>
           )}
         </div>
       )}

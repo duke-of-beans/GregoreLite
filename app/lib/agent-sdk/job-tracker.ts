@@ -31,6 +31,8 @@ export interface ManifestRow {
   quality_gates: string | null; // JSON
   is_self_evolution: number;
   self_evolution_branch: string | null;
+  pr_number: number | null;
+  ci_passed: number | null;
   result_report: string | null; // JSON
   tokens_used: number;
   cost_usd: number;

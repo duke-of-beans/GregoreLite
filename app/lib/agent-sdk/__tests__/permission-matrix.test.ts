@@ -116,15 +116,18 @@ describe('selectTools — tool injection', () => {
     expect(names).not.toContain('run_command');
   });
 
-  it('self_evolution session gets full tool set including git_branch_tools', () => {
+  it('self_evolution session gets full tool set including git_commit/status/diff (Sprint 7H)', () => {
     const manifest = makeManifest('self_evolution');
     const names = selectTools('self_evolution', manifest).map((t) => t.name);
     expect(names).toContain('fs_read');
     expect(names).toContain('fs_write');
-    expect(names).toContain('git_branch_tools');
+    expect(names).toContain('git_commit');
+    expect(names).toContain('git_status');
+    expect(names).toContain('git_diff');
     expect(names).toContain('shim_check');
     expect(names).toContain('test_runner');
     expect(names).toContain('run_command');
+    expect(names).not.toContain('git_branch_tools');
   });
 
   it('returns Tool objects with valid SDK shape (no _stub exposed)', () => {
@@ -153,7 +156,7 @@ describe('selectTools — tool injection', () => {
 // ─── 2. readOnly sessions have no write tools ─────────────────────────────────
 
 describe('selectTools — readOnly enforcement', () => {
-  const WRITE_TOOLS = ['fs_write', 'fs_write_docs_only', 'run_command', 'git_branch_tools'];
+  const WRITE_TOOLS = ['fs_write', 'fs_write_docs_only', 'run_command', 'git_commit'];
 
   it('research session injects no write tools', () => {
     const names = getToolNames('research');
@@ -184,7 +187,6 @@ describe('isStubTool', () => {
     expect(isStubTool('shim_readonly_audit')).toBe(true);
     expect(isStubTool('markdown_linter')).toBe(true);
     expect(isStubTool('kernl_search_readonly')).toBe(true);
-    expect(isStubTool('git_branch_tools')).toBe(true);
   });
 
   it('returns false for real tools', () => {

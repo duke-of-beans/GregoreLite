@@ -44,7 +44,9 @@ export interface PermissionProfile {
  *   shim_readonly_audit  — run SHIM analysis without modifications                [STUB → 7G]
  *   markdown_linter      — lint markdown files for formatting issues              [STUB → 7G]
  *   kernl_search_readonly — search KERNL knowledge base (no writes)              [STUB → 7G]
- *   git_branch_tools     — create/checkout/push branches, open PRs               [STUB → 7H]
+ *   git_commit           — stage files and create git commits                    [REAL → 7H]
+ *   git_status           — show working tree status                              [REAL → 7H]
+ *   git_diff             — show staged and unstaged diffs                        [REAL → 7H]
  */
 export const PERMISSION_CONFIG: Record<TaskType, PermissionProfile> = {
   code: {
@@ -80,9 +82,10 @@ export const PERMISSION_CONFIG: Record<TaskType, PermissionProfile> = {
 
   self_evolution: {
     permissionMode: 'acceptEdits',
+    // git_branch_tools stub replaced with 3 real tools in Sprint 7H
     tools: [
       'fs_read', 'list_directory', 'fs_write', 'run_command',
-      'git_branch_tools', 'shim_check', 'test_runner',
+      'git_commit', 'git_status', 'git_diff', 'shim_check', 'test_runner',
     ],
     cwdPolicy: 'project_root',
   },

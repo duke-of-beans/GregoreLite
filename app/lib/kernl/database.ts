@@ -73,6 +73,9 @@ function runMigrations(db: Database.Database): void {
     'ALTER TABLE manifests ADD COLUMN target_component TEXT',
     'ALTER TABLE manifests ADD COLUMN goal_summary     TEXT',
     'ALTER TABLE manifests ADD COLUMN shim_score_after REAL DEFAULT NULL',
+    // Phase 7H — PR tracking for self-evolution [Merge PR] button
+    'ALTER TABLE manifests ADD COLUMN pr_number  INTEGER DEFAULT NULL',
+    'ALTER TABLE manifests ADD COLUMN ci_passed  INTEGER DEFAULT NULL',
   ];
 
   for (const sql of alterStatements) {

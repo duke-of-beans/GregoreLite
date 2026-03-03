@@ -39,6 +39,8 @@ import { AGENT_COST_CONFIG } from './config';
 import type { TaskManifest, JobStatus, JobStateRow, StreamEvent, AgentEvent } from './types';
 // Sprint 7G: SHIM hybrid integration
 import { runShimCheck } from './shim-tool';
+// Sprint 7H: self-evolution git tools
+import { executeGitCommit, executeGitStatus, executeGitDiff } from './self-evolution/git-tools';
 import { getLastScore, recordShimCall, clearSession, SHIM_LOOP_SENTINEL } from './retry-tracker';
 import { runPostProcessingShim } from './post-processor';
 
@@ -219,6 +221,27 @@ function executeTool(
         }
 
         return JSON.stringify(shimResult);
+      }
+
+      // Sprint 7H: git tools for self-evolution sessions
+      case 'git_commit': {
+        const message = String(input['message'] ?? '');
+        if (!message) return 'ERROR: git_commit requires a message';
+        const rawFiles = input['files'];
+        const files: string[] = Array.isArray(rawFiles)
+          ? rawFiles.map((f) => String(f))
+          : [];
+        if (files.length === 0) return 'ERROR: git_commit requires at least one file';
+        return executeGitCommit({ message, files }, projectPath);
+      }
+
+      case 'git_status': {
+        return executeGitStatus({}, projectPath);
+      }
+
+      case 'git_diff': {
+        const diffPath = input['path'] ? String(input['path']) : undefined;
+        return executeGitDiff(diffPath !== undefined ? { path: diffPath } : {}, projectPath);
       }
 
       default:
