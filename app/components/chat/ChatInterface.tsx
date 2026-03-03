@@ -29,7 +29,16 @@ import { syncArtifact } from '@/lib/artifacts/kernl-sync';
 import { useDecisionGateStore } from '@/lib/stores/decision-gate-store';
 import { GatePanel } from '@/components/decision-gate';
 import { useGhostStore } from '@/lib/stores/ghost-store';
-import { useThreadTabsStore, selectActiveTab } from '@/lib/stores/thread-tabs-store';
+import {
+  useThreadTabsStore,
+  selectActiveTabId,
+  selectActiveTabMessages,
+  selectActiveTabConversationId,
+  selectActiveTabArtifact,
+  selectActiveTabGhostContext,
+  selectActiveTabRestoring,
+} from '@/lib/stores/thread-tabs-store';
+
 import { ThreadTabBar } from './ThreadTabBar';
 import { CommandPalette } from '../ui/CommandPalette';
 import { StatusBar } from '../ui/StatusBar';
@@ -42,6 +51,8 @@ import { InspectorDrawer } from '../inspector/InspectorDrawer';
 import { startTrayBridge, stopTrayBridge } from '@/lib/notifications/tray-bridge';
 import { DecisionBrowser } from '../decisions/DecisionBrowser';
 import { ArtifactLibrary } from '../artifacts/ArtifactLibrary';
+import { ChatSidebar } from './ChatSidebar';
+import { generateTitle } from '@/lib/chat/auto-title';
 
 type ActiveTab = 'strategic' | 'workers' | 'warroom';
 
@@ -85,8 +96,13 @@ export function ChatInterface() {
   const [searchMatches, setSearchMatches] = useState<SearchMatch[]>([]);
   const [activeMatchIdx, setActiveMatchIdx] = useState(0);
 
-  // Thread tabs store — per-tab state
-  const threadTab = useThreadTabsStore(selectActiveTab);
+  // Thread tabs store — per-tab state (stable individual selectors to prevent render loops)
+  const activeTabId = useThreadTabsStore(selectActiveTabId);
+  const activeMessages = useThreadTabsStore(selectActiveTabMessages);
+  const activeConversationId = useThreadTabsStore(selectActiveTabConversationId);
+  const activeArtifact = useThreadTabsStore(selectActiveTabArtifact);
+  const activeGhostContext = useThreadTabsStore(selectActiveTabGhostContext);
+  const activeRestoring = useThreadTabsStore(selectActiveTabRestoring);
   const initializeTabs = useThreadTabsStore((s) => s.initialize);
   const tabInitializing = useThreadTabsStore((s) => s.initializing);
   const appendMessage = useThreadTabsStore((s) => s.appendMessage);
@@ -95,16 +111,17 @@ export function ChatInterface() {
   const setTabArtifact = useThreadTabsStore((s) => s.setTabArtifact);
   const setTabMessages = useThreadTabsStore((s) => s.setTabMessages);
   const createTab = useThreadTabsStore((s) => s.createTab);
+  const renameTab = useThreadTabsStore((s) => s.renameTab);
 
-  const { trigger: gateTrigger } = useDecisionGateStore();
-  const { setActiveThreadId } = useGhostStore();
+  const gateTrigger = useDecisionGateStore((s) => s.trigger);
+  const setActiveThreadId = useGhostStore((s) => s.setActiveThreadId);
 
   // Sync ghost store's activeThreadId when thread tab changes
   useEffect(() => {
-    if (threadTab?.conversationId) {
-      setActiveThreadId(threadTab.conversationId);
+    if (activeConversationId) {
+      setActiveThreadId(activeConversationId);
     }
-  }, [threadTab?.conversationId, setActiveThreadId]);
+  }, [activeConversationId, setActiveThreadId]);
 
   // ── Keyboard shortcuts ───────────────────────────────────────────────────
   useEffect(() => {
@@ -238,57 +255,54 @@ export function ChatInterface() {
 
   // ── S9-20: Edit last message — restore to input, truncate from that point ──
   const handleEditMessage = useCallback((messageIndex: number) => {
-    if (!threadTab) return;
-    const msgs = threadTab.messages;
-    const msg = msgs[messageIndex];
+    if (!activeTabId) return;
+    const msg = activeMessages[messageIndex];
     if (!msg || msg.role !== 'user') return;
 
     // Restore content to input
     setInput(msg.content);
 
     // Remove this message and everything after it from the tab
-    const truncated = msgs.slice(0, messageIndex);
-    setTabMessages(threadTab.id, truncated);
+    const truncated = activeMessages.slice(0, messageIndex);
+    setTabMessages(activeTabId, truncated);
 
     // Truncate from KERNL asynchronously (best-effort)
-    if (threadTab.conversationId) {
-      void fetch(`/api/threads/${threadTab.conversationId}/truncate-after/${encodeURIComponent('__from_index_' + messageIndex)}`, {
+    if (activeConversationId) {
+      void fetch(`/api/threads/${activeConversationId}/truncate-after/${encodeURIComponent('__from_index_' + messageIndex)}`, {
         method: 'DELETE',
       }).catch(() => null);
     }
-  }, [threadTab, setTabMessages]);
+  }, [activeTabId, activeMessages, activeConversationId, setTabMessages]);
 
   const handleEditLastMessage = useCallback(() => {
-    if (!threadTab) return;
-    const msgs = threadTab.messages;
-    for (let i = msgs.length - 1; i >= 0; i--) {
-      if (msgs[i]?.role === 'user') {
+    if (!activeTabId) return;
+    for (let i = activeMessages.length - 1; i >= 0; i--) {
+      if (activeMessages[i]?.role === 'user') {
         handleEditMessage(i);
         return;
       }
     }
-  }, [threadTab, handleEditMessage]);
+  }, [activeTabId, activeMessages, handleEditMessage]);
 
   const handleRegenerate = useCallback(() => {
-    if (!threadTab) return;
-    const msgs = threadTab.messages;
+    if (!activeTabId) return;
     // Find last assistant message and last user message before it
     let lastAssistantIdx = -1;
     let lastUserContent = '';
-    for (let i = msgs.length - 1; i >= 0; i--) {
-      if (lastAssistantIdx === -1 && msgs[i]?.role === 'assistant') {
+    for (let i = activeMessages.length - 1; i >= 0; i--) {
+      if (lastAssistantIdx === -1 && activeMessages[i]?.role === 'assistant') {
         lastAssistantIdx = i;
       }
-      if (lastAssistantIdx !== -1 && msgs[i]?.role === 'user') {
-        lastUserContent = msgs[i]?.content ?? '';
+      if (lastAssistantIdx !== -1 && activeMessages[i]?.role === 'user') {
+        lastUserContent = activeMessages[i]?.content ?? '';
         break;
       }
     }
     if (lastAssistantIdx === -1 || !lastUserContent) return;
 
     // Remove last assistant message
-    const truncated = msgs.slice(0, lastAssistantIdx);
-    setTabMessages(threadTab.id, truncated);
+    const truncated = activeMessages.slice(0, lastAssistantIdx);
+    setTabMessages(activeTabId, truncated);
 
     // Re-send the last user message
     setInput(lastUserContent);
@@ -297,15 +311,15 @@ export function ChatInterface() {
       const submitBtn = document.querySelector<HTMLButtonElement>('[data-send-button]');
       submitBtn?.click();
     }, 50);
-  }, [threadTab, setTabMessages]);
+  }, [activeTabId, activeMessages, setTabMessages]);
 
   // ── Send message ─────────────────────────────────────────────────────────
   const handleSubmit = useCallback(async () => {
-    if (!input.trim() || !threadTab) return;
+    if (!input.trim() || !activeTabId) return;
 
     const messageText = input;
-    const tabId = threadTab.id;
-    const conversationId = threadTab.conversationId;
+    const tabId = activeTabId;
+    const conversationId = activeConversationId;
 
     setInput('');
     // Clear ghost context on send
@@ -350,6 +364,21 @@ export function ChatInterface() {
       if (chatData?.conversationId && !conversationId) {
         setTabConversationId(tabId, chatData.conversationId);
         setActiveThreadId(chatData.conversationId);
+
+        // ── Sprint 10.5 Task 5: Auto-title — fire-and-forget ─────────────
+        // New conversation just got its ID. Generate a title from the first
+        // user message in the background; never blocks or throws.
+        const newConvId = chatData.conversationId;
+        void generateTitle(messageText).then((title) => {
+          if (title && title !== 'Untitled') {
+            renameTab(tabId, title);
+            void fetch(`/api/conversations/${newConvId}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ title }),
+            }).catch(() => null);
+          }
+        });
       }
 
       const responseContent: string = chatData?.content ?? data?.content ?? 'No response';
@@ -381,7 +410,7 @@ export function ChatInterface() {
       appendMessage(tabId, errorMessage);
       setSendButtonState('normal');
     }
-  }, [input, threadTab, appendMessage, setTabConversationId, setActiveThreadId, setTabGhostContext, setTabArtifact]);
+  }, [input, activeTabId, activeConversationId, appendMessage, setTabConversationId, setActiveThreadId, setTabGhostContext, setTabArtifact, renameTab]);
 
   // ── Search callbacks (S9-08) ──────────────────────────────────────────────
   const handleSearchChange = useCallback(
@@ -401,18 +430,17 @@ export function ChatInterface() {
   }, []);
 
   // ── Render ───────────────────────────────────────────────────────────────
-  const messages = threadTab?.messages ?? [];
-  const activeArtifact = threadTab?.artifact ?? null;
-  const ghostContextActive = threadTab?.ghostContextActive ?? null;
-  const restoring = tabInitializing || (threadTab?.restoring ?? false);
+  const messages = activeMessages;
+  const ghostContextActive = activeGhostContext;
+  const restoring = tabInitializing || activeRestoring;
   const panelOpen = activeArtifact !== null && activeTab === 'strategic';
 
   const clearArtifact = () => {
-    if (threadTab) setTabArtifact(threadTab.id, null);
+    if (activeTabId) setTabArtifact(activeTabId, null);
   };
 
   const clearGhostContext = () => {
-    if (threadTab) setTabGhostContext(threadTab.id, null);
+    if (activeTabId) setTabGhostContext(activeTabId, null);
   };
 
   return (
@@ -451,8 +479,14 @@ export function ChatInterface() {
         })}
       </div>
 
-      {/* ── Body: content area based on active tab ── */}
+      {/* ── Body: sidebar + content area ── */}
       <div className="flex flex-1 overflow-hidden">
+
+        {/* ── Persistent conversation sidebar (Sprint 10.5 Task 2) ── */}
+        <ChatSidebar onLoadThread={handleLoadThread} />
+
+        {/* ── Tab content (War Room / Workers / Strategic) ── */}
+        <div className="flex flex-1 overflow-hidden">
 
         {/* ── War Room ── */}
         {activeTab === 'warroom' && (
@@ -485,7 +519,7 @@ export function ChatInterface() {
                 open={searchOpen}
                 onClose={handleSearchClose}
                 messages={messages}
-                threadId={threadTab?.kernlThreadId ?? null}
+                threadId={activeConversationId}
                 onSearchChange={handleSearchChange}
               />
 
@@ -509,7 +543,7 @@ export function ChatInterface() {
 
               {/* Decision Gate panel — slides in above input, pushes it down */}
               {gateTrigger && (
-                <GatePanel threadId={threadTab?.conversationId ?? null} trigger={gateTrigger} />
+                <GatePanel threadId={activeConversationId} trigger={gateTrigger} />
               )}
 
               {/* Input bar */}
@@ -583,7 +617,8 @@ export function ChatInterface() {
             </div>
           </>
         )}
-      </div>
+        </div>{/* end tab content wrapper */}
+      </div>{/* end body */}
 
       {/* S9-12: Chat History Panel */}
       <ChatHistoryPanel
