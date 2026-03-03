@@ -136,6 +136,7 @@ export function SendButton({
       `}
       aria-label={`${config.label} - Ghost state: ${state}`}
       title={ghostMessage || config.label}
+      data-send-button
     >
       {config.icon && <span>{config.icon}</span>}
       <span className="text-sm">{config.label}</span>

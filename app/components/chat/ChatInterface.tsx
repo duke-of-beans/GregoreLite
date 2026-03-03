@@ -151,6 +151,16 @@ export function ChatInterface() {
         e.preventDefault();
         setArtifactLibraryOpen((prev) => !prev);
       }
+      // Cmd+E — edit last user message (S9-20)
+      if (meta && e.key === 'e') {
+        e.preventDefault();
+        handleEditLastMessage();
+      }
+      // Cmd+R — regenerate last assistant response (S9-20)
+      if (meta && e.key === 'r') {
+        e.preventDefault();
+        handleRegenerate();
+      }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
@@ -225,6 +235,69 @@ export function ChatInterface() {
 
     setActiveTab('strategic');
   }, [createTab, setTabConversationId, setTabMessages]);
+
+  // ── S9-20: Edit last message — restore to input, truncate from that point ──
+  const handleEditMessage = useCallback((messageIndex: number) => {
+    if (!threadTab) return;
+    const msgs = threadTab.messages;
+    const msg = msgs[messageIndex];
+    if (!msg || msg.role !== 'user') return;
+
+    // Restore content to input
+    setInput(msg.content);
+
+    // Remove this message and everything after it from the tab
+    const truncated = msgs.slice(0, messageIndex);
+    setTabMessages(threadTab.id, truncated);
+
+    // Truncate from KERNL asynchronously (best-effort)
+    if (threadTab.conversationId) {
+      void fetch(`/api/threads/${threadTab.conversationId}/truncate-after/${encodeURIComponent('__from_index_' + messageIndex)}`, {
+        method: 'DELETE',
+      }).catch(() => null);
+    }
+  }, [threadTab, setTabMessages]);
+
+  const handleEditLastMessage = useCallback(() => {
+    if (!threadTab) return;
+    const msgs = threadTab.messages;
+    for (let i = msgs.length - 1; i >= 0; i--) {
+      if (msgs[i]?.role === 'user') {
+        handleEditMessage(i);
+        return;
+      }
+    }
+  }, [threadTab, handleEditMessage]);
+
+  const handleRegenerate = useCallback(() => {
+    if (!threadTab) return;
+    const msgs = threadTab.messages;
+    // Find last assistant message and last user message before it
+    let lastAssistantIdx = -1;
+    let lastUserContent = '';
+    for (let i = msgs.length - 1; i >= 0; i--) {
+      if (lastAssistantIdx === -1 && msgs[i]?.role === 'assistant') {
+        lastAssistantIdx = i;
+      }
+      if (lastAssistantIdx !== -1 && msgs[i]?.role === 'user') {
+        lastUserContent = msgs[i]?.content ?? '';
+        break;
+      }
+    }
+    if (lastAssistantIdx === -1 || !lastUserContent) return;
+
+    // Remove last assistant message
+    const truncated = msgs.slice(0, lastAssistantIdx);
+    setTabMessages(threadTab.id, truncated);
+
+    // Re-send the last user message
+    setInput(lastUserContent);
+    // Auto-submit after a tick so input state updates
+    setTimeout(() => {
+      const submitBtn = document.querySelector<HTMLButtonElement>('[data-send-button]');
+      submitBtn?.click();
+    }, 50);
+  }, [threadTab, setTabMessages]);
 
   // ── Send message ─────────────────────────────────────────────────────────
   const handleSubmit = useCallback(async () => {
@@ -428,6 +501,8 @@ export function ChatInterface() {
                     highlightQuery={searchQuery || undefined}
                     searchMatches={searchMatches.length > 0 ? searchMatches : undefined}
                     activeMatchIdx={activeMatchIdx}
+                    onEditMessage={handleEditMessage}
+                    onRegenerate={handleRegenerate}
                   />
                 )}
               </div>

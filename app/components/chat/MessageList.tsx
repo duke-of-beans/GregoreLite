@@ -22,6 +22,10 @@ export interface MessageListProps {
   searchMatches?: SearchMatch[] | undefined;
   /** Index into searchMatches[] for the currently active match */
   activeMatchIdx?: number | undefined;
+  /** S9-20: Called when user clicks Edit on their last message */
+  onEditMessage?: ((index: number) => void) | undefined;
+  /** S9-20: Called when user clicks Regenerate on last assistant message */
+  onRegenerate?: (() => void) | undefined;
 }
 
 export function MessageList({
@@ -29,6 +33,8 @@ export function MessageList({
   highlightQuery,
   searchMatches,
   activeMatchIdx,
+  onEditMessage,
+  onRegenerate,
 }: MessageListProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -59,6 +65,15 @@ export function MessageList({
       }
     }
   }, [highlightQuery, searchMatches, activeMatchIdx]);
+
+  // S9-20: find last user and last assistant message indices for edit/regen buttons
+  let lastUserIdx = -1;
+  let lastAssistantIdx = -1;
+  for (let i = messages.length - 1; i >= 0; i--) {
+    if (lastUserIdx === -1 && messages[i]?.role === 'user') lastUserIdx = i;
+    if (lastAssistantIdx === -1 && messages[i]?.role === 'assistant') lastAssistantIdx = i;
+    if (lastUserIdx !== -1 && lastAssistantIdx !== -1) break;
+  }
 
   // Build a Set of message indices that are matches for fast lookup
   const matchIndices = new Set(searchMatches?.map((m) => m.messageIndex));
@@ -103,6 +118,8 @@ export function MessageList({
                   : undefined
               }
               isActiveMatch={index === activeMessageIndex}
+              onEdit={index === lastUserIdx && onEditMessage ? () => onEditMessage(index) : undefined}
+              onRegenerate={index === lastAssistantIdx && onRegenerate ? () => onRegenerate() : undefined}
             />
           ))}
         </div>

@@ -212,6 +212,10 @@ export interface MessageProps {
   highlightQuery?: string | undefined;
   /** Whether this message is the active search match (for scroll-to) */
   isActiveMatch?: boolean | undefined;
+  /** S9-20: Show Edit button on hover (last user message only) */
+  onEdit?: (() => void) | undefined;
+  /** S9-20: Show Regenerate button on hover (last assistant message only) */
+  onRegenerate?: (() => void) | undefined;
 }
 
 // ─── Highlight helper ─────────────────────────────────────────────────────────
@@ -241,12 +245,13 @@ function highlightText(text: string, query: string): React.ReactNode {
 
 // ─── Message ──────────────────────────────────────────────────────────────────
 
-export function Message({ role, content, timestamp, highlightQuery, isActiveMatch }: MessageProps) {
+export function Message({ role, content, timestamp, highlightQuery, isActiveMatch, onEdit, onRegenerate }: MessageProps) {
   const isUser = role === 'user';
+  const showActions = onEdit || onRegenerate;
 
   return (
     <div
-      className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'}`}
+      className={`group/msg flex w-full ${isUser ? 'justify-end' : 'justify-start'}`}
       role="article"
       aria-label={`${isUser ? 'User' : 'AI'} message`}
       data-active-match={isActiveMatch ? 'true' : undefined}
@@ -280,6 +285,30 @@ export function Message({ role, content, timestamp, highlightQuery, isActiveMatc
               >
                 {content}
               </ReactMarkdown>
+            )}
+          </div>
+        )}
+
+        {/* S9-20: Edit / Regenerate hover actions */}
+        {showActions && (
+          <div className="mt-2 flex items-center gap-2 opacity-0 group-hover/msg:opacity-100 transition-opacity">
+            {onEdit && (
+              <button
+                onClick={onEdit}
+                className="flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-medium text-[var(--mist)] hover:text-[var(--ice-white)] hover:bg-[var(--surface)] transition-colors"
+                title="Edit message (Cmd+E)"
+              >
+                ✎ Edit
+              </button>
+            )}
+            {onRegenerate && (
+              <button
+                onClick={onRegenerate}
+                className="flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-medium text-[var(--mist)] hover:text-[var(--ice-white)] hover:bg-[var(--surface)] transition-colors"
+                title="Regenerate response (Cmd+R)"
+              >
+                ↻ Regenerate
+              </button>
             )}
           </div>
         )}
