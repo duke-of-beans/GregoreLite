@@ -7,13 +7,13 @@
  *   3. Provide the branch name for KERNL tagging
  *   4. Clean up the branch on abort (if session fails before any commits)
  *
- * All git operations via execSync (cmd on Windows). The session CWD is
+ * All git operations via execFileSync array form (no shell invocation). The session CWD is
  * locked to the branch after creation — the agent cannot change branches.
  *
  * BLUEPRINT §7.3
  */
 
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 import { generateBranchName } from './branch-namer';
 
 export interface BranchCreateResult {
@@ -112,15 +112,10 @@ function checkDirtyRepo(repoRoot: string): string | null {
 }
 
 function runGit(args: string[], cwd: string): string {
-  return execSync(`git ${args.map(quoteArg).join(' ')}`, {
+  return execFileSync('git', args, {
     cwd,
     encoding: 'utf8',
     timeout: GIT_TIMEOUT,
     stdio: ['pipe', 'pipe', 'pipe'],
   });
-}
-
-function quoteArg(arg: string): string {
-  // Quote args that contain spaces or special characters
-  return /[\s"'\\]/.test(arg) ? `"${arg.replace(/"/g, '\\"')}"` : arg;
 }

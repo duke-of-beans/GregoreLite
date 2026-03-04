@@ -15,7 +15,11 @@
  * BLUEPRINT §7.7
  */
 
-import { getDatabase } from '@/lib/kernl/database';
+import {
+  storePAT as keychainStorePAT,
+  getPAT as keychainGetPAT,
+  deletePAT as keychainDeletePAT,
+} from '@/lib/security/keychain-store';
 
 // ─── Public types ─────────────────────────────────────────────────────────────
 
@@ -39,27 +43,22 @@ export type MergePRResult =
   | { ok: false; reason: string };
 
 // ─── PAT management ───────────────────────────────────────────────────────────
+// PAT stored in OS keychain via keytar (Windows Credential Manager).
+// SQLite settings table is NOT used for PAT storage — Sprint 8A security fix.
 
-const VAULT_TABLE = 'settings';
-const PAT_KEY = 'github_pat';
-
-/** Store a GitHub PAT in the KERNL settings table (encrypted at rest by OS). */
-export function storePAT(pat: string): void {
-  const db = getDatabase();
-  db.prepare(`
-    INSERT INTO ${VAULT_TABLE} (key, value, updated_at)
-    VALUES (?, ?, ?)
-    ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at
-  `).run(PAT_KEY, pat, Date.now());
+/** Store a GitHub PAT in the OS keychain. */
+export async function storePAT(pat: string): Promise<void> {
+  await keychainStorePAT(pat);
 }
 
-/** Retrieve the GitHub PAT. Returns null if not set. */
-export function getPAT(): string | null {
-  const db = getDatabase();
-  const row = db.prepare(`SELECT value FROM ${VAULT_TABLE} WHERE key = ?`).get(PAT_KEY) as
-    | { value: string }
-    | undefined;
-  return row?.value ?? null;
+/** Retrieve the GitHub PAT from OS keychain. Returns null if not set. */
+export async function getPAT(): Promise<string | null> {
+  return keychainGetPAT();
+}
+
+/** Delete the GitHub PAT from OS keychain. */
+export async function deletePAT(): Promise<boolean> {
+  return keychainDeletePAT();
 }
 
 // ─── GitHub API calls ─────────────────────────────────────────────────────────
@@ -68,7 +67,7 @@ export function getPAT(): string | null {
  * createPR — open a pull request on GitHub.
  */
 export async function createPR(input: CreatePRInput): Promise<CreatePRResult> {
-  const pat = getPAT();
+  const pat = await getPAT();
   if (!pat) {
     return { ok: false, reason: 'GitHub PAT not set. Please add your token in Settings.' };
   }
@@ -103,7 +102,7 @@ export async function mergePR(
   prNumber: number,
   commitTitle: string,
 ): Promise<MergePRResult> {
-  const pat = getPAT();
+  const pat = await getPAT();
   if (!pat) {
     return { ok: false, reason: 'GitHub PAT not set.' };
   }
@@ -139,7 +138,7 @@ export async function pollCIStatus(
   repo: string,
   sha: string,
 ): Promise<CIStatus> {
-  const pat = getPAT();
+  const pat = await getPAT();
   if (!pat) return 'error';
 
   try {

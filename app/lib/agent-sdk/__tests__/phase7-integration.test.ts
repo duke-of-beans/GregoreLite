@@ -18,12 +18,13 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// ─── Mock: child_process execSync ─────────────────────────────────────────────
+// ─── Mock: child_process execFileSync (Sprint 8A: execSync → execFileSync) ───
 
-const mockExecSync = vi.fn();
+const mockExecFileSync = vi.fn();
 
 vi.mock('child_process', () => ({
-  execSync: (cmd: string, opts?: unknown) => mockExecSync(cmd, opts),
+  execFileSync: (cmd: string, args?: string[], opts?: unknown) =>
+    mockExecFileSync(cmd, args, opts),
 }));
 
 // ─── Mock: database ───────────────────────────────────────────────────────────
@@ -41,6 +42,16 @@ const { mockDbRun, mockDbGet, mockPrepare } = vi.hoisted(() => {
 vi.mock('@/lib/kernl/database', () => ({
   getDatabase: vi.fn().mockReturnValue({ prepare: mockPrepare }),
 }));
+
+// ─── Mock: keychain-store (Sprint 8A: PAT moved to OS keychain) ──────────────
+
+const mockKeychainStore = vi.hoisted(() => ({
+  storePAT: vi.fn<(token: string) => Promise<void>>().mockResolvedValue(undefined),
+  getPAT: vi.fn<() => Promise<string | null>>().mockResolvedValue(null),
+  deletePAT: vi.fn<() => Promise<boolean>>().mockResolvedValue(true),
+}));
+
+vi.mock('@/lib/security/keychain-store', () => mockKeychainStore);
 
 // ─── Mock: node:fs for .gregignore tests ─────────────────────────────────────
 
@@ -207,13 +218,13 @@ describe('Phase 7H: Protected Paths', () => {
 
 describe('Phase 7H: Branch Manager', () => {
   beforeEach(() => {
-    mockExecSync.mockReset();
+    mockExecFileSync.mockReset();
   });
 
   it('createEvolutionBranch: verifies clean repo then checks out branch', () => {
     // git status --porcelain returns empty string (clean)
-    mockExecSync.mockReturnValueOnce('');            // git status --porcelain
-    mockExecSync.mockReturnValueOnce('');            // git checkout -b
+    mockExecFileSync.mockReturnValueOnce('');            // git status --porcelain
+    mockExecFileSync.mockReturnValueOnce('');            // git checkout -b
 
     const result = createEvolutionBranch('Fix scheduler bug', REPO_ROOT);
     expect(result.ok).toBe(true);
@@ -221,13 +232,14 @@ describe('Phase 7H: Branch Manager', () => {
       expect(result.branchName).toMatch(/^self-evolve\//);
     }
 
-    const calls = mockExecSync.mock.calls.map((c) => c[0] as string);
-    expect(calls.some((c) => c.includes('status --porcelain'))).toBe(true);
-    expect(calls.some((c) => c.includes('checkout -b'))).toBe(true);
+    // execFileSync calls: [cmd, args[], opts]
+    const calls = mockExecFileSync.mock.calls as [string, string[], unknown][];
+    expect(calls.some(([cmd, args]) => cmd === 'git' && args.includes('--porcelain'))).toBe(true);
+    expect(calls.some(([cmd, args]) => cmd === 'git' && args.includes('-b'))).toBe(true);
   });
 
   it('createEvolutionBranch: returns error result when working tree is dirty', () => {
-    mockExecSync.mockReturnValueOnce(' M app/lib/agent-sdk/query.ts\n');
+    mockExecFileSync.mockReturnValueOnce(' M app/lib/agent-sdk/query.ts\n');
     const result = createEvolutionBranch('Fix scheduler', REPO_ROOT);
     expect(result.ok).toBe(false);
     if (!result.ok) {
@@ -236,7 +248,7 @@ describe('Phase 7H: Branch Manager', () => {
   });
 
   it('getCurrentBranch: returns trimmed branch name', () => {
-    mockExecSync.mockReturnValueOnce('  main  \n');
+    mockExecFileSync.mockReturnValueOnce('  main  \n');
     const branch = getCurrentBranch(REPO_ROOT);
     expect(branch).toBe('main');
   });
@@ -246,32 +258,33 @@ describe('Phase 7H: Branch Manager', () => {
 
 describe('Phase 7H: Git Tools', () => {
   beforeEach(() => {
-    mockExecSync.mockReset();
+    mockExecFileSync.mockReset();
   });
 
   it('executeGitStatus returns git status --short output', () => {
-    mockExecSync.mockReturnValueOnce(' M query.ts\n?? newfile.ts\n');
+    mockExecFileSync.mockReturnValueOnce(' M query.ts\n?? newfile.ts\n');
     const output = executeGitStatus({}, REPO_ROOT);
     expect(output).toContain('query.ts');
-    const call = mockExecSync.mock.calls[0]?.[0] as string;
-    expect(call).toContain('status');
+    const [cmd, args] = mockExecFileSync.mock.calls[0] as [string, string[]];
+    expect(cmd).toBe('git');
+    expect(args).toContain('status');
   });
 
   it('executeGitCommit stages files and uses -F temp file', () => {
     // git add (one per file), then git commit -F
-    mockExecSync.mockReturnValue('');
+    mockExecFileSync.mockReturnValue('');
     const output = executeGitCommit(
       { message: 'test: improve query loop', files: ['app/lib/agent-sdk/query.ts'] },
       REPO_ROOT,
     );
-    const calls = mockExecSync.mock.calls.map((c) => c[0] as string);
-    expect(calls.some((c) => c.includes('git add'))).toBe(true);
-    expect(calls.some((c) => c.includes('commit'))).toBe(true);
+    const calls = mockExecFileSync.mock.calls as [string, string[], unknown][];
+    expect(calls.some(([cmd, args]) => cmd === 'git' && args.includes('add'))).toBe(true);
+    expect(calls.some(([cmd, args]) => cmd === 'git' && args.includes('commit'))).toBe(true);
     expect(output).not.toContain('ERROR');
   });
 
   it('executeGitDiff returns both staged and unstaged diffs', () => {
-    mockExecSync
+    mockExecFileSync
       .mockReturnValueOnce('staged diff content\n')
       .mockReturnValueOnce('unstaged diff content\n');
     const output = executeGitDiff({}, REPO_ROOT);
@@ -287,21 +300,23 @@ describe('Phase 7H: GitHub API', () => {
     mockFetch.mockReset();
     mockDbGet.mockReset();
     mockDbRun.mockReset();
+    mockKeychainStore.storePAT.mockReset().mockResolvedValue(undefined);
+    mockKeychainStore.getPAT.mockReset().mockResolvedValue(null);
   });
 
-  it('storePAT and getPAT round-trip through settings table', () => {
-    // storePAT writes to DB
-    storePAT('ghp_testtoken123');
-    expect(mockDbRun).toHaveBeenCalled();
+  it('storePAT and getPAT round-trip through OS keychain', async () => {
+    // storePAT writes to keychain
+    await storePAT('ghp_testtoken123');
+    expect(mockKeychainStore.storePAT).toHaveBeenCalledWith('ghp_testtoken123');
 
-    // getPAT reads from DB
-    mockDbGet.mockReturnValueOnce({ value: 'ghp_testtoken123' });
-    const pat = getPAT();
+    // getPAT reads from keychain
+    mockKeychainStore.getPAT.mockResolvedValueOnce('ghp_testtoken123');
+    const pat = await getPAT();
     expect(pat).toBe('ghp_testtoken123');
   });
 
   it('createPR: calls POST /repos/.../pulls and returns prNumber', async () => {
-    mockDbGet.mockReturnValueOnce({ value: 'ghp_testpat' }); // getPAT
+    mockKeychainStore.getPAT.mockResolvedValueOnce('ghp_testpat'); // getPAT via keychain
     mockFetch.mockResolvedValueOnce({
       ok: true,
       json: async () => ({
@@ -331,7 +346,7 @@ describe('Phase 7H: GitHub API', () => {
   });
 
   it('mergePR: calls PUT .../merge with squash method', async () => {
-    mockDbGet.mockReturnValueOnce({ value: 'ghp_testpat' });
+    mockKeychainStore.getPAT.mockResolvedValueOnce('ghp_testpat');
     mockFetch.mockResolvedValueOnce({
       ok: true,
       json: async () => ({ sha: 'abc123' }),
@@ -350,7 +365,7 @@ describe('Phase 7H: GitHub API', () => {
   });
 
   it('pollCIStatus: maps GitHub combined status to CIStatus type', async () => {
-    mockDbGet.mockReturnValueOnce({ value: 'ghp_testpat' });
+    mockKeychainStore.getPAT.mockResolvedValueOnce('ghp_testpat');
     mockFetch.mockResolvedValueOnce({
       ok: true,
       json: async () => ({ state: 'success', total_count: 2 }),
@@ -365,11 +380,11 @@ describe('Phase 7H: GitHub API', () => {
 
 describe('Phase 7H: Orchestrator runPreFlight', () => {
   beforeEach(() => {
-    mockExecSync.mockReset();
+    mockExecFileSync.mockReset();
   });
 
   it('mutates manifest in-memory with branch name and is_self_evolution', () => {
-    mockExecSync.mockReturnValue(''); // clean status + checkout
+    mockExecFileSync.mockReturnValue(''); // clean status + checkout
     const manifest = makeManifest();
     runPreFlight(manifest, REPO_ROOT);
 
@@ -378,7 +393,7 @@ describe('Phase 7H: Orchestrator runPreFlight', () => {
   });
 
   it('throws if repo is dirty — does not modify manifest', () => {
-    mockExecSync.mockReturnValueOnce(' M dirty-file.ts\n');
+    mockExecFileSync.mockReturnValueOnce(' M dirty-file.ts\n');
     const manifest = makeManifest();
     const originalBranch = manifest.self_evolution_branch;
 
@@ -394,7 +409,7 @@ describe('Phase 7H: Orchestrator runPostProcessing gates', () => {
   beforeEach(() => {
     mockDbGet.mockReset();
     mockDbRun.mockReset();
-    mockExecSync.mockReset();
+    mockExecFileSync.mockReset();
     mockFetch.mockReset(); // clear call history from GitHub API tests (block 6)
   });
 
@@ -409,7 +424,7 @@ describe('Phase 7H: Orchestrator runPostProcessing gates', () => {
     ).resolves.toBeUndefined();
 
     // No execSync calls (tests not run, no git push)
-    expect(mockExecSync).not.toHaveBeenCalled();
+    expect(mockExecFileSync).not.toHaveBeenCalled();
   });
 
   it('exits early if SHIM score is below threshold', async () => {
@@ -427,7 +442,7 @@ describe('Phase 7H: Orchestrator runPostProcessing gates', () => {
     await runPostProcessing('manifest-002', { repoRoot: REPO_ROOT });
 
     // No git push, no PR creation
-    expect(mockExecSync).not.toHaveBeenCalled();
+    expect(mockExecFileSync).not.toHaveBeenCalled();
   });
 
   it('skips PR creation when githubOwner/githubRepo not provided', async () => {
@@ -443,7 +458,7 @@ describe('Phase 7H: Orchestrator runPostProcessing gates', () => {
       .mockReturnValueOnce({ files_modified: '[]' }); // dbGetFilesModified
 
     // Vitest passes for test run
-    mockExecSync.mockReturnValue('');
+    mockExecFileSync.mockReturnValue('');
 
     const { runPostProcessing } = await import('../self-evolution/self-evolution-orchestrator');
     await runPostProcessing('manifest-003', {

@@ -12,7 +12,7 @@
  * BLUEPRINT §7.3 (local commits only, no push)
  */
 
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 
 const GIT_TIMEOUT = 30_000;
 
@@ -115,14 +115,10 @@ export function executeGitDiff(input: GitDiffInput, repoRoot: string): string {
 // ─── Internals ─────────────────────────────────────────────────────────────────
 
 function runGit(args: string[], cwd: string): string {
-  return execSync(`git ${args.map(quoteArg).join(' ')}`, {
+  return execFileSync('git', args, {
     cwd,
     encoding: 'utf8',
     timeout: GIT_TIMEOUT,
     stdio: ['pipe', 'pipe', 'pipe'],
   });
-}
-
-function quoteArg(arg: string): string {
-  return /[\s"'\\]/.test(arg) ? `"${arg.replace(/"/g, '\\"')}"` : arg;
 }

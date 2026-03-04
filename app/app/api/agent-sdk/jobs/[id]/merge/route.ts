@@ -16,6 +16,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDatabase } from '@/lib/kernl/database';
 import { mergePR } from '@/lib/agent-sdk/self-evolution/github-api';
+import { requireAppToken } from '@/lib/security/auth-middleware';
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -31,6 +32,10 @@ interface ManifestMergeRow {
 }
 
 export async function POST(_req: NextRequest, { params }: RouteParams) {
+  // ── Auth gate — Sprint 8A ──────────────────────────────────────────────
+  const authError = requireAppToken(_req);
+  if (authError) return authError;
+
   try {
     const { id: manifestId } = await params;
     const db = getDatabase();

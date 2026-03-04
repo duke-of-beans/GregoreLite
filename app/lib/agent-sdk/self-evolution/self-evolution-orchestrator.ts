@@ -16,7 +16,7 @@
  * BLUEPRINT §7
  */
 
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 import { getDatabase } from '../../kernl/database';
 import type { TaskManifest } from '../types';
 import { createEvolutionBranch, getHeadSha } from './branch-manager';
@@ -210,10 +210,11 @@ export async function runPostProcessing(
 
   // ── Local test run ────────────────────────────────────────────────────────
   try {
-    execSync('npx vitest run --passWithNoTests', {
+    execFileSync('npx', ['vitest', 'run', '--passWithNoTests'], {
       cwd: repoRoot,
       stdio: 'pipe',
       timeout: TEST_TIMEOUT_MS,
+      shell: true, // npx is a .cmd on Windows — requires shell to resolve
     });
     console.info(`[SelfEvolution] Local tests passed for ${manifestId}`);
   } catch (err) {
@@ -244,7 +245,7 @@ export async function runPostProcessing(
 
   // Push the branch to origin before creating PR
   try {
-    execSync(`git push origin ${branchName}`, { cwd: repoRoot, stdio: 'pipe' });
+    execFileSync('git', ['push', 'origin', branchName], { cwd: repoRoot, stdio: 'pipe' });
   } catch (err) {
     console.error(
       `[SelfEvolution] git push origin ${branchName} failed: ${String(err)}`,
