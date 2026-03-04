@@ -1,4 +1,4 @@
-﻿/**
+/**
  * EoS False Positive Tracker
  *
  * Persists FP feedback to KERNL (eos_fp_log table) and auto-suppresses

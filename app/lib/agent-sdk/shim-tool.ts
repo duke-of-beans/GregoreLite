@@ -1,4 +1,4 @@
-﻿/**
+/**
  * shim-tool.ts — Local Quality Analyser — Phase 7G
  *
  * Implements the shim_check in-session tool as a fully local analyser.

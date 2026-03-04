@@ -1,4 +1,4 @@
-﻿/**
+/**
  * EoS Health Score
  *
  * Formula from PHASE5A_EXECUTION_BRIEF.md:

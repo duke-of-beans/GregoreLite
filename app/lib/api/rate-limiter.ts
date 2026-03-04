@@ -15,13 +15,14 @@ class RateLimiter {
   private limits: Map<string, RateLimitEntry> = new Map();
   private readonly requests: number;
   private readonly windowMs: number;
+  private cleanupInterval: ReturnType<typeof setInterval>;
 
   constructor(requests: number, windowMs: number) {
     this.requests = requests;
     this.windowMs = windowMs;
 
     // Clean up expired entries every minute
-    setInterval(() => this.cleanup(), 60000);
+    this.cleanupInterval = setInterval(() => this.cleanup(), 60000);
   }
 
   /**
@@ -104,6 +105,14 @@ class RateLimiter {
       requests: this.requests,
       windowMs: this.windowMs,
     };
+  }
+
+  /**
+   * Tear down the cleanup interval. Call on process shutdown to prevent leaks.
+   */
+  destroy(): void {
+    clearInterval(this.cleanupInterval);
+    this.limits.clear();
   }
 }
 

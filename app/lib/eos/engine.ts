@@ -1,4 +1,4 @@
-﻿/**
+/**
  * EoS Scan Engine
  *
  * Orchestrates file discovery, parallel analysis, issue normalisation,

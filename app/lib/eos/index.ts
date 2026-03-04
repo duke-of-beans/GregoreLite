@@ -1,4 +1,4 @@
-﻿/**
+/**
  * EoS Public API
  *
  * The only import surface other modules should use:

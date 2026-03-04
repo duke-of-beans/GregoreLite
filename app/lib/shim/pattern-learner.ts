@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SHIM PatternLearner — GregLite Port
  *
  * ML-based pattern recognition from historical job improvements.

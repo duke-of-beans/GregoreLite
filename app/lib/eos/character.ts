@@ -1,4 +1,4 @@
-﻿/**
+/**
  * EoS Character Forensics — TypeScript port
  *
  * Migrated rules (from CharacterForensics.js):

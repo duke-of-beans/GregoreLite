@@ -1,4 +1,4 @@
-﻿/**
+/**
  * EoS Technical Debt Calculator — adapted TypeScript port of TechnicalDebtCalculator.js
  *
  * Computes a debt score from a set of health issues. Severity weights:

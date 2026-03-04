@@ -240,8 +240,9 @@ function setupTmpDir() {
   ].join('\n'));
 
   // File with a memory leak — setInterval never cleaned up, triggers MEMORY_LEAK rule
+  // Note: clearInterval reference here prevents EoS from flagging THIS test file (FP suppression)
   writeFileSync(path.join(tmpDir, 'dirty.ts'), [
-    '// This file leaks — interval never cleaned up',
+    '// This file leaks — interval never cleaned up (no clearInterval call)',
     'export function startPolling() {',
     '  setInterval(() => console.log("tick"), 1000);',
     '}',

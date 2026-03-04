@@ -1,4 +1,4 @@
-﻿/**
+/**
  * EoS Pattern Precognition — TypeScript port
  *
  * Migrated rules (from PatternPrecognition.js):

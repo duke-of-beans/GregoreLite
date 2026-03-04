@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SHIM Job Context Extractor
  *
  * Maps a GregLite TaskManifest + EoS scan result to the context shape

@@ -58,6 +58,7 @@ export async function runSession(
   const filesModified: string[] = [];
   let tokensUsed = 0;
   let costUsd = 0;
+  let abortHandler: (() => void) | undefined;
 
   try {
     // SPAWNING → RUNNING on first text delta
@@ -78,9 +79,8 @@ export async function runSession(
     });
 
     // Honour abort signal from kill()
-    jobRecord.abortController?.signal.addEventListener('abort', () => {
-      stream.controller.abort();
-    });
+    abortHandler = () => { stream.controller.abort(); };
+    jobRecord.abortController?.signal.addEventListener('abort', abortHandler);
 
     for await (const event of stream) {
       // Check abort
@@ -160,7 +160,9 @@ export async function runSession(
     const completedAt = new Date().toISOString();
 
     if (jobRecord.abortController?.signal.aborted) {
-      // INTERRUPTED path
+      // INTERRUPTED path — clean up abort listener
+      jobRecord.abortController.signal.removeEventListener('abort', abortHandler);
+
       transitionState(jobId, 'INTERRUPTED');
       callbacks.onStateChange(jobId, 'INTERRUPTED');
 
@@ -180,6 +182,9 @@ export async function runSession(
       callbacks.onComplete(jobId, report);
       return;
     }
+
+    // Clean up abort listener on normal completion
+    jobRecord.abortController?.signal.removeEventListener('abort', abortHandler);
 
     // WORKING → VALIDATING
     transitionState(jobId, 'VALIDATING');
@@ -206,6 +211,11 @@ export async function runSession(
   } catch (err) {
     const error = err instanceof Error ? err : new Error(String(err));
     const completedAt = new Date().toISOString();
+
+    // Clean up abort listener on error path
+    if (abortHandler) {
+      jobRecord.abortController?.signal.removeEventListener('abort', abortHandler);
+    }
 
     transitionState(jobId, 'FAILED');
     callbacks.onStateChange(jobId, 'FAILED');
