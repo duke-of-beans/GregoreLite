@@ -1,21 +1,31 @@
 # GREGLITE — STATUS
-**Last Updated:** March 4, 2026 — Sprint 11.2 COMPLETE.
+**Last Updated:** March 4, 2026 — Sprint 11.3 COMPLETE.
 **Version:** v1.0.0 (Phase 8 Ship Prep complete)
-**Test Count:** 982/986 (38 new transit tests, all passing; 4 pre-existing failures unrelated to transit scope)
+**Test Count:** 1004/1007 (21 new transit tests, all passing; 3 pre-existing failures unrelated to transit scope)
 **EoS Health:** 100/100
 **TSC:** 0 errors
-**Next:** Sprint 11.3 — Transit Map Phase B (Z2 Subway renderer, scrollbar landmarks UI)
+**Next:** Sprint 11.4 (Z3 Detail Annotations)
 **Feature Backlog:** FEATURE_BACKLOG.md
-**Transit Map Spec:** TRANSIT_MAP_SPEC.md (829-line spec, ZERO implementation — see SPRINT_ROADMAP.md)
+**Transit Map Spec:** TRANSIT_MAP_SPEC.md — Phase A data foundation SHIPPED (Sprint 11.2, commit 37d60af)
 
 ### ⚠️ GROUND TRUTH AUDIT (March 4, 2026)
-1. Transit Map "data foundation" listed in Sprint 10.6 was NOT shipped. Zero Transit Map code exists.
+1. ~~Transit Map "data foundation" listed in Sprint 10.6 was NOT shipped.~~ RESOLVED: Sprint 11.2 shipped data foundation (conversation_events table, 26 event types, capture hooks). commit 37d60af.
 2. ~~Agent SDK has 4 stub tools still returning NOT_IMPLEMENTED (test_runner, shim_readonly_audit, markdown_linter, kernl_search_readonly) + detectShimLoop() always returns false.~~ — RESOLVED: Sprint 11.1 — all 4 tools implemented, detectShimLoop() implemented, 5 new test files.
 3. ~~Phase 8 (Ship Prep) claimed complete but needs targeted file verification~~ — RESOLVED: Sprint 8A–8D executed, all gates verified, git tag v1.0.0 applied.
 4. ~~Dual routes exist: /api/conversations + /api/threads, /api/jobs + /api/agent-sdk/jobs — need consolidation.~~ — RESOLVED: Sprint 11.0 — /api/conversations deleted (no consumers), /api/jobs deleted (canonical is /api/agent-sdk/jobs), old lib/database/ layer removed.
 5. ~~Decision gate trigger-detector.ts has 3 dead stub functions replaced by Haiku inference — cleanup needed.~~ — RESOLVED: Sprint 11.0 — detectHighTradeoffCount/detectMultiProjectTouch/detectLargeEstimate removed.
 
 ---
+
+- [x] **SPRINT 11.3** — Transit Map Phase B: Scrollbar Landmarks — **COMPLETE**
+  - `components/transit/ScrollbarLandmarks.tsx`: client component rendering event-driven colored ticks on scrollbar overlay; reads from `/api/transit/events`; `pointer-events: none` container preserves native scroll; per-tick `pointer-events: auto` for tooltip hover
+  - `app/api/transit/events/route.ts`: GET endpoint enriching `conversation_events` rows with `message_index`, `total_messages`, registry `config`; uses `getThreadMessages()` for accurate message-index mapping
+  - `lib/transit/topic-detector.ts`: Jaccard similarity on stopword-filtered token sets; threshold 0.4; synchronous, ~0ms; `detectTopicShift(prev, curr)` → `{ isShift, similarity, inferredTopic }`
+  - `components/chat/MessageList.tsx`: added `conversationId?: string` prop; wired `<ScrollbarLandmarks>` after `<CustomScrollbar>` (both coexist — heuristic vs event-driven)
+  - `components/chat/ChatInterface.tsx`: `cognitive.artifact_generated` captureClientEvent fires after `detectArtifact()` returns non-null; `conversationId` threaded down to `<MessageList>`
+  - `app/api/chat/route.ts`: `flow.topic_shift` detection block (fire-and-forget, dynamic import); `system.gate_trigger` capture in `analyze().then()` void async IIFE
+  - 21 new tests: topic-detector (11 tests, all logic), ScrollbarLandmarks (10 tests — evaluateFilter + position formula, pure logic; jsdom excluded per project node env constraint)
+  - TSC: 0 errors; 1004/1007 passing (3 pre-existing failures unchanged)
 
 - [x] **SPRINT 11.2** — Transit Map Phase A: Data Foundation — **COMPLETE**
   - `lib/transit/types.ts`: EventCategory, MarkerShape, MarkerSize, EventTypeDefinition (with marker + scrollbar fields), EventMetadata, CaptureEventInput

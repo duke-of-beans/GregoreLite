@@ -150,6 +150,30 @@ export const POST = safeHandler(async (request: Request) => {
 
   // Build Anthropic messages array from thread history
   const history = getThreadMessages(threadId);
+
+  // Transit Map: topic shift detection — fire-and-forget, never blocks stream
+  // history includes the user message just added, so prev user = second-to-last user msg
+  try {
+    const userMsgs = history.filter((m) => m.role === 'user');
+    if (userMsgs.length >= 2) {
+      const prev = userMsgs[userMsgs.length - 2]!;
+      const { detectTopicShift } = await import('@/lib/transit/topic-detector');
+      const { captureEvent: captureShift } = await import('@/lib/transit/capture');
+      const shiftResult = detectTopicShift(prev.content, body.message);
+      if (shiftResult.isShift) {
+        captureShift({
+          conversation_id: threadId,
+          event_type: 'flow.topic_shift',
+          category: 'flow',
+          payload: {
+            similarity_score: shiftResult.similarity,
+            inferred_topic_label: shiftResult.inferredTopic,
+          },
+        });
+      }
+    }
+  } catch { /* non-blocking — telemetry loss acceptable */ }
+
   const anthropicMessages: Anthropic.MessageParam[] = history.map((m) => ({
     role: m.role === 'assistant' ? 'assistant' : 'user',
     content: m.content,
@@ -265,6 +289,24 @@ export const POST = safeHandler(async (request: Request) => {
               if (result.triggered) {
                 const { dismissCount } = getDecisionLock();
                 useDecisionGateStore.getState().setTrigger(result, dismissCount);
+
+                // Transit Map: system.gate_trigger — fire-and-forget
+                void (async () => {
+                  try {
+                    const { captureEvent: captureGate } = await import('@/lib/transit/capture');
+                    captureGate({
+                      conversation_id: threadId,
+                      message_id: assistantMsg.id,
+                      event_type: 'system.gate_trigger',
+                      category: 'system',
+                      payload: {
+                        gate_type: result.trigger,
+                        trigger_reason: result.reason,
+                        severity: 'high',
+                      },
+                    });
+                  } catch { /* non-blocking */ }
+                })();
               }
             })
             .catch((err: unknown) =>

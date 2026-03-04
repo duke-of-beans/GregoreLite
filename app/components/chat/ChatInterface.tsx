@@ -564,6 +564,21 @@ export function ChatInterface() {
                 artifact.threadId = streamConversationId ?? '';
                 setTabArtifact(tabId, artifact);
                 void syncArtifact(artifact, streamConversationId ?? '');
+
+                // Transit Map: cognitive.artifact_generated — fire-and-forget
+                if (streamConversationId) {
+                  captureClientEvent({
+                    conversation_id: streamConversationId,
+                    event_type: 'cognitive.artifact_generated',
+                    category: 'cognitive',
+                    payload: {
+                      artifact_type: artifact.type,
+                      language: artifact.language,
+                      line_count: artifact.content.split('\n').length,
+                      was_opened_in_panel: true,
+                    },
+                  });
+                }
               }
             }
 
@@ -725,6 +740,7 @@ export function ChatInterface() {
                 ) : (
                   <MessageList
                     messages={messages}
+                    conversationId={activeConversationId ?? undefined}
                     highlightQuery={searchQuery || undefined}
                     searchMatches={searchMatches.length > 0 ? searchMatches : undefined}
                     activeMatchIdx={activeMatchIdx}

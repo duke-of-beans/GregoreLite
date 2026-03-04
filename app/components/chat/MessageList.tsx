@@ -15,11 +15,14 @@ import { Message, type MessageProps } from './Message';
 import type { SearchMatch } from './ThreadSearch';
 import { ScrollToBottom } from './ScrollToBottom';
 import { CustomScrollbar } from './CustomScrollbar';
+import { ScrollbarLandmarks } from '@/components/transit/ScrollbarLandmarks';
 import { ThinkingIndicator } from './ThinkingIndicator';
 import { useDensityStore, DENSITY_CONFIG } from '@/lib/stores/density-store';
 
 export interface MessageListProps {
   messages: MessageProps[];
+  /** Transit Map: active thread ID for scrollbar landmark events */
+  conversationId?: string | undefined;
   /** Current search query — passed to each Message for highlighting */
   highlightQuery?: string | undefined;
   /** Which messages matched the search (by message index) */
@@ -36,6 +39,7 @@ export interface MessageListProps {
 
 export function MessageList({
   messages,
+  conversationId,
   highlightQuery,
   searchMatches,
   activeMatchIdx,
@@ -161,8 +165,15 @@ export function MessageList({
         '--msg-role-size': config.roleLabelSize,
       } as React.CSSProperties}
     >
-      {/* Scrollbar landmarks */}
+      {/* Scrollbar landmarks — heuristic layer (message content inspection) */}
       <CustomScrollbar messages={messages} containerHeight={containerHeight} />
+
+      {/* Scrollbar landmarks — Transit Map layer (conversation_events driven) */}
+      <ScrollbarLandmarks
+        conversationId={conversationId}
+        messageCount={messages.length}
+        scrollContainerRef={scrollRef}
+      />
 
       {messages.length === 0 ? (
         <div className="flex h-full items-center justify-center">
