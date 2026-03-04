@@ -6,7 +6,7 @@
  */
 
 import Database from 'better-sqlite3';
-import { getDatabase } from '../database';
+import { getDatabase } from '../kernl/database';
 import {
   DatabaseError,
   NotFoundError,

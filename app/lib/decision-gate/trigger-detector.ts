@@ -8,8 +8,10 @@
  *   repeated_question, sacred_principle_risk, irreversible_action,
  *   contradicts_prior, low_confidence
  *
- * STUB (Sprint 4B — require Haiku NLP inference call):
+ * HAIKU INFERENCE (Sprint 4B — single inference call, three structured results):
  *   high_tradeoff_count, multi_project_touch, large_build_estimate
+ *   → Evaluated via inferStructuredTriggers() in decision-gate/inference.ts.
+ *     The three always-false stub functions have been removed.
  */
 
 import type { GateMessage } from './types';
@@ -190,37 +192,4 @@ export function detectLowConfidence(messages: GateMessage[]): boolean {
   return matchCount >= 2;
 }
 
-// ─── Stubs — Sprint 4B wires these via Haiku inference ───────────────────────
 
-/**
- * [STUB — Sprint 4B]
- * Will use a Haiku inference call (~$0.0005/message) to evaluate whether
- * the conversation involves ≥4 major tradeoffs.
- * Currently always returns false to avoid false positives.
- */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function detectHighTradeoffCount(_messages: GateMessage[]): Promise<boolean> {
-  return false;
-}
-
-/**
- * [STUB — Sprint 4B]
- * Will use a Haiku inference call to detect if the proposed decision
- * touches ≥2 distinct projects in David's portfolio.
- * Currently always returns false to avoid false positives.
- */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function detectMultiProjectTouch(_messages: GateMessage[]): Promise<boolean> {
-  return false;
-}
-
-/**
- * [STUB — Sprint 4B]
- * Will use a Haiku inference call to estimate whether the proposed build
- * exceeds 3 Agent SDK sessions — a signal to stop and confirm scope.
- * Currently always returns false to avoid false positives.
- */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function detectLargeEstimate(_messages: GateMessage[]): Promise<boolean> {
-  return false;
-}

@@ -7,7 +7,7 @@
  *
  * Phase 7B: tools are injected via selectTools() from the permission matrix.
  * Write scope is enforced by checkWriteScope() / scope-enforcer.ts.
- * Stub tools return NOT_IMPLEMENTED until 7G/7H.
+ * Sprint 11.1: all 4 previously-stubbed tools are now real implementations.
  *
  * Phase 7C: error-handler.ts wired into the agentic loop.
  * - CONTEXT_LIMIT (max_tokens): FAILED, no retry
@@ -43,6 +43,12 @@ import { runShimCheck } from './shim-tool';
 import { executeGitCommit, executeGitStatus, executeGitDiff } from './self-evolution/git-tools';
 import { getLastScore, recordShimCall, clearSession, SHIM_LOOP_SENTINEL } from './retry-tracker';
 import { runPostProcessingShim } from './post-processor';
+// Sprint 11.1: real tool implementations replacing stubs
+import { runTestRunner } from './tools/test-runner';
+import { runShimReadonlyAudit } from './tools/shim-readonly-audit';
+import { runMarkdownLinter } from './tools/markdown-linter';
+import { runKernlSearch } from './tools/kernl-search';
+import { detectShimLoop } from './failure-modes';
 
 const client = new Anthropic();
 
@@ -67,11 +73,11 @@ function sleepMs(ms: number, signal?: AbortSignal): Promise<void> {
 
 // ─── Tool executor ────────────────────────────────────────────────────────────
 
-function executeTool(
+async function executeTool(
   toolName: string,
   input: Record<string, unknown>,
   manifest: TaskManifest,
-): string {
+): Promise<string> {
   const projectPath = manifest.context.project_path;
 
   try {
@@ -244,6 +250,34 @@ function executeTool(
         return executeGitDiff(diffPath !== undefined ? { path: diffPath } : {}, projectPath);
       }
 
+      // Sprint 11.1: real tool implementations
+      case 'test_runner': {
+        const filter = input['filter'] ? String(input['filter']) : undefined;
+        const testResult = runTestRunner(projectPath, filter);
+        return JSON.stringify(testResult);
+      }
+
+      case 'shim_readonly_audit': {
+        const rawTarget = String(input['target'] ?? projectPath);
+        const auditTarget = path.isAbsolute(rawTarget) ? rawTarget : path.resolve(projectPath, rawTarget);
+        const auditResult = await runShimReadonlyAudit(auditTarget);
+        return JSON.stringify(auditResult);
+      }
+
+      case 'markdown_linter': {
+        const rawLintPath = String(input['path'] ?? projectPath);
+        const lintTarget = path.isAbsolute(rawLintPath) ? rawLintPath : path.resolve(projectPath, rawLintPath);
+        const lintResult = runMarkdownLinter(lintTarget);
+        return JSON.stringify(lintResult);
+      }
+
+      case 'kernl_search_readonly': {
+        const searchQuery = String(input['query'] ?? '');
+        const maxResults = typeof input['max_results'] === 'number' ? input['max_results'] : 10;
+        const searchResult = runKernlSearch(searchQuery, maxResults);
+        return JSON.stringify(searchResult);
+      }
+
       default:
         return `ERROR: Unknown tool: "${toolName}". This tool is not registered in the executor.`;
     }
@@ -325,6 +359,8 @@ export async function runQuerySession(
   let stepsCompleted = 0;
   let filesModified: string[] = [];
   let tokensUsedSoFar = 0;
+  // Sprint 11.1: session-level SHIM call history for detectShimLoop()
+  const shimCallHistory: Array<{ file: string; score: number }> = [];
   let costSoFar = 0;
   let toolCallsSinceCheckpoint = 0;
   let lastCheckpointAt = Date.now();
@@ -591,8 +627,29 @@ export async function runQuerySession(
             parsedInput = block.input as Record<string, unknown>;
           }
 
-          const result = executeTool(block.name, parsedInput, manifest);
+          const result = await executeTool(block.name, parsedInput, manifest);
           logger.append(`[tool_result] ${block.name}: ${result.slice(0, 200)}`);
+
+          // Sprint 11.1: detectShimLoop via failure-modes pure function.
+          // Runs after shim_check and supplements the retry-tracker sentinel check.
+          if (block.name === 'shim_check' && !result.startsWith(SHIM_LOOP_SENTINEL) && !result.startsWith('ERROR')) {
+            try {
+              const shimJson = JSON.parse(result) as { health_score?: number };
+              const shimFilePath = String(parsedInput['file_path'] ?? '');
+              if (shimFilePath && shimJson.health_score !== undefined) {
+                shimCallHistory.push({ file: shimFilePath, score: shimJson.health_score });
+                if (detectShimLoop(shimCallHistory)) {
+                  emitAgentEvent({
+                    type: 'error_recoverable',
+                    message: `SHIM loop detected on ${path.basename(shimFilePath)} — 3 calls with no score improvement (score: ${shimJson.health_score}).`,
+                    toolTrace: 'shim_loop_failure_modes',
+                  });
+                }
+              }
+            } catch {
+              // JSON parse failed — result was not a valid shim response, skip history update
+            }
+          }
 
           // Sprint 7G: detect SHIM_LOOP sentinel — emit blocked event for UI
           if (result.startsWith(SHIM_LOOP_SENTINEL)) {

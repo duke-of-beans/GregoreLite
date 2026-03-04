@@ -6,78 +6,17 @@
  */
 
 import Database from 'better-sqlite3';
-import { initializeDatabase, closeDatabase } from '@/lib/database/connection';
-import { migrateUp } from '@/lib/database/migrations/runner';
-import { migrations } from '@/lib/database/migrations';
-import { beforeEach, afterEach, expect } from 'vitest';
+import { expect } from 'vitest';
 import type { Result } from '@/lib/repositories/types';
 
 // ============================================================================
 // DATABASE SETUP & TEARDOWN
 // ============================================================================
-
-/**
- * Setup a fresh in-memory database for testing
- */
-export const setupTestDatabase = async (): Promise<Database.Database> => {
-  // Close any existing connection
-  try {
-    closeDatabase();
-  } catch {
-    // Ignore if no connection exists
-  }
-
-  // Initialize in-memory database through the singleton
-  const { db } = await initializeDatabase({ filename: ':memory:' });
-
-  // Run migrations
-  const results = migrateUp(migrations);
-  const failed = results.find((r) => !r.success);
-  if (failed) {
-    throw new Error(`Migration failed: ${failed.message}`);
-  }
-
-  return db;
-};
-
-/**
- * Teardown test database
- */
-export const teardownTestDatabase = (): void => {
-  try {
-    closeDatabase();
-  } catch (error) {
-    console.error('Error closing database:', error);
-  }
-};
-
-/**
- * Clear all data from database (keeps schema)
- */
-export const clearDatabase = (db: Database.Database): void => {
-  db.exec(`
-    DELETE FROM attachments;
-    DELETE FROM messages;
-    DELETE FROM conversations;
-  `);
-};
-
-/**
- * Setup and teardown for each test
- */
-export const setupTestDatabaseHooks = () => {
-  let db: Database.Database;
-
-  beforeEach(async () => {
-    db = await setupTestDatabase();
-  });
-
-  afterEach(() => {
-    teardownTestDatabase();
-  });
-
-  return () => db;
-};
+// NOTE: setupTestDatabase / teardownTestDatabase / clearDatabase /
+// setupTestDatabaseHooks were removed in Sprint 11.0 — they depended on
+// lib/database/ (the old gregore.db ConversationRepository layer) which was
+// deleted as part of route consolidation.  The KERNL SQLite layer
+// (lib/kernl/database) self-initialises; per-test setup is not needed.
 
 // ============================================================================
 // RESULT ASSERTIONS

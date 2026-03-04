@@ -144,13 +144,47 @@ describe('isToolError', () => {
   });
 });
 
-// ─── detectShimLoop (stub) ───────────────────────────────────────────────────
+// ─── detectShimLoop (Sprint 11.1 — real implementation) ─────────────────────
 
-describe('detectShimLoop (stub)', () => {
-  it('always returns false in Phase 7C', () => {
+describe('detectShimLoop', () => {
+  it('returns false for empty history', () => {
     expect(detectShimLoop([])).toBe(false);
+  });
+
+  it('returns false with fewer than 3 entries for the same file', () => {
     expect(detectShimLoop([
       { file: 'a.ts', score: 70 },
+      { file: 'a.ts', score: 65 },
+    ])).toBe(false);
+  });
+
+  it('returns true when 3 consecutive calls on the same file have non-improving scores', () => {
+    expect(detectShimLoop([
+      { file: 'a.ts', score: 70 },
+      { file: 'a.ts', score: 70 },
+      { file: 'a.ts', score: 70 },
+    ])).toBe(true);
+  });
+
+  it('returns true when scores are strictly decreasing', () => {
+    expect(detectShimLoop([
+      { file: 'a.ts', score: 80 },
+      { file: 'a.ts', score: 75 },
+      { file: 'a.ts', score: 70 },
+    ])).toBe(true);
+  });
+
+  it('returns false when scores are strictly increasing (making progress)', () => {
+    expect(detectShimLoop([
+      { file: 'a.ts', score: 60 },
+      { file: 'a.ts', score: 70 },
+      { file: 'a.ts', score: 80 },
+    ])).toBe(false);
+  });
+
+  it('returns false when the repeated file has fewer than 3 hits in history', () => {
+    expect(detectShimLoop([
+      { file: 'b.ts', score: 50 },
       { file: 'a.ts', score: 70 },
       { file: 'a.ts', score: 70 },
     ])).toBe(false);

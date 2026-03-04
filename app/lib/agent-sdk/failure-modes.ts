@@ -8,7 +8,7 @@
  *   detectImpossibleTask — impossibility phrasing in final text + no files written
  *   isNetworkError       — connection-layer SDK errors (1 retry)
  *   isToolError          — all other SDK errors (3 retries with backoff)
- *   detectShimLoop       — stub; full implementation in Phase 7G
+ *   detectShimLoop       — implemented in Sprint 11.1
  *
  * BLUEPRINT §4.3.4
  */
@@ -26,7 +26,7 @@ export enum FailureMode {
   IMPOSSIBLE_TASK = 'IMPOSSIBLE_TASK',
   /** App restart found job in active state. INTERRUPTED on boot. */
   APP_CRASH       = 'APP_CRASH',
-  /** 3 consecutive SHIM calls on same file with no score improvement. BLOCKED. Stub in 7C; full impl in 7G. */
+  /** 3 consecutive SHIM calls on same file with no score improvement. BLOCKED. Implemented in Sprint 11.1. */
   SHIM_LOOP       = 'SHIM_LOOP',
 }
 
@@ -95,14 +95,37 @@ export function isToolError(err: unknown): boolean {
 }
 
 /**
- * detectShimLoop — STUB. Full implementation in Phase 7G.
+ * detectShimLoop — Sprint 11.1 implementation.
  *
- * Full spec: 3 consecutive SHIM calls on the same file with no improvement in
- * quality score → BLOCKED state + escalation banner to strategic thread.
- * Currently always returns false.
+ * Returns true when the last 3 consecutive SHIM calls on the same file show
+ * no quality score improvement (each score <= the previous), signalling a
+ * BLOCKED state. The session should surface an escalation banner and stop
+ * attempting to fix the file.
+ *
+ * "Consecutive" = the last 3 entries for the most-recently-seen file.
+ * "No improvement" = score[n] <= score[n-1] for all consecutive pairs.
  */
 export function detectShimLoop(
-  _shimCallHistory: Array<{ file: string; score: number }>,
+  shimCallHistory: Array<{ file: string; score: number }>,
 ): boolean {
-  return false; // stub — Phase 7G implements this
+  if (shimCallHistory.length < 3) return false;
+
+  // Identify the file from the most recent call
+  const mostRecentFile = shimCallHistory[shimCallHistory.length - 1]?.file;
+  if (!mostRecentFile) return false;
+
+  // Collect all calls for that file in order
+  const fileCalls = shimCallHistory.filter((entry) => entry.file === mostRecentFile);
+  if (fileCalls.length < 3) return false;
+
+  // Examine the last 3 calls for this file
+  const last3 = fileCalls.slice(-3);
+  const [a, b, c] = last3 as [
+    { file: string; score: number },
+    { file: string; score: number },
+    { file: string; score: number },
+  ];
+
+  // Loop = no improvement in either consecutive step
+  return b.score <= a.score && c.score <= b.score;
 }

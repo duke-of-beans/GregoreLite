@@ -182,11 +182,12 @@ describe('selectTools — readOnly enforcement', () => {
 // ─── 3. isStubTool ────────────────────────────────────────────────────────────
 
 describe('isStubTool', () => {
-  it('returns true for stub tools', () => {
-    expect(isStubTool('test_runner')).toBe(true);
-    expect(isStubTool('shim_readonly_audit')).toBe(true);
-    expect(isStubTool('markdown_linter')).toBe(true);
-    expect(isStubTool('kernl_search_readonly')).toBe(true);
+  it('returns false for Sprint 11.1 tools — now fully implemented', () => {
+    // These four tools had _stub: true before Sprint 11.1; stubs removed.
+    expect(isStubTool('test_runner')).toBe(false);
+    expect(isStubTool('shim_readonly_audit')).toBe(false);
+    expect(isStubTool('markdown_linter')).toBe(false);
+    expect(isStubTool('kernl_search_readonly')).toBe(false);
   });
 
   it('returns false for real tools', () => {

@@ -9,47 +9,23 @@
 
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { initializeDatabase } from '@/lib/database/connection';
-import { initializeSchema } from '@/lib/database/init';
+import { getDatabase } from '@/lib/kernl/database';
 
 let dbInitialized = false;
-let initializationPromise: Promise<void> | null = null;
 
 /**
  * Initialize database (singleton pattern)
+ *
+ * KERNL's getDatabase() auto-initialises on first call — no explicit
+ * migration step required.  We keep the singleton flag so we only log once.
  */
-async function ensureDatabaseInitialized(): Promise<void> {
-  // If already initialized, return immediately
-  if (dbInitialized) {
-    return;
-  }
+function ensureDatabaseInitialized(): void {
+  if (dbInitialized) return;
 
-  // If initialization in progress, wait for it
-  if (initializationPromise) {
-    return initializationPromise;
-  }
-
-  // Start initialization
-  initializationPromise = (async () => {
-    try {
-      console.log('[Middleware] Initializing database...');
-      
-      // Initialize database connection
-      await initializeDatabase();
-      
-      // Run migrations
-      await initializeSchema();
-      
-      dbInitialized = true;
-      console.log('[Middleware] Database initialized successfully');
-    } catch (error) {
-      console.error('[Middleware] Database initialization failed:', error);
-      initializationPromise = null; // Allow retry on next request
-      throw error;
-    }
-  })();
-
-  return initializationPromise;
+  // Calling getDatabase() triggers auto-init of the KERNL SQLite layer.
+  getDatabase();
+  dbInitialized = true;
+  console.log('[Middleware] KERNL database initialised');
 }
 
 /**
@@ -61,10 +37,10 @@ export async function middleware(request: NextRequest) {
   // Only initialize for API routes
   if (request.nextUrl.pathname.startsWith('/api')) {
     try {
-      await ensureDatabaseInitialized();
+      ensureDatabaseInitialized();
     } catch (error) {
       console.error('[Middleware] Failed to initialize database:', error);
-      
+
       return NextResponse.json(
         {
           success: false,
@@ -77,7 +53,7 @@ export async function middleware(request: NextRequest) {
               : undefined,
           timestamp: new Date().toISOString(),
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
   }

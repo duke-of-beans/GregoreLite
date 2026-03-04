@@ -3,7 +3,7 @@
  *
  * Builds the concrete Anthropic SDK Tool array for a given session type.
  * Every entry in PERMISSION_CONFIG.tools must have a matching definition here.
- * Stub tools return a NOT_IMPLEMENTED error until 7G/7H implement them.
+ * Stub tools return a NOT_IMPLEMENTED error until Sprint 11.1 implements them.
  *
  * BLUEPRINT §4.3.3
  */
@@ -100,14 +100,12 @@ const TOOL_DEFINITIONS: Record<string, Tool & { _stub?: true }> = {
     },
   },
 
-  // ── Stub tools (7G/7H) ─────────────────────────────────────────────────────
+  // ── Stub tools (Sprint 11.1) ────────────────────────────────────────────────
 
   test_runner: {
-    _stub: true,
     name: 'test_runner',
     description:
-      'Run the project test suite and return a structured result. ' +
-      '(NOT IMPLEMENTED — available in Sprint 7G)',
+      'Run the project test suite and return a structured JSON result with pass/fail counts and failure details.',
     input_schema: {
       type: 'object' as const,
       properties: {
@@ -117,15 +115,13 @@ const TOOL_DEFINITIONS: Record<string, Tool & { _stub?: true }> = {
     },
   },
 
-  // Sprint 7G: real implementation — local tsc + ESLint + LOC analyser
+  // Sprint 7G: implemented — local tsc + ESLint + LOC analyser
   shim_check: SHIM_CHECK_TOOL_DEFINITION,
 
   shim_readonly_audit: {
-    _stub: true,
     name: 'shim_readonly_audit',
     description:
-      'Run a read-only SHIM audit — no modifications applied. Returns score + issues. ' +
-      '(NOT IMPLEMENTED — available in Sprint 7G)',
+      'Run a read-only EoS quality audit on a file or directory. Returns health score, grade, and issue list. No modifications applied.',
     input_schema: {
       type: 'object' as const,
       properties: {
@@ -136,11 +132,9 @@ const TOOL_DEFINITIONS: Record<string, Tool & { _stub?: true }> = {
   },
 
   markdown_linter: {
-    _stub: true,
     name: 'markdown_linter',
     description:
-      'Lint markdown files for formatting issues and return a list of violations. ' +
-      '(NOT IMPLEMENTED — available in Sprint 7G)',
+      'Lint markdown files for formatting issues. Checks H1 presence, list marker consistency, trailing whitespace, and blank lines before headers. Returns a violations list.',
     input_schema: {
       type: 'object' as const,
       properties: {
@@ -151,11 +145,9 @@ const TOOL_DEFINITIONS: Record<string, Tool & { _stub?: true }> = {
   },
 
   kernl_search_readonly: {
-    _stub: true,
     name: 'kernl_search_readonly',
     description:
-      'Search the KERNL knowledge base (read-only). Returns matching context snippets. ' +
-      '(NOT IMPLEMENTED — available in Sprint 7G)',
+      'Search the KERNL knowledge base via FTS5 full-text search (read-only). Returns ranked matching messages with thread IDs.',
     input_schema: {
       type: 'object' as const,
       properties: {

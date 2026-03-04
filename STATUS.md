@@ -1,21 +1,28 @@
 # GREGLITE — STATUS
-**Last Updated:** March 4, 2026 — Sprint 12.0 COMPLETE. API Cost Optimization: prompt caching, Batch API, Haiku routing.
+**Last Updated:** March 4, 2026 — Sprint 11.0+11.1 COMPLETE. Route consolidation, dead code cleanup, Agent SDK stubs implemented.
 **Version:** v1.0.0 (Phase 8 Ship Prep complete)
-**Test Count:** 936/943 passing (48 test files, 27 new Sprint 12.0 tests, 7 pre-existing failures unchanged)
+**Test Count:** 945/948 passing (48 test files, 5 new Sprint 11.1 test files, 3 pre-existing failures unchanged)
 **EoS Health:** 100/100 (target ≥ 85)
-**TSC:** 2 pre-existing errors in test-helpers.ts — 0 new errors from Sprint 12.0
-**Next:** See SPRINT_ROADMAP.md for remaining work (Sprint 11.0/11.1 if not yet complete)
+**TSC:** 0 errors (test-helpers.ts dead imports from deleted lib/database/ also cleaned up)
+**Next:** See SPRINT_ROADMAP.md — Sprint 11.2 (Transit Map data foundation) next up
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md (829-line spec, ZERO implementation — see SPRINT_ROADMAP.md)
 
 ### ⚠️ GROUND TRUTH AUDIT (March 4, 2026)
 1. Transit Map "data foundation" listed in Sprint 10.6 was NOT shipped. Zero Transit Map code exists.
-2. Agent SDK has 4 stub tools still returning NOT_IMPLEMENTED (test_runner, shim_readonly_audit, markdown_linter, kernl_search_readonly) + detectShimLoop() always returns false.
+2. ~~Agent SDK has 4 stub tools still returning NOT_IMPLEMENTED (test_runner, shim_readonly_audit, markdown_linter, kernl_search_readonly) + detectShimLoop() always returns false.~~ — RESOLVED: Sprint 11.1 — all 4 tools implemented, detectShimLoop() implemented, 5 new test files.
 3. ~~Phase 8 (Ship Prep) claimed complete but needs targeted file verification~~ — RESOLVED: Sprint 8A–8D executed, all gates verified, git tag v1.0.0 applied.
-4. Dual routes exist: /api/conversations + /api/threads, /api/jobs + /api/agent-sdk/jobs — need consolidation.
-5. Decision gate trigger-detector.ts has 3 dead stub functions replaced by Haiku inference — cleanup needed.
+4. ~~Dual routes exist: /api/conversations + /api/threads, /api/jobs + /api/agent-sdk/jobs — need consolidation.~~ — RESOLVED: Sprint 11.0 — /api/conversations deleted (no consumers), /api/jobs deleted (canonical is /api/agent-sdk/jobs), old lib/database/ layer removed.
+5. ~~Decision gate trigger-detector.ts has 3 dead stub functions replaced by Haiku inference — cleanup needed.~~ — RESOLVED: Sprint 11.0 — detectHighTradeoffCount/detectMultiProjectTouch/detectLargeEstimate removed.
 
 ---
+
+- [x] **SPRINT 11.0+11.1** — Cleanup + Agent SDK Stub Completion — **COMPLETE**
+  - Wave 1 (Route Consolidation): deleted /api/conversations (no consumers), /api/jobs (canonical: /api/agent-sdk/jobs), removed entire lib/database/ gregore.db layer, MORNING_BRIEFING.md
+  - Wave 2 (Dead Code): removed 3 always-false trigger stubs from trigger-detector.ts, updated Sprint 7G→11.1 comments across agent-sdk, cleaned test-helpers.ts dead imports
+  - Wave 3 (Agent SDK): implemented test_runner (vitest via execFileSync), shim_readonly_audit (EoS read-only scan), markdown_linter (pure rule-based), kernl_search_readonly (FTS5 BM25); implemented detectShimLoop(); wired all into query.ts; 5 new test files, 34 new tests
+  - Wave 4: tsc 0 errors, 945/948 tests passing (3 pre-existing failures in artifacts/detector + phase5-integration, zero-overlap with sprint scope)
+  - Also fixed: 4 sprint-caused test regressions (isStubTool, detectShimLoop stub test, FTS5 escape assertion, grade threshold)
 
 - [x] **SPRINT 12.0** — API Cost Optimization — **COMPLETE**
   - Prompt caching: `buildSystemPromptBlocks()` with `cache_control: ephemeral` on stable block (~90% cost reduction on repeated context)

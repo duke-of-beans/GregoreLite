@@ -12,9 +12,6 @@ import {
   detectSacredPrincipleRisk,
   detectIrreversibleAction,
   detectLowConfidence,
-  detectHighTradeoffCount,
-  detectMultiProjectTouch,
-  detectLargeEstimate,
 } from '@/lib/decision-gate/trigger-detector';
 import {
   acquireLock,
@@ -261,27 +258,6 @@ describe('detectLowConfidence', () => {
     ];
     // The last assistant message is confident
     expect(detectLowConfidence(messages)).toBe(false);
-  });
-});
-
-// ─── Stubs — Sprint 4B ────────────────────────────────────────────────────────
-
-describe('Sprint 4B stubs — always return false', () => {
-  const messages: GateMessage[] = [
-    userMsg('We need to decide on the architecture for the new system'),
-    assistantMsg('There are several tradeoffs to consider across multiple projects'),
-  ];
-
-  it('detectHighTradeoffCount returns false', async () => {
-    expect(await detectHighTradeoffCount(messages)).toBe(false);
-  });
-
-  it('detectMultiProjectTouch returns false', async () => {
-    expect(await detectMultiProjectTouch(messages)).toBe(false);
-  });
-
-  it('detectLargeEstimate returns false', async () => {
-    expect(await detectLargeEstimate(messages)).toBe(false);
   });
 });
 
