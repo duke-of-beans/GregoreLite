@@ -1,12 +1,12 @@
 {
   "$schema": "https://schema.tauri.app/config/2.0.0",
   "productName": "Gregore Lite",
-  "version": "0.1.0",
-  "identifier": "ai.greglite.app",
+  "version": "1.0.0",
+  "identifier": "ai.greglite.desktop",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:3000",
-    "beforeBuildCommand": "npm run build",
+    "beforeBuildCommand": "scripts\\tauri-prebuild.bat",
     "frontendDist": "../out"
   },
   "bundle": {
@@ -18,7 +18,23 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "windows": {
+      "nsis": {
+        "displayLanguageSelector": false,
+        "installMode": "currentUser",
+        "startMenuFolder": "Gregore Lite"
+      }
+    }
+  },
+  "plugins": {
+    "updater": {
+      "endpoints": [
+        "https://github.com/duke-of-beans/GregoreLite/releases/latest/download/latest.json"
+      ],
+      "dialog": true,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDhFMjQ5QUI3NDYzRjM0MDQKUldRRU5EOUd0NW9ranQ5NFVMdkEyeWtYeW8vVGtWMWNKU1diUzZteHpCUS9ycGsvblc1ZTRMNGQK"
+    }
   },
   "app": {
     "windows": [

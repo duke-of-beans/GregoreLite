@@ -53,6 +53,9 @@ dump.rdb
 # Tauri build artifacts
 src-tauri/target/
 
+# Tauri updater signing keys (NEVER commit private key)
+src-tauri/.keys/
+
 # Test output files
 test-output.txt
 test-cost.txt
