@@ -54,6 +54,8 @@ function countMatches(text: string, query: string): number {
   return count;
 }
 
+const EMPTY_MATCHES: SearchMatch[] = [];
+
 export function ThreadSearch({
   open,
   onClose,
@@ -62,10 +64,12 @@ export function ThreadSearch({
   onSearchChange,
 }: ThreadSearchProps) {
   const [query, setQuery] = useState('');
-  const [matches, setMatches] = useState<SearchMatch[]>([]);
+  const [matches, setMatches] = useState<SearchMatch[]>(EMPTY_MATCHES);
   const [activeIdx, setActiveIdx] = useState(0);
   const [serverHits, setServerHits] = useState<string[] | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  // Track whether we've already cleared to avoid re-firing the empty-query branch
+  const clearedRef = useRef(true);
 
   // Focus input when search opens
   useEffect(() => {
@@ -78,12 +82,17 @@ export function ThreadSearch({
   // Client-side search
   useEffect(() => {
     if (!query.trim()) {
-      setMatches([]);
-      setActiveIdx(0);
-      setServerHits(null);
-      onSearchChange('', [], 0);
+      // Only clear + notify parent once to prevent infinite loop
+      if (!clearedRef.current) {
+        clearedRef.current = true;
+        setMatches(EMPTY_MATCHES);
+        setActiveIdx(0);
+        setServerHits(null);
+        onSearchChange('', EMPTY_MATCHES, 0);
+      }
       return;
     }
+    clearedRef.current = false;
 
     const q = query.trim();
     const clientMatches: SearchMatch[] = [];

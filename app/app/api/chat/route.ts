@@ -13,9 +13,8 @@
 
 import { NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
-import type { ChatRequest, ChatResponse } from '@/lib/api/types';
+import type { ChatRequest } from '@/lib/api/types';
 import {
-  successResponse,
   errorResponse,
   validationError,
   parseRequestBody,
@@ -122,6 +121,17 @@ export const POST = safeHandler(async (request: Request) => {
     content: body.message,
   });
 
+  // Transit Map: capture user message event
+  try {
+    const { captureEvent } = require('@/lib/events/capture');
+    captureEvent({
+      conversation_id: threadId,
+      event_type: 'flow.message',
+      category: 'flow',
+      payload: { role: 'user', content_length: body.message.length },
+    });
+  } catch { /* non-blocking */ }
+
   // Signal user activity to background indexer (resets idle timer)
   recordUserActivity();
 
@@ -148,75 +158,143 @@ export const POST = safeHandler(async (request: Request) => {
   const start = Date.now();
 
   try {
-    const response = await client.messages.create({
+    const stream = client.messages.stream({
       model: 'claude-sonnet-4-5',
       max_tokens: 8096,
       system: body.systemPrompt ?? getBootstrapSystemPrompt(),
       messages: anthropicMessages,
     });
 
-    const textBlock = response.content.find((b) => b.type === 'text');
-    const content = textBlock?.type === 'text' ? textBlock.text : '';
-    const latencyMs = Date.now() - start;
+    const encoder = new TextEncoder();
 
-    // Persist assistant response to KERNL
-    const assistantMsg = addMessage({
-      thread_id: threadId,
-      role: 'assistant',
-      content,
-      model: response.model,
-      input_tokens: response.usage.input_tokens,
-      output_tokens: response.usage.output_tokens,
-      latency_ms: latencyMs,
+    const readableStream = new ReadableStream({
+      async start(controller) {
+        // Send conversation ID immediately
+        controller.enqueue(encoder.encode(
+          `data: ${JSON.stringify({ type: 'meta', conversationId: threadId })}\n\n`
+        ));
+
+        // Stream text deltas
+        stream.on('text', (text) => {
+          controller.enqueue(encoder.encode(
+            `data: ${JSON.stringify({ type: 'text_delta', text })}\n\n`
+          ));
+        });
+
+        // Stream content blocks (thinking, tool_use)
+        stream.on('contentBlock', (block) => {
+          if (block.type === 'thinking') {
+            controller.enqueue(encoder.encode(
+              `data: ${JSON.stringify({ type: 'thinking', thinking: block.thinking })}\n\n`
+            ));
+          }
+          if (block.type === 'tool_use') {
+            controller.enqueue(encoder.encode(
+              `data: ${JSON.stringify({ type: 'tool_use', id: block.id, name: block.name, input: block.input })}\n\n`
+            ));
+          }
+        });
+
+        // Wait for stream completion
+        try {
+          const finalMessage = await stream.finalMessage();
+          const textBlock = finalMessage.content.find((b) => b.type === 'text');
+          const content = textBlock?.type === 'text' ? textBlock.text : '';
+          const latencyMs = Date.now() - start;
+
+          // Persist assistant response to KERNL
+          const assistantMsg = addMessage({
+            thread_id: threadId,
+            role: 'assistant',
+            content,
+            model: finalMessage.model,
+            input_tokens: finalMessage.usage.input_tokens,
+            output_tokens: finalMessage.usage.output_tokens,
+            latency_ms: latencyMs,
+          });
+
+          // Continuity checkpoint
+          checkpoint(threadId, assistantMsg.id);
+
+          // Event capture (Transit Map)
+          try {
+            const { captureEvent } = await import('@/lib/events/capture');
+            captureEvent({
+              conversation_id: threadId,
+              message_id: assistantMsg.id,
+              event_type: 'flow.message',
+              category: 'flow',
+              payload: {
+                role: 'assistant',
+                content_length: content.length,
+                model: finalMessage.model,
+                input_tokens: finalMessage.usage.input_tokens,
+                output_tokens: finalMessage.usage.output_tokens,
+                latency_ms: latencyMs,
+              },
+            });
+          } catch { /* non-blocking */ }
+
+          // Fire-and-forget: decision gate, embeddings
+          const fullConversation: GateMessage[] = history
+            .map((m) => ({
+              role: m.role as GateMessage['role'],
+              content: m.content,
+            }))
+            .concat([{ role: 'assistant', content }]);
+
+          analyze(fullConversation)
+            .then((result) => {
+              if (result.triggered) {
+                const { dismissCount } = getDecisionLock();
+                useDecisionGateStore.getState().setTrigger(result, dismissCount);
+              }
+            })
+            .catch((err: unknown) =>
+              console.warn('[decision-gate] analyze failed', { err })
+            );
+
+          embed(content, 'conversation', threadId)
+            .then((records) => persistEmbeddingsFull(records))
+            .catch((err: unknown) =>
+              console.warn('[embeddings] persist failed', { err })
+            );
+
+          // Send completion event
+          controller.enqueue(encoder.encode(
+            `data: ${JSON.stringify({
+              type: 'done',
+              messageId: assistantMsg.id,
+              model: finalMessage.model,
+              usage: {
+                inputTokens: finalMessage.usage.input_tokens,
+                outputTokens: finalMessage.usage.output_tokens,
+                totalTokens: finalMessage.usage.input_tokens + finalMessage.usage.output_tokens,
+              },
+              costUsd: 0,
+              latencyMs,
+            })}\n\n`
+          ));
+        } catch (streamErr) {
+          controller.enqueue(encoder.encode(
+            `data: ${JSON.stringify({
+              type: 'error',
+              error: streamErr instanceof Error ? streamErr.message : 'Stream failed',
+            })}\n\n`
+          ));
+        }
+
+        controller.close();
+      },
     });
 
-    // Continuity checkpoint after every assistant response (crash recovery)
-    checkpoint(threadId, assistantMsg.id);
-
-    // Fire-and-forget decision gate analysis — does NOT delay chat response (§8 blueprint)
-    // Builds full conversation in GateMessage shape; analyze() runs 5 live triggers +
-    // 3 stubs. If triggered, result is pushed to Zustand for Sprint 4B UI panel.
-    const fullConversation: GateMessage[] = history
-      .map((m) => ({
-        role: m.role as GateMessage['role'],
-        content: m.content,
-      }))
-      .concat([{ role: 'assistant', content }]);
-
-    analyze(fullConversation)
-      .then((result) => {
-        if (result.triggered) {
-          const { dismissCount } = getDecisionLock();
-          useDecisionGateStore.getState().setTrigger(result, dismissCount);
-        }
-      })
-      .catch((err: unknown) =>
-        console.warn('[decision-gate] analyze failed', { err })
-      );
-
-    // Fire-and-forget embedding — does NOT delay chat response (§5.1 blueprint)
-    // Sprint 3B: persistEmbeddingsFull writes to content_chunks AND vec_index.
-    embed(content, 'conversation', threadId)
-      .then((records) => persistEmbeddingsFull(records))
-      .catch((err: unknown) =>
-        console.warn('[embeddings] persist failed', { err })
-      );
-
-    const chatResponse: ChatResponse = {
-      content,
-      conversationId: threadId,
-      messageId: assistantMsg.id,
-      model: response.model,
-      usage: {
-        inputTokens: response.usage.input_tokens,
-        outputTokens: response.usage.output_tokens,
-        totalTokens: response.usage.input_tokens + response.usage.output_tokens,
+    return new Response(readableStream, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
       },
-      costUsd: 0, // Phase 2D: wire pricing.ts
-      latencyMs,
-    };
-
-    return successResponse(chatResponse, 200);
+    });
   } catch (error) {
     console.error('[chat/route] Error:', error);
     return errorResponse(

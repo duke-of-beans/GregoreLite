@@ -1,4 +1,4 @@
-/**
+﻿/**
  * EoS Scan Engine
  *
  * Orchestrates file discovery, parallel analysis, issue normalisation,
@@ -10,13 +10,13 @@
 import fs from 'fs';
 import path from 'path';
 
-import type { EoSConfig, EoSScanResult, HealthIssue, RawIssue, ScanMode } from './types.js';
-import { DEFAULT_CONFIG, SEVERITY_MAP } from './types.js';
-import { analyzeCharacters } from './character.js';
-import { analyzePatterns } from './patterns.js';
-import { processBatch } from './batch.js';
-import { computeHealthScore } from './health-score.js';
-import { getSuppressedRules } from './fp-tracker.js';
+import type { EoSConfig, EoSScanResult, HealthIssue, RawIssue, ScanMode } from './types';
+import { DEFAULT_CONFIG, SEVERITY_MAP } from './types';
+import { analyzeCharacters } from './character';
+import { analyzePatterns } from './patterns';
+import { processBatch } from './batch';
+import { computeHealthScore } from './health-score';
+import { getSuppressedRules } from './fp-tracker';
 
 // ---------------------------------------------------------------------------
 // File discovery

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * EoS Health Score
  *
  * Formula from PHASE5A_EXECUTION_BRIEF.md:
@@ -12,7 +12,7 @@
  *   0–49    Critical
  */
 
-import type { HealthIssue } from './types.js';
+import type { HealthIssue } from './types';
 
 export type HealthGrade = 'excellent' | 'good' | 'attention' | 'critical';
 

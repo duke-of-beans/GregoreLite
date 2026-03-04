@@ -12,7 +12,7 @@
  */
 
 import { useConversationStore } from '@/lib/stores/conversation-store';
-import { recordFeedback } from '@/lib/cross-context/feedback';
+import { recordSuggestionFeedback } from '@/lib/api/conversation-client';
 import type { Suggestion } from '@/lib/cross-context/types';
 
 // ── Styles ────────────────────────────────────────────────────────────────────
@@ -119,11 +119,7 @@ export function SuggestionCard({ suggestion, onDismiss }: SuggestionCardProps) {
   };
 
   const handleDismiss = () => {
-    try {
-      recordFeedback(suggestion.id, 'dismissed');
-    } catch {
-      // non-blocking — feedback recording should not prevent UI update
-    }
+    recordSuggestionFeedback(suggestion.id, 'dismissed');
     onDismiss(suggestion.id);
   };
 

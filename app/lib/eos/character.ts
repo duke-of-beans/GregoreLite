@@ -1,4 +1,4 @@
-/**
+﻿/**
  * EoS Character Forensics — TypeScript port
  *
  * Migrated rules (from CharacterForensics.js):
@@ -13,7 +13,7 @@
  *   ❌ EXCESSIVE_NEWLINES — cosmetic, too noisy
  */
 
-import type { RawIssue } from './types.js';
+import type { RawIssue } from './types';
 
 // ---------------------------------------------------------------------------
 // Character sets

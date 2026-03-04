@@ -146,6 +146,30 @@ These components or stores exist but have no functional UI surface. Lowest build
 12. **C5** — Artifact library [P2] — all artifacts inaccessible
 13. **C9** — Job retry/edit [P2] — obvious daily use
 
+### Phase 10.5 — New Items (March 3, 2026)
+22. **API Cost Optimization** [P2] — Implement prompt caching (90% savings on repeated context) and batch API (50% discount) in GregLite's API layer. Smart Haiku routing for classification/simple tasks. Contact Anthropic sales (sales@anthropic.com) for volume discount once spend exceeds ~$200/month. Goal: run GregLite at $50-80/month with caching instead of $300+ raw.
+23. **Use actual Gregore logo** [P1] — Replace placeholder/text logo with the real Gregore logo asset throughout the app (Header, favicon, tray icon).
+24. **Left panel collapse/expand carets both at top** [P1] — When collapsing the left panel via the caret at the top, the expand caret appears at the bottom of the panel. Both collapse and expand carets should be at the top for consistent UX.
+25. **Chat history not visible in left pane** [P1] — Past conversations are not showing in the left panel. Last chat should be visible and browsable. Verify conversation-store → API route → list endpoint pipeline is wired to the sidebar.
+26. **Auto-name chat instances** [P1] — Conversations should auto-generate a title from the first user message (or first exchange). Use Haiku to summarize the first message into a short title. Currently threads appear unnamed.
+
+### Sprint 10.6 — Professional Cognitive Interface (COMPLETE):
+27. **SSE streaming** [P1] — Progressive token rendering via Server-Sent Events. ✅ COMPLETE
+28. **Flat borderless messages** [P1] — Kill bubble layout, centered column, density-aware CSS variables. ✅ COMPLETE
+29. **3-tier density toggle** [P1] — Compact/comfortable/spacious presets with Cmd+Shift shortcuts. ✅ COMPLETE
+30. **Auto-scroll + floating button** [P1] — IntersectionObserver sentinel, smart scroll pause on read-back. ✅ COMPLETE
+31. **Thinking indicator** [P1] — Animated dots before first token, processing status for tool/thinking events. ✅ COMPLETE
+32. **Collapsible blocks** [P2] — Accordion UI for thinking and tool_use events within messages. ✅ COMPLETE
+33. **Stop/interrupt button** [P1] — AbortController pattern, partial content preservation. ✅ COMPLETE
+34. **Scrollbar landmarks** [P2] — DeepSeek-inspired colored tick marks for code blocks, user messages, errors. ✅ COMPLETE
+35. **Sidebar consolidation** [P2] — Recent Chats moved to Context Panel, ChatSidebar removed from layout. ✅ COMPLETE
+36. **Cost display 4dp** [P2] — StatusBar and per-message metadata with 4 decimal places. ✅ COMPLETE
+37. **Branding consistency** [P2] — All UI strings say "GregLite". ✅ COMPLETE
+38. **Anti-bootstrap prompt** [P2] — System prompt tuned to respond conversationally to casual messages. ✅ COMPLETE
+39. **Transit Map data foundation** [P2] — conversation_events table, tree columns, capture helper, event registry. ✅ COMPLETE
+40. **Fix: ChatSidebar hydration error** [P1] — Deferred localStorage to useEffect. ✅ COMPLETE
+41. **Fix: API 500s in dev mode** [P1] — Empty defaults instead of 500 on 4 routes. ✅ COMPLETE
+
 ### Phase 11 / polish:
 14. **A5** — Inspector drawer [P2]
 15. **C6** — In-thread search [P2]

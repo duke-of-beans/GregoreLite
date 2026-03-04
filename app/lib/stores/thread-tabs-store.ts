@@ -10,7 +10,7 @@
  */
 
 import { create } from 'zustand';
-import type { MessageProps } from '@/components/chat/Message';
+import type { MessageProps, MessageBlock } from '@/components/chat/Message';
 import type { Artifact } from '@/lib/artifacts/types';
 import type { GhostContextActive } from './ghost-store';
 import {
@@ -62,6 +62,12 @@ interface ThreadTabsActions {
   setTabGhostContext: (tabId: string, ctx: GhostContextActive | null) => void;
   /** Set artifact for a tab */
   setTabArtifact: (tabId: string, artifact: Artifact | null) => void;
+  /** Update streaming message content and optional blocks (in progress) */
+  updateStreamingMessage: (tabId: string, content: string, blocks?: MessageBlock[]) => void;
+  /** Finalize streaming message with metadata */
+  finalizeStreamingMessage: (tabId: string, content: string, meta: {
+    model?: string; tokens?: number; costUsd?: number; latencyMs?: number;
+  }, blocks?: MessageBlock[]) => void;
   /** Get the currently active tab (convenience) */
   getActiveTab: () => ThreadTab | null;
   /** Persist current layout to KERNL */
@@ -242,6 +248,50 @@ export const useThreadTabsStore = create<ThreadTabsStore>((set, get) => ({
     }));
   },
 
+  updateStreamingMessage: (tabId: string, content: string, blocks?: MessageBlock[]) => {
+    set((state) => {
+      const tab = state.tabs.find((t) => t.id === tabId);
+      if (!tab || tab.messages.length === 0) return state;
+      const messages = [...tab.messages];
+      const lastIdx = messages.length - 1;
+      messages[lastIdx] = { ...messages[lastIdx]!, content, isStreaming: true, ...(blocks && { blocks }) };
+      return {
+        tabs: state.tabs.map((t) =>
+          t.id === tabId ? { ...t, messages } : t
+        ),
+      };
+    });
+  },
+
+  finalizeStreamingMessage: (tabId: string, content: string, meta: {
+    model?: string;
+    tokens?: number;
+    costUsd?: number;
+    latencyMs?: number;
+  }, blocks?: MessageBlock[]) => {
+    set((state) => {
+      const tab = state.tabs.find((t) => t.id === tabId);
+      if (!tab || tab.messages.length === 0) return state;
+      const messages = [...tab.messages];
+      const lastIdx = messages.length - 1;
+      messages[lastIdx] = {
+        ...messages[lastIdx]!,
+        content,
+        isStreaming: false,
+        model: meta.model,
+        tokens: meta.tokens,
+        costUsd: meta.costUsd,
+        latencyMs: meta.latencyMs,
+        ...(blocks && { blocks }),
+      };
+      return {
+        tabs: state.tabs.map((t) =>
+          t.id === tabId ? { ...t, messages } : t
+        ),
+      };
+    });
+  },
+
   getActiveTab: () => {
     const { tabs, activeTabId } = get();
     return tabs.find((t) => t.id === activeTabId) ?? null;
@@ -266,6 +316,48 @@ export const useThreadTabsStore = create<ThreadTabsStore>((set, get) => ({
 
 export const selectActiveTab = (state: ThreadTabsStore) =>
   state.tabs.find((t) => t.id === state.activeTabId) ?? null;
+
+// ── Stable selectors for individual active-tab fields ─────────────────────
+// These return primitives or referentially-stable defaults so Zustand's
+// Object.is equality check doesn't see a "new" value on every call.
+//
+// CRITICAL: fallback values MUST be module-level constants, NOT inline
+// literals like `?? []` which create a new reference every call.
+//
+// We cache the last result per-selector so that getServerSnapshot returns
+// the same reference as getSnapshot (React 18+ requirement for
+// useSyncExternalStore). Without this, Next.js SSR triggers:
+// "The result of getServerSnapshot should be cached to avoid an infinite loop"
+
+const EMPTY_MESSAGES: MessageProps[] = [];
+
+function makeStableSelector<T>(extract: (tab: ThreadTab) => T, fallback: T) {
+  let lastActiveTabId: string | null | undefined;
+  let lastTabs: ThreadTab[] | undefined;
+  let lastResult: T = fallback;
+
+  return (state: ThreadTabsStore): T => {
+    // Fast path: if tabs array ref AND activeTabId haven't changed, return cached
+    if (state.tabs === lastTabs && state.activeTabId === lastActiveTabId) {
+      return lastResult;
+    }
+    lastTabs = state.tabs;
+    lastActiveTabId = state.activeTabId;
+
+    const tab = state.tabs.find((t) => t.id === state.activeTabId);
+    const result = tab ? extract(tab) : fallback;
+    lastResult = result;
+    return result;
+  };
+}
+
+export const selectActiveTabId = makeStableSelector<string | null>((t) => t.id, null);
+export const selectActiveTabMessages = makeStableSelector<MessageProps[]>((t) => t.messages, EMPTY_MESSAGES);
+export const selectActiveTabConversationId = makeStableSelector<string | null>((t) => t.conversationId, null);
+export const selectActiveTabArtifact = makeStableSelector<Artifact | null>((t) => t.artifact, null);
+export const selectActiveTabGhostContext = makeStableSelector<GhostContextActive | null>((t) => t.ghostContextActive, null);
+export const selectActiveTabRestoring = makeStableSelector<boolean>((t) => t.restoring, false);
+export const selectActiveTabKernlThreadId = makeStableSelector<string | null>((t) => t.kernlThreadId, null);
 
 export const selectTabCount = (state: ThreadTabsStore) => state.tabs.length;
 

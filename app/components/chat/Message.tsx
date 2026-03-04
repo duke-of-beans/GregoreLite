@@ -19,6 +19,7 @@ import { nanoid } from 'nanoid';
 import { useArtifactStore } from '@/lib/artifacts/store';
 import { detectArtifact } from '@/lib/artifacts/detector';
 import type { Artifact } from '@/lib/artifacts/types';
+import { CollapsibleBlock } from './CollapsibleBlock';
 
 // ─── Shiki singleton ─────────────────────────────────────────────────────────
 // Initialised once; subsequent calls return the cached promise.
@@ -202,7 +203,13 @@ function buildComponents(): Components {
 
 const markdownComponents = buildComponents();
 
-// ─── MessageProps ─────────────────────────────────────────────────────────────
+// ─── MessageBlock & MessageProps ────────────────────────────────────────────
+
+export interface MessageBlock {
+  type: 'text' | 'thinking' | 'tool_use' | 'tool_result';
+  content: string;
+  metadata?: Record<string, unknown>;
+}
 
 export interface MessageProps {
   role: 'user' | 'assistant';
@@ -216,6 +223,14 @@ export interface MessageProps {
   onEdit?: (() => void) | undefined;
   /** S9-20: Show Regenerate button on hover (last assistant message only) */
   onRegenerate?: (() => void) | undefined;
+  // New streaming fields
+  isStreaming?: boolean | undefined;
+  model?: string | undefined;
+  tokens?: number | undefined;
+  costUsd?: number | undefined;
+  latencyMs?: number | undefined;
+  // Block-based content
+  blocks?: MessageBlock[] | undefined;
 }
 
 // ─── Highlight helper ─────────────────────────────────────────────────────────
@@ -245,82 +260,146 @@ function highlightText(text: string, query: string): React.ReactNode {
 
 // ─── Message ──────────────────────────────────────────────────────────────────
 
-export function Message({ role, content, timestamp, highlightQuery, isActiveMatch, onEdit, onRegenerate }: MessageProps) {
+export function Message({ role, content, timestamp, highlightQuery, isActiveMatch,
+  onEdit, onRegenerate, isStreaming, model, tokens, costUsd, latencyMs, blocks }: MessageProps) {
   const isUser = role === 'user';
   const showActions = onEdit || onRegenerate;
 
   return (
     <div
-      className={`group/msg flex w-full ${isUser ? 'justify-end' : 'justify-start'}`}
+      className="group/msg w-full"
       role="article"
       aria-label={`${isUser ? 'User' : 'AI'} message`}
       data-active-match={isActiveMatch ? 'true' : undefined}
-      style={isActiveMatch ? { scrollMarginTop: '80px' } : undefined}
+      style={{
+        padding: 'var(--msg-padding, 8px 0)',
+        scrollMarginTop: isActiveMatch ? '80px' : undefined,
+      }}
     >
+      {/* Role label */}
       <div
-        className={`max-w-[80%] rounded-lg p-4 ${
-          isUser
-            ? 'border-l-[3px] border-[var(--cyan)] bg-[var(--cyan)]/10 text-[var(--ice-white)]'
-            : 'bg-[var(--elevated)]/60 text-[var(--ice-white)]'
-        }`}
+        className="mb-1 font-semibold"
+        style={{
+          fontSize: 'var(--msg-role-size, 11px)',
+          color: isUser ? 'var(--cyan)' : 'var(--frost)',
+        }}
       >
-        {/* Message content */}
+        {isUser ? 'You' : 'GregLite'}
+      </div>
+
+      {/* Content — subtle left border for user messages only */}
+      <div
+        style={{
+          borderLeft: isUser ? '2px solid var(--cyan)' : 'none',
+          paddingLeft: isUser ? '12px' : '0',
+          fontSize: 'var(--msg-font-size, 14px)',
+          lineHeight: 'var(--msg-line-height, 1.5)',
+        }}
+        className="text-[var(--ice-white)]"
+      >
         {isUser ? (
-          // User messages: plain pre-wrap (no need to parse markdown)
-          <p className="m-0 whitespace-pre-wrap break-words text-sm">
+          <p className="m-0 whitespace-pre-wrap break-words">
             {highlightQuery ? highlightText(content, highlightQuery) : content}
           </p>
-        ) : (
-          // Assistant messages: full markdown rendering
-          <div className="prose prose-invert prose-sm max-w-none">
+        ) : blocks && blocks.length > 0 ? (
+          /* Block-based rendering (structured content from SSE) */
+          <div className="prose prose-invert max-w-none" style={{ fontSize: 'inherit', lineHeight: 'inherit' }}>
+            {blocks.map((block, i) => {
+              if (block.type === 'text') {
+                return (
+                  <ReactMarkdown key={i} remarkPlugins={[remarkGfm]} components={markdownComponents}>
+                    {block.content}
+                  </ReactMarkdown>
+                );
+              }
+              if (block.type === 'thinking') {
+                const duration = block.metadata?.duration_ms
+                  ? `${Math.round((block.metadata.duration_ms as number) / 1000)}s`
+                  : '';
+                return (
+                  <CollapsibleBlock key={i} type="thinking" summary={`Thought${duration ? ` for ${duration}` : ''}`}>
+                    <p className="whitespace-pre-wrap text-[var(--mist)]">{block.content}</p>
+                  </CollapsibleBlock>
+                );
+              }
+              if (block.type === 'tool_use') {
+                const toolName = (block.metadata?.name as string) ?? 'tool';
+                return (
+                  <CollapsibleBlock key={i} type="tool_use" summary={`Used ${toolName}`}>
+                    <pre className="text-[11px] font-mono whitespace-pre-wrap text-[var(--frost)]">
+                      {block.content}
+                    </pre>
+                  </CollapsibleBlock>
+                );
+              }
+              return null;
+            })}
+          </div>
+        ) : !isUser ? (
+          /* Fallback: single content string (backwards compatible) */
+          <div className="prose prose-invert max-w-none" style={{ fontSize: 'inherit', lineHeight: 'inherit' }}>
             {highlightQuery ? (
-              // When searching, render as highlighted plain text to ensure match visibility
-              <p className="m-0 whitespace-pre-wrap break-words text-sm">
+              <p className="m-0 whitespace-pre-wrap break-words">
                 {highlightText(content, highlightQuery)}
               </p>
             ) : (
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                components={markdownComponents}
-              >
+              <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
                 {content}
               </ReactMarkdown>
             )}
           </div>
-        )}
+        ) : null}
 
-        {/* S9-20: Edit / Regenerate hover actions */}
-        {showActions && (
-          <div className="mt-2 flex items-center gap-2 opacity-0 group-hover/msg:opacity-100 transition-opacity">
-            {onEdit && (
-              <button
-                onClick={onEdit}
-                className="flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-medium text-[var(--mist)] hover:text-[var(--ice-white)] hover:bg-[var(--surface)] transition-colors"
-                title="Edit message (Cmd+E)"
-              >
-                ✎ Edit
-              </button>
-            )}
-            {onRegenerate && (
-              <button
-                onClick={onRegenerate}
-                className="flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-medium text-[var(--mist)] hover:text-[var(--ice-white)] hover:bg-[var(--surface)] transition-colors"
-                title="Regenerate response (Cmd+R)"
-              >
-                ↻ Regenerate
-              </button>
-            )}
-          </div>
+        {/* Streaming cursor */}
+        {isStreaming && (
+          <span className="inline-block animate-pulse text-[var(--cyan)]">▌</span>
         )}
+      </div>
 
-        {/* Timestamp */}
+      {/* Edit / Regenerate hover actions */}
+      {showActions && (
+        <div className="mt-1 flex items-center gap-2 opacity-0 group-hover/msg:opacity-100 transition-opacity">
+          {onEdit && (
+            <button onClick={onEdit}
+              className="flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-medium text-[var(--mist)] hover:text-[var(--ice-white)] hover:bg-[var(--surface)] transition-colors"
+              title="Edit message (Cmd+E)">✎ Edit</button>
+          )}
+          {onRegenerate && (
+            <button onClick={onRegenerate}
+              className="flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-medium text-[var(--mist)] hover:text-[var(--ice-white)] hover:bg-[var(--surface)] transition-colors"
+              title="Regenerate (Cmd+R)">↻ Regenerate</button>
+          )}
+        </div>
+      )}
+
+      {/* Timestamp + metadata */}
+      <div className="mt-1 flex items-center gap-2 text-[10px] text-[var(--mist)]">
         {timestamp !== undefined && (
-          <div className="mt-2 text-xs text-[var(--mist)]">
-            {timestamp.toLocaleTimeString('en-US', {
-              hour: '2-digit',
-              minute: '2-digit',
-            })}
-          </div>
+          <span>{timestamp.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
+        )}
+        {!isStreaming && model && (
+          <>
+            <span>·</span>
+            <span>{model.replace('claude-', '').split('-')[0]}</span>
+          </>
+        )}
+        {!isStreaming && tokens !== undefined && tokens > 0 && (
+          <>
+            <span>·</span>
+            <span>{tokens.toLocaleString()} tokens</span>
+          </>
+        )}
+        {!isStreaming && costUsd !== undefined && costUsd > 0 && (
+          <>
+            <span>·</span>
+            <span>${costUsd.toFixed(4)}</span>
+          </>
+        )}
+        {!isStreaming && latencyMs !== undefined && latencyMs > 0 && (
+          <>
+            <span>·</span>
+            <span>{(latencyMs / 1000).toFixed(1)}s</span>
+          </>
         )}
       </div>
     </div>

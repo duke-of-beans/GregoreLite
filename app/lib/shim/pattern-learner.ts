@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SHIM PatternLearner — GregLite Port
  *
  * ML-based pattern recognition from historical job improvements.
@@ -13,8 +13,8 @@
  * MLPredictor (stub with Math.random()) is explicitly NOT migrated.
  */
 
-import { getDatabase } from '../kernl/database.js';
-import type { HistoricalImprovement, Pattern, PredictionScore } from './types.js';
+import { getDatabase } from '../kernl/database';
+import type { HistoricalImprovement, Pattern, PredictionScore } from './types';
 
 // ─── DB row shapes ────────────────────────────────────────────────────────────
 

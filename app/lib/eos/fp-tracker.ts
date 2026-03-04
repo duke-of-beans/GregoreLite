@@ -1,4 +1,4 @@
-/**
+﻿/**
  * EoS False Positive Tracker
  *
  * Persists FP feedback to KERNL (eos_fp_log table) and auto-suppresses
@@ -6,7 +6,7 @@
  */
 
 import { nanoid } from 'nanoid';
-import { getDatabase } from '../kernl/database.js';
+import { getDatabase } from '../kernl/database';
 
 const FP_THRESHOLD = 0.2;
 const WINDOW_SIZE = 100;

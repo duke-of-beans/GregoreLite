@@ -1,5 +1,29 @@
-# GREGORE LITE — STATUS
-**Last Updated:** March 3, 2026 — Phase 9 "The Full Cockpit" COMPLETE. v1.1.0 tagged (ac634bd). 22 sprints across 4 waves: multi-thread tabs, command palette, notification display, status bar, morning briefing, Ghost Teach Me, manifest templates, in-thread search, EoS sparkline, cost breakdown, job retry/edit, chat history panel, settings panel, inspector drawer, push notifications/tray, decision browser, artifact library, KERNL health panel, project quick-switcher, edit/regenerate, memory modal deprecated. Every keyboard shortcut in KeyboardShortcuts.tsx now fires a real action. tsc clean, 40 files / 890 tests passing throughout.
+# GREGLITE — STATUS
+**Last Updated:** March 3, 2026 — Sprint 10.6 "Professional Cognitive Interface" COMPLETE. SSE streaming, flat messages with density toggle, auto-scroll, thinking indicators, collapsible blocks, stop button, scrollbar landmarks, sidebar consolidation, Transit Map data foundation. 14 tasks across 5 waves. tsc clean.
+**Phase:** Sprint 10.6 — Professional Cognitive Interface: ✅ COMPLETE
+**Feature Backlog:** FEATURE_BACKLOG.md
+**Sprint 10.6 Blueprint:** SPRINT_10_6_BLUEPRINT.md — 14 tasks executed
+
+---
+
+- [x] **SPRINT 10.6** — Professional Cognitive Interface — **COMPLETE**
+  - SSE streaming for progressive token rendering
+  - Flat borderless messages with 3-tier density toggle (compact/comfortable/spacious)
+  - Smart auto-scroll with floating scroll-to-bottom button
+  - Thinking/processing indicators (dots → cursor → status lines)
+  - Collapsible tool and thinking blocks in messages
+  - Stop/interrupt button with partial content preservation
+  - Scrollbar landmarks (DeepSeek pattern)
+  - Sidebar consolidated into Context Panel
+  - Cost display 4 decimal places + per-message metadata
+  - GregLite branding consistency
+  - Anti-bootstrap system prompt tuning
+  - Transit Map data foundation (events table, tree columns, capture helper)
+  - Fix: ChatSidebar hydration error
+  - Fix: API 500s in dev mode
+
+---
+**Previous:** Phase 9 "The Full Cockpit" COMPLETE. v1.1.0 tagged (ac634bd). 22 sprints across 4 waves.
 **Phase:** Phase 9 — The Full Cockpit: ✅ COMPLETE (v1.1.0, commit ac634bd)
 **Feature Backlog:** FEATURE_BACKLOG.md — 21 items, all completed or deprecated with rationale
 **Phase 9 Blueprint:** PHASE9_BLUEPRINT.md — 22 sprints executed, certified

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * EoS Pattern Precognition — TypeScript port
  *
  * Migrated rules (from PatternPrecognition.js):
@@ -10,7 +10,7 @@
  *   ❌ CONSOLE_USAGE_ENHANCED  — ESLint handles this; too noisy in TS projects
  */
 
-import type { RawIssue } from './types.js';
+import type { RawIssue } from './types';
 
 // ---------------------------------------------------------------------------
 // Memory leak detection — setInterval without clearInterval

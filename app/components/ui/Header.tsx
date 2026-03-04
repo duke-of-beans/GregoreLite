@@ -26,13 +26,13 @@ export function Header() {
       <div className="flex items-center gap-3">
         <img
           src="/gregore-logo.png"
-          alt="Gregore"
+          alt="GregLite"
           className="h-8 w-8 rounded-lg"
           width={32}
           height={32}
         />
         <span className="text-lg font-semibold tracking-tight text-[var(--ice-white)]">
-          Gregore Lite
+          GregLite
         </span>
       </div>
 

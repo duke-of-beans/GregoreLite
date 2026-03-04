@@ -1,4 +1,4 @@
-/**
+﻿/**
  * EoS Shared Types
  */
 

@@ -53,10 +53,13 @@ export interface ChatSidebarProps {
 const STORAGE_KEY = 'greglite-sidebar-collapsed';
 
 export function ChatSidebar({ onLoadThread }: ChatSidebarProps) {
-  const [collapsed, setCollapsed] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
-    return localStorage.getItem(STORAGE_KEY) === 'true';
-  });
+  const [collapsed, setCollapsed] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setCollapsed(localStorage.getItem(STORAGE_KEY) === 'true');
+    setMounted(true);
+  }, []);
 
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(false);
@@ -93,7 +96,7 @@ export function ChatSidebar({ onLoadThread }: ChatSidebarProps) {
     return (
       <div
         className="flex flex-col flex-shrink-0 border-r border-[var(--shadow)] bg-[var(--elevated)]"
-        style={{ width: '48px' }}
+        style={{ width: '48px', opacity: mounted ? 1 : 0, transition: 'opacity 150ms ease' }}
       >
         {/* Expand caret — always at the very top of the strip */}
         <button
@@ -115,7 +118,7 @@ export function ChatSidebar({ onLoadThread }: ChatSidebarProps) {
   return (
     <div
       className="flex flex-col flex-shrink-0 border-r border-[var(--shadow)] bg-[var(--elevated)] overflow-hidden"
-      style={{ width: '240px' }}
+      style={{ width: '240px', opacity: mounted ? 1 : 0, transition: 'opacity 150ms ease' }}
     >
       {/* Header row: label + collapse caret — pinned to top */}
       <div className="flex items-center justify-between flex-shrink-0 border-b border-[var(--shadow)]" style={{ height: '40px', padding: '0 12px' }}>

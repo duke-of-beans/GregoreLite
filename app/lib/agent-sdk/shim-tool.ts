@@ -1,4 +1,4 @@
-/**
+﻿/**
  * shim-tool.ts — Local Quality Analyser — Phase 7G
  *
  * Implements the shim_check in-session tool as a fully local analyser.
@@ -42,7 +42,7 @@ const SCORE_DEDUCT_PER_LINT_ERROR  = 10;  // severity 2
 const SCORE_DEDUCT_PER_LINT_WARN   = 2;   // severity 1
 
 const TS_EXTENSIONS   = new Set(['.ts', '.tsx']);
-const LINT_EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs']);
+const LINT_EXTENSIONS = new Set(['.ts', '.tsx', '', '.jsx', '.mjs', '.cjs']);
 
 // ─── Main analyser ────────────────────────────────────────────────────────────
 

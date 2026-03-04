@@ -1,4 +1,4 @@
-/**
+﻿/**
  * EoS Public API
  *
  * The only import surface other modules should use:
@@ -6,19 +6,19 @@
  */
 
 import { nanoid } from 'nanoid';
-import { getDatabase } from '../kernl/database.js';
-import { scan as _scan, scanFiles as _scanFiles } from './engine.js';
-import type { EoSScanResult, ScanMode } from './types.js';
+import { getDatabase } from '../kernl/database';
+import { scan as _scan, scanFiles as _scanFiles } from './engine';
+import type { EoSScanResult, ScanMode } from './types';
 
-export type { ScanMode, EoSScanResult, HealthIssue } from './types.js';
-export { computeHealthScore } from './health-score.js';
-export { computeDebt } from './debt.js';
+export type { ScanMode, EoSScanResult, HealthIssue } from './types';
+export { computeHealthScore } from './health-score';
+export { computeDebt } from './debt';
 export {
   recordOccurrence,
   markFalsePositive,
   getSuppressedRules,
   getRuleStats,
-} from './fp-tracker.js';
+} from './fp-tracker';
 
 // ---------------------------------------------------------------------------
 // Primary scan API
@@ -33,9 +33,9 @@ export {
  */
 export async function scan(
   projectPath: string,
-  mode: import('./types.js').ScanMode = 'quick',
+  mode: import('./types').ScanMode = 'quick',
   projectId?: string,
-): Promise<import('./types.js').EoSScanResult> {
+): Promise<import('./types').EoSScanResult> {
   return _scan(projectPath, mode, projectId);
 }
 
@@ -46,7 +46,7 @@ export async function scan(
 export async function scanFiles(
   filePaths: string[],
   projectId?: string,
-): Promise<import('./types.js').EoSScanResult> {
+): Promise<import('./types').EoSScanResult> {
   return _scanFiles(filePaths, projectId);
 }
 

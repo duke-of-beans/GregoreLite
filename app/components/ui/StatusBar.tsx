@@ -87,7 +87,7 @@ export function StatusBar() {
           title="Daily cost — click for breakdown"
         >
           <span className="text-[var(--mist)]">COST TODAY:</span>
-          <span className="font-mono font-medium">${costToday.toFixed(2)}</span>
+          <span className="font-mono font-medium">${costToday.toFixed(4)}</span>
         </button>
 
         {/* Separator */}

@@ -32,10 +32,13 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error('[api/costs/today] Failed:', error);
-    return NextResponse.json(
-      { error: 'Failed to query daily costs' },
-      { status: 500 }
-    );
+    console.warn('[api/costs/today] DB unavailable:', error);
+    return NextResponse.json({
+      data: {
+        totalUsd: 0,
+        since: Date.now(),
+        queriedAt: Date.now(),
+      },
+    });
   }
 }

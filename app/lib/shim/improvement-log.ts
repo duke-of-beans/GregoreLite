@@ -7,12 +7,12 @@
  */
 
 import { nanoid } from 'nanoid';
-import { getDatabase } from '../kernl/database.js';
-import { getPatternLearner } from './pattern-learner.js';
-import { extractContextFromScore } from './job-context.js';
-import type { JobContext } from './job-context.js';
-import type { ManifestRow } from '../agent-sdk/job-tracker.js';
-import type { EoSScanResult } from '../eos/types.js';
+import { getDatabase } from '../kernl/database';
+import { getPatternLearner } from './pattern-learner';
+import { extractContextFromScore } from './job-context';
+import type { JobContext } from './job-context';
+import type { ManifestRow } from '../agent-sdk/job-tracker';
+import type { EoSScanResult } from '../eos/types';
 
 // ─── Spawn-time: store health score before the job runs ──────────────────────
 

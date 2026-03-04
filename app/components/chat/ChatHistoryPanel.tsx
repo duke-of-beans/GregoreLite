@@ -10,7 +10,8 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useConversationStore } from '@/lib/stores/conversation-store';
-import type { ConversationWithStats } from '@/lib/repositories';
+import type { ConversationWithStats } from '@/lib/api/conversation-client';
+import { listConversations as apiListConversations } from '@/lib/api/conversation-client';
 import { HistoryRow } from './HistoryRow';
 
 interface ChatHistoryPanelProps {
@@ -49,11 +50,11 @@ export function ChatHistoryPanel({ open, onClose, onLoadThread }: ChatHistoryPan
   }, [open]);
 
   const loadPinned = useCallback(async () => {
-    // Use the store's repository to list pinned conversations
-    const repo = useConversationStore.getState().repository;
-    const result = repo.listConversations({ pinned: true, page: 1, pageSize: 50 });
-    if (result.ok) {
-      setPinnedConvs(result.value.items);
+    try {
+      const result = await apiListConversations({ pinned: true, page: 1, pageSize: 50 });
+      setPinnedConvs(result.items);
+    } catch {
+      // non-blocking — pinned section degrades gracefully
     }
   }, []);
 

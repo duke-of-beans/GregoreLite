@@ -103,6 +103,51 @@ function runMigrations(db: Database.Database): void {
     // FTS table may already exist or fts5 may not be available
   }
 
+  // Sprint 10.6 — Transit Map: conversation_events table
+  try {
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS conversation_events (
+        id              TEXT PRIMARY KEY,
+        conversation_id TEXT NOT NULL,
+        message_id      TEXT,
+        event_type      TEXT NOT NULL,
+        category        TEXT NOT NULL,
+        timestamp       TEXT NOT NULL DEFAULT (datetime('now')),
+        payload         TEXT NOT NULL DEFAULT '{}',
+        schema_version  INTEGER NOT NULL DEFAULT 1,
+        tags            TEXT DEFAULT '[]',
+        annotations     TEXT DEFAULT '[]',
+        learning_status TEXT DEFAULT 'pending'
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_events_conversation ON conversation_events(conversation_id);
+      CREATE INDEX IF NOT EXISTS idx_events_type ON conversation_events(event_type);
+      CREATE INDEX IF NOT EXISTS idx_events_category ON conversation_events(category);
+      CREATE INDEX IF NOT EXISTS idx_events_message ON conversation_events(message_id)
+        WHERE message_id IS NOT NULL;
+    `);
+  } catch {
+    // Table may already exist
+  }
+
+  // Sprint 10.6 — Transit Map: tree structure columns on messages
+  const treeColumns = [
+    { name: 'parent_id', type: 'TEXT DEFAULT NULL' },
+    { name: 'branch_index', type: 'INTEGER DEFAULT 0' },
+    { name: 'is_active_branch', type: 'INTEGER DEFAULT 1' },
+  ];
+  for (const col of treeColumns) {
+    try {
+      db.exec(`ALTER TABLE messages ADD COLUMN ${col.name} ${col.type}`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (!msg.includes('duplicate column') && !msg.includes('already has column')) throw err;
+    }
+  }
+  try {
+    db.exec(`CREATE INDEX IF NOT EXISTS idx_messages_parent ON messages(parent_id) WHERE parent_id IS NOT NULL`);
+  } catch { /* index may already exist */ }
+
   // S9-21 — Log Memory Modal deprecation decision (idempotent via fixed ID)
   try {
     db.exec(`

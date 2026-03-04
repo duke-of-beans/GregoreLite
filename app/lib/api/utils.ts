@@ -125,9 +125,9 @@ export async function parseRequestBody<T>(
  * Wraps async route handlers with error handling
  */
 export function safeHandler(
-  handler: (request: Request) => Promise<NextResponse>
+  handler: (request: Request) => Promise<Response | NextResponse>
 ) {
-  return async (request: Request): Promise<NextResponse> => {
+  return async (request: Request): Promise<Response | NextResponse> => {
     try {
       return await handler(request);
     } catch (error) {

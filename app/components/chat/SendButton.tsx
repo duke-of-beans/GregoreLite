@@ -17,11 +17,13 @@ export type SendButtonState =
   | 'checking' // [◉ Checking] - animated
   | 'approved' // [✓ Send] - green tint
   | 'warning' // [⚠ Review] - amber
-  | 'veto'; // [Override?] - red
+  | 'veto' // [Override?] - red
+  | 'streaming'; // [Stop] - red square
 
 export interface SendButtonProps {
   state: SendButtonState;
   onClick: () => void;
+  onStop?: () => void;
   disabled?: boolean | undefined;
   ghostMessage?: string | undefined; // For hover tooltip
 }
@@ -29,9 +31,27 @@ export interface SendButtonProps {
 export function SendButton({
   state,
   onClick,
+  onStop,
   disabled = false,
   ghostMessage,
 }: SendButtonProps) {
+  // Streaming state — special render (stop button)
+  if (state === 'streaming') {
+    return (
+      <button
+        onClick={onStop}
+        className="flex items-center justify-center h-9 w-9 rounded-lg bg-red-500/20 border border-red-500/50 text-red-400 hover:bg-red-500/30 transition-colors"
+        title="Stop generating"
+        aria-label="Stop generating"
+        data-send-button
+      >
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" aria-hidden>
+          <rect x="2" y="2" width="8" height="8" rx="1" />
+        </svg>
+      </button>
+    );
+  }
+
   // State-specific configuration
   const stateConfig = {
     normal: {

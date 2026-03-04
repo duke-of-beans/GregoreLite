@@ -1,4 +1,4 @@
-/**
+﻿/**
  * EoS Technical Debt Calculator — adapted TypeScript port of TechnicalDebtCalculator.js
  *
  * Computes a debt score from a set of health issues. Severity weights:
@@ -10,7 +10,7 @@
  * EoS report Map, keeping debt calculation decoupled from scanner internals.
  */
 
-import type { HealthIssue } from './types.js';
+import type { HealthIssue } from './types';
 
 export interface DebtReport {
   /** Raw debt score (unbounded, can exceed 100) */

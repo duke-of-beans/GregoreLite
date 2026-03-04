@@ -16,9 +16,9 @@ import { getDatabase } from '@/lib/kernl/database';
 
 export async function POST(
   _req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ): Promise<NextResponse> {
-  const { id } = params;
+  const { id } = await params;
 
   try {
     const db = getDatabase();

@@ -15,7 +15,7 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Header } from '../ui/Header';
 import { MessageList } from './MessageList';
 import { InputField } from './InputField';
@@ -51,8 +51,10 @@ import { InspectorDrawer } from '../inspector/InspectorDrawer';
 import { startTrayBridge, stopTrayBridge } from '@/lib/notifications/tray-bridge';
 import { DecisionBrowser } from '../decisions/DecisionBrowser';
 import { ArtifactLibrary } from '../artifacts/ArtifactLibrary';
-import { ChatSidebar } from './ChatSidebar';
 import { generateTitle } from '@/lib/chat/auto-title';
+import { useDensityStore } from '@/lib/stores/density-store';
+import type { ProcessingEvent } from './ProcessingStatus';
+import type { MessageBlock } from './Message';
 
 type ActiveTab = 'strategic' | 'workers' | 'warroom';
 
@@ -96,6 +98,11 @@ export function ChatInterface() {
   const [searchMatches, setSearchMatches] = useState<SearchMatch[]>([]);
   const [activeMatchIdx, setActiveMatchIdx] = useState(0);
 
+  // ── SSE streaming state (Sprint 10.6) ───────────────────────────────────
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const [_isStreaming, setIsStreaming] = useState(false);
+  const [_processingEvents, setProcessingEvents] = useState<ProcessingEvent[]>([]);
+
   // Thread tabs store — per-tab state (stable individual selectors to prevent render loops)
   const activeTabId = useThreadTabsStore(selectActiveTabId);
   const activeMessages = useThreadTabsStore(selectActiveTabMessages);
@@ -112,6 +119,8 @@ export function ChatInterface() {
   const setTabMessages = useThreadTabsStore((s) => s.setTabMessages);
   const createTab = useThreadTabsStore((s) => s.createTab);
   const renameTab = useThreadTabsStore((s) => s.renameTab);
+  const updateStreamingMessage = useThreadTabsStore((s) => s.updateStreamingMessage);
+  const finalizeStreamingMessage = useThreadTabsStore((s) => s.finalizeStreamingMessage);
 
   const gateTrigger = useDecisionGateStore((s) => s.trigger);
   const setActiveThreadId = useGhostStore((s) => s.setActiveThreadId);
@@ -177,6 +186,16 @@ export function ChatInterface() {
       if (meta && e.key === 'r') {
         e.preventDefault();
         handleRegenerate();
+      }
+      // Cmd+Shift+= — increase density (more compact)
+      if (meta && e.shiftKey && (e.key === '=' || e.key === '+')) {
+        e.preventDefault();
+        useDensityStore.getState().cycleDensity('up');
+      }
+      // Cmd+Shift+- — decrease density (more spacious)
+      if (meta && e.shiftKey && e.key === '-') {
+        e.preventDefault();
+        useDensityStore.getState().cycleDensity('down');
       }
     };
     window.addEventListener('keydown', handler);
@@ -253,6 +272,25 @@ export function ChatInterface() {
     setActiveTab('strategic');
   }, [createTab, setTabConversationId, setTabMessages]);
 
+  // ── Listen for ContextPanel custom events (Sprint 10.6D) ──────────────
+  useEffect(() => {
+    const handleLoadThreadEvent = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail?.conversationId) {
+        void handleLoadThread(detail.conversationId);
+      }
+    };
+    const handleOpenHistoryEvent = () => {
+      setHistoryOpen(true);
+    };
+    window.addEventListener('greglite:load-thread', handleLoadThreadEvent);
+    window.addEventListener('greglite:open-history', handleOpenHistoryEvent);
+    return () => {
+      window.removeEventListener('greglite:load-thread', handleLoadThreadEvent);
+      window.removeEventListener('greglite:open-history', handleOpenHistoryEvent);
+    };
+  }, [handleLoadThread]);
+
   // ── S9-20: Edit last message — restore to input, truncate from that point ──
   const handleEditMessage = useCallback((messageIndex: number) => {
     if (!activeTabId) return;
@@ -313,6 +351,12 @@ export function ChatInterface() {
     }, 50);
   }, [activeTabId, activeMessages, setTabMessages]);
 
+  const handleStop = useCallback(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+  }, []);
+
   // ── Send message ─────────────────────────────────────────────────────────
   const handleSubmit = useCallback(async () => {
     if (!input.trim() || !activeTabId) return;
@@ -322,7 +366,6 @@ export function ChatInterface() {
     const conversationId = activeConversationId;
 
     setInput('');
-    // Clear ghost context on send
     setTabGhostContext(tabId, null);
 
     const userMessage: MessageProps = {
@@ -330,9 +373,13 @@ export function ChatInterface() {
       content: messageText,
       timestamp: new Date(),
     };
-
     appendMessage(tabId, userMessage);
     setSendButtonState('checking');
+
+    let fullContent = '';
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
 
     try {
       const response = await fetch('/api/chat', {
@@ -342,6 +389,7 @@ export function ChatInterface() {
           message: messageText,
           ...(conversationId && { conversationId }),
         }),
+        signal: controller.signal,
       });
 
       if (response.status === 423) {
@@ -353,55 +401,153 @@ export function ChatInterface() {
         };
         appendMessage(tabId, errorMessage);
         setSendButtonState('normal');
+        setIsStreaming(false);
+        abortControllerRef.current = null;
         return;
       }
 
-      if (!response.ok) throw new Error(`API error: ${response.statusText}`);
-
-      const data = await response.json();
-      const chatData = data?.data;
-
-      if (chatData?.conversationId && !conversationId) {
-        setTabConversationId(tabId, chatData.conversationId);
-        setActiveThreadId(chatData.conversationId);
-
-        // ── Sprint 10.5 Task 5: Auto-title — fire-and-forget ─────────────
-        // New conversation just got its ID. Generate a title from the first
-        // user message in the background; never blocks or throws.
-        const newConvId = chatData.conversationId;
-        void generateTitle(messageText).then((title) => {
-          if (title && title !== 'Untitled') {
-            renameTab(tabId, title);
-            void fetch(`/api/conversations/${newConvId}`, {
-              method: 'PATCH',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ title }),
-            }).catch(() => null);
-          }
-        });
+      if (!response.ok || !response.body) {
+        throw new Error(`API error: ${response.statusText}`);
       }
 
-      const responseContent: string = chatData?.content ?? data?.content ?? 'No response';
-      const threadId: string = chatData?.conversationId ?? conversationId ?? '';
+      // ── SSE Stream Consumer ───────────────────────────────────────────
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let streamConversationId = conversationId;
+      let sseBuffer = '';
 
-      const aiMessage: MessageProps = {
+      // Block-based content tracking
+      let blocks: MessageBlock[] = [];
+      let currentTextBlock = '';
+
+      // Add empty streaming message placeholder
+      const streamingMsg: MessageProps = {
         role: 'assistant',
-        content: responseContent,
+        content: '',
         timestamp: new Date(),
+        isStreaming: true,
       };
+      appendMessage(tabId, streamingMsg);
+      setSendButtonState('streaming');
+      setIsStreaming(true);
+      setProcessingEvents([]);
 
-      appendMessage(tabId, aiMessage);
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        sseBuffer += decoder.decode(value, { stream: true });
+
+        const lines = sseBuffer.split('\n');
+        sseBuffer = lines.pop() ?? '';
+
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          try {
+            const event = JSON.parse(line.slice(6));
+
+            if (event.type === 'meta' && event.conversationId) {
+              streamConversationId = event.conversationId;
+              if (!conversationId) {
+                setTabConversationId(tabId, event.conversationId);
+                setActiveThreadId(event.conversationId);
+
+                const newConvId = event.conversationId;
+                void generateTitle(messageText).then((title) => {
+                  if (title && title !== 'Untitled') {
+                    renameTab(tabId, title);
+                    void fetch(`/api/conversations/${newConvId}`, {
+                      method: 'PATCH',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ title }),
+                    }).catch(() => null);
+                  }
+                });
+              }
+            }
+
+            if (event.type === 'text_delta') {
+              // Clear processing events when text starts flowing
+              setProcessingEvents([]);
+              currentTextBlock += event.text;
+              fullContent += event.text;
+              const displayBlocks = [...blocks, { type: 'text' as const, content: currentTextBlock }];
+              updateStreamingMessage(tabId, fullContent, displayBlocks);
+            }
+
+            if (event.type === 'thinking') {
+              setProcessingEvents(prev => [...prev, { type: 'thinking', startTime: Date.now() }]);
+              if (currentTextBlock) {
+                blocks.push({ type: 'text', content: currentTextBlock });
+                currentTextBlock = '';
+              }
+              blocks.push({ type: 'thinking', content: event.thinking, metadata: {} });
+            }
+
+            if (event.type === 'tool_use') {
+              setProcessingEvents(prev => [...prev, { type: 'tool_use', name: event.name, startTime: Date.now() }]);
+              if (currentTextBlock) {
+                blocks.push({ type: 'text', content: currentTextBlock });
+                currentTextBlock = '';
+              }
+              blocks.push({
+                type: 'tool_use',
+                content: JSON.stringify(event.input, null, 2),
+                metadata: { name: event.name },
+              });
+            }
+
+            if (event.type === 'done') {
+              setProcessingEvents([]);
+              // Flush remaining text block
+              if (currentTextBlock) {
+                blocks.push({ type: 'text', content: currentTextBlock });
+                currentTextBlock = '';
+              }
+              finalizeStreamingMessage(tabId, fullContent, {
+                model: event.model,
+                tokens: event.usage?.totalTokens,
+                costUsd: event.costUsd,
+                latencyMs: event.latencyMs,
+              }, blocks.length > 0 ? blocks : undefined);
+
+              const artifact = detectArtifact(fullContent);
+              if (artifact) {
+                artifact.threadId = streamConversationId ?? '';
+                setTabArtifact(tabId, artifact);
+                void syncArtifact(artifact, streamConversationId ?? '');
+              }
+            }
+
+            if (event.type === 'error') {
+              setProcessingEvents([]);
+              updateStreamingMessage(tabId, `Error: ${event.error}`);
+              finalizeStreamingMessage(tabId, `Error: ${event.error}`, {});
+            }
+          } catch {
+            // Malformed SSE line — skip
+          }
+        }
+      }
+
+      setIsStreaming(false);
+      abortControllerRef.current = null;
       setSendButtonState('approved');
       setTimeout(() => setSendButtonState('normal'), 1500);
-
-      // ── Artifact detection ─────────────────────────────────────────────
-      const artifact = detectArtifact(responseContent);
-      if (artifact) {
-        artifact.threadId = threadId;
-        setTabArtifact(tabId, artifact);
-        void syncArtifact(artifact, threadId);
-      }
     } catch (error) {
+      setIsStreaming(false);
+      abortControllerRef.current = null;
+      setProcessingEvents([]);
+
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        // User stopped generation — keep partial content
+        if (fullContent) {
+          finalizeStreamingMessage(tabId, fullContent, {});
+        }
+        setSendButtonState('normal');
+        return;
+      }
+
       const errorMessage: MessageProps = {
         role: 'assistant',
         content: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -410,7 +556,9 @@ export function ChatInterface() {
       appendMessage(tabId, errorMessage);
       setSendButtonState('normal');
     }
-  }, [input, activeTabId, activeConversationId, appendMessage, setTabConversationId, setActiveThreadId, setTabGhostContext, setTabArtifact, renameTab]);
+  }, [input, activeTabId, activeConversationId, appendMessage, setTabConversationId,
+      setActiveThreadId, setTabGhostContext, setTabArtifact, renameTab,
+      updateStreamingMessage, finalizeStreamingMessage]);
 
   // ── Search callbacks (S9-08) ──────────────────────────────────────────────
   const handleSearchChange = useCallback(
@@ -482,9 +630,6 @@ export function ChatInterface() {
       {/* ── Body: sidebar + content area ── */}
       <div className="flex flex-1 overflow-hidden">
 
-        {/* ── Persistent conversation sidebar (Sprint 10.5 Task 2) ── */}
-        <ChatSidebar onLoadThread={handleLoadThread} />
-
         {/* ── Tab content (War Room / Workers / Strategic) ── */}
         <div className="flex flex-1 overflow-hidden">
 
@@ -537,6 +682,7 @@ export function ChatInterface() {
                     activeMatchIdx={activeMatchIdx}
                     onEditMessage={handleEditMessage}
                     onRegenerate={handleRegenerate}
+                    isWaitingForResponse={sendButtonState === 'checking'}
                   />
                 )}
               </div>
@@ -597,6 +743,7 @@ export function ChatInterface() {
                     <SendButton
                       state={sendButtonState}
                       onClick={handleSubmit}
+                      onStop={handleStop}
                       disabled={!input.trim() || restoring}
                     />
                   </div>

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SHIM Job Context Extractor
  *
  * Maps a GregLite TaskManifest + EoS scan result to the context shape
@@ -10,8 +10,8 @@
  *   linesOfCode     = file count × 100 (rough estimate; no estimated_lines in manifest)
  */
 
-import type { TaskManifest } from '../agent-sdk/types.js';
-import type { EoSScanResult } from '../eos/types.js';
+import type { TaskManifest } from '../agent-sdk/types';
+import type { EoSScanResult } from '../eos/types';
 
 export interface JobContext {
   complexity: number;

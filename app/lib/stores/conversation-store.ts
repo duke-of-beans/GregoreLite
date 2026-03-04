@@ -3,23 +3,50 @@
  *
  * Sophisticated Zustand store for conversation management.
  * Includes persistence, optimistic updates, caching, and error recovery.
+ *
+ * NOTE: All database operations go through API routes via conversation-client.
+ * This keeps server-only modules (better-sqlite3, fs) out of the browser bundle.
  */
 
 import { create } from 'zustand';
 import {
-  ConversationRepository,
-  Conversation,
-  ConversationWithStats,
-  ConversationListParams,
-} from '../repositories';
+  createConversation as apiCreate,
+  getConversation as apiGet,
+  updateTitle as apiUpdateTitle,
+  archiveConversation as apiArchive,
+  unarchiveConversation as apiUnarchive,
+  pinConversation as apiPin,
+  unpinConversation as apiUnpin,
+  deleteConversation as apiDelete,
+  listConversations as apiList,
+  searchConversations as apiSearch,
+  type ConversationWithStats,
+  type PaginatedResult,
+} from '../api/conversation-client';
 import {
   saveToStorage,
   loadFromStorage,
   PersistOptions,
 } from './middleware/persist';
 import { connectDevtools, sendToDevtools } from './middleware/devtools';
-import { createOptimisticManager } from './store-utils';
-import { PaginatedResult } from '../repositories/types';
+
+/**
+ * Conversation entity (re-exported for downstream consumers)
+ */
+export type { ConversationWithStats } from '../api/conversation-client';
+
+export interface Conversation {
+  id: string;
+  title: string;
+  model: string;
+  modelTier: 'haiku' | 'sonnet' | 'opus';
+  createdAt: Date;
+  updatedAt: Date;
+  archived: boolean;
+  pinned: boolean;
+  totalTokens: number;
+  totalCost: number;
+}
 
 /**
  * Store state
@@ -38,18 +65,12 @@ export interface ConversationState {
     archived: boolean;
     pinned: boolean | null;
   };
-
-  // Optimistic updates
-  optimisticUpdates: ReturnType<typeof createOptimisticManager<Conversation>>;
 }
 
 /**
  * Store actions
  */
 interface ConversationActions {
-  // Repository instance
-  repository: ConversationRepository;
-
   // Conversation operations
   createConversation: (data: {
     title: string;
@@ -65,9 +86,10 @@ interface ConversationActions {
   deleteConversation: (id: string) => Promise<void>;
 
   // List operations
-  loadConversations: (
-    params?: Omit<ConversationListParams, 'page' | 'pageSize'>
-  ) => Promise<void>;
+  loadConversations: (params?: {
+    archived?: boolean;
+    pinned?: boolean | null;
+  }) => Promise<void>;
   loadNextPage: () => Promise<void>;
   searchConversations: (query: string) => Promise<void>;
 
@@ -111,7 +133,6 @@ const initialState: ConversationState = {
     archived: false,
     pinned: null,
   },
-  optimisticUpdates: createOptimisticManager<Conversation>(),
 };
 
 /**
@@ -130,12 +151,9 @@ const persistOptions: PersistOptions<ConversationState> = {
  * Create conversation store
  */
 export const useConversationStore = create<ConversationStore>((set, get) => {
-  // Repository instance
-  const repository = new ConversationRepository();
-
   // Devtools connection
   const devtools =
-    process.env.NODE_ENV === 'development'
+    typeof window !== 'undefined' && process.env.NODE_ENV === 'development'
       ? connectDevtools('ConversationStore')
       : null;
 
@@ -153,7 +171,6 @@ export const useConversationStore = create<ConversationStore>((set, get) => {
 
   return {
     ...initialState,
-    repository,
 
     // Create conversation
     createConversation: async (data) => {
@@ -161,34 +178,33 @@ export const useConversationStore = create<ConversationStore>((set, get) => {
       sendAction('createConversation/pending');
 
       try {
-        const result = repository.createConversation(data);
+        const convWithStats = await apiCreate(data);
 
-        if (!result.ok) {
-          throw result.error;
-        }
+        set((state) => ({
+          conversations: new Map(state.conversations).set(
+            convWithStats.id,
+            convWithStats
+          ),
+          activeConversationId: convWithStats.id,
+          isLoading: false,
+          listCache: null, // Invalidate cache
+        }));
 
-        const conversation = result.value;
+        get().persist();
+        sendAction('createConversation/fulfilled');
 
-        // Load full stats
-        const statsResult = repository.findByIdWithStats(conversation.id);
-        if (statsResult.ok) {
-          const convWithStats = statsResult.value;
-
-          set((state) => ({
-            conversations: new Map(state.conversations).set(
-              conversation.id,
-              convWithStats
-            ),
-            activeConversationId: conversation.id,
-            isLoading: false,
-            listCache: null, // Invalidate cache
-          }));
-
-          get().persist();
-          sendAction('createConversation/fulfilled');
-        }
-
-        return conversation;
+        return {
+          id: convWithStats.id,
+          title: convWithStats.title,
+          model: convWithStats.model,
+          modelTier: convWithStats.modelTier,
+          createdAt: convWithStats.createdAt,
+          updatedAt: convWithStats.updatedAt,
+          archived: convWithStats.archived,
+          pinned: convWithStats.pinned,
+          totalTokens: convWithStats.totalTokens,
+          totalCost: convWithStats.totalCost,
+        };
       } catch (error) {
         const errorMessage =
           error instanceof Error
@@ -215,14 +231,10 @@ export const useConversationStore = create<ConversationStore>((set, get) => {
       sendAction('loadConversation/pending');
 
       try {
-        const result = repository.findByIdWithStats(id);
-
-        if (!result.ok) {
-          throw result.error;
-        }
+        const conv = await apiGet(id);
 
         set((state) => ({
-          conversations: new Map(state.conversations).set(id, result.value),
+          conversations: new Map(state.conversations).set(id, conv),
           activeConversationId: id,
           isLoading: false,
         }));
@@ -254,22 +266,18 @@ export const useConversationStore = create<ConversationStore>((set, get) => {
       sendAction('updateTitle/pending');
 
       try {
-        const result = repository.updateTitle(id, title);
-
-        if (!result.ok) {
-          throw result.error;
-        }
+        await apiUpdateTitle(id, title);
 
         // Reload to get accurate stats
-        const statsResult = repository.findByIdWithStats(id);
-        if (statsResult.ok) {
+        try {
+          const updated = await apiGet(id);
           set((state) => ({
-            conversations: new Map(state.conversations).set(
-              id,
-              statsResult.value
-            ),
+            conversations: new Map(state.conversations).set(id, updated),
             listCache: null,
           }));
+        } catch {
+          // If reload fails, optimistic state is fine
+          set({ listCache: null });
         }
 
         get().persist();
@@ -305,9 +313,7 @@ export const useConversationStore = create<ConversationStore>((set, get) => {
       sendAction('archiveConversation/pending');
 
       try {
-        const result = repository.archive(id);
-        if (!result.ok) throw result.error;
-
+        await apiArchive(id);
         set({ listCache: null });
         get().persist();
         sendAction('archiveConversation/fulfilled');
@@ -337,9 +343,7 @@ export const useConversationStore = create<ConversationStore>((set, get) => {
       sendAction('unarchiveConversation/pending');
 
       try {
-        const result = repository.unarchive(id);
-        if (!result.ok) throw result.error;
-
+        await apiUnarchive(id);
         set({ listCache: null });
         get().persist();
         sendAction('unarchiveConversation/fulfilled');
@@ -369,9 +373,7 @@ export const useConversationStore = create<ConversationStore>((set, get) => {
       sendAction('pinConversation/pending');
 
       try {
-        const result = repository.pin(id);
-        if (!result.ok) throw result.error;
-
+        await apiPin(id);
         set({ listCache: null });
         get().persist();
         sendAction('pinConversation/fulfilled');
@@ -401,9 +403,7 @@ export const useConversationStore = create<ConversationStore>((set, get) => {
       sendAction('unpinConversation/pending');
 
       try {
-        const result = repository.unpin(id);
-        if (!result.ok) throw result.error;
-
+        await apiUnpin(id);
         set({ listCache: null });
         get().persist();
         sendAction('unpinConversation/fulfilled');
@@ -423,8 +423,7 @@ export const useConversationStore = create<ConversationStore>((set, get) => {
       sendAction('deleteConversation/pending');
 
       try {
-        const result = repository.delete(id);
-        if (!result.ok) throw result.error;
+        await apiDelete(id);
 
         set((state) => {
           const newConversations = new Map(state.conversations);
@@ -455,32 +454,23 @@ export const useConversationStore = create<ConversationStore>((set, get) => {
 
       try {
         const { filters } = get();
-        const listParams: ConversationListParams = {
+        const result = await apiList({
           page: 1,
           pageSize: 50,
           archived: filters.archived,
-          ...(params as Partial<ConversationListParams>),
-        };
-
-        if (filters.pinned !== null) {
-          listParams.pinned = filters.pinned;
-        }
-
-        const result = repository.listConversations(listParams);
-
-        if (!result.ok) {
-          throw result.error;
-        }
+          pinned: filters.pinned,
+          ...params,
+        });
 
         // Update conversations map
         const newConversations = new Map(get().conversations);
-        result.value.items.forEach((conv) => {
+        result.items.forEach((conv) => {
           newConversations.set(conv.id, conv);
         });
 
         set({
           conversations: newConversations,
-          listCache: result.value,
+          listCache: result,
           isLoading: false,
         });
 
@@ -505,29 +495,22 @@ export const useConversationStore = create<ConversationStore>((set, get) => {
       sendAction('loadNextPage/pending');
 
       try {
-        const listParams: ConversationListParams = {
+        const result = await apiList({
           page: listCache.page + 1,
           pageSize: listCache.pageSize,
           archived: filters.archived,
-        };
-
-        if (filters.pinned !== null) {
-          listParams.pinned = filters.pinned;
-        }
-
-        const result = repository.listConversations(listParams);
-
-        if (!result.ok) throw result.error;
+          pinned: filters.pinned,
+        });
 
         // Merge with existing
         const newConversations = new Map(get().conversations);
-        result.value.items.forEach((conv) => {
+        result.items.forEach((conv) => {
           newConversations.set(conv.id, conv);
         });
 
         set({
           conversations: newConversations,
-          listCache: result.value,
+          listCache: result,
           isLoading: false,
         });
 
@@ -544,21 +527,19 @@ export const useConversationStore = create<ConversationStore>((set, get) => {
       sendAction('searchConversations/pending');
 
       try {
-        const result = repository.searchConversations({
+        const result = await apiSearch({
           query,
           page: 1,
           pageSize: 50,
         });
 
-        if (!result.ok) throw result.error;
-
         // Update cache
         const searchCache = new Map(get().searchCache);
-        searchCache.set(query, result.value);
+        searchCache.set(query, result);
 
         // Update conversations map
         const newConversations = new Map(get().conversations);
-        result.value.items.forEach((conv) => {
+        result.items.forEach((conv) => {
           newConversations.set(conv.id, conv);
         });
 

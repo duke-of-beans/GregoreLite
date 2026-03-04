@@ -30,11 +30,13 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error('[api/morning-briefing] Failed:', error);
-    return NextResponse.json(
-      { error: 'Failed to generate briefing' },
-      { status: 500 }
-    );
+    console.warn('[api/morning-briefing] DB unavailable:', error);
+    return NextResponse.json({
+      data: {
+        briefing: null,
+        alreadyShown: true,
+      },
+    });
   }
 }
 
@@ -51,10 +53,7 @@ export async function POST() {
 
     return NextResponse.json({ data: { markedDate: today } });
   } catch (error) {
-    console.error('[api/morning-briefing] POST failed:', error);
-    return NextResponse.json(
-      { error: 'Failed to mark briefing shown' },
-      { status: 500 }
-    );
+    console.warn('[api/morning-briefing] POST DB unavailable:', error);
+    return NextResponse.json({ data: { markedDate: null } });
   }
 }

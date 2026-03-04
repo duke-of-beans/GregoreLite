@@ -24,8 +24,8 @@ export async function GET() {
     }
     return NextResponse.json({ data: config });
   } catch (err) {
-    console.error('[settings] GET failed:', err);
-    return NextResponse.json({ error: 'Failed to load settings' }, { status: 500 });
+    console.warn('[settings] GET DB unavailable:', err);
+    return NextResponse.json({ data: {} });
   }
 }
 

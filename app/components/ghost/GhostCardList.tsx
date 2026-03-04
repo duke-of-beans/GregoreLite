@@ -19,12 +19,10 @@ import { useGhostStore } from '@/lib/stores/ghost-store';
 import { GhostCard } from './GhostCard';
 
 export function GhostCardList() {
-  const {
-    ghostSuggestions,
-    addGhostSuggestion,
-    dismissGhostSuggestion,
-    activeThreadId,
-  } = useGhostStore();
+  const ghostSuggestions = useGhostStore((s) => s.ghostSuggestions);
+  const addGhostSuggestion = useGhostStore((s) => s.addGhostSuggestion);
+  const dismissGhostSuggestion = useGhostStore((s) => s.dismissGhostSuggestion);
+  const activeThreadId = useGhostStore((s) => s.activeThreadId);
 
   // ── Tauri event listener for ghost:suggestion-ready ───────────────────────
   useEffect(() => {

@@ -28,6 +28,7 @@ import { scoreClass } from '@/lib/eos/score-class';
 import { GhostCardList } from '@/components/ghost/GhostCardList';
 import { EoSSparkLine } from './EoSSparkLine';
 import { EoSHistoryPanel } from './EoSHistoryPanel';
+import { RecentChats } from './RecentChats';
 
 // ─── Collapsed icon strip ─────────────────────────────────────────────────────
 
@@ -130,6 +131,18 @@ function PanelContent() {
           </svg>
         </button>
       </div>
+
+      {/* Recent Chats */}
+      <RecentChats
+        onLoadThread={(id) => {
+          // Will be wired via props from ChatInterface
+          window.dispatchEvent(new CustomEvent('greglite:load-thread', { detail: { conversationId: id } }));
+        }}
+        onSeeAll={() => {
+          // Trigger Cmd+[ equivalent
+          window.dispatchEvent(new CustomEvent('greglite:open-history'));
+        }}
+      />
 
       {/* Sections */}
       <ProjectSection />

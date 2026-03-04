@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Gregore Lite',
+  title: 'GregLite',
   description: 'Cognitive operating environment',
   icons: {
     icon: '/gregore-logo.png',

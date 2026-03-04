@@ -116,10 +116,18 @@ export async function GET(): Promise<NextResponse> {
 
     return NextResponse.json({ success: true, data: state });
   } catch (error) {
-    console.error('[api/context] Error:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to load context' },
-      { status: 500 }
-    );
+    console.warn('[api/context] DB unavailable:', error);
+    const emptyState: ContextPanelState = {
+      activeProject: null,
+      sessionNumber: 0,
+      sessionDurationMs: 0,
+      recentDecisions: [],
+      kernlStatus: 'error',
+      aegisProfile: 'IDLE',
+      aegisOnline: false,
+      pendingSuggestions: 0,
+      eosSummary: null,
+    };
+    return NextResponse.json({ success: true, data: emptyState });
   }
 }
