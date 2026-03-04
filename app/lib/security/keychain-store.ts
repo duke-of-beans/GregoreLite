@@ -16,8 +16,9 @@
 
 import keytar from 'keytar';
 
-const SERVICE_NAME = 'ai.greglite.app';
+const SERVICE_NAME = 'ai.greglite.desktop';
 const ACCOUNT_GITHUB_PAT = 'github_pat';
+const ACCOUNT_ANTHROPIC_KEY = 'anthropic_api_key';
 
 /**
  * Store a GitHub PAT in the OS keychain.
@@ -41,4 +42,29 @@ export async function getPAT(): Promise<string | null> {
  */
 export async function deletePAT(): Promise<boolean> {
   return keytar.deletePassword(SERVICE_NAME, ACCOUNT_GITHUB_PAT);
+}
+
+// ── Anthropic API Key ─────────────────────────────────────────────────────────
+
+/**
+ * Store the Anthropic API key in the OS keychain.
+ * Sprint 8D: onboarding stores key here, never in SQLite.
+ */
+export async function storeAnthropicKey(key: string): Promise<void> {
+  await keytar.setPassword(SERVICE_NAME, ACCOUNT_ANTHROPIC_KEY, key);
+}
+
+/**
+ * Retrieve the Anthropic API key from the OS keychain.
+ * Returns null if no entry exists (key not configured).
+ */
+export async function getAnthropicKey(): Promise<string | null> {
+  return keytar.getPassword(SERVICE_NAME, ACCOUNT_ANTHROPIC_KEY);
+}
+
+/**
+ * Delete the Anthropic API key from the OS keychain.
+ */
+export async function deleteAnthropicKey(): Promise<boolean> {
+  return keytar.deletePassword(SERVICE_NAME, ACCOUNT_ANTHROPIC_KEY);
 }

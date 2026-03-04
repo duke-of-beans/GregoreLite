@@ -982,9 +982,13 @@ Gregore-UI-specific:
 
 **Phase 7 — Self-Evolution Mode** — Agent SDK sessions on own source, CI gate, David merge workflow. Council Session 3 complete — see §7. ✅ COMPLETE (commit 9b5789d). tsc clean, 890/890 tests, EoS 82/100.
 
-**Phase 8 — Ship Prep: v1.0.0** — ✅ COMPLETE. Security hardening: execSync → execFileSync (shell injection), OS keychain for GitHub PAT + Anthropic API key (keytar/Windows Credential Manager), merge route HMAC auth. Leak fixes: executor.ts EventListener, rate-limiter.ts setInterval. EoS FP suppression (phase5-integration false positive). NSIS installer, tauri-plugin-updater, build-installer.bat. First-run onboarding (4-step: API key → KERNL init → AEGIS ping → launch). README rewritten as product document. 890 tests passing. git tag v1.0.0.
+**Phase 8 — Ship Prep: v1.0.0** — ✅ COMPLETE (March 4, 2026). Security hardening: execSync → execFileSync (shell injection closed), OS keychain for GitHub PAT and Anthropic API key (keytar/Windows Credential Manager), merge route auth (HMAC desktop token). Leak fixes: executor.ts EventListener leak closed (removeEventListener in all 3 paths), rate-limiter.ts setInterval leak closed (clearInterval in destroy()). EoS FP suppression: phase5-integration.test.ts:246 suppressed. EoS: 0→100/85 target. NSIS installer, tauri-plugin-updater, build-installer.bat, tauri-prebuild.bat (static export with API route relocation). First-run onboarding (4-step wizard: API key validation + keychain storage, KERNL init status, AEGIS ping with graceful skip, launch summary). README rewritten as product document. 887/890 tests passing (3 pre-existing artifact detector failures, no regression). git tag v1.0.0. Commits: 8e25a72 (8A), b154aad (8B), 5de4800 (8C).
 
 **Phase 9 — The Full Cockpit: v1.1.0** — ✅ COMPLETE (commit ac634bd, March 3, 2026). 22 sprints, 4 waves. Every keyboard shortcut in KeyboardShortcuts.tsx fires a real action. tsc clean, 890 tests throughout.
+
+**Sprint 10.x — Daily Driver Polish** — ✅ COMPLETE (Sprints 10.5–10.9, March 3–4, 2026). Post-v1.1.0 polish for daily use. SSE streaming, flat messages, density toggle, light/dark theme, settings gear, thread CRUD, War Room fix, AEGIS audit, StatusBar event wiring, 404 route stubs. **NOTE:** Sprint 10.6 STATUS entry falsely claimed "Transit Map data foundation shipped" — zero Transit Map code exists.
+
+**Remaining work mapped in SPRINT_ROADMAP.md:** Sprint 11.0 (cleanup), 11.1 (Agent SDK stubs), 11.2–11.7 (Transit Map Phases A–F), 12.0 (cost optimization).
 
 Wave 0: schema migrations (manifest_templates, ghost_preferences tables).
 

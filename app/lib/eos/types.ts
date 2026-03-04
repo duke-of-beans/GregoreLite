@@ -55,6 +55,8 @@ export const DEFAULT_CONFIG: EoSConfig = {
     /build/,
     /\.next/,
     /coverage/,
+    /out[\\/]/,
+    /src-tauri[\\/]target/,
   ],
   fileExtensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs'],
   batchSize: 10,

@@ -1,6 +1,7 @@
 # GREGLITE PROJECT DNA
-# Version: 1.1.0 | Phase 9 COMPLETE | March 3, 2026
+# Version: Post-1.1.0 | Sprint 10.9 COMPLETE | March 4, 2026
 # Feature Backlog: D:\Projects\GregLite\FEATURE_BACKLOG.md
+# Sprint Roadmap: D:\Projects\GregLite\SPRINT_ROADMAP.md
 
 identity:
   name: "Gregore Lite"
@@ -18,59 +19,47 @@ identity:
     - "LEAN-OUT — use existing tools, build only unique intelligence"
 
 current_state:
-  version: "1.1.0"
-  phase: "Phase 9 COMPLETE — The Full Cockpit"
-  status: "All 22 Phase 9 sprints shipped. v1.1.0 tagged (ac634bd). Every keyboard shortcut wired. Complete cockpit."
+  version: "post-1.1.0"
+  phase: "Sprint 10.x polish complete, Sprint 11.x next"
+  status: |
+    Phases 1–9 shipped (KERNL, continuity, bootstrap, Agent SDK, context engine,
+    Ghost Thread, decision gate, quality layer, self-evolution, full cockpit).
+    Sprint 10.5–10.9 polished UX for daily driver use. SSE streaming, density toggle,
+    light/dark theme, settings panel, thread CRUD, War Room fix, AEGIS audit.
+    890 tests, EoS 82/100, tsc clean.
   git_tag: "v1.1.0"
+  latest_commits: "Sprint 10.5 → 10.9 (post-v1.1.0 polish)"
+
+ground_truth_audit:
+  date: "2026-03-04"
+  findings:
+    - "Transit Map: 829-line spec exists (TRANSIT_MAP_SPEC.md), ZERO implementation. Sprint 10.6 falsely claimed 'data foundation shipped.'"
+    - "Agent SDK stubs: 4 tools still NOT_IMPLEMENTED (test_runner, shim_readonly_audit, markdown_linter, kernl_search_readonly). detectShimLoop() always returns false."
+    - "Phase 8 (Ship Prep): Claimed complete in BLUEPRINT_FINAL.md. No Phase 8 commits visible in git log. Needs targeted file audit."
+    - "Dual routes: /api/conversations + /api/threads both exist. /api/jobs + /api/agent-sdk/jobs both exist. Need consolidation."
+    - "Decision gate: 3 dead stub functions in trigger-detector.ts replaced by Haiku inference path. Dead code cleanup needed."
 
 key_decisions:
   - date: "2026-02-28"
     decision: "Tauri + Next.js 16 + React 19 + TypeScript strict — identical to Gregore"
-    rationale: "Borrow scaffold entirely, 40-60% Phase 1 time savings"
-
-  - date: "2026-02-28"
-    decision: "Cowork is a UI product — cannot be programmatically spawned"
-    rationale: "Research confirmed no CLI/manifest API. Claude Agent SDK is the right tool."
-
   - date: "2026-02-28"
     decision: "Claude Agent SDK replaces all Cowork references in blueprint"
-    rationale: "Programmatic spawn, manifest-as-system-prompt injection, streaming results"
-
   - date: "2026-02-28"
     decision: "Ghost Thread gets full disk + all email/inbox access"
-    rationale: "David explicitly approved. Ghost needs full context awareness to be valuable."
-
   - date: "2026-02-28"
     decision: "War Room Dependency Visualization is Phase 2, not cut"
-    rationale: "Phase 1 must carry dependency graph fields in manifest schema from day one"
-
   - date: "2026-02-28"
-    decision: "Self-Evolution Mode is in scope — Phase 5 or post-launch"
-    rationale: "Gregore Lite runs Agent SDK sessions against its own source code. David is merge gate."
-
+    decision: "Self-Evolution Mode is in scope"
   - date: "2026-02-28"
     decision: "Gregore design system carries over completely"
-    rationale: "CSS variables, animations, dark theme, Geyser G branding — direct copy"
-
   - date: "2026-02-28"
-    decision: "Session end is inferred, not signaled"
-    rationale: "Three triggers: Tauri on_window_event, idle timeout (20min default), explicit thread close"
-
+    decision: "Session end is inferred (Tauri event, idle timeout 20min, explicit close)"
   - date: "2026-02-28"
-    decision: "TECHNICAL_STANDARDS.md and CLAUDE_INSTRUCTIONS.md are Phase 1 inputs"
-    rationale: "Bootstrap sequence loads dev protocols the same way it loads KERNL context"
-
-  - date: "2026-02-28"
-    decision: "Deep Research stays in Claude Desktop — passive ingestion bridge in Phase 3"
-    rationale: "Clipboard monitor + D:\\Research\\Ingest file watcher, manual trigger only"
-
-  - date: "2026-02-28"
-    decision: "Cognitive Performance Tracking is Phase 5/post-launch"
-    rationale: "AEGIS must log signal data from Day 1. Correlation model needs weeks of data first."
-
-  - date: "2026-02-28"
-    decision: "Public API is Gregore (full) feature, not Gregore Lite"
-    rationale: "Don't shape architecture prematurely for platform needs"
+    decision: "Deep Research stays in Claude Desktop — passive ingestion bridge"
+  - date: "2026-03-04"
+    decision: "Transit Map implementation deferred to Sprint 11.2–11.7 (data foundation first)"
+  - date: "2026-03-04"
+    decision: "Sprint 11.0 cleanup sprint before new features (dead code, route consolidation, Phase 8 verification)"
 
 product_funnel:
   lite: "Single-user, Claude-only, David's daily driver, dogfooding vehicle"
@@ -78,29 +67,27 @@ product_funnel:
   delta: "Lite → Full adds: Consensus engine, auth/billing, model selector, marketplace API, team KERNL"
 
 interfaces:
-  - workspace: "Gregore"
-    relationship: "Scaffold source — copy entire app/ directory to start"
-    path: "D:\\Projects\\Gregore\\app\\"
   - workspace: "KERNL"
     relationship: "Primary memory layer — native TypeScript import, not MCP"
   - workspace: "SHIM"
-    relationship: "Quality analysis — native TypeScript import, runs on every Agent SDK result"
+    relationship: "Quality analysis — native TypeScript import"
   - workspace: "AEGIS"
     relationship: "Workload signaling — local HTTP to AEGIS REST endpoint"
-  - workspace: "Oktyv"
-    relationship: "Browser automation module — native import"
-  - workspace: "Continuity"
-    relationship: "Crash recovery — native import"
+  - workspace: "Eye of Sauron"
+    relationship: "Code quality scanning — native import (lib/eos/)"
 
 documents:
-  core:
+  living:
     - "PROJECT_DNA.yaml"           # This file
-    - "BLUEPRINT_FINAL.md"         # Complete locked architecture (to be created)
-    - "COUNCIL_PROMPTS.md"         # Three Council prompts (to be written next session)
-    - "STATUS.md"                  # Build status tracking
-  source:
-    - "D:\\Downloads\\greglite synth.md"  # Full Council Round 2 synthesis (all 6 members)
-    - "D:\\Projects\\Gregore\\docs\\DESIGN_SYSTEM.md"
-    - "D:\\Projects\\Gregore\\docs\\UI_UX_FINAL_DIRECTION.md"
-    - "D:\\Dev\\TECHNICAL_STANDARDS.md"
-    - "D:\\Dev\\CLAUDE_INSTRUCTIONS.md"
+    - "STATUS.md"                  # Build status tracking (823 lines, historical gate results)
+    - "FEATURE_BACKLOG.md"         # Feature backlog with priority tiers
+    - "SPRINT_ROADMAP.md"          # Dependency-ordered remaining sprint sequence
+    - "TRANSIT_MAP_SPEC.md"        # Transit Map design spec (829 lines, zero impl)
+  architecture:
+    - "BLUEPRINT_FINAL.md"         # Complete locked architecture v1.1.0
+    - "BLUEPRINT_S5_CrossContext.md"
+    - "BLUEPRINT_S6_Ghost.md"
+    - "BLUEPRINT_S7_AgentSDK_SelfEvolution.md"
+  reference:
+    - "DEV_PROTOCOLS.md"
+    - "HANDOFF.md"

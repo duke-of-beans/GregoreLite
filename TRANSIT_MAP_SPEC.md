@@ -726,39 +726,44 @@ conversation_events (learnable, pending)
 
 The Transit Map is too large for a single sprint. Here's how it decomposes.
 
-### Phase A — Data Foundation (Sprint 10.6 scope)
+**IMPLEMENTATION STATUS (March 4, 2026): ZERO code exists.**
+Sprint 10.6 STATUS.md entry claimed "Transit Map data foundation shipped" — this was incorrect.
+No `conversation_events` table, no tree columns, no capture hooks, no registry.
+All phases below are pending. Mapped to Sprint 11.x sequence in SPRINT_ROADMAP.md.
+
+### Phase A — Data Foundation → Sprint 11.2
 - [ ] Create `conversation_events` table (§4.1)
 - [ ] Add `parent_id`, `branch_index`, `is_active_branch` to messages (§4.2)
 - [ ] Implement EventMetadata schema and write helper (§2.3)
 - [ ] Capture initial events: `flow.message`, `quality.interruption` (requires SSE), `quality.regeneration`, `quality.edit_resend`
 - [ ] Event registry config file with initial types (§4.3)
 
-### Phase B — Scrollbar Landmarks (Sprint 10.7)
+### Phase B — Scrollbar Landmarks → Sprint 11.3
 - [ ] CustomScrollbar component (§5.1)
 - [ ] Scrollbar landmark rendering from events (§5.2)
 - [ ] Capture: `flow.topic_shift`, `cognitive.artifact_generated`, `system.gate_trigger`
 - [ ] Scrollbar landmark config (§3.4)
 
-### Phase C — Z3 Detail Annotations (Sprint 10.8)
+### Phase C — Z3 Detail Annotations → Sprint 11.4
 - [ ] Per-message inline metadata (model, tokens, cost, latency)
 - [ ] Event marker rendering on messages
 - [ ] Event detail panel on marker click
 - [ ] User annotation support
 
-### Phase D — Z2 Subway View (Sprint 11.x)
+### Phase D — Z2 Subway View → Sprint 11.5
 - [ ] Station auto-generation from events (§3.3)
 - [ ] Subway line renderer (horizontal, with markers)
 - [ ] Branch rendering (fork/merge visualization)
 - [ ] Click-to-scroll navigation from stations to messages
 - [ ] Manual station creation (right-click → "Mark as Landmark")
 
-### Phase E — Z1 Sankey View (Sprint 12.x)
+### Phase E — Z1 Sankey View → Sprint 11.6
 - [ ] Sankey flow graph renderer
 - [ ] Token volume → edge width mapping
 - [ ] Quality color coding on segments
 - [ ] Zoom transition animations (Z1 ↔ Z2 ↔ Z3)
 
-### Phase F — Learning Engine (Sprint 12.x+)
+### Phase F — Learning Engine → Sprint 11.7
 - [ ] Batch processor for learnable events (§6.1)
 - [ ] Pattern detector (initial: verbosity, regeneration rate)
 - [ ] Insight generator with confidence scoring

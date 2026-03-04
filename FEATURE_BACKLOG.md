@@ -1,181 +1,149 @@
 # GREGLITE — FEATURE BACKLOG
-# Created: March 2, 2026
-# Purpose: Features confirmed missing or stub-only. Sourced from UI audit, blueprint gap analysis, and David's priorities.
-# Priority tiers: P1 = daily friction, P2 = significant value, P3 = nice-to-have
+# Updated: March 4, 2026
+# Purpose: Ground-truth gap analysis. What's actually missing vs what's built.
+# Source: Codebase audit (March 4, 2026) + TRANSIT_MAP_SPEC.md + manual testing
+# Sprint Roadmap: SPRINT_ROADMAP.md
 
 ---
 
-## BUCKET A — BUILT BUT NOT WIRED (dead code or stub-only)
-These components or stores exist but have no functional UI surface. Lowest build cost — infrastructure already done.
-
-### A1 — Command Palette (Cmd+K) [P1]
-**Status:** Button in Header fires console.log. Full state shape in ui-store (openCommandPalette, closeCommandPalette, recentCommands). Zero actual component.
-**What's needed:** CommandPalette.tsx — fuzzy search input, command registry, keyboard navigation, recent commands list, context-aware filtering (e.g. "spawn job" only available when on strategic thread).
-**Scope:** ~1 sprint. ui-store wiring already done. Needs the visual component and a command registry that maps to existing actions.
-**Commands to wire on day 1:** New thread, Switch tab (Strategic/Workers/War Room), Open War Room, Toggle context panel, Open settings, Open ghost privacy, Kill job [id], Spawn job, Search KERNL.
-
-### A2 — Notification Display (toast / bell) [P1]
-**Status:** addNotification/dismissNotification/clearNotifications fully modeled in ui-store with typed severities and durations. Nothing renders them. Every background event (job completed, CI passed, Ghost surfaced something, budget warning) fires into a void.
-**What's needed:** ToastStack.tsx — fixed-position bottom-right stack, auto-dismiss, severity colors. NotificationBell.tsx in Header — badge count for unread persistent notifications.
-**Scope:** ~0.5 sprint. Pure UI, all the data is there.
-
-### A3 — Status Bar [P2]
-**Blueprint §10:** `│ COUNCIL: 0 pending │ COST TODAY: $0.42 │ COWORK: 2 active │`
-**Status:** ChatInterface.tsx ends with no bottom bar. Cost ticker lives in JobQueue but not in a global status bar. Council count and active job count aren't surfaced anywhere globally.
-**What's needed:** StatusBar.tsx — fixed bottom strip showing: cost today (from session_costs), active jobs count (from job-store), AEGIS current profile, KERNL index status.
-**Scope:** ~0.5 sprint. Data already available from existing stores.
-
-### A4 — Settings Panel (Cmd+,) [P2]
-**Status:** ThemeMode (light/dark/system) exists in ui-store. AEGIS port, Ghost scan cadence, budget caps, Ghost exclusion shortcuts — all configurable in code but nowhere in the UI.
-**What's needed:** SettingsPanel.tsx — slide-in drawer or modal. Sections: Appearance (theme toggle), Budget (soft/hard caps), Ghost (cadence, exclusion quick-add), AEGIS (port, status), API (key status, model selection). Links to Privacy Dashboard for deep Ghost config.
-**Scope:** ~1.5 sprints.
-
-### A5 — Inspector Drawer (Cmd+I) [P2]
-**Status:** Listed in KeyboardShortcuts as Cmd+I. No component. In Gregore it's designed as a debugging/inspection surface.
-**What's needed:** InspectorDrawer.tsx — right-side slide-out. Tabs: Active Thread (token count, message count, checkpoint status), KERNL (last write, index size, recent decisions), Job Inspector (selected job detail beyond JobCard), EoS (full issue list, not just top 5).
-**Scope:** ~1.5 sprints.
-
-### A6 — Chat History Panel (Cmd+[) [P2]
-**Status:** conversation-store.ts has full CRUD with pagination. listThreads() in session-manager returns all threads. No UI to browse or switch past conversations.
-**What's needed:** ChatHistoryPanel.tsx — left drawer or separate panel. List of past threads, searchable, click to load. Wires to existing conversation-store.
-**Note:** This is adjacent to the multi-thread tabs feature (B1) but simpler — history panel is read-only browse and reload, not simultaneous parallel threads.
-**Scope:** ~1 sprint.
-
-### A7 — Edit Last Message / Regenerate (Cmd+E / Cmd+R) [P3]
-**Status:** Listed in shortcuts. InputField is input-only.
-**What's needed:** Message.tsx hover state to show Edit / Regenerate actions. Edit mode sets InputField content and removes the message from the list (server-side truncate at that checkpoint). Regenerate re-sends the last user message.
-**Scope:** ~0.5 sprint.
-
-### A8 — Memory Modal (Cmd+M) [P3]
-**Status:** Listed in shortcuts. Unclear what this should be in GregLite context — likely a quick KERNL search surface.
-**What's needed:** Define clearly before building. Probably: search KERNL decisions + patterns from within the strategic thread, without leaving the conversation. Could overlap with command palette search.
-**Scope:** Design first, then ~0.5 sprint.
+## STATUS KEY
+- ✅ SHIPPED — In codebase, tested, working
+- ⚠️ STUB — Code exists but returns NOT_IMPLEMENTED or placeholder
+- ❌ MISSING — Zero implementation despite being in spec or claimed shipped
+- 🔧 BROKEN — Exists but has known issues
 
 ---
 
-## BUCKET B — PARTIALLY BUILT, MISSING LAST PIECE
+## BUCKET A — CLEANUP & VERIFICATION (Sprint 11.0)
 
-### B1 — Multi-Thread Tabs (Multiple Strategic Conversations) [P1]
-**Status:** KERNL supports multiple threads (listThreads(), createThread()). Tab bar has one Strategic slot. Cmd+N does nothing. Hard-wired to single conversation on mount.
-**What's needed:** Thread tabs rendered horizontally across the header (or tab bar). Each tab = independent strategic thread with its own KERNL persistence, Ghost context, artifact panel, decision gate state. [+] button creates a new thread (prompts for name/project). Active tab badge for running Ghost or pending gates. Switch tabs without interrupting anything — each thread is fully KERNL-persisted.
-**Scope:** ~2 sprints. Session-manager already handles multiple threads. Biggest work is Zustand thread-per-tab state isolation and the tab UI.
+### A1 — Phase 8 File Verification [P1]
+BLUEPRINT_FINAL.md claims Phase 8 shipped: NSIS installer, tauri-plugin-updater, first-run onboarding wizard, security hardening (execSync→execFileSync, HMAC auth, OS keychain). No Phase 8 commits visible in git log between Phase 7 (9b5789d) and Phase 9 (ac634bd). Needs targeted file audit to confirm what actually exists.
 
-### B2 — Decision Browser [P2]
-**Status:** DecisionList.tsx shows last 5 decisions in context panel. KERNL is writing every significant decision to the decisions table but there's no read surface beyond the last 5.
-**What's needed:** DecisionBrowser.tsx — full-page or drawer view. Grouped by project, searchable by keyword, filterable by date range. Each decision shows rationale, alternatives considered, thread link. Export to markdown.
-**Scope:** ~1 sprint. Data already in DB.
+### A2 — Dead Route Consolidation [P1]
+Two pairs of duplicate routes serve the same data:
+- `/api/conversations` (ConversationRepository) + `/api/threads` (KERNL) — threads is correct, conversations should be removed or redirected
+- `/api/jobs` + `/api/agent-sdk/jobs` — need to determine which is canonical and remove the other
 
----
+### A3 — Decision Gate Dead Stubs [P2]
+`trigger-detector.ts` has 3 functions marked `[STUB — Sprint 4B]`: `detectHighTradeoff()`, `detectMultiProject()`, `detectLargeEstimate()`. Sprint 4B's Haiku inference path in `analyze()` replaced these. The stubs are dead code — clean up.
 
-## BUCKET C — NOT DESIGNED, SHOULD EXIST
-
-### C1 — Morning Briefing Surface [P1]
-**Current state:** MORNING_BRIEFING.md is manually written per session. The data to generate it automatically already exists in KERNL.
-**What's needed:** MorningBriefing.tsx — shown on cold start before first message (dismissable). Auto-generated from: jobs completed/failed yesterday, decisions logged yesterday, Ghost items surfaced in last 24h, daily cost summary, EoS score delta, any PRs pending merge.
-**Data sources:** session_costs, manifests, decisions, ghost_indexed_items, manifests.ci_passed — all exist.
-**Scope:** ~1.5 sprints (generation logic + UI surface).
-
-### C2 — Ghost Teach Me (Positive Reinforcement) [P1]
-**Current state:** Ghost surfaces cards with Tell me more / Noted. Privacy Dashboard handles exclusions (what to ignore). No way to tell Ghost what to surface MORE of.
-**What's needed:** On GhostCard: "Teach Ghost" action alongside Noted. Opens a micro-form: "Surface more like this" with optional topic label (e.g. "GHM competitor intelligence", "Code quality alerts"). Writes a ghost_preferences row: source_type, topic_hint, boost_factor. Ghost scorer reads ghost_preferences and applies boost when matching content is found.
-**Scope:** ~1.5 sprints.
-
-### C3 — Push Notifications / System Tray [P1]
-**Current state:** Events fire, notifications queue in ui-store, nothing reaches you when app is in background or minimized.
-**What's needed:** Tauri system tray icon (Rust side). Badge count for: CI ready to merge (most important), job failed, budget warning, Ghost surfaced critical interrupt. Clicking tray notification brings window to front and navigates to relevant context. Windows native toast notifications for high-priority events even when app is minimized.
-**Scope:** ~2 sprints (Rust Tauri plugin + notification routing layer).
-
-### C4 — Manifest Templates [P2]
-**Current state:** ManifestBuilder is blank every time. Recurring jobs (weekly GHM scan, GregLite self-evolution runs, etc.) re-described from scratch.
-**What's needed:** Save current ManifestBuilder form as named template. Templates stored in KERNL (new table: manifest_templates). Template picker in ManifestBuilder header — select template to pre-fill all fields. Quick-spawn from Workers tab: list templates with one-click spawn.
-**Scope:** ~1 sprint.
-
-### C5 — Artifact Library [P2]
-**Current state:** ArtifactPanel shows artifact from the current message only. All artifacts are stored in KERNL artifacts table but inaccessible from any other context.
-**What's needed:** ArtifactLibrary.tsx — browsable panel (full-screen tab or drawer). Filter by project, type (code/markdown/output), date. Search by filename or content. Click to open in ArtifactPanel. "Re-attach to current thread" action to pull a past artifact back into context.
-**Scope:** ~1.5 sprints.
-
-### C6 — In-Thread Search [P2]
-**Current state:** MessageList is scroll-only. No find-in-thread.
-**What's needed:** Cmd+F inside a thread opens a search bar above the message list. Highlights matching messages, jumps to them. Client-side search over current messages array. Optionally: server-side KERNL semantic search for "find the message where we discussed X".
-**Scope:** ~0.5 sprint (client-side), ~1 sprint (with semantic).
-
-### C7 — EoS Health Score History [P2]
-**Current state:** Context panel shows current EoS score as a snapshot (82/100). No trend data.
-**What's needed:** EoS scan results written to a history table (eos_scan_history: timestamp, score, file_count, critical_count, warning_count). SparkLine component in context panel shows last 30 days. Click to open full history view with per-sprint breakdown.
-**Scope:** ~1 sprint.
-
-### C8 — Cost Breakdown by Project [P2]
-**Current state:** session_costs tracks per-session costs. Jobs are tagged with project_path. Daily total visible in status bar (once built). No per-project breakdown.
-**What's needed:** Cost view in Inspector or as a section in StatusBar tooltip: cost today by project, cost this week, burn rate by job type. Useful when running GHM + GregLite + research jobs in parallel.
-**Scope:** ~0.5 sprint (pure query + display).
-
-### C9 — Job Retry / Edit Manifest [P2]
-**Current state:** Failed job shows InterruptedSessionCard with [Restart with Handoff] [Cancel]. Restart uses the original manifest unchanged. If the manifest was wrong, you cancel and rebuild from scratch.
-**What's needed:** [Edit & Retry] on failed/interrupted jobs — opens ManifestBuilder pre-filled with the original manifest, editable. On submit, spawns new job with modified manifest (original job marked superseded).
-**Scope:** ~0.5 sprint.
-
-### C10 — KERNL Health Panel [P3]
-**Current state:** KERNLStatus.tsx in context panel shows indexed/not-indexed dot. DB size, index coverage %, last backup time, last embedding run — invisible.
-**What's needed:** Expanded KERNL status section or InspectorDrawer tab: DB file size, total chunks indexed, embedding coverage %, last background indexer run, last backup timestamp, vector index size.
-**Scope:** ~0.5 sprint.
-
-### C11 — Project Quick-Switcher [P3]
-**Current state:** Active project shown in ProjectSection of context panel. Changing it requires multiple clicks.
-**What's needed:** Click the project name in context panel → inline dropdown of recent projects. One click to switch. Also available from command palette (Project: switch to GHM, Project: switch to GregLite).
-**Scope:** ~0.5 sprint.
+### A4 — Stale Comments Audit [P3]
+Multiple files reference "Sprint 7G" or "Sprint 4B" on work that's already complete. Comments like `// stub — Phase 7G implements this` on `detectShimLoop()` which is still a stub should be updated to reflect actual status.
 
 ---
 
-## PRIORITY ORDER (David's confirmed + gap analysis ranking)
+## BUCKET B — AGENT SDK STUB COMPLETION (Sprint 11.1)
 
-### Phase 9 candidates (highest value, do next):
-1. **B1** — Multi-thread tabs [P1] — changes daily feel most
-2. **A1** — Command palette [P1] — keyboard-first was a design principle, currently a stub
-3. **C1** — Morning briefing [P1] — ritual, makes cold start meaningful
-4. **A2** — Notification display [P1] — events fire into a void right now
-5. **C3** — Push notifications / tray [P1] — CI ready to merge should reach you
-6. **C2** — Ghost Teach Me [P1] — closes the Ghost feedback loop
+### B1 — test_runner Tool [P2] ⚠️ STUB
+`tool-injector.ts` line 106. Returns NOT_IMPLEMENTED. Should run vitest and capture structured results (pass/fail count, failures list).
 
-### Phase 10 candidates:
-7. **A3** — Status bar [P2] — completes the §10 blueprint layout
-8. **A4** — Settings panel [P2] — theme, budget, AEGIS config all need a home
-9. **A6** — Chat history panel [P2] — browse and reload past threads
-10. **B2** — Decision browser [P2] — KERNL decisions have no read surface
-11. **C4** — Manifest templates [P2] — recurring jobs friction
-12. **C5** — Artifact library [P2] — all artifacts inaccessible
-13. **C9** — Job retry/edit [P2] — obvious daily use
+### B2 — shim_readonly_audit Tool [P2] ⚠️ STUB
+`tool-injector.ts` line 124. Returns NOT_IMPLEMENTED. Should run EoS scan on target path without modifications, return score + issues.
 
-### Phase 10.5 — New Items (March 3, 2026)
-22. **API Cost Optimization** [P2] — Implement prompt caching (90% savings on repeated context) and batch API (50% discount) in GregLite's API layer. Smart Haiku routing for classification/simple tasks. Contact Anthropic sales (sales@anthropic.com) for volume discount once spend exceeds ~$200/month. Goal: run GregLite at $50-80/month with caching instead of $300+ raw.
-23. **Use actual Gregore logo** [P1] — Replace placeholder/text logo with the real Gregore logo asset throughout the app (Header, favicon, tray icon).
-24. **Left panel collapse/expand carets both at top** [P1] — When collapsing the left panel via the caret at the top, the expand caret appears at the bottom of the panel. Both collapse and expand carets should be at the top for consistent UX.
-25. **Chat history not visible in left pane** [P1] — Past conversations are not showing in the left panel. Last chat should be visible and browsable. Verify conversation-store → API route → list endpoint pipeline is wired to the sidebar.
-26. **Auto-name chat instances** [P1] — Conversations should auto-generate a title from the first user message (or first exchange). Use Haiku to summarize the first message into a short title. Currently threads appear unnamed.
+### B3 — markdown_linter Tool [P3] ⚠️ STUB
+`tool-injector.ts` line 139. Returns NOT_IMPLEMENTED. Should lint markdown files, return violation list.
 
-### Sprint 10.6 — Professional Cognitive Interface (COMPLETE):
-27. **SSE streaming** [P1] — Progressive token rendering via Server-Sent Events. ✅ COMPLETE
-28. **Flat borderless messages** [P1] — Kill bubble layout, centered column, density-aware CSS variables. ✅ COMPLETE
-29. **3-tier density toggle** [P1] — Compact/comfortable/spacious presets with Cmd+Shift shortcuts. ✅ COMPLETE
-30. **Auto-scroll + floating button** [P1] — IntersectionObserver sentinel, smart scroll pause on read-back. ✅ COMPLETE
-31. **Thinking indicator** [P1] — Animated dots before first token, processing status for tool/thinking events. ✅ COMPLETE
-32. **Collapsible blocks** [P2] — Accordion UI for thinking and tool_use events within messages. ✅ COMPLETE
-33. **Stop/interrupt button** [P1] — AbortController pattern, partial content preservation. ✅ COMPLETE
-34. **Scrollbar landmarks** [P2] — DeepSeek-inspired colored tick marks for code blocks, user messages, errors. ✅ COMPLETE
-35. **Sidebar consolidation** [P2] — Recent Chats moved to Context Panel, ChatSidebar removed from layout. ✅ COMPLETE
-36. **Cost display 4dp** [P2] — StatusBar and per-message metadata with 4 decimal places. ✅ COMPLETE
-37. **Branding consistency** [P2] — All UI strings say "GregLite". ✅ COMPLETE
-38. **Anti-bootstrap prompt** [P2] — System prompt tuned to respond conversationally to casual messages. ✅ COMPLETE
-39. **Transit Map data foundation** [P2] — conversation_events table, tree columns, capture helper, event registry. ✅ COMPLETE
-40. **Fix: ChatSidebar hydration error** [P1] — Deferred localStorage to useEffect. ✅ COMPLETE
-41. **Fix: API 500s in dev mode** [P1] — Empty defaults instead of 500 on 4 routes. ✅ COMPLETE
+### B4 — kernl_search_readonly Tool [P2] ⚠️ STUB
+`tool-injector.ts` line 154. Returns NOT_IMPLEMENTED. Should search KERNL FTS index read-only, return matching context.
 
-### Phase 11 / polish:
-14. **A5** — Inspector drawer [P2]
-15. **C6** — In-thread search [P2]
-16. **C7** — EoS history [P2]
-17. **C8** — Cost breakdown by project [P2]
-18. **A7** — Edit last message / regenerate [P3]
-19. **C10** — KERNL health panel [P3]
-20. **C11** — Project quick-switcher [P3]
-21. **A8** — Memory modal [P3] — define before building
+### B5 — detectShimLoop() [P2] ⚠️ STUB
+`failure-modes.ts` line 107. Always returns false. Spec: 3 consecutive SHIM calls on same file with no score improvement → BLOCKED state + escalation to strategic thread.
+
+---
+
+## BUCKET C — TRANSIT MAP (Sprints 11.2–11.7) ❌ MISSING
+
+Full spec: TRANSIT_MAP_SPEC.md (829 lines). Zero implementation exists despite Sprint 10.6 claiming "data foundation shipped."
+
+### C1 — Phase A: Data Foundation (Sprint 11.2) ❌
+- `conversation_events` table in KERNL schema (§4.1)
+- `parent_id`, `branch_index`, `is_active_branch` columns on messages (§4.2)
+- EventMetadata TypeScript types + write helper (§2.3)
+- Event registry config file (§4.3)
+- Capture hooks: flow.message, quality.interruption, quality.regeneration, quality.edit_resend (§4.4)
+
+### C2 — Phase B: Scrollbar Landmarks (Sprint 11.3) ❌
+- CustomScrollbar component reading from conversation_events (§5.1)
+- Landmark rendering — colored ticks on scrollbar track (§5.2)
+- Capture hooks: flow.topic_shift (embedding comparison), cognitive.artifact_generated, system.gate_trigger (§4.4)
+
+### C3 — Phase C: Z3 Detail Annotations (Sprint 11.4) ❌
+- Per-message inline metadata: model badge, token count, cost, latency (§3.7)
+- Event marker rendering on messages (§3.2)
+- Event detail panel on marker click
+- User annotation support
+
+### C4 — Phase D: Z2 Subway View (Sprint 11.5) ❌
+- Station auto-generation from events (§3.3)
+- Subway line renderer (horizontal, with markers) (§3.6)
+- Branch rendering — fork/merge visualization (§3.1)
+- Click-to-scroll navigation from stations to messages
+- Manual station creation (right-click → "Mark as Landmark")
+
+### C5 — Phase E: Z1 Sankey View (Sprint 11.6) ❌
+- Sankey flow graph renderer (§3.5)
+- Token volume → edge width mapping
+- Quality color coding on segments
+- Zoom transition animations (Z1 ↔ Z2 ↔ Z3)
+
+### C6 — Phase F: Learning Engine (Sprint 11.7) ❌
+- Batch processor for learnable events (§6.1)
+- Pattern detector — verbosity calibration, regeneration rate, model routing (§6.2)
+- Insight generator with confidence scoring (§6.3)
+- Human approval gate for system prompt modifications
+- Insight registry with rollback support
+
+---
+
+## BUCKET D — COST OPTIMIZATION (Sprint 12.0)
+
+### D1 — Prompt Caching [P2]
+90% savings on repeated context (bootstrap system prompt, KERNL context). Anthropic API supports this natively.
+
+### D2 — Batch API [P3]
+50% discount for non-urgent Agent SDK jobs. Queue non-critical jobs for batch processing.
+
+### D3 — Smart Haiku Routing [P2]
+Use Haiku for classification tasks (decision gate triggers, auto-title, Ghost summaries) instead of Sonnet. Already partially done for decision gate Haiku inference.
+
+---
+
+## COMPLETED — Phase 9 (all items shipped, verified in codebase)
+
+The following items from the original backlog were ALL shipped in Phase 9 (22 sprints):
+
+- ✅ A1 — Command Palette (Cmd+K) — CommandPalette.tsx, fuzzy search, command registry
+- ✅ A2 — Notification Display — ToastStack, NotificationBell, all events wired
+- ✅ A3 — Status Bar — cost/jobs/AEGIS/KERNL live polling
+- ✅ A4 — Settings Panel (Cmd+,) — theme, budget caps, AEGIS, Ghost cadence
+- ✅ A5 — Inspector Drawer (Cmd+I) — 5 tabs: Thread/KERNL/Quality/Jobs/Costs
+- ✅ A6 — Chat History Panel (Cmd+[) — search, load thread, pin/archive
+- ✅ A7 — Edit Last Message / Regenerate (Cmd+E / Cmd+R) — hover actions, truncate API
+- ✅ A8 — Memory Modal — DEPRECATED (Cmd+M removed, Cmd+K search + Cmd+D decision browser covers it)
+- ✅ B1 — Multi-Thread Tabs (Cmd+N) — per-tab Zustand state isolation, ThreadTabBar
+- ✅ B2 — Decision Browser (Cmd+D) — filter, FTS, markdown export, thread links
+- ✅ C1 — Morning Briefing — auto-generated from KERNL, once per day, 6 sections
+- ✅ C2 — Ghost Teach Me — ghost_preferences table, scorer boost_factor, Privacy Dashboard Preferences tab
+- ✅ C3 — Push Notifications / Tray — tauri-plugin-notification, Windows native toasts, tray icon + badge
+- ✅ C4 — Manifest Templates — save-as-template, template picker, quick-spawn from Workers tab
+- ✅ C5 — Artifact Library (Cmd+L) — cross-session browse, filter by type/language/project, re-attach
+- ✅ C6 — In-Thread Search (Cmd+F) — client highlight, server-side FTS5 fallback
+- ✅ C7 — EoS Sparkline — SVG trend from eos_reports, delta, color thresholds, EoSHistoryPanel
+- ✅ C8 — Cost Breakdown by Project — today/week/all tabs
+- ✅ C9 — Job Retry/Edit — Edit & Retry on failed jobs, ManifestBuilder pre-fill, superseded status
+- ✅ C10 — KERNL Health Panel — full DB stats in Inspector KERNL tab
+- ✅ C11 — Project Quick-Switcher — context panel popover + command palette registration
+
+## COMPLETED — Sprint 10.x (all items shipped)
+
+- ✅ SSE streaming, flat messages, density toggle, auto-scroll, thinking indicators
+- ✅ Collapsible blocks, stop button, scrollbar landmarks, sidebar consolidation
+- ✅ Cost display 4dp, branding consistency, anti-bootstrap prompt
+- ✅ ChatSidebar hydration fix, API 500 fixes, dev mode API fix
+- ✅ Gregore logo in header/favicon/tray, auto-title
+- ✅ Database unification (getDatabase auto-init, /api/threads route)
+- ✅ Settings gear icon, AppearanceSection density selector
+- ✅ Thread rename/delete, decision dismiss, context panel hierarchy
+- ✅ Light mode CSS, ThemeSync DOM wiring
+- ✅ War Room firstTick fix, StatusBar event wiring, 404 route stubs
+- ✅ Collapsed panel caret position, context-provider poll noise reduction
