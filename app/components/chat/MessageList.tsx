@@ -10,7 +10,7 @@
 
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Message, type MessageProps } from './Message';
 import type { SearchMatch } from './ThreadSearch';
 import { ScrollToBottom } from './ScrollToBottom';
@@ -18,11 +18,15 @@ import { CustomScrollbar } from './CustomScrollbar';
 import { ScrollbarLandmarks } from '@/components/transit/ScrollbarLandmarks';
 import { ThinkingIndicator } from './ThinkingIndicator';
 import { useDensityStore, DENSITY_CONFIG } from '@/lib/stores/density-store';
+import type { EnrichedEvent } from '@/lib/transit/types';
+import { EventDetailPanel } from '@/components/transit/EventDetailPanel';
 
 export interface MessageListProps {
   messages: MessageProps[];
   /** Transit Map: active thread ID for scrollbar landmark events */
   conversationId?: string | undefined;
+  /** Show Transit Map Z3 annotations (model badge, tokens, cost, event markers) */
+  showTransitMetadata?: boolean | undefined;
   /** Current search query — passed to each Message for highlighting */
   highlightQuery?: string | undefined;
   /** Which messages matched the search (by message index) */
@@ -40,6 +44,7 @@ export interface MessageListProps {
 export function MessageList({
   messages,
   conversationId,
+  showTransitMetadata,
   highlightQuery,
   searchMatches,
   activeMatchIdx,
@@ -58,6 +63,72 @@ export function MessageList({
   const autoScroll = useDensityStore((s) => s.autoScroll);
   const setDensity = useDensityStore((s) => s.setDensity);
   const config = DENSITY_CONFIG[density];
+
+  // Transit Map — fetch events ONCE at this level, share with all consumers.
+  // ScrollbarLandmarks and Message both read from this single fetch. NO N+1.
+  const [transitEvents, setTransitEvents] = useState<EnrichedEvent[]>([]);
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!conversationId) {
+      setTransitEvents([]);
+      return;
+    }
+    let cancelled = false;
+    const doFetch = async () => {
+      try {
+        const res = await fetch(
+          `/api/transit/events?conversationId=${encodeURIComponent(conversationId)}`,
+        );
+        if (!res.ok || cancelled) return;
+        const data = (await res.json()) as { events: EnrichedEvent[] };
+        if (!cancelled) setTransitEvents(data.events ?? []);
+      } catch {
+        // Non-blocking — transit telemetry never breaks the chat
+      }
+    };
+    void doFetch();
+    return () => { cancelled = true; };
+  }, [conversationId, messages.length]);
+
+  // Build Map<message_id, EnrichedEvent[]> for O(1) per-message lookup
+  const eventsMap = useMemo(() => {
+    const map = new Map<string, EnrichedEvent[]>();
+    for (const e of transitEvents) {
+      if (!e.message_id) continue;
+      const arr = map.get(e.message_id) ?? [];
+      arr.push(e);
+      map.set(e.message_id, arr);
+    }
+    return map;
+  }, [transitEvents]);
+
+  // Selected event object for EventDetailPanel
+  const selectedEvent = selectedEventId
+    ? (transitEvents.find((e) => e.id === selectedEventId) ?? null)
+    : null;
+
+  const handleAnnotationAdd = async (eventId: string, note: string) => {
+    try {
+      const res = await fetch(`/api/transit/events/${encodeURIComponent(eventId)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ addAnnotation: note }),
+      });
+      if (res.ok && conversationId) {
+        // Re-fetch to get updated annotations
+        const updated = await fetch(
+          `/api/transit/events?conversationId=${encodeURIComponent(conversationId)}`,
+        );
+        if (updated.ok) {
+          const data = (await updated.json()) as { events: EnrichedEvent[] };
+          setTransitEvents(data.events ?? []);
+        }
+      }
+    } catch {
+      // Non-blocking
+    }
+  };
 
   // Hydration-safe density sync
   useEffect(() => {
@@ -168,11 +239,12 @@ export function MessageList({
       {/* Scrollbar landmarks — heuristic layer (message content inspection) */}
       <CustomScrollbar messages={messages} containerHeight={containerHeight} />
 
-      {/* Scrollbar landmarks — Transit Map layer (conversation_events driven) */}
+      {/* Scrollbar landmarks — Transit Map layer (conversation_events driven, shared fetch) */}
       <ScrollbarLandmarks
         conversationId={conversationId}
         messageCount={messages.length}
         scrollContainerRef={scrollRef}
+        events={transitEvents}
       />
 
       {messages.length === 0 ? (
@@ -210,6 +282,9 @@ export function MessageList({
                 isActiveMatch={index === activeMessageIndex}
                 onEdit={index === lastUserIdx && onEditMessage ? () => onEditMessage(index) : undefined}
                 onRegenerate={index === lastAssistantIdx && onRegenerate ? () => onRegenerate() : undefined}
+                messageEvents={message.id ? (eventsMap.get(message.id) ?? []) : []}
+                showTransitMetadata={showTransitMetadata}
+                onMarkerClick={(eventId) => setSelectedEventId(eventId)}
               />
             ))}
 
@@ -229,6 +304,13 @@ export function MessageList({
         visible={!isAtBottom}
         hasNewContent={hasNewContent}
         onClick={scrollToBottom}
+      />
+
+      {/* Transit Map — Event Detail Panel (portals outside scroll container) */}
+      <EventDetailPanel
+        event={selectedEvent}
+        onClose={() => setSelectedEventId(null)}
+        onAnnotationAdd={(eventId, note) => void handleAnnotationAdd(eventId, note)}
       />
     </div>
   );

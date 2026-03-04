@@ -83,6 +83,9 @@ export interface UIState {
 
   // Settings panel
   settingsOpen: boolean;
+
+  // Transit Map Z3 annotations toggle (default OFF — must be opted in)
+  showTransitMetadata: boolean;
 }
 
 // ============================================================================
@@ -132,6 +135,10 @@ export interface UIActions {
   toggleSettings: () => void;
   setSettingsOpen: (open: boolean) => void;
 
+  // Transit Map Z3 annotations
+  toggleTransitMetadata: () => void;
+  setShowTransitMetadata: (show: boolean) => void;
+
   // Reset
   resetUI: () => void;
 }
@@ -172,6 +179,7 @@ const initialState: UIState = {
   focusedElement: null,
 
   settingsOpen: false,
+  showTransitMetadata: false,
 };
 
 // ============================================================================
@@ -430,6 +438,18 @@ const createUISlice: StateCreator<UIStore> = (set, get) => ({
 
   setSettingsOpen: (open: boolean) => {
     set({ settingsOpen: open });
+  },
+
+  // ========================================================================
+  // TRANSIT MAP ANNOTATIONS
+  // ========================================================================
+
+  toggleTransitMetadata: () => {
+    set((state) => ({ showTransitMetadata: !state.showTransitMetadata }));
+  },
+
+  setShowTransitMetadata: (show: boolean) => {
+    set({ showTransitMetadata: show });
   },
 
   // ========================================================================

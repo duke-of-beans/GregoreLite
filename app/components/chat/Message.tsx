@@ -20,6 +20,9 @@ import { useArtifactStore } from '@/lib/artifacts/store';
 import { detectArtifact } from '@/lib/artifacts/detector';
 import type { Artifact } from '@/lib/artifacts/types';
 import { CollapsibleBlock } from './CollapsibleBlock';
+import { MessageMetadata } from '@/components/transit/MessageMetadata';
+import { EventMarkers } from '@/components/transit/EventMarkers';
+import type { EnrichedEvent } from '@/lib/transit/types';
 
 // ─── Shiki singleton ─────────────────────────────────────────────────────────
 // Initialised once; subsequent calls return the cached promise.
@@ -231,6 +234,12 @@ export interface MessageProps {
   latencyMs?: number | undefined;
   // Block-based content
   blocks?: MessageBlock[] | undefined;
+  // Stable DOM id for scroll-targeting (message.id from the store)
+  id?: string | undefined;
+  // Transit Map Z3 annotations
+  messageEvents?: EnrichedEvent[] | undefined;
+  showTransitMetadata?: boolean | undefined;
+  onMarkerClick?: ((eventId: string) => void) | undefined;
 }
 
 // ─── Highlight helper ─────────────────────────────────────────────────────────
@@ -261,12 +270,14 @@ function highlightText(text: string, query: string): React.ReactNode {
 // ─── Message ──────────────────────────────────────────────────────────────────
 
 export function Message({ role, content, timestamp, highlightQuery, isActiveMatch,
-  onEdit, onRegenerate, isStreaming, model, tokens, costUsd, latencyMs, blocks }: MessageProps) {
+  onEdit, onRegenerate, isStreaming, model, tokens, costUsd, latencyMs, blocks,
+  id, messageEvents, showTransitMetadata, onMarkerClick }: MessageProps) {
   const isUser = role === 'user';
   const showActions = onEdit || onRegenerate;
 
   return (
     <div
+      id={id ? `message-${id}` : undefined}
       className="group/msg w-full"
       role="article"
       aria-label={`${isUser ? 'User' : 'AI'} message`}
@@ -372,36 +383,55 @@ export function Message({ role, content, timestamp, highlightQuery, isActiveMatc
         </div>
       )}
 
-      {/* Timestamp + metadata */}
+      {/* Transit Map Z3 — Event Markers (shown when transit layer is active) */}
+      {showTransitMetadata && messageEvents && messageEvents.length > 0 && onMarkerClick && (
+        <EventMarkers
+          events={messageEvents}
+          onMarkerClick={onMarkerClick}
+        />
+      )}
+
+      {/* Timestamp + metadata footer */}
       <div className="mt-1 flex items-center gap-2 text-[10px] text-[var(--mist)]">
         {timestamp !== undefined && (
           <span>{timestamp.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
         )}
-        {!isStreaming && model && (
+        {/* Basic model/token info — shown only when Transit layer is OFF */}
+        {!showTransitMetadata && !isStreaming && model && (
           <>
             <span>·</span>
             <span>{model.replace('claude-', '').split('-')[0]}</span>
           </>
         )}
-        {!isStreaming && tokens !== undefined && tokens > 0 && (
+        {!showTransitMetadata && !isStreaming && tokens !== undefined && tokens > 0 && (
           <>
             <span>·</span>
             <span>{tokens.toLocaleString()} tokens</span>
           </>
         )}
-        {!isStreaming && costUsd !== undefined && costUsd > 0 && (
+        {!showTransitMetadata && !isStreaming && costUsd !== undefined && costUsd > 0 && (
           <>
             <span>·</span>
             <span>${costUsd.toFixed(4)}</span>
           </>
         )}
-        {!isStreaming && latencyMs !== undefined && latencyMs > 0 && (
+        {!showTransitMetadata && !isStreaming && latencyMs !== undefined && latencyMs > 0 && (
           <>
             <span>·</span>
             <span>{(latencyMs / 1000).toFixed(1)}s</span>
           </>
         )}
       </div>
+
+      {/* Transit Map Z3 — MessageMetadata (richer styled version, replaces basic row) */}
+      {showTransitMetadata && !isUser && !isStreaming && (
+        <MessageMetadata
+          model={model}
+          tokens={tokens}
+          cost={costUsd}
+          latencyMs={latencyMs}
+        />
+      )}
     </div>
   );
 }

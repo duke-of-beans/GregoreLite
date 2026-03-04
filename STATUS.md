@@ -1,10 +1,10 @@
 # GREGLITE — STATUS
-**Last Updated:** March 4, 2026 — Sprint 11.3 COMPLETE.
+**Last Updated:** March 4, 2026 — Sprint 11.4 COMPLETE (Phase 1 checkpoint).
 **Version:** v1.0.0 (Phase 8 Ship Prep complete)
-**Test Count:** 1004/1007 (21 new transit tests, all passing; 3 pre-existing failures unrelated to transit scope)
+**Test Count:** 1040/1043 (36 new transit tests from Sprint 11.4; 3 pre-existing failures unrelated to transit scope)
 **EoS Health:** 100/100
 **TSC:** 0 errors
-**Next:** Sprint 11.4 (Z3 Detail Annotations)
+**Next:** Sprint 11.5 Phase 2 (Z2 Subway View)
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md — Phase A data foundation SHIPPED (Sprint 11.2, commit 37d60af)
 
@@ -16,6 +16,22 @@
 5. ~~Decision gate trigger-detector.ts has 3 dead stub functions replaced by Haiku inference — cleanup needed.~~ — RESOLVED: Sprint 11.0 — detectHighTradeoffCount/detectMultiProjectTouch/detectLargeEstimate removed.
 
 ---
+
+- [x] **SPRINT 11.4** — Transit Map Phase C: Z3 Detail Annotations — **COMPLETE**
+  - `components/transit/MessageMetadata.tsx`: model badge pill, token counts, cost (4dp), latency; all logic exported for pure unit testing
+  - `components/transit/EventMarkers.tsx`: SVG shape renderers (circle/diamond/square/triangle/hexagon) from registry config; nothing hardcoded
+  - `components/transit/EventDetailPanel.tsx`: right slide-in drawer (InspectorDrawer pattern, z=200); shows payload, annotations, Add Note form
+  - `components/chat/Message.tsx`: extended with `id`, `messageEvents`, `showTransitMetadata`, `onMarkerClick` props
+  - `components/chat/MessageList.tsx`: single shared event fetch (N+1 rule enforced); `Map<message_id, EnrichedEvent[]>` for O(1) lookup
+  - `components/chat/ChatInterface.tsx`: `Cmd+Shift+M` toggle, `Cmd+T` transit tab, Transit tab split view (SubwayMap stub 25% / messages 75%)
+  - `components/settings/AppearanceSection.tsx`: "Transit Map" toggle pill + shortcut hint
+  - `components/transit/SubwayMap.tsx`: stub (Phase 2 Task 9 builds full renderer)
+  - `lib/stores/ui-store.ts`: `showTransitMetadata: boolean` (default false) + `toggleTransitMetadata()`
+  - `lib/transit/types.ts`: `EnrichedEvent` + `EventsApiResponse` + `Station` + `station?` on `EventTypeDefinition`
+  - `app/api/transit/events/[id]/route.ts`: PATCH endpoint for user annotations
+  - `__tests__/MessageMetadata.test.tsx`: 22 pure logic tests (parseModelLabel, formatTokens, formatCost, formatLatency)
+  - `__tests__/EventMarkers.test.tsx`: 14 pure logic tests (markerSizePx × 5, renderMarkerShape × 9)
+  - TSC: 0 errors | Tests: 1040/1043 (36 new, all passing)
 
 - [x] **SPRINT 11.3** — Transit Map Phase B: Scrollbar Landmarks — **COMPLETE**
   - `components/transit/ScrollbarLandmarks.tsx`: client component rendering event-driven colored ticks on scrollbar overlay; reads from `/api/transit/events`; `pointer-events: none` container preserves native scroll; per-tick `pointer-events: auto` for tooltip hover

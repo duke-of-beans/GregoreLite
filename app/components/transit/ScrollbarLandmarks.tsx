@@ -13,22 +13,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import type { EventTypeDefinition, EventMetadata } from '@/lib/transit/types';
-
-// ── API response types ────────────────────────────────────────────────────────
-
-interface EnrichedEvent extends EventMetadata {
-  /** Registry definition for this event type (may be undefined for unknown types) */
-  config?: EventTypeDefinition;
-  /** Zero-based index of the message this event is attached to in conversation order */
-  message_index: number | null;
-  /** Total messages in the conversation at fetch time */
-  total_messages: number;
-}
-
-interface EventsApiResponse {
-  events: EnrichedEvent[];
-}
+import type { EnrichedEvent } from '@/lib/transit/types';
 
 // ── Props ─────────────────────────────────────────────────────────────────────
 
@@ -39,6 +24,11 @@ export interface ScrollbarLandmarksProps {
   messageCount: number;
   /** The scrollable container element — used to confirm overlay is mounted */
   scrollContainerRef: React.RefObject<HTMLElement | null>;
+  /**
+   * Pre-fetched events from MessageList (avoids double-fetch).
+   * When provided, the internal fetch is skipped entirely.
+   */
+  events?: EnrichedEvent[] | undefined;
 }
 
 // ── Filter evaluator ──────────────────────────────────────────────────────────
@@ -63,14 +53,16 @@ export function ScrollbarLandmarks({
   conversationId,
   messageCount,
   scrollContainerRef,
+  events: propEvents,
 }: ScrollbarLandmarksProps) {
-  const [events, setEvents] = useState<EnrichedEvent[]>([]);
+  const [fetchedEvents, setFetchedEvents] = useState<EnrichedEvent[]>([]);
 
-  // Fetch events whenever conversationId or messageCount changes.
-  // messageCount change = new messages added = possible new events.
+  // Only fetch internally when no events are passed as props.
+  // When MessageList shares its events, we skip this entirely.
   useEffect(() => {
+    if (propEvents !== undefined) return; // parent owns the data
     if (!conversationId) {
-      setEvents([]);
+      setFetchedEvents([]);
       return;
     }
 
@@ -82,9 +74,9 @@ export function ScrollbarLandmarks({
           `/api/transit/events?conversationId=${encodeURIComponent(conversationId)}`,
         );
         if (!res.ok || cancelled) return;
-        const data = (await res.json()) as EventsApiResponse;
+        const data = (await res.json()) as { events: EnrichedEvent[] };
         if (!cancelled) {
-          setEvents(data.events ?? []);
+          setFetchedEvents(data.events ?? []);
         }
       } catch {
         // Non-blocking — landmark display is optional, never throws
@@ -93,7 +85,9 @@ export function ScrollbarLandmarks({
 
     void fetchEvents();
     return () => { cancelled = true; };
-  }, [conversationId, messageCount]);
+  }, [conversationId, messageCount, propEvents]);
+
+  const events = propEvents ?? fetchedEvents;
 
   // Don't render until we have a conversation, events, and a container
   if (!conversationId || events.length === 0 || !scrollContainerRef.current) {

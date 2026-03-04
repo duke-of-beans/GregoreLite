@@ -68,6 +68,19 @@ export interface EventTypeDefinition {
     /** Optional JS expression evaluated against payload to filter which events get ticks */
     filter?: string;
   };
+
+  /**
+   * If present, this event type auto-generates a subway station (§3.3).
+   * nameTemplate supports {payload.field} substitution.
+   * The station generator reads this config — nothing in the renderer is hardcoded.
+   */
+  station?: {
+    enabled: boolean;
+    /** Template string with {payload.field} tokens. E.g. "Artifact: {payload.artifact_type}" */
+    nameTemplate: string;
+    /** Emoji or icon reference for the station */
+    icon: string;
+  };
 }
 
 // ── Stored event record ───────────────────────────────────────────────────────
@@ -91,6 +104,47 @@ export interface EventMetadata {
   payload: Record<string, unknown>;
   /** Unix milliseconds (unixepoch * 1000) */
   created_at: number;
+}
+
+// ── Enriched event (API response shape) ──────────────────────────────────────
+
+/**
+ * An event row enriched by GET /api/transit/events with:
+ *   - config: full registry definition (or null for unknown event types)
+ *   - message_index: zero-based message position in the conversation
+ *   - total_messages: total message count at fetch time
+ *
+ * Used by ScrollbarLandmarks, MessageList, SubwayMap, and EventDetailPanel.
+ */
+export interface EnrichedEvent extends EventMetadata {
+  config: EventTypeDefinition | null;
+  message_index: number | null;
+  total_messages: number;
+  /** Processing status for the self-improvement pipeline */
+  learning_status?: string | null;
+  /** User-added notes attached to this event row */
+  annotations?: unknown[] | null;
+}
+
+export interface EventsApiResponse {
+  events: EnrichedEvent[];
+}
+
+// ── Station ───────────────────────────────────────────────────────────────────
+
+/**
+ * A named landmark on the subway map.
+ * Generated from events whose registry entry has station config (§3.3).
+ * Manual stations have source: 'manual'.
+ */
+export interface Station {
+  id: string;
+  eventId: string;
+  messageId: string | null;
+  messageIndex: number;
+  name: string;
+  icon: string;
+  source: 'auto' | 'manual';
 }
 
 // ── Capture input ─────────────────────────────────────────────────────────────

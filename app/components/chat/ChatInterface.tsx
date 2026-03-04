@@ -55,10 +55,11 @@ import { generateTitle } from '@/lib/chat/auto-title';
 import { captureClientEvent } from '@/lib/transit/client';
 import { useDensityStore } from '@/lib/stores/density-store';
 import { useUIStore } from '@/lib/stores/ui-store';
+import { SubwayMap } from '@/components/transit/SubwayMap';
 import type { ProcessingEvent } from './ProcessingStatus';
 import type { MessageBlock } from './Message';
 
-type ActiveTab = 'strategic' | 'workers' | 'warroom';
+type ActiveTab = 'strategic' | 'workers' | 'warroom' | 'transit';
 
 interface TabDef {
   id: ActiveTab;
@@ -71,6 +72,7 @@ const TABS: TabDef[] = [
   { id: 'strategic', label: 'Strategic', icon: '★' },
   { id: 'workers',   label: 'Workers',   icon: '⚙' },
   { id: 'warroom',   label: 'War Room',  icon: '🗺', shortcut: 'Cmd+W' },
+  { id: 'transit',   label: 'Transit',   icon: '🚇', shortcut: 'Cmd+T' },
 ];
 
 export function ChatInterface() {
@@ -85,6 +87,9 @@ export function ChatInterface() {
   // ── S9-13: Settings panel state (lifted to ui-store for Header gear icon — Sprint 10.8)
   const settingsOpen = useUIStore((s) => s.settingsOpen);
   const setSettingsOpen = useUIStore((s) => s.setSettingsOpen);
+
+  // ── Transit Map Z3 annotations toggle (Sprint 11.4)
+  const showTransitMetadata = useUIStore((s) => s.showTransitMetadata);
 
   // ── S9-14: Inspector drawer state ─────────────────────────────────────────
   const [inspectorOpen, setInspectorOpen] = useState(false);
@@ -199,6 +204,16 @@ export function ChatInterface() {
       if (meta && e.shiftKey && e.key === '-') {
         e.preventDefault();
         useDensityStore.getState().cycleDensity('down');
+      }
+      // Cmd+Shift+M — toggle Transit Map Z3 annotation layer
+      if (meta && e.shiftKey && e.key === 'm') {
+        e.preventDefault();
+        useUIStore.getState().toggleTransitMetadata();
+      }
+      // Cmd+T — switch to Transit tab
+      if (meta && !e.shiftKey && e.key === 't') {
+        e.preventDefault();
+        setActiveTab((prev) => (prev === 'transit' ? 'strategic' : 'transit'));
       }
     };
     window.addEventListener('keydown', handler);
@@ -703,6 +718,27 @@ export function ChatInterface() {
           </div>
         )}
 
+        {/* ── Transit tab — SubwayMap (top 25%) + Messages (bottom 75%) ── */}
+        {activeTab === 'transit' && (
+          <div className="flex flex-1 flex-col overflow-hidden">
+            {/* Subway map — top 25% */}
+            <div style={{ flex: '0 0 25%', minHeight: 140, borderBottom: '1px solid var(--shadow)', overflow: 'hidden' }}>
+              <SubwayMap conversationId={activeConversationId ?? undefined} />
+            </div>
+            {/* Messages — bottom 75%, scrollable, transit metadata always on in this view */}
+            <div className="flex-1 overflow-hidden flex flex-col min-h-0">
+              <MessageList
+                messages={messages}
+                conversationId={activeConversationId ?? undefined}
+                showTransitMetadata={true}
+                onEditMessage={handleEditMessage}
+                onRegenerate={handleRegenerate}
+                isWaitingForResponse={sendButtonState === 'checking'}
+              />
+            </div>
+          </div>
+        )}
+
         {/* ── Workers tab ── */}
         {activeTab === 'workers' && (
           <div className="flex flex-1 overflow-hidden">
@@ -741,6 +777,7 @@ export function ChatInterface() {
                   <MessageList
                     messages={messages}
                     conversationId={activeConversationId ?? undefined}
+                    showTransitMetadata={showTransitMetadata}
                     highlightQuery={searchQuery || undefined}
                     searchMatches={searchMatches.length > 0 ? searchMatches : undefined}
                     activeMatchIdx={activeMatchIdx}
