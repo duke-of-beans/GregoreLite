@@ -1,10 +1,10 @@
 # GREGLITE — STATUS
-**Last Updated:** March 4, 2026 — Sprint 11.0+11.1 COMPLETE. Route consolidation, dead code cleanup, Agent SDK stubs implemented.
+**Last Updated:** March 4, 2026 — Sprint 11.2 COMPLETE.
 **Version:** v1.0.0 (Phase 8 Ship Prep complete)
-**Test Count:** 945/948 passing (48 test files, 5 new Sprint 11.1 test files, 3 pre-existing failures unchanged)
-**EoS Health:** 100/100 (target ≥ 85)
-**TSC:** 0 errors (test-helpers.ts dead imports from deleted lib/database/ also cleaned up)
-**Next:** See SPRINT_ROADMAP.md — Sprint 11.2 (Transit Map data foundation) next up
+**Test Count:** 982/986 (38 new transit tests, all passing; 4 pre-existing failures unrelated to transit scope)
+**EoS Health:** 100/100
+**TSC:** 0 errors
+**Next:** Sprint 11.3 — Transit Map Phase B (Z2 Subway renderer, scrollbar landmarks UI)
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md (829-line spec, ZERO implementation — see SPRINT_ROADMAP.md)
 
@@ -17,7 +17,19 @@
 
 ---
 
+- [x] **SPRINT 11.2** — Transit Map Phase A: Data Foundation — **COMPLETE**
+  - `lib/transit/types.ts`: EventCategory, MarkerShape, MarkerSize, EventTypeDefinition (with marker + scrollbar fields), EventMetadata, CaptureEventInput
+  - `lib/transit/registry.ts`: Map-based registry, 26 event types across 5 categories, getEventType() / getAllEventTypes() / getEventTypesByCategory()
+  - `lib/transit/capture.ts`: captureEvent() (sync, fire-and-forget), getEventsForConversation(), getEventsByType()
+  - `lib/transit/client.ts`: captureClientEvent() browser-safe fire-and-forget fetch wrapper
+  - `app/api/transit/capture/route.ts`: thin POST bridge for client-side capture (always returns 200)
+  - `app/api/chat/route.ts`: updated both flow.message hooks from lib/events/capture → lib/transit/capture
+  - `components/chat/ChatInterface.tsx`: quality.interruption (handleStop), quality.regeneration (handleRegenerate), quality.edit_resend (handleEditMessage) — all fire-and-forget
+  - 38 new tests: registry.test.ts (24 tests), capture.test.ts (14 tests) — all passing
+  - TSC: 0 errors; Tasks 1+2 (DB migrations) confirmed pre-done from Sprint 10.6
+
 - [x] **SPRINT 11.0+11.1** — Cleanup + Agent SDK Stub Completion — **COMPLETE**
+- [x] **SPRINT 12.0** — API Cost Optimization — **COMPLETE** (commit 3ae1f0d). Prompt caching (cache_control: ephemeral on stable system blocks), batch-executor.ts (50% cost via Batches API + Haiku), Haiku routing for summaries/auto-title, cache savings tracking in CostBreakdown UI. 27 new tests.
   - Wave 1 (Route Consolidation): deleted /api/conversations (no consumers), /api/jobs (canonical: /api/agent-sdk/jobs), removed entire lib/database/ gregore.db layer, MORNING_BRIEFING.md
   - Wave 2 (Dead Code): removed 3 always-false trigger stubs from trigger-detector.ts, updated Sprint 7G→11.1 comments across agent-sdk, cleaned test-helpers.ts dead imports
   - Wave 3 (Agent SDK): implemented test_runner (vitest via execFileSync), shim_readonly_audit (EoS read-only scan), markdown_linter (pure rule-based), kernl_search_readonly (FTS5 BM25); implemented detectShimLoop(); wired all into query.ts; 5 new test files, 34 new tests

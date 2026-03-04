@@ -121,9 +121,9 @@ export const POST = safeHandler(async (request: Request) => {
     content: body.message,
   });
 
-  // Transit Map: capture user message event
+  // Transit Map: capture user message event (lib/transit §4.4)
   try {
-    const { captureEvent } = require('@/lib/events/capture');
+    const { captureEvent } = await import('@/lib/transit/capture');
     captureEvent({
       conversation_id: threadId,
       event_type: 'flow.message',
@@ -233,9 +233,9 @@ export const POST = safeHandler(async (request: Request) => {
           // Continuity checkpoint
           checkpoint(threadId, assistantMsg.id);
 
-          // Event capture (Transit Map)
+          // Event capture (Transit Map) — lib/transit §4.4
           try {
-            const { captureEvent } = await import('@/lib/events/capture');
+            const { captureEvent } = await import('@/lib/transit/capture');
             captureEvent({
               conversation_id: threadId,
               message_id: assistantMsg.id,

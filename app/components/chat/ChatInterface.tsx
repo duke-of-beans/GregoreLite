@@ -52,6 +52,7 @@ import { startTrayBridge, stopTrayBridge } from '@/lib/notifications/tray-bridge
 import { DecisionBrowser } from '../decisions/DecisionBrowser';
 import { ArtifactLibrary } from '../artifacts/ArtifactLibrary';
 import { generateTitle } from '@/lib/chat/auto-title';
+import { captureClientEvent } from '@/lib/transit/client';
 import { useDensityStore } from '@/lib/stores/density-store';
 import { useUIStore } from '@/lib/stores/ui-store';
 import type { ProcessingEvent } from './ProcessingStatus';
@@ -326,6 +327,16 @@ export function ChatInterface() {
         method: 'DELETE',
       }).catch(() => null);
     }
+
+    // Transit Map: quality.edit_resend — fire-and-forget, never blocks UI
+    if (activeConversationId) {
+      captureClientEvent({
+        conversation_id: activeConversationId,
+        event_type: 'quality.edit_resend',
+        category: 'quality',
+        payload: { message_index: messageIndex },
+      });
+    }
   }, [activeTabId, activeMessages, activeConversationId, setTabMessages]);
 
   const handleEditLastMessage = useCallback(() => {
@@ -358,6 +369,17 @@ export function ChatInterface() {
     const truncated = activeMessages.slice(0, lastAssistantIdx);
     setTabMessages(activeTabId, truncated);
 
+    // Transit Map: quality.regeneration — fire-and-forget, never blocks UI
+    const regenConvId = useThreadTabsStore.getState().getActiveTab()?.conversationId;
+    if (regenConvId) {
+      captureClientEvent({
+        conversation_id: regenConvId,
+        event_type: 'quality.regeneration',
+        category: 'quality',
+        payload: {},
+      });
+    }
+
     // Re-send the last user message
     setInput(lastUserContent);
     // Auto-submit after a tick so input state updates
@@ -370,6 +392,16 @@ export function ChatInterface() {
   const handleStop = useCallback(() => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
+      // Transit Map: quality.interruption — fire-and-forget, never blocks UI
+      const convId = useThreadTabsStore.getState().getActiveTab()?.conversationId;
+      if (convId) {
+        captureClientEvent({
+          conversation_id: convId,
+          event_type: 'quality.interruption',
+          category: 'quality',
+          payload: {},
+        });
+      }
     }
   }, []);
 
