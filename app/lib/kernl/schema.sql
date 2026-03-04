@@ -524,3 +524,26 @@ CREATE TABLE IF NOT EXISTS ghost_preferences (
 
 CREATE INDEX IF NOT EXISTS idx_ghost_preferences_source
   ON ghost_preferences (source_type);
+
+-- ─── TRANSIT MAP LEARNING ENGINE — Sprint 11.7 ───────────────────────────────
+-- Stores proposed/applied/dismissed insights from the learning pipeline.
+-- Every applied insight has before_state for one-click rollback (§6.3).
+CREATE TABLE IF NOT EXISTS learning_insights (
+  id           TEXT    PRIMARY KEY,
+  pattern_type TEXT    NOT NULL,
+  title        TEXT    NOT NULL,
+  description  TEXT    NOT NULL,
+  confidence   INTEGER NOT NULL,
+  sample_size  INTEGER NOT NULL,
+  status       TEXT    NOT NULL DEFAULT 'proposed',
+  adjustment   TEXT    NOT NULL DEFAULT '{}',  -- JSON: InsightAdjustment
+  before_state TEXT    NOT NULL DEFAULT '{}',  -- JSON snapshot before applying
+  after_state  TEXT,                           -- JSON snapshot after applying (null until applied)
+  created_at   INTEGER NOT NULL,
+  applied_at   INTEGER,
+  expires_at   INTEGER NOT NULL                -- 90 days from created_at
+);
+
+CREATE INDEX IF NOT EXISTS idx_insights_status  ON learning_insights(status);
+CREATE INDEX IF NOT EXISTS idx_insights_pattern ON learning_insights(pattern_type);
+CREATE INDEX IF NOT EXISTS idx_insights_expires ON learning_insights(expires_at);

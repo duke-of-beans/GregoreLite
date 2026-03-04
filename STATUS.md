@@ -1,9 +1,9 @@
 # GREGLITE — STATUS
-**Last Updated:** March 4, 2026 — Sprint 11.4 COMPLETE (Phase 1 checkpoint).
+**Last Updated:** March 4, 2026 — Sprint 11.7 COMPLETE (Transit Map Phase F: Learning Engine).
 **Version:** v1.0.0 (Phase 8 Ship Prep complete)
-**Test Count:** 1040/1043 (36 new transit tests from Sprint 11.4; 3 pre-existing failures unrelated to transit scope)
+**Test Count:** 1152/1155 (148 new learning engine tests from Sprint 11.7; 3 pre-existing failures unrelated to learning scope)
 **EoS Health:** 100/100
-**TSC:** 0 errors
+**TSC:** 0 errors in Sprint 11.7 files (6 pre-existing errors in parallel Sprint 11.4/11.5 chat components)
 **Next:** Sprint 11.5 Phase 2 (Z2 Subway View)
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md — Phase A data foundation SHIPPED (Sprint 11.2, commit 37d60af)
@@ -16,6 +16,22 @@
 5. ~~Decision gate trigger-detector.ts has 3 dead stub functions replaced by Haiku inference — cleanup needed.~~ — RESOLVED: Sprint 11.0 — detectHighTradeoffCount/detectMultiProjectTouch/detectLargeEstimate removed.
 
 ---
+
+- [x] **SPRINT 11.7** — Transit Map Phase F: Learning Engine — **COMPLETE**
+  - `lib/transit/learning/types.ts`: `InsightStatus`, `InsightAdjustment`, `LearningInsight`, `PatternResult`, `LearningInsightRow`
+  - `lib/transit/learning/insights.ts`: `calculateConfidence()` (base+recency+consistency boosts, 95% cap), `generateInsights()` (dedup + conflict detection)
+  - `lib/transit/learning/verbosity.ts`: token bucket detector (4 buckets); flags bucket with >50% interruptions ≥5 events; proposed_value = `max(256, round(median*0.9))`
+  - `lib/transit/learning/regeneration.ts`: task type classifier (6 types, keyword heuristic); flags types with >30% regen rate ≥5 events
+  - `lib/transit/learning/model-routing.ts`: cross-references `system.model_route` with quality failures; flags when worst model failure rate > 2× best
+  - `lib/transit/learning/registry.ts`: `storeInsight` (UPSERT), `applyInsight`, `dismissInsight`, `rollbackInsight` (returns before_state), `decayExpiredInsights` (90-day decay), `getAllInsights`, `getInsightsByStatus`
+  - `lib/transit/learning/pipeline.ts`: `runLearningPipeline()` (full try/catch; marks events processed), `startLearningScheduler()` / `stopLearningScheduler()` (6h interval, `.unref()`)
+  - `lib/transit/learning/index.ts`: barrel export
+  - `lib/kernl/schema.sql` + `lib/kernl/database.ts`: `learning_insights` table migration (3 indexes: status, pattern_type, expires_at)
+  - `components/transit/InsightReviewPanel.tsx`: React client component; confidence bar (red/amber/green); approve/dismiss/rollback actions; Run Pipeline button; active/archive sections
+  - `components/inspector/InspectorDrawer.tsx`: 6th tab 'Learning' (🔮) wired to `InsightReviewPanel`
+  - `app/api/transit/insights/route.ts`: `GET` (list all or `?status=` filter) + `POST` (approve/dismiss/rollback/run_pipeline actions)
+  - 148 new tests across 5 test files: verbosity, regeneration, insights, registry, pipeline — all passing
+  - TSC: 0 errors in Sprint 11.7 files | Tests: 1152/1155
 
 - [x] **SPRINT 11.4** — Transit Map Phase C: Z3 Detail Annotations — **COMPLETE**
   - `components/transit/MessageMetadata.tsx`: model badge pill, token counts, cost (4dp), latency; all logic exported for pure unit testing

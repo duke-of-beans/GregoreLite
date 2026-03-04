@@ -13,8 +13,9 @@ import { KernlTab } from './KernlTab';
 import { QualityTab } from './QualityTab';
 import { JobsTab } from './JobsTab';
 import { CostBreakdown } from '@/components/agent-sdk/CostBreakdown';
+import { InsightReviewPanel } from '@/components/transit/InsightReviewPanel';
 
-type InspectorTab = 'thread' | 'kernl' | 'quality' | 'jobs' | 'costs';
+type InspectorTab = 'thread' | 'kernl' | 'quality' | 'jobs' | 'costs' | 'learning';
 
 interface TabDef {
   id: InspectorTab;
@@ -28,6 +29,7 @@ const TABS: TabDef[] = [
   { id: 'quality', label: 'Quality', icon: '📊' },
   { id: 'jobs', label: 'Jobs', icon: '⚡' },
   { id: 'costs', label: 'Costs', icon: '💰' },
+  { id: 'learning', label: 'Learning', icon: '🔮' },
 ];
 
 interface InspectorDrawerProps {
@@ -165,6 +167,7 @@ export function InspectorDrawer({ open, onClose }: InspectorDrawerProps) {
           {activeTab === 'costs' && showCostModal && (
             <CostBreakdown onClose={() => setShowCostModal(false)} />
           )}
+          {activeTab === 'learning' && <InsightReviewPanel />}
         </div>
       </div>
     </>

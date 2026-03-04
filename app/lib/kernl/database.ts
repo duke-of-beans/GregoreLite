@@ -130,6 +130,32 @@ function runMigrations(db: Database.Database): void {
     // Table may already exist
   }
 
+  // Sprint 11.7 — Learning Engine: learning_insights table
+  try {
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS learning_insights (
+        id           TEXT    PRIMARY KEY,
+        pattern_type TEXT    NOT NULL,
+        title        TEXT    NOT NULL,
+        description  TEXT    NOT NULL,
+        confidence   INTEGER NOT NULL,
+        sample_size  INTEGER NOT NULL,
+        status       TEXT    NOT NULL DEFAULT 'proposed',
+        adjustment   TEXT    NOT NULL DEFAULT '{}',
+        before_state TEXT    NOT NULL DEFAULT '{}',
+        after_state  TEXT,
+        created_at   INTEGER NOT NULL,
+        applied_at   INTEGER,
+        expires_at   INTEGER NOT NULL
+      );
+      CREATE INDEX IF NOT EXISTS idx_insights_status  ON learning_insights(status);
+      CREATE INDEX IF NOT EXISTS idx_insights_pattern ON learning_insights(pattern_type);
+      CREATE INDEX IF NOT EXISTS idx_insights_expires ON learning_insights(expires_at);
+    `);
+  } catch {
+    // Table may already exist
+  }
+
   // Sprint 10.6 — Transit Map: tree structure columns on messages
   const treeColumns = [
     { name: 'parent_id', type: 'TEXT DEFAULT NULL' },
