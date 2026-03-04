@@ -1,8 +1,27 @@
 # GREGLITE — STATUS
-**Last Updated:** March 3, 2026 — Sprint 10.6 "Professional Cognitive Interface" COMPLETE. SSE streaming, flat messages with density toggle, auto-scroll, thinking indicators, collapsible blocks, stop button, scrollbar landmarks, sidebar consolidation, Transit Map data foundation. 14 tasks across 5 waves. tsc clean.
-**Phase:** Sprint 10.6 — Professional Cognitive Interface: ✅ COMPLETE
+**Last Updated:** March 4, 2026 — Sprint 10.9 "UX Audit & Functional Wiring" COMPLETE. Thread rename/delete, decision dismiss, context panel hierarchy polish, caret reorder, theme sync DOM wiring, light mode CSS, War Room poller firstTick fix, StatusBar event wiring, 404 routes resolved. 15 tasks across 3 waves. tsc clean.
+**Phase:** Sprint 10.9 — UX Audit & Functional Wiring: ✅ COMPLETE
 **Feature Backlog:** FEATURE_BACKLOG.md
-**Sprint 10.6 Blueprint:** SPRINT_10_6_BLUEPRINT.md — 14 tasks executed
+**Sprint 10.9 Brief:** SPRINT_10_9_BRIEF.md — 15 tasks executed
+
+---
+
+- [x] **SPRINT 10.9** — UX Audit & Functional Wiring — **COMPLETE**
+  - Thread rename (inline edit) + delete with PATCH/DELETE API routes
+  - Decision list per-item dismiss (local state, hover ×)
+  - Context panel hierarchy: "Project" + "Session" labels, dimmed placeholder, visual separation
+  - CollapsedStrip caret moved to first position
+  - KERNLStatus removed from panel footer
+  - Header logo → clickable, dispatches `greglite:new-thread`
+  - ThemeSync component wires Zustand theme to `document.documentElement.dataset.theme`
+  - Light mode CSS variables block (`[data-theme="light"]`)
+  - /api/agent-sdk/status stub (was 404)
+  - BudgetSection URL fixed (/api/costs/today)
+  - War Room poller `firstTick` flag — empty graph now calls onUpdate on first tick
+  - StatusBar AEGIS/KERNL clicks dispatch `greglite:open-context-panel` event
+  - StatusBar Jobs click dispatches `greglite:switch-tab` event
+  - `greglite:switch-tab` handler wired in ChatInterface
+  - context-provider poll log demoted to console.debug
 
 ---
 

@@ -38,6 +38,26 @@
   --ghost-veto: var(--error);
 }
 
+/* ========== LIGHT MODE OVERRIDES — Sprint 10.9 Task 8 ========== */
+/* Applied via data-theme="light" on <html> by ThemeSync component */
+[data-theme="light"] {
+  --deep-space: #f0f4f8;
+  --elevated: #ffffff;
+  --surface: #e8edf2;
+  --ice-white: #1a2332;
+  --frost: #2d3f52;
+  --mist: #5a6e82;
+  --shadow: #c2cdd8;
+  --cyan: #0891b2;
+  --cyan-dark: #0e7490;
+  --cyan-light: #06b6d4;
+  --cyan-bright: #0ea5e9;
+  --success: #16a34a;
+  --warning: #d97706;
+  --error: #dc2626;
+  --info: #2563eb;
+}
+
 @theme inline {
   /* ========== FONT FAMILIES ========== */
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;

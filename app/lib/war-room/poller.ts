@@ -19,17 +19,22 @@ export function startWarRoomPolling(
 ): () => void {
   let previous: string = JSON.stringify({ nodes: [], edges: [] });
   let stopped = false;
+  let firstTick = true;
 
   const tick = async () => {
     if (stopped) return;
     try {
       const next = await buildGraph();
       const serialised = JSON.stringify(next);
-      if (serialised !== previous) {
+      // Sprint 10.9 Task 10: always call onUpdate on first tick so loading
+      // resolves even when there are no jobs (empty === initial previous).
+      if (firstTick || serialised !== previous) {
         previous = serialised;
+        firstTick = false;
         onUpdate(next);
       }
     } catch (err) {
+      firstTick = false;
       onError?.(err);
     }
   };

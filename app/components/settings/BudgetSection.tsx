@@ -40,7 +40,8 @@ export function BudgetSection() {
     // Also fetch today's spend
     void (async () => {
       try {
-        const res = await fetch('/api/agent-sdk/costs/daily');
+        // Sprint 10.9 Task 9: use /api/costs/today (correct route)
+        const res = await fetch('/api/costs/today');
         if (res.ok) {
           const body = await res.json() as { data?: { totalUsd: number } };
           if (body.data) setDailySpend(body.data.totalUsd);

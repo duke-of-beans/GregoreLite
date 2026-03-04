@@ -1,5 +1,11 @@
 'use client';
 
+/**
+ * SessionSection — Sprint 10.9 Task 3
+ * Added "SESSION" label as its own labeled section with visual separator from project.
+ * Session tooltip on number for clarity.
+ */
+
 import { useContextPanel } from '@/lib/context/context-provider';
 
 function formatDuration(ms: number): string {
@@ -27,8 +33,11 @@ export function SessionSection() {
 
   return (
     <div className="px-4 py-2">
-      <p className="text-xs font-semibold text-[var(--frost)]">
-        Session #{state.sessionNumber}
+      <p className="mb-1 text-[9px] font-semibold uppercase tracking-widest text-[var(--mist)] opacity-60">
+        Session
+      </p>
+      <p className="text-xs font-semibold text-[var(--frost)]" title={`Session number ${state.sessionNumber}`}>
+        #{state.sessionNumber}
       </p>
       <p className="mt-0.5 text-[11px] text-[var(--mist)]">
         {formatDuration(state.sessionDurationMs)}

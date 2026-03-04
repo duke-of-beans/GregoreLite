@@ -64,17 +64,17 @@ export function StatusBar() {
   };
 
   const handleJobsClick = () => {
-    document.querySelector<HTMLButtonElement>('[data-tab="workers"]')?.click();
+    window.dispatchEvent(new CustomEvent('greglite:switch-tab', { detail: { tab: 'workers' } }));
   };
 
   const handleAegisClick = () => {
-    // Will open Inspector (S9-14). For now, log.
-    console.log('[StatusBar] AEGIS profile:', ctx.aegisProfile);
+    // Opens context panel which shows AEGIS override dialog (Sprint 10.9 Task 11)
+    window.dispatchEvent(new CustomEvent('greglite:open-context-panel'));
   };
 
   const handleKernlClick = () => {
-    // Will open KERNL Health Panel (S9-18). For now, log.
-    console.log('[StatusBar] KERNL status:', ctx.kernlStatus);
+    // Opens context panel which shows KERNL status (Sprint 10.9 Task 11)
+    window.dispatchEvent(new CustomEvent('greglite:open-context-panel'));
   };
 
   return (

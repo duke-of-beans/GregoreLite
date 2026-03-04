@@ -285,13 +285,27 @@ export function ChatInterface() {
     const handleOpenHistoryEvent = () => {
       setHistoryOpen(true);
     };
+    // Sprint 10.9 Task 7: logo click creates a new thread tab
+    const handleNewThreadEvent = () => {
+      void createTab();
+      setActiveTab('strategic');
+    };
+    // Sprint 10.9 Task 12: StatusBar job count click switches to workers tab
+    const handleSwitchTabEvent = (e: Event) => {
+      const detail = (e as CustomEvent<{ tab: ActiveTab }>).detail;
+      if (detail?.tab) setActiveTab(detail.tab);
+    };
     window.addEventListener('greglite:load-thread', handleLoadThreadEvent);
     window.addEventListener('greglite:open-history', handleOpenHistoryEvent);
+    window.addEventListener('greglite:new-thread', handleNewThreadEvent);
+    window.addEventListener('greglite:switch-tab', handleSwitchTabEvent);
     return () => {
       window.removeEventListener('greglite:load-thread', handleLoadThreadEvent);
       window.removeEventListener('greglite:open-history', handleOpenHistoryEvent);
+      window.removeEventListener('greglite:new-thread', handleNewThreadEvent);
+      window.removeEventListener('greglite:switch-tab', handleSwitchTabEvent);
     };
-  }, [handleLoadThread]);
+  }, [handleLoadThread, createTab]);
 
   // ── S9-20: Edit last message — restore to input, truncate from that point ──
   const handleEditMessage = useCallback((messageIndex: number) => {

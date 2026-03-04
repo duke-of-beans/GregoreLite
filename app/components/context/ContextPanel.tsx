@@ -20,7 +20,6 @@ import { useState } from 'react';
 import { ProjectSection } from './ProjectSection';
 import { SessionSection } from './SessionSection';
 import { DecisionList } from './DecisionList';
-import { KERNLStatus } from './KERNLStatus';
 import { AEGISStatus } from './AEGISStatus';
 import { SuggestionSlot } from './SuggestionSlot';
 import { EoSIssueRow } from './EoSIssueRow';
@@ -38,6 +37,17 @@ function CollapsedStrip({ onExpand }: { onExpand: () => void }) {
       className="flex h-full w-10 flex-shrink-0 flex-col items-center border-r border-[var(--shadow)] bg-[var(--elevated)] py-4 gap-4"
       aria-label="Context panel (collapsed)"
     >
+      {/* Expand button — FIRST so it sits above indicator dots (Sprint 10.9 Task 6) */}
+      <button
+        onClick={onExpand}
+        className="text-[var(--mist)] hover:text-[var(--ice-white)] transition-colors"
+        aria-label="Expand context panel (Cmd+B)"
+        title="Expand (Cmd+B)"
+      >
+        <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
       {/* Project dot */}
       <div
         className="h-2 w-2 rounded-full bg-[var(--cyan)]"
@@ -64,17 +74,6 @@ function CollapsedStrip({ onExpand }: { onExpand: () => void }) {
         className="h-2 w-2 rounded-full bg-[var(--success)]"
         title="KERNL indexed"
       />
-      {/* Expand button — pinned to top like the collapse chevron */}
-      <button
-        onClick={onExpand}
-        className="text-[var(--mist)] hover:text-[var(--ice-white)] transition-colors"
-        aria-label="Expand context panel (Cmd+B)"
-        title="Expand (Cmd+B)"
-      >
-        <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
     </aside>
   );
 }
@@ -105,6 +104,15 @@ function PanelContent() {
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
   }, [toggleCollapsed]);
+
+  // Sprint 10.9 Task 11: StatusBar AEGIS/KERNL clicks expand the context panel
+  useEffect(() => {
+    function handleExpand() {
+      if (collapsed) toggleCollapsed();
+    }
+    window.addEventListener('greglite:open-context-panel', handleExpand);
+    return () => window.removeEventListener('greglite:open-context-panel', handleExpand);
+  }, [collapsed, toggleCollapsed]);
 
   if (collapsed) {
     return <CollapsedStrip onExpand={toggleCollapsed} />;
@@ -202,9 +210,8 @@ function PanelContent() {
         <div className="mx-4 h-px bg-[var(--shadow)] opacity-30" />
       </>
 
-      {/* Status footer */}
+      {/* Status footer — KERNLStatus removed (shown in StatusBar only) Sprint 10.9 Task 4 */}
       <div className="mt-auto border-t border-[var(--shadow)] py-2">
-        <KERNLStatus />
         <AEGISStatus />
         <SuggestionSlot />
       </div>

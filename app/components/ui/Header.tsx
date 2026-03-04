@@ -18,8 +18,15 @@ export function Header() {
 
   return (
     <header className="flex h-16 w-full items-center justify-between border-b border-[var(--shadow)] bg-[var(--deep-space)] px-6">
-      {/* Logo Section */}
-      <div className="flex items-center gap-3">
+      {/* Logo Section — click to open new thread (Sprint 10.9 Task 7) */}
+      <button
+        onClick={() => {
+          window.dispatchEvent(new CustomEvent('greglite:new-thread'));
+        }}
+        className="flex items-center gap-3 rounded-lg px-2 py-1 transition-colors hover:bg-[var(--elevated)]"
+        title="New conversation (home)"
+        aria-label="GregLite — start new conversation"
+      >
         <img
           src="/gregore-logo.png"
           alt="GregLite"
@@ -30,7 +37,7 @@ export function Header() {
         <span className="text-lg font-semibold tracking-tight text-[var(--ice-white)]">
           GregLite
         </span>
-      </div>
+      </button>
 
       {/* Right section: gate badge + notifications + settings + command palette */}
       <div className="flex items-center gap-3">

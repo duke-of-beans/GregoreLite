@@ -90,7 +90,7 @@ export function useContextPanelProvider(): ContextPanelCtx {
     // Then poll every 30s
     intervalRef.current = setInterval(() => {
       void fetchContext();
-      console.log('[context-provider] poll fired');
+      console.debug('[context-provider] poll fired');
     }, POLL_INTERVAL_MS);
 
     return () => {

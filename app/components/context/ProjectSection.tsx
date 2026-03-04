@@ -1,5 +1,11 @@
 'use client';
 
+/**
+ * ProjectSection — Sprint 10.9 Task 3
+ * "No active project" now renders as dimmed italic placeholder, not a heading.
+ * Active project name shows with tooltip on overflow.
+ */
+
 import { useState, useRef, useCallback } from 'react';
 import { useContextPanel } from '@/lib/context/context-provider';
 import { ProjectSwitcher } from './ProjectSwitcher';
@@ -9,7 +15,6 @@ const MAX_PATH_CHARS = 30;
 function truncatePath(path: string | null): string {
   if (!path) return '';
   if (path.length <= MAX_PATH_CHARS) return path;
-  // Keep last N chars so the meaningful end stays visible
   return '…' + path.slice(-(MAX_PATH_CHARS - 1));
 }
 
@@ -19,8 +24,6 @@ export function ProjectSection() {
   const anchorRef = useRef<HTMLDivElement>(null);
 
   const handleSwitch = useCallback((_projectId: string) => {
-    // Context provider will pick up the change on next 30s poll.
-    // Force an immediate re-fetch by dispatching a custom event.
     window.dispatchEvent(new CustomEvent('greglite:context-refresh'));
   }, []);
 
@@ -35,18 +38,21 @@ export function ProjectSection() {
 
   if (!state.activeProject) {
     return (
-      <div className="px-4 py-3 text-xs text-[var(--mist)]">
-        No active project
+      <div className="px-4 py-3">
+        <p className="text-[11px] italic text-[var(--mist)] opacity-60">No active project</p>
       </div>
     );
   }
 
   return (
     <div className="px-4 py-3" ref={anchorRef}>
+      <p className="mb-1 text-[9px] font-semibold uppercase tracking-widest text-[var(--mist)] opacity-60">
+        Project
+      </p>
       <div
         className="flex items-center gap-2 cursor-pointer group"
         onClick={() => setSwitcherOpen((prev) => !prev)}
-        title="Click to switch project"
+        title={state.activeProject.name}
       >
         <span
           className="mt-0.5 h-2 w-2 flex-shrink-0 rounded-full bg-[var(--cyan)]"
@@ -58,7 +64,10 @@ export function ProjectSection() {
         <span className="text-[10px] text-[var(--mist)] group-hover:text-[var(--frost)] transition-colors ml-auto">▾</span>
       </div>
       {state.activeProject.path && (
-        <p className="ml-4 mt-0.5 font-mono text-[10px] text-[var(--mist)]">
+        <p
+          className="ml-4 mt-0.5 font-mono text-[10px] text-[var(--mist)] truncate"
+          title={state.activeProject.path}
+        >
           {truncatePath(state.activeProject.path)}
         </p>
       )}
