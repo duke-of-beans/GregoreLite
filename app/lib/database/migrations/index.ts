@@ -13,7 +13,9 @@ import { Migration } from './types';
  * Load SQL migration file
  */
 function loadMigrationSQL(filename: string): string {
-  const filepath = join(__dirname, filename);
+  // __dirname is unreliable in Next.js (Turbopack resolves to .next output dir).
+  // Use process.cwd() which always points to the project root.
+  const filepath = join(process.cwd(), 'lib', 'database', 'migrations', filename);
   return readFileSync(filepath, 'utf-8');
 }
 

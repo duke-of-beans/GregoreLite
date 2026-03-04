@@ -11,7 +11,7 @@ import { nanoid } from 'nanoid';
 import type { Artifact, ArtifactType } from './types';
 
 /** Minimum content length (chars) before we bother opening an artifact panel */
-const MIN_ARTIFACT_LENGTH = 50;
+const MIN_ARTIFACT_LENGTH = 120;
 
 /**
  * Map a code fence language tag to an ArtifactType.
@@ -43,6 +43,18 @@ export function detectArtifact(content: string): Artifact | null {
     const code = match[2];
 
     if (!code || code.length < MIN_ARTIFACT_LENGTH) continue;
+
+    // Skip code blocks that look like tool calls, bootstrap output, or shell commands
+    const skipPatterns = [
+      /^#\s*Step\s/m,               // Bootstrap step comments
+      /Filesystem:read_file/,        // MCP tool calls
+      /<kernl>/,                     // KERNL XML
+      /<get_session_context>/,       // KERNL session
+      /^bash\s*$/m,                  // bash language tag with no real code
+      /CLAUDE_INSTRUCTIONS/,         // Bootstrap file reads
+      /TECHNICAL_STANDARDS/,         // Bootstrap file reads
+    ];
+    if (skipPatterns.some(pat => pat.test(code))) continue;
 
     if (!largest || code.length > largest.content.length) {
       largest = {

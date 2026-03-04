@@ -64,10 +64,10 @@ function CollapsedStrip({ onExpand }: { onExpand: () => void }) {
         className="h-2 w-2 rounded-full bg-[var(--success)]"
         title="KERNL indexed"
       />
-      {/* Expand button */}
+      {/* Expand button — pinned to top like the collapse chevron */}
       <button
         onClick={onExpand}
-        className="mt-auto text-[var(--mist)] hover:text-[var(--ice-white)] transition-colors"
+        className="text-[var(--mist)] hover:text-[var(--ice-white)] transition-colors"
         aria-label="Expand context panel (Cmd+B)"
         title="Expand (Cmd+B)"
       >

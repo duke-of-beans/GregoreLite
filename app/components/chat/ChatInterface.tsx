@@ -669,7 +669,7 @@ export function ChatInterface() {
               />
 
               {/* Message list */}
-              <div className="flex-1 overflow-hidden">
+              <div className="flex-1 overflow-hidden flex flex-col">
                 {restoring ? (
                   <div className="flex h-full items-center justify-center text-[var(--ghost-text)] text-sm">
                     Restoring session…
