@@ -17,6 +17,15 @@ interface BudgetConfigRow {
 export async function GET() {
   try {
     const db = getDatabase();
+
+    // Guard: budget_config table may not exist in fresh installs
+    const hasTable = db.prepare(
+      "SELECT 1 FROM sqlite_master WHERE type='table' AND name='budget_config'"
+    ).get();
+    if (!hasTable) {
+      return NextResponse.json({ data: {} });
+    }
+
     const rows = db.prepare('SELECT key, value FROM budget_config').all() as BudgetConfigRow[];
     const config: Record<string, string> = {};
     for (const row of rows) {
@@ -24,7 +33,7 @@ export async function GET() {
     }
     return NextResponse.json({ data: config });
   } catch (err) {
-    console.warn('[settings] GET DB unavailable:', err);
+    console.debug('[settings] GET DB unavailable:', err);
     return NextResponse.json({ data: {} });
   }
 }

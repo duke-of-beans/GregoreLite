@@ -12,6 +12,14 @@ export async function GET() {
   try {
     const db = getDatabase();
 
+    // Guard: if session_costs table doesn't exist yet, return zero silently
+    const hasTable = db.prepare(
+      "SELECT 1 FROM sqlite_master WHERE type='table' AND name='session_costs'"
+    ).get();
+    if (!hasTable) {
+      return NextResponse.json({ data: { totalUsd: 0, since: Date.now(), queriedAt: Date.now() } });
+    }
+
     // Midnight today in epoch ms
     const now = new Date();
     const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
@@ -32,7 +40,7 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.warn('[api/costs/today] DB unavailable:', error);
+    console.debug('[api/costs/today] DB unavailable:', error);
     return NextResponse.json({
       data: {
         totalUsd: 0,

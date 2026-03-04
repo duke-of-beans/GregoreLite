@@ -1,1 +1,14 @@
-phase-4: complete -- decision gate, trigger detection, API lock, KERNL logging
+feat(ux): Sprint 10.6 — Professional Cognitive Interface
+
+SSE streaming (client.messages.stream), flat borderless messages with 3-tier
+density toggle, smart auto-scroll with floating button, thinking/processing
+indicators, collapsible tool/thinking blocks, stop/interrupt with partial
+content preservation, scrollbar landmarks, sidebar consolidated into context
+panel, cost 4dp + per-message metadata, Transit Map data foundation
+(conversation_events table, tree columns, event capture helper, registry).
+
+Fixes: ChatSidebar hydration error, API 500s in dev mode, GregLite branding,
+anti-bootstrap system prompt.
+
+14 tasks, 7 execution briefs, 20 new files, 38 modified.
+890+ tests, tsc clean.

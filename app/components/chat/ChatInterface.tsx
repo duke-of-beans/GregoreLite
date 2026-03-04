@@ -53,6 +53,7 @@ import { DecisionBrowser } from '../decisions/DecisionBrowser';
 import { ArtifactLibrary } from '../artifacts/ArtifactLibrary';
 import { generateTitle } from '@/lib/chat/auto-title';
 import { useDensityStore } from '@/lib/stores/density-store';
+import { useUIStore } from '@/lib/stores/ui-store';
 import type { ProcessingEvent } from './ProcessingStatus';
 import type { MessageBlock } from './Message';
 
@@ -80,8 +81,9 @@ export function ChatInterface() {
   // ── S9-12: Chat history panel state ─────────────────────────────────────────
   const [historyOpen, setHistoryOpen] = useState(false);
 
-  // ── S9-13: Settings panel state ───────────────────────────────────────────
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  // ── S9-13: Settings panel state (lifted to ui-store for Header gear icon — Sprint 10.8)
+  const settingsOpen = useUIStore((s) => s.settingsOpen);
+  const setSettingsOpen = useUIStore((s) => s.setSettingsOpen);
 
   // ── S9-14: Inspector drawer state ─────────────────────────────────────────
   const [inspectorOpen, setInspectorOpen] = useState(false);
@@ -160,7 +162,7 @@ export function ChatInterface() {
       // Cmd+, — open settings panel (S9-13)
       if (meta && e.key === ',') {
         e.preventDefault();
-        setSettingsOpen((prev) => !prev);
+        useUIStore.getState().toggleSettings();
       }
       // Cmd+I — open inspector drawer (S9-14)
       if (meta && e.key === 'i') {
@@ -668,8 +670,8 @@ export function ChatInterface() {
                 onSearchChange={handleSearchChange}
               />
 
-              {/* Message list */}
-              <div className="flex-1 overflow-hidden flex flex-col">
+              {/* Message list — min-h-0 prevents flex child from overflowing (Sprint 10.8 Task 9) */}
+              <div className="flex-1 overflow-hidden flex flex-col min-h-0">
                 {restoring ? (
                   <div className="flex h-full items-center justify-center text-[var(--ghost-text)] text-sm">
                     Restoring session…

@@ -30,7 +30,7 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.warn('[api/morning-briefing] DB unavailable:', error);
+    console.debug('[api/morning-briefing] DB unavailable:', error);
     return NextResponse.json({
       data: {
         briefing: null,

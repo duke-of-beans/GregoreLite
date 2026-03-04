@@ -73,10 +73,21 @@ export const GET = safeHandler(async (request: Request) => {
       200
     );
   } catch (error) {
-    console.error('List conversations error:', error);
-    return errorResponse(
-      error instanceof Error ? error.message : 'Failed to list conversations',
-      500
+    // Sprint 10.8 Task 3: Return empty list instead of 500 when DB unavailable
+    console.warn('[api/conversations] DB unavailable, returning empty list:', error);
+    return successResponse(
+      {
+        conversations: [],
+        pagination: {
+          page: 1,
+          pageSize: 10,
+          totalItems: 0,
+          totalPages: 0,
+          hasNext: false,
+          hasPrevious: false,
+        },
+      },
+      200
     );
   }
 });

@@ -3,11 +3,14 @@
  *
  * Provides singleton SQLite database connection with proper initialization,
  * error handling, and resource management.
+ *
+ * Sprint 10.8 Task 1: Auto-initializes on first getDatabase() call.
+ * No longer requires initializeDatabase() to be called explicitly.
  */
 
 import Database from 'better-sqlite3';
 import { join } from 'path';
-import { appDataDir } from '@tauri-apps/api/path';
+import { mkdirSync } from 'fs';
 
 export interface DatabaseConfig {
   filename?: string;
@@ -24,39 +27,64 @@ export interface DatabaseConnection {
 }
 
 let dbInstance: Database.Database | null = null;
-let dbPath: string | null = null;
 
 /**
- * Get database file path
+ * Get (or auto-create) the singleton database connection.
  *
- * In development: ./data/gregore.db
- * In production: User data directory from Tauri
+ * On first call: creates the data directory, opens the SQLite file,
+ * sets pragmas, and runs any pending migrations.
+ * On subsequent calls: returns the existing connection.
  */
-async function getDatabasePath(): Promise<string> {
-  if (dbPath) return dbPath;
-
-  try {
-    // Try to get Tauri app data directory
-    const appData = await appDataDir();
-    dbPath = join(appData, 'gregore.db');
-  } catch {
-    // Fallback for non-Tauri environment (tests, development)
-    dbPath = join(process.cwd(), 'data', 'gregore.db');
+export function getDatabase(): Database.Database {
+  if (dbInstance && dbInstance.open) {
+    return dbInstance;
   }
 
-  return dbPath;
+  const dbFile = join(process.cwd(), 'data', 'gregore.db');
+
+  // Ensure data directory exists
+  mkdirSync(join(process.cwd(), 'data'), { recursive: true });
+
+  dbInstance = new Database(dbFile, { timeout: 5000 });
+
+  // Enable foreign keys
+  dbInstance.pragma('foreign_keys = ON');
+  // Set WAL mode for better concurrency
+  dbInstance.pragma('journal_mode = WAL');
+  // Performance optimizations
+  dbInstance.pragma('synchronous = NORMAL');
+  dbInstance.pragma('cache_size = -64000'); // 64MB cache
+  dbInstance.pragma('temp_store = MEMORY');
+  dbInstance.pragma('mmap_size = 268435456'); // 256MB memory-mapped I/O
+  dbInstance.pragma('page_size = 4096');
+  dbInstance.pragma('optimize');
+
+  // Run migrations on first connect (Task 2)
+  try {
+    const { migrateUp } = require('./migrations/runner') as {
+      migrateUp: (migrations: import('./migrations/types').Migration[]) => unknown[];
+    };
+    const { migrations } = require('./migrations/index') as {
+      migrations: import('./migrations/types').Migration[];
+    };
+    migrateUp(migrations);
+  } catch (err) {
+    console.warn('[database] migration warning:', err);
+  }
+
+  return dbInstance;
 }
 
 /**
- * Initialize database connection
+ * Initialize database connection (legacy async API — kept for Tauri production builds).
  *
- * Creates singleton connection with proper configuration.
- * Safe to call multiple times - returns existing connection.
+ * In dev/Node.js, getDatabase() now auto-initializes. This function is only needed
+ * when you want to pass a specific filename (e.g. Tauri appDataDir path).
  */
 export async function initializeDatabase(
   config: DatabaseConfig = {}
 ): Promise<DatabaseConnection> {
-  if (dbInstance) {
+  if (dbInstance && dbInstance.open) {
     return {
       db: dbInstance,
       close: closeDatabase,
@@ -64,61 +92,34 @@ export async function initializeDatabase(
     };
   }
 
-  const filename = config.filename || (await getDatabasePath());
-
-  try {
-    dbInstance = new Database(filename, {
+  // If a specific filename is provided, open that file instead of the default
+  if (config.filename) {
+    mkdirSync(require('path').dirname(config.filename), { recursive: true });
+    dbInstance = new Database(config.filename, {
       readonly: config.readonly ?? false,
       fileMustExist: config.fileMustExist ?? false,
       timeout: config.timeout ?? 5000,
       verbose: config.verbose,
     });
 
-    // Enable foreign keys
     dbInstance.pragma('foreign_keys = ON');
-
-    // Set WAL mode for better concurrency
     dbInstance.pragma('journal_mode = WAL');
-
-    // Performance optimizations
-    dbInstance.pragma('synchronous = NORMAL'); // Balance safety and speed
-    dbInstance.pragma('cache_size = -64000'); // 64MB cache
-    dbInstance.pragma('temp_store = MEMORY'); // Store temp tables in memory
-    dbInstance.pragma('mmap_size = 268435456'); // 256MB memory-mapped I/O
-    dbInstance.pragma('page_size = 4096'); // Optimal page size
-
-    // Query optimizer settings
-    dbInstance.pragma('optimize'); // Run optimizer on startup
-
-    return {
-      db: dbInstance,
-      close: closeDatabase,
-      isOpen: () => dbInstance !== null && dbInstance.open,
-    };
-  } catch (error) {
-    throw new Error(
-      `Failed to initialize database at ${filename}: ${error instanceof Error ? error.message : String(error)}`
-    );
-  }
-}
-
-/**
- * Get existing database connection
- *
- * @throws Error if database not initialized
- */
-export function getDatabase(): Database.Database {
-  if (!dbInstance) {
-    throw new Error(
-      'Database not initialized. Call initializeDatabase() first.'
-    );
+    dbInstance.pragma('synchronous = NORMAL');
+    dbInstance.pragma('cache_size = -64000');
+    dbInstance.pragma('temp_store = MEMORY');
+    dbInstance.pragma('mmap_size = 268435456');
+    dbInstance.pragma('page_size = 4096');
+    dbInstance.pragma('optimize');
+  } else {
+    // Fall back to auto-init
+    getDatabase();
   }
 
-  if (!dbInstance.open) {
-    throw new Error('Database connection is closed.');
-  }
-
-  return dbInstance;
+  return {
+    db: dbInstance!,
+    close: closeDatabase,
+    isOpen: () => dbInstance !== null && dbInstance!.open,
+  };
 }
 
 /**
@@ -135,24 +136,12 @@ export function closeDatabase(): void {
       console.error('Error closing database:', error);
     } finally {
       dbInstance = null;
-      dbPath = null;
     }
   }
 }
 
 /**
  * Execute database transaction
- *
- * Automatically handles commit/rollback and provides type-safe callback.
- *
- * @example
- * ```typescript
- * const result = await executeTransaction(async (db) => {
- *   db.prepare('INSERT INTO ...').run();
- *   db.prepare('UPDATE ...').run();
- *   return { success: true };
- * });
- * ```
  */
 export async function executeTransaction<T>(
   callback: (db: Database.Database) => T | Promise<T>
@@ -174,7 +163,7 @@ export async function executeTransaction<T>(
  * Check if database file exists
  */
 export async function databaseExists(): Promise<boolean> {
-  const path = await getDatabasePath();
+  const path = join(process.cwd(), 'data', 'gregore.db');
   const fs = await import('fs/promises');
 
   try {
@@ -189,7 +178,7 @@ export async function databaseExists(): Promise<boolean> {
  * Get database file size in bytes
  */
 export async function getDatabaseSize(): Promise<number> {
-  const path = await getDatabasePath();
+  const path = join(process.cwd(), 'data', 'gregore.db');
   const fs = await import('fs/promises');
 
   try {

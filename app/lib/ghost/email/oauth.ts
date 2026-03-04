@@ -128,22 +128,29 @@ function waitForAuthCode(expectedState: string, timeoutMs = 120_000): Promise<st
 // ── Browser opener ─────────────────────────────────────────────────────────────
 
 async function openInBrowser(url: string): Promise<void> {
-  try {
-    // Tauri context: use shell plugin (runtime-only; no type declarations in dev environment)
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error — @tauri-apps/plugin-shell only resolves at Tauri runtime
-    const { open } = await import('@tauri-apps/plugin-shell');
-    await open(url);
-  } catch {
-    // Non-Tauri context (tests/dev): fall back to Node.js child_process
-    const { exec } = await import('child_process');
-    const cmd = process.platform === 'win32'
-      ? `start "" "${url}"`
-      : process.platform === 'darwin'
-        ? `open "${url}"`
-        : `xdg-open "${url}"`;
-    exec(cmd);
+  // Only attempt Tauri shell in actual Tauri runtime.
+  // webpackIgnore prevents Turbopack/webpack from resolving this module at
+  // build time, eliminating the "Module not found" warning during pnpm dev.
+  if (typeof window !== 'undefined' && '__TAURI__' in window) {
+    try {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error — @tauri-apps/plugin-shell only resolves at Tauri runtime
+      const { open } = await import(/* webpackIgnore: true */ '@tauri-apps/plugin-shell');
+      await open(url);
+      return;
+    } catch {
+      // Fall through to Node.js fallback
+    }
   }
+
+  // Non-Tauri context (Node.js / dev server): open URL via child_process
+  const { exec } = await import('child_process');
+  const cmd = process.platform === 'win32'
+    ? `start "" "${url}"`
+    : process.platform === 'darwin'
+      ? `open "${url}"`
+      : `xdg-open "${url}"`;
+  exec(cmd);
 }
 
 // ── Token exchange — Gmail ─────────────────────────────────────────────────────

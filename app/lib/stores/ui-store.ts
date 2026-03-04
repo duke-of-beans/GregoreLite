@@ -80,6 +80,9 @@ export interface UIState {
 
   // Focus management
   focusedElement: string | null;
+
+  // Settings panel
+  settingsOpen: boolean;
 }
 
 // ============================================================================
@@ -125,6 +128,10 @@ export interface UIActions {
   // Focus management
   setFocusedElement: (elementId: string | null) => void;
 
+  // Settings panel
+  toggleSettings: () => void;
+  setSettingsOpen: (open: boolean) => void;
+
   // Reset
   resetUI: () => void;
 }
@@ -163,6 +170,8 @@ const initialState: UIState = {
   },
 
   focusedElement: null,
+
+  settingsOpen: false,
 };
 
 // ============================================================================
@@ -409,6 +418,18 @@ const createUISlice: StateCreator<UIStore> = (set, get) => ({
 
   setFocusedElement: (elementId: string | null) => {
     set({ focusedElement: elementId });
+  },
+
+  // ========================================================================
+  // SETTINGS PANEL
+  // ========================================================================
+
+  toggleSettings: () => {
+    set((state) => ({ settingsOpen: !state.settingsOpen }));
+  },
+
+  setSettingsOpen: (open: boolean) => {
+    set({ settingsOpen: open });
   },
 
   // ========================================================================
