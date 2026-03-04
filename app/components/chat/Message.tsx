@@ -240,6 +240,8 @@ export interface MessageProps {
   messageEvents?: EnrichedEvent[] | undefined;
   showTransitMetadata?: boolean | undefined;
   onMarkerClick?: ((eventId: string) => void) | undefined;
+  /** Mark this message as a manual subway station */
+  onMarkAsLandmark?: ((messageId: string, name: string, icon: string) => void) | undefined;
 }
 
 // ─── Highlight helper ─────────────────────────────────────────────────────────
@@ -271,9 +273,14 @@ function highlightText(text: string, query: string): React.ReactNode {
 
 export function Message({ role, content, timestamp, highlightQuery, isActiveMatch,
   onEdit, onRegenerate, isStreaming, model, tokens, costUsd, latencyMs, blocks,
-  id, messageEvents, showTransitMetadata, onMarkerClick }: MessageProps) {
+  id, messageEvents, showTransitMetadata, onMarkerClick, onMarkAsLandmark }: MessageProps) {
   const isUser = role === 'user';
-  const showActions = onEdit || onRegenerate;
+  const showActions = onEdit || onRegenerate || onMarkAsLandmark;
+
+  // ── Landmark form state (Task 12) ──────────────────────────────────────────
+  const [landmarkFormOpen, setLandmarkFormOpen] = useState(false);
+  const [landmarkName, setLandmarkName] = useState('');
+  const [landmarkIcon, setLandmarkIcon] = useState('📍');
 
   return (
     <div
@@ -367,7 +374,7 @@ export function Message({ role, content, timestamp, highlightQuery, isActiveMatc
         )}
       </div>
 
-      {/* Edit / Regenerate hover actions */}
+      {/* Edit / Regenerate / Landmark hover actions */}
       {showActions && (
         <div className="mt-1 flex items-center gap-2 opacity-0 group-hover/msg:opacity-100 transition-opacity">
           {onEdit && (
@@ -380,6 +387,67 @@ export function Message({ role, content, timestamp, highlightQuery, isActiveMatc
               className="flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-medium text-[var(--mist)] hover:text-[var(--ice-white)] hover:bg-[var(--surface)] transition-colors"
               title="Regenerate (Cmd+R)">↻ Regenerate</button>
           )}
+          {onMarkAsLandmark && (
+            <button
+              onClick={() => { setLandmarkFormOpen((p) => !p); setLandmarkName(''); setLandmarkIcon('📍'); }}
+              className="flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-medium text-[var(--mist)] hover:text-[var(--cyan)] hover:bg-[var(--surface)] transition-colors"
+              title="Mark as subway station landmark">
+              ⭐ Landmark
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Landmark inline form — shown when ⭐ Landmark is clicked */}
+      {landmarkFormOpen && onMarkAsLandmark && id && (
+        <div
+          className="mt-2 flex items-center gap-2 rounded border border-[var(--shadow)] bg-[var(--elevated)] px-3 py-2"
+          style={{ maxWidth: 360 }}
+        >
+          <input
+            type="text"
+            value={landmarkIcon}
+            onChange={(e) => setLandmarkIcon(e.target.value)}
+            placeholder="📍"
+            maxLength={4}
+            style={{ width: 36, textAlign: 'center', fontSize: 16, background: 'transparent', border: 'none', outline: 'none', color: 'var(--ice-white)' }}
+            aria-label="Station icon"
+          />
+          <input
+            type="text"
+            value={landmarkName}
+            onChange={(e) => setLandmarkName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && landmarkName.trim()) {
+                onMarkAsLandmark(id, landmarkName.trim(), landmarkIcon || '📍');
+                setLandmarkFormOpen(false);
+              }
+              if (e.key === 'Escape') setLandmarkFormOpen(false);
+            }}
+            placeholder="Station name…"
+            autoFocus
+            className="flex-1 bg-transparent text-[11px] text-[var(--ice-white)] placeholder:text-[var(--mist)] outline-none border-none"
+            aria-label="Station name"
+          />
+          <button
+            onClick={() => {
+              if (landmarkName.trim()) {
+                onMarkAsLandmark(id, landmarkName.trim(), landmarkIcon || '📍');
+                setLandmarkFormOpen(false);
+              }
+            }}
+            disabled={!landmarkName.trim()}
+            className="rounded px-2 py-0.5 text-[10px] font-medium bg-[var(--cyan)]/20 text-[var(--cyan)] hover:bg-[var(--cyan)]/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Save
+          </button>
+          <button
+            onClick={() => setLandmarkFormOpen(false)}
+            className="rounded px-1.5 py-0.5 text-[10px] text-[var(--mist)] hover:text-[var(--ice-white)] transition-colors"
+            aria-label="Cancel"
+          >
+            ✕
+          </button>
         </div>
       )}
 

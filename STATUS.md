@@ -1,10 +1,10 @@
 # GREGLITE — STATUS
-**Last Updated:** March 4, 2026 — Sprint 11.7 COMPLETE (Transit Map Phase F: Learning Engine).
+**Last Updated:** March 4, 2026 — Sprint 11.4+11.5 COMPLETE (Transit Map Z3 Annotations + Z2 Subway View).
 **Version:** v1.0.0 (Phase 8 Ship Prep complete)
-**Test Count:** 1152/1155 (148 new learning engine tests from Sprint 11.7; 3 pre-existing failures unrelated to learning scope)
+**Test Count:** 1165/1168 (13 new SubwayMap tests from Sprint 11.5; 3 pre-existing failures unrelated to transit scope)
 **EoS Health:** 100/100
-**TSC:** 0 errors in Sprint 11.7 files (6 pre-existing errors in parallel Sprint 11.4/11.5 chat components)
-**Next:** Sprint 11.5 Phase 2 (Z2 Subway View)
+**TSC:** 0 errors
+**Next:** Sprint 11.6 or product backlog triage
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md — Phase A data foundation SHIPPED (Sprint 11.2, commit 37d60af)
 
@@ -32,6 +32,19 @@
   - `app/api/transit/insights/route.ts`: `GET` (list all or `?status=` filter) + `POST` (approve/dismiss/rollback/run_pipeline actions)
   - 148 new tests across 5 test files: verbosity, regeneration, insights, registry, pipeline — all passing
   - TSC: 0 errors in Sprint 11.7 files | Tests: 1152/1155
+
+- [x] **SPRINT 11.5** — Transit Map Phase D: Z2 Subway View — **COMPLETE**
+  - `components/transit/SubwayMap.tsx`: full SVG renderer; `indexToX()` (exported pure fn, proportional station positioning with configurable paddingX); `extractBranchSegments()` (exported for testing); station dots, event marker dots, branch fork lines, click-to-scroll; `events` prop shared from ChatInterface (no internal fetch)
+  - `components/transit/SubwayStationNode.tsx`: station label + icon rendering; tooltip on hover; click fires `onStationClick(messageIndex)`
+  - `components/transit/SubwayMarkerDot.tsx`: event marker dots on subway track; colored by category; click fires `onMarkerClick(event)`
+  - `components/transit/SubwayBranch.tsx`: fork/merge visualization; bezier curves between track Y positions
+  - `lib/transit/stations.ts`: `resolveTemplate()` (Handlebars-style `{{field}}` substitution) + `generateStations()` (reads `station` config from registry, auto-creates Station[] from events); exported pure fns
+  - `lib/transit/stations.ts` registered event type `transit.manual_station` for user-created landmarks
+  - `components/chat/Message.tsx`: `onMarkAsLandmark` prop; ⭐ Landmark hover button; inline form (emoji input + name input + Save/Cancel); Enter/Escape keyboard shortcuts
+  - `components/chat/MessageList.tsx`: `handleMarkAsLandmark` callback → `captureClientEvent(transit.manual_station)` + event refresh; `onMarkAsLandmark` wired into `<Message>` render; `propEvents` bypass skips internal fetch when ChatInterface provides shared events
+  - `components/chat/ChatInterface.tsx`: transit useEffect placed after store selector declarations (fixed TS2448 hoisting); single shared `transitEvents` state passed to both `<SubwayMap>` and `<MessageList>`
+  - `components/transit/__tests__/SubwayMap.test.tsx`: 13 new pure logic tests — `indexToX` (6: paddingX boundaries, midpoint, single-message centering, monotonicity, default padding) + `extractBranchSegments` (7: empty events, one segment per fork, isActive true/false, forkX < endX, trunkY propagation, label from branch_type)
+  - TSC: 0 errors | Tests: 1165/1168 (13 new, all passing; 3 pre-existing unrelated failures unchanged)
 
 - [x] **SPRINT 11.4** — Transit Map Phase C: Z3 Detail Annotations — **COMPLETE**
   - `components/transit/MessageMetadata.tsx`: model badge pill, token counts, cost (4dp), latency; all logic exported for pure unit testing

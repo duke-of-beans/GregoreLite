@@ -20,6 +20,7 @@ import { ThinkingIndicator } from './ThinkingIndicator';
 import { useDensityStore, DENSITY_CONFIG } from '@/lib/stores/density-store';
 import type { EnrichedEvent } from '@/lib/transit/types';
 import { EventDetailPanel } from '@/components/transit/EventDetailPanel';
+import { captureClientEvent } from '@/lib/transit/client';
 
 export interface MessageListProps {
   messages: MessageProps[];
@@ -27,6 +28,12 @@ export interface MessageListProps {
   conversationId?: string | undefined;
   /** Show Transit Map Z3 annotations (model badge, tokens, cost, event markers) */
   showTransitMetadata?: boolean | undefined;
+  /** Pre-fetched transit events from ChatInterface (avoids double-fetch in Transit tab) */
+  events?: EnrichedEvent[] | undefined;
+  /** When set, smooth-scroll to the message at this index (click-to-scroll from SubwayMap) */
+  scrollToIndex?: number | undefined;
+  /** Called when the user scrolls, reporting the estimated center-visible message index */
+  onActiveIndexChange?: ((index: number) => void) | undefined;
   /** Current search query — passed to each Message for highlighting */
   highlightQuery?: string | undefined;
   /** Which messages matched the search (by message index) */
@@ -45,6 +52,9 @@ export function MessageList({
   messages,
   conversationId,
   showTransitMetadata,
+  events: propEvents,
+  scrollToIndex,
+  onActiveIndexChange,
   highlightQuery,
   searchMatches,
   activeMatchIdx,
@@ -64,14 +74,16 @@ export function MessageList({
   const setDensity = useDensityStore((s) => s.setDensity);
   const config = DENSITY_CONFIG[density];
 
-  // Transit Map — fetch events ONCE at this level, share with all consumers.
-  // ScrollbarLandmarks and Message both read from this single fetch. NO N+1.
-  const [transitEvents, setTransitEvents] = useState<EnrichedEvent[]>([]);
+  // Transit Map — events shared from ChatInterface when in Transit tab (no double-fetch).
+  // Falls back to an internal fetch when used standalone (Strategic tab, etc.).
+  const [fetchedEvents, setFetchedEvents] = useState<EnrichedEvent[]>([]);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
 
+  // Only fetch internally when propEvents is not provided
   useEffect(() => {
+    if (propEvents !== undefined) return; // parent owns the data
     if (!conversationId) {
-      setTransitEvents([]);
+      setFetchedEvents([]);
       return;
     }
     let cancelled = false;
@@ -82,14 +94,35 @@ export function MessageList({
         );
         if (!res.ok || cancelled) return;
         const data = (await res.json()) as { events: EnrichedEvent[] };
-        if (!cancelled) setTransitEvents(data.events ?? []);
+        if (!cancelled) setFetchedEvents(data.events ?? []);
       } catch {
         // Non-blocking — transit telemetry never breaks the chat
       }
     };
     void doFetch();
     return () => { cancelled = true; };
-  }, [conversationId, messages.length]);
+  }, [propEvents, conversationId, messages.length]);
+
+  // Resolved event list: prefer prop (Transit tab shared fetch) over internal fetch
+  const transitEvents = propEvents ?? fetchedEvents;
+
+  // Click-to-scroll from SubwayMap station click
+  useEffect(() => {
+    if (scrollToIndex === undefined || !scrollRef.current) return undefined;
+    const msg = messages[scrollToIndex];
+    if (!msg?.id) return undefined;
+    const el = scrollRef.current.querySelector(`#message-${msg.id}`);
+    if (!el) return undefined;
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Brief highlight flash — CSS transition on outline
+    (el as HTMLElement).style.outline = '2px solid var(--cyan)';
+    (el as HTMLElement).style.borderRadius = '6px';
+    const timer = setTimeout(() => {
+      (el as HTMLElement).style.outline = '';
+      (el as HTMLElement).style.borderRadius = '';
+    }, 900);
+    return () => clearTimeout(timer);
+  }, [scrollToIndex, messages]);
 
   // Build Map<message_id, EnrichedEvent[]> for O(1) per-message lookup
   const eventsMap = useMemo(() => {
@@ -122,13 +155,39 @@ export function MessageList({
         );
         if (updated.ok) {
           const data = (await updated.json()) as { events: EnrichedEvent[] };
-          setTransitEvents(data.events ?? []);
+          setFetchedEvents(data.events ?? []);
         }
       }
     } catch {
       // Non-blocking
     }
   };
+
+  // Task 12: Mark a message as a manual subway station landmark
+  const handleMarkAsLandmark = useCallback(
+    async (messageId: string, name: string, icon: string) => {
+      if (!conversationId) return;
+      captureClientEvent({
+        conversation_id: conversationId,
+        event_type: 'transit.manual_station',
+        category: 'cognitive',
+        payload: { name, icon, message_id: messageId },
+      });
+      // Re-fetch transit events so the new station appears immediately
+      try {
+        const res = await fetch(
+          `/api/transit/events?conversationId=${encodeURIComponent(conversationId)}`,
+        );
+        if (res.ok) {
+          const data = (await res.json()) as { events: EnrichedEvent[] };
+          setFetchedEvents(data.events ?? []);
+        }
+      } catch {
+        // Non-blocking
+      }
+    },
+    [conversationId],
+  );
 
   // Hydration-safe density sync
   useEffect(() => {
@@ -221,9 +280,21 @@ export function MessageList({
       ? searchMatches[activeMatchIdx]?.messageIndex
       : undefined;
 
+  // Report visible center message index to parent (for subway active-station sync)
+  const handleScroll = () => {
+    if (!onActiveIndexChange || !scrollRef.current || messages.length === 0) return;
+    const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+    const scrollable = scrollHeight - clientHeight;
+    if (scrollable <= 0) return;
+    const fraction = scrollTop / scrollable;
+    const index = Math.round(fraction * (messages.length - 1));
+    onActiveIndexChange(Math.max(0, Math.min(index, messages.length - 1)));
+  };
+
   return (
     <div
       ref={scrollRef}
+      onScroll={handleScroll}
       className="relative flex-1 min-h-0 overflow-y-auto px-6 py-4"
       role="log"
       aria-label="Message history"
@@ -265,6 +336,7 @@ export function MessageList({
             {messages.map((message, index) => (
               <Message
                 key={index}
+                id={message.id}
                 role={message.role}
                 content={message.content}
                 timestamp={message.timestamp}
@@ -285,6 +357,11 @@ export function MessageList({
                 messageEvents={message.id ? (eventsMap.get(message.id) ?? []) : []}
                 showTransitMetadata={showTransitMetadata}
                 onMarkerClick={(eventId) => setSelectedEventId(eventId)}
+                onMarkAsLandmark={
+                  message.id
+                    ? (msgId, name, icon) => void handleMarkAsLandmark(msgId, name, icon)
+                    : undefined
+                }
               />
             ))}
 

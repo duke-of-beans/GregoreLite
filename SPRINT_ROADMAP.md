@@ -341,7 +341,7 @@ Settings or keyboard shortcut to show/hide message metadata overlay. Default: hi
 - [ ] `npx tsc --noEmit` — 0 errors
 - [ ] `pnpm test:run` — all passing
 - [ ] Manual: send messages, verify metadata appears, click markers, add annotation
-- [ ] Commit: `feat: Sprint 11.4 — Transit Map Z3 detail annotations`
+- [x] Commit: `feat: Sprint 11.4+11.5 — Transit Map Z3 annotations + Z2 subway view` ✅ COMPLETE (March 4, 2026)
 
 ---
 
@@ -396,7 +396,7 @@ New file: `components/transit/SubwayMap.tsx`
 - [ ] `npx tsc --noEmit` — 0 errors
 - [ ] `pnpm test:run` — all passing
 - [ ] Manual: have a multi-topic conversation, verify stations appear, click to navigate
-- [ ] Commit: `feat: Sprint 11.5 — Transit Map Z2 subway view`
+- [x] Commit: `feat: Sprint 11.5 — Transit Map Z2 subway view` ✅ (merged with 11.4 commit above)
 
 ---
 

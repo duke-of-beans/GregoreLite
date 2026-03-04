@@ -29,18 +29,18 @@ Full spec: TRANSIT_MAP_SPEC.md (829 lines). Zero implementation exists.
 - Landmark rendering — colored ticks on scrollbar track (§5.2)
 - Capture hooks: flow.topic_shift, cognitive.artifact_generated, system.gate_trigger (§4.4)
 
-### Phase C: Z3 Detail Annotations (Sprint 11.4) ❌
-- Per-message inline metadata: model badge, token count, cost, latency (§3.7)
-- Event marker rendering on messages (§3.2)
-- Event detail panel on marker click
-- User annotation support
+### ✅ Phase C: Z3 Detail Annotations (Sprint 11.4) — COMPLETE (March 4, 2026)
+- ✅ Per-message inline metadata: model badge, token count, cost, latency (§3.7)
+- ✅ Event marker rendering on messages (§3.2)
+- ✅ Event detail panel on marker click
+- ✅ User annotation support
 
-### Phase D: Z2 Subway View (Sprint 11.5) ❌
-- Station auto-generation from events (§3.3)
-- Subway line renderer (horizontal, with markers) (§3.6)
-- Branch rendering — fork/merge visualization (§3.1)
-- Click-to-scroll navigation from stations to messages
-- Manual station creation (right-click → "Mark as Landmark")
+### ✅ Phase D: Z2 Subway View (Sprint 11.5) — COMPLETE (March 4, 2026)
+- ✅ Station auto-generation from events (§3.3) — `generateStations()` + `resolveTemplate()`
+- ✅ Subway line renderer (horizontal, with markers) (§3.6) — `SubwayMap.tsx`, `SubwayStationNode.tsx`, `SubwayMarkerDot.tsx`
+- ✅ Branch rendering — fork/merge visualization (§3.1) — `SubwayBranch.tsx`, `extractBranchSegments()`
+- ✅ Click-to-scroll navigation from stations to messages
+- ✅ Manual station creation ("⭐ Landmark" hover button → inline form → `transit.manual_station` event)
 
 ### Phase E: Z1 Sankey View (Sprint 11.6) ❌
 - Sankey flow graph renderer (§3.5)

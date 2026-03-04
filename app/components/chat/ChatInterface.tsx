@@ -56,6 +56,8 @@ import { captureClientEvent } from '@/lib/transit/client';
 import { useDensityStore } from '@/lib/stores/density-store';
 import { useUIStore } from '@/lib/stores/ui-store';
 import { SubwayMap } from '@/components/transit/SubwayMap';
+import type { EnrichedEvent } from '@/lib/transit/types';
+import type { Station } from '@/lib/transit/types';
 import type { ProcessingEvent } from './ProcessingStatus';
 import type { MessageBlock } from './Message';
 
@@ -90,6 +92,23 @@ export function ChatInterface() {
 
   // ── Transit Map Z3 annotations toggle (Sprint 11.4)
   const showTransitMetadata = useUIStore((s) => s.showTransitMetadata);
+
+  // ── Transit Map Z2 events — fetched once here, shared with SubwayMap + MessageList
+  // Single source of truth: no double-fetch between SubwayMap and MessageList.
+  const [transitEvents, setTransitEvents] = useState<EnrichedEvent[]>([]);
+  const [activeStationId, setActiveStationId] = useState<string | null>(null);
+  const [scrollToIndex, setScrollToIndex] = useState<number | undefined>(undefined);
+
+  const handleStationClick = (station: Station) => {
+    setScrollToIndex(station.messageIndex);
+    setActiveStationId(station.id);
+  };
+
+  const handleActiveIndexChange = (index: number) => {
+    // No-op placeholder — activeStationId could be updated here
+    // using nearest-station lookup once UX is validated
+    void index;
+  };
 
   // ── S9-14: Inspector drawer state ─────────────────────────────────────────
   const [inspectorOpen, setInspectorOpen] = useState(false);
@@ -657,6 +676,21 @@ export function ChatInterface() {
 
   // ── Render ───────────────────────────────────────────────────────────────
   const messages = activeMessages;
+
+  // ── Transit Map Z2 — fetch events once, share with SubwayMap + MessageList ──
+  // Placed after store selectors so activeConversationId and messages are in scope.
+  useEffect(() => {
+    if (!activeConversationId) { setTransitEvents([]); return; }
+    let cancelled = false;
+    void fetch(`/api/transit/events?conversationId=${encodeURIComponent(activeConversationId)}`)
+      .then((r) => (r.ok ? r.json() : { events: [] }))
+      .then((data: { events: EnrichedEvent[] }) => {
+        if (!cancelled) setTransitEvents(data.events ?? []);
+      })
+      .catch(() => null);
+    return () => { cancelled = true; };
+  }, [activeConversationId, messages.length]);
+
   const ghostContextActive = activeGhostContext;
   const restoring = tabInitializing || activeRestoring;
   const panelOpen = activeArtifact !== null && activeTab === 'strategic';
@@ -723,7 +757,14 @@ export function ChatInterface() {
           <div className="flex flex-1 flex-col overflow-hidden">
             {/* Subway map — top 25% */}
             <div style={{ flex: '0 0 25%', minHeight: 140, borderBottom: '1px solid var(--shadow)', overflow: 'hidden' }}>
-              <SubwayMap conversationId={activeConversationId ?? undefined} />
+              <SubwayMap
+                conversationId={activeConversationId ?? undefined}
+                events={transitEvents}
+                totalMessages={messages.length}
+                activeStationId={activeStationId}
+                onStationClick={handleStationClick}
+                onMarkerClick={() => { /* EventDetailPanel handles via MessageList */ }}
+              />
             </div>
             {/* Messages — bottom 75%, scrollable, transit metadata always on in this view */}
             <div className="flex-1 overflow-hidden flex flex-col min-h-0">
@@ -731,6 +772,9 @@ export function ChatInterface() {
                 messages={messages}
                 conversationId={activeConversationId ?? undefined}
                 showTransitMetadata={true}
+                events={transitEvents}
+                scrollToIndex={scrollToIndex}
+                onActiveIndexChange={handleActiveIndexChange}
                 onEditMessage={handleEditMessage}
                 onRegenerate={handleRegenerate}
                 isWaitingForResponse={sendButtonState === 'checking'}

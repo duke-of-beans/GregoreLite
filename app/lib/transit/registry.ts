@@ -48,6 +48,11 @@ const REGISTRY_DATA: EventTypeDefinition[] = [
     experimental: true,
     marker: { shape: 'circle', color: 'var(--cyan)', size: 'landmark' },
     scrollbar: { color: 'var(--cyan)', height: 3, opacity: 0.7 },
+    station: {
+      enabled: true,
+      nameTemplate: '{payload.inferred_topic_label}',
+      icon: '📍',
+    },
   },
 
   {
@@ -58,6 +63,11 @@ const REGISTRY_DATA: EventTypeDefinition[] = [
     learnable: true,
     marker: { shape: 'circle', color: 'var(--amber-400)', size: 'large' },
     scrollbar: { color: 'var(--amber-400)', height: 2, opacity: 0.6 },
+    station: {
+      enabled: true,
+      nameTemplate: 'Fork: {payload.branch_type}',
+      icon: '🔀',
+    },
   },
 
   {
@@ -76,6 +86,11 @@ const REGISTRY_DATA: EventTypeDefinition[] = [
     description: 'App open, idle timeout, or explicit close.',
     learnable: false,
     marker: { shape: 'circle', color: 'var(--frost)', size: 'small' },
+    station: {
+      enabled: true,
+      nameTemplate: 'Session Start/End',
+      icon: '🚉',
+    },
   },
 
   // ══════════════════════════════════════════════════════════════════════════
@@ -160,6 +175,11 @@ const REGISTRY_DATA: EventTypeDefinition[] = [
     learnable: true,
     marker: { shape: 'square', color: 'var(--amber-400)', size: 'large' },
     scrollbar: { color: 'var(--amber-400)', height: 3, opacity: 0.8 },
+    station: {
+      enabled: true,
+      nameTemplate: 'Gate: {payload.gate_type}',
+      icon: '🛑',
+    },
   },
 
   {
@@ -279,6 +299,11 @@ const REGISTRY_DATA: EventTypeDefinition[] = [
     learnable: true,
     marker: { shape: 'hexagon', color: 'var(--teal-400)', size: 'large' },
     scrollbar: { color: 'var(--teal-400)', height: 2, opacity: 0.5 },
+    station: {
+      enabled: true,
+      nameTemplate: 'Artifact: {payload.artifact_type}',
+      icon: '📦',
+    },
   },
 
   {
@@ -288,6 +313,25 @@ const REGISTRY_DATA: EventTypeDefinition[] = [
     description: 'User copied, edited, or opened an artifact.',
     learnable: true,
     marker: { shape: 'hexagon', color: 'var(--green-400)', size: 'medium' },
+  },
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // TRANSIT — User-created manual stations (§3.3 manual source)
+  // ══════════════════════════════════════════════════════════════════════════
+
+  {
+    id: 'transit.manual_station',
+    category: 'cognitive',
+    name: 'Manual Landmark',
+    description: 'User-created station marking this message as a navigation landmark.',
+    learnable: false,
+    marker: { shape: 'hexagon', color: 'var(--cyan)', size: 'landmark' },
+    scrollbar: { color: 'var(--cyan)', height: 3, opacity: 0.9 },
+    station: {
+      enabled: true,
+      nameTemplate: '{payload.name}',
+      icon: '{payload.icon}',
+    },
   },
 
 ];
