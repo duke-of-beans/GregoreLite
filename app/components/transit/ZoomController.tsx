@@ -157,8 +157,8 @@ export function ZoomIndicator({ zoomLevel, onSetZoom }: ZoomIndicatorProps) {
     <div
       style={{
         display: 'inline-flex',
-        gap: 2,
-        padding: '2px 6px',
+        gap: 4,
+        padding: '2px 8px',
         borderRadius: 4,
         background: 'var(--shadow)',
         fontSize: 10,
@@ -169,16 +169,17 @@ export function ZoomIndicator({ zoomLevel, onSetZoom }: ZoomIndicatorProps) {
         <button
           key={level}
           onClick={() => onSetZoom(level)}
+          aria-current={level === zoomLevel ? 'true' : undefined}
+          className="transit-interactive"
           style={{
-            padding: '1px 4px',
-            borderRadius: 3,
+            padding: '2px 8px',
+            borderRadius: 4,
             border: 'none',
             background: level === zoomLevel ? 'var(--cyan)' : 'transparent',
             color: level === zoomLevel ? 'var(--deep-space)' : 'var(--mist)',
             cursor: 'pointer',
             fontSize: 10,
             fontWeight: level === zoomLevel ? 700 : 400,
-            transition: 'all 0.15s',
           }}
           title={`Switch to ${level}`}
         >

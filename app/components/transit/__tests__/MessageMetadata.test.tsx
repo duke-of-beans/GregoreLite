@@ -24,7 +24,7 @@ describe('parseModelLabel', () => {
   it('returns "opus" in purple for opus model strings', () => {
     const { label, color } = parseModelLabel('claude-opus-4-5-20251101');
     expect(label).toBe('opus');
-    expect(color).toBe('var(--purple-400, #a78bfa)');
+    expect(color).toBe('var(--purple-400)');
   });
 
   it('falls back gracefully for unknown model strings', () => {

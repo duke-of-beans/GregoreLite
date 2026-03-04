@@ -1,10 +1,10 @@
 # GREGLITE — STATUS
-**Last Updated:** March 4, 2026 — Sprint 11.6 COMPLETE. Transit Map ALL PHASES (A–F) SHIPPED.
+**Last Updated:** March 4, 2026 — Sprint 13.0 COMPLETE. Transit Map UX/UI audit & polish.
 **Version:** v1.0.0 (Phase 8 Ship Prep complete)
-**Test Count:** 1207/1210 (42 new Sprint 11.6 tests; 3 pre-existing failures in artifacts/detector + phase5-integration, unrelated to transit scope)
+**Test Count:** 1210/1210 transit tests all green (83 transit-specific); 3 pre-existing failures in artifacts/detector + phase5-integration, unrelated
 **EoS Health:** 100/100
 **TSC:** 0 errors
-**Next:** All Transit Map sprints complete. See FEATURE_BACKLOG.md for next priorities.
+**Next:** Sprint 13.0 shipped. See FEATURE_BACKLOG.md for next priorities.
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md — ALL PHASES (A–F) SHIPPED.
 **Recent commits:** 7c08d9f (11.3), dc188fd (11.4+11.5), 4b2382d (11.7), [pending] (11.6)

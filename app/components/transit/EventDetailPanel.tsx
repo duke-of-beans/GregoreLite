@@ -10,7 +10,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { EnrichedEvent } from '@/lib/transit/types';
 
 // ── Props ─────────────────────────────────────────────────────────────────────
@@ -25,9 +25,9 @@ export interface EventDetailPanelProps {
 
 function LearningStatusPill({ status }: { status?: string | undefined }) {
   const styles: Record<string, React.CSSProperties> = {
-    pending:   { background: 'rgba(245,158,11,0.15)', color: 'var(--amber-400)', border: '1px solid var(--amber-400)' },
-    processed: { background: 'rgba(52,211,153,0.15)', color: 'var(--green-400)', border: '1px solid var(--green-400)' },
-    skipped:   { background: 'rgba(100,116,139,0.15)', color: 'var(--frost)',     border: '1px solid var(--frost)' },
+    pending:   { background: 'var(--status-pending-bg)', color: 'var(--amber-400)', border: '1px solid var(--amber-400)' },
+    processed: { background: 'var(--status-success-bg)', color: 'var(--green-400)', border: '1px solid var(--green-400)' },
+    skipped:   { background: 'var(--status-neutral-bg)', color: 'var(--frost)',     border: '1px solid var(--frost)' },
   };
   const s = styles[status ?? 'pending'] ?? styles['pending']!;
   return (
@@ -70,7 +70,7 @@ function PayloadEntry({ k, v }: { k: string; v: unknown }) {
     ? JSON.stringify(v, null, 2)
     : String(v);
   return (
-    <div style={{ display: 'flex', gap: 8, marginBottom: 6, alignItems: 'flex-start' }}>
+    <div style={{ display: 'flex', gap: 8, marginBottom: 8, alignItems: 'flex-start' }}>
       <span style={{ fontSize: 11, color: 'var(--mist)', minWidth: 120, flexShrink: 0, paddingTop: 2 }}>
         {k}
       </span>
@@ -93,6 +93,7 @@ export function EventDetailPanel({ event, onClose, onAnnotationAdd }: EventDetai
   const [noteOpen, setNoteOpen] = useState(false);
   const [noteText, setNoteText] = useState('');
   const [saving, setSaving] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   // Reset note state whenever a new event opens
   useEffect(() => {
@@ -100,13 +101,29 @@ export function EventDetailPanel({ event, onClose, onAnnotationAdd }: EventDetai
     setNoteText('');
   }, [event?.id]);
 
-  // Escape to close
+  // Escape to close + focus trap
   useEffect(() => {
     if (!event) return;
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') { e.preventDefault(); onClose(); }
+      if (e.key === 'Escape') { e.preventDefault(); onClose(); return; }
+      // Focus trap: cycle Tab within panel
+      if (e.key === 'Tab' && panelRef.current) {
+        const focusable = panelRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0]!;
+        const last = focusable[focusable.length - 1]!;
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault(); last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault(); first.focus();
+        }
+      }
     };
     window.addEventListener('keydown', handler);
+    // Auto-focus the panel on open
+    panelRef.current?.focus();
     return () => window.removeEventListener('keydown', handler);
   }, [event, onClose]);
 
@@ -138,14 +155,15 @@ export function EventDetailPanel({ event, onClose, onAnnotationAdd }: EventDetai
       {/* Backdrop */}
       <div
         onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 199 }}
+        style={{ position: 'fixed', inset: 0, background: 'var(--backdrop)', zIndex: 199 }}
       />
 
       {/* Panel */}
-      <div style={{
+      <div ref={panelRef} tabIndex={-1} className="slide-in-right" role="dialog" aria-label={`Event detail: ${config?.name ?? event.event_type}`} style={{
         position: 'fixed', top: 0, right: 0, bottom: 0, width: 400,
         background: 'var(--deep-space)', borderLeft: '1px solid var(--shadow)',
         zIndex: 200, display: 'flex', flexDirection: 'column', overflow: 'hidden',
+        outline: 'none',
       }}>
 
         {/* Header */}
@@ -178,7 +196,7 @@ export function EventDetailPanel({ event, onClose, onAnnotationAdd }: EventDetai
           <div style={{ marginBottom: 16 }}>
             <span style={{
               fontSize: 10, fontFamily: 'monospace', color: 'var(--cyan)',
-              background: 'var(--elevated)', padding: '3px 8px', borderRadius: 4,
+              background: 'var(--elevated)', padding: '4px 8px', borderRadius: 4,
             }}>
               {event.event_type}
             </span>
@@ -194,7 +212,7 @@ export function EventDetailPanel({ event, onClose, onAnnotationAdd }: EventDetai
           {/* Payload */}
           {payloadEntries.length > 0 && (
             <div style={{ marginBottom: 16 }}>
-              <h4 style={{ fontSize: 11, fontWeight: 600, color: 'var(--mist)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
+              <h4 style={{ fontSize: 11, fontWeight: 600, color: 'var(--mist)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
                 Payload
               </h4>
               <div style={{ borderLeft: '2px solid var(--shadow)', paddingLeft: 12 }}>
@@ -208,13 +226,13 @@ export function EventDetailPanel({ event, onClose, onAnnotationAdd }: EventDetai
           {/* Existing annotations */}
           {Array.isArray(event.annotations) && event.annotations.length > 0 && (
             <div style={{ marginBottom: 16 }}>
-              <h4 style={{ fontSize: 11, fontWeight: 600, color: 'var(--mist)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
+              <h4 style={{ fontSize: 11, fontWeight: 600, color: 'var(--mist)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
                 Notes
               </h4>
               {event.annotations.map((note: unknown, i: number) => (
                 <div key={i} style={{
                   fontSize: 12, color: 'var(--frost)', background: 'var(--elevated)',
-                  borderRadius: 6, padding: '8px 12px', marginBottom: 6, lineHeight: 1.4,
+                  borderRadius: 6, padding: '8px 12px', marginBottom: 8, lineHeight: 1.4,
                 }}>
                   {String(note)}
                 </div>
@@ -226,10 +244,11 @@ export function EventDetailPanel({ event, onClose, onAnnotationAdd }: EventDetai
           {!noteOpen ? (
             <button
               onClick={() => setNoteOpen(true)}
+              className="transit-interactive"
               style={{
                 background: 'none', border: '1px solid var(--shadow)', borderRadius: 6,
-                color: 'var(--frost)', cursor: 'pointer', fontSize: 12, padding: '7px 14px',
-                width: '100%', textAlign: 'left', transition: 'border-color 0.15s',
+                color: 'var(--frost)', cursor: 'pointer', fontSize: 12, padding: '8px 16px',
+                width: '100%', textAlign: 'left',
               }}
               onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--cyan)'; }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--shadow)'; }}
@@ -258,7 +277,7 @@ export function EventDetailPanel({ event, onClose, onAnnotationAdd }: EventDetai
                     flex: 1, background: saving ? 'var(--elevated)' : 'var(--cyan)',
                     border: 'none', borderRadius: 6, color: saving ? 'var(--frost)' : 'var(--deep-space)',
                     cursor: saving ? 'not-allowed' : 'pointer', fontSize: 12, fontWeight: 600,
-                    padding: '7px 0',
+                    padding: '8px 0', transition: 'background 0.15s ease',
                   }}
                 >
                   {saving ? 'Saving…' : 'Save Note'}
@@ -267,7 +286,8 @@ export function EventDetailPanel({ event, onClose, onAnnotationAdd }: EventDetai
                   onClick={() => { setNoteOpen(false); setNoteText(''); }}
                   style={{
                     background: 'none', border: '1px solid var(--shadow)', borderRadius: 6,
-                    color: 'var(--frost)', cursor: 'pointer', fontSize: 12, padding: '7px 14px',
+                    color: 'var(--frost)', cursor: 'pointer', fontSize: 12, padding: '8px 16px',
+                    transition: 'border-color 0.15s ease',
                   }}
                 >
                   Cancel

@@ -782,8 +782,8 @@ export function ChatInterface() {
                 {/* Z1: Sankey view — full conversation topology */}
                 {(zoomLevel === 'Z1' || previousZoom === 'Z1') && (
                   <div style={{
-                    flex: zoomLevel === 'Z1' ? '0 0 25%' : 0,
-                    minHeight: zoomLevel === 'Z1' ? 140 : 0,
+                    flex: zoomLevel === 'Z1' ? '0 0 30%' : 0,
+                    minHeight: zoomLevel === 'Z1' ? 160 : 0,
                     borderBottom: '1px solid var(--shadow)',
                     overflow: 'hidden',
                     opacity: zoomLevel === 'Z1' ? 1 : 0,
@@ -803,7 +803,7 @@ export function ChatInterface() {
                 {/* Z2: Subway map — route with named stations */}
                 {(zoomLevel === 'Z2' || previousZoom === 'Z2' || zoomLevel === 'Z1') && (
                   <div style={{
-                    flex: zoomLevel === 'Z2' || zoomLevel === 'Z1' ? '0 0 25%' : 0,
+                    flex: zoomLevel === 'Z2' ? '0 0 25%' : zoomLevel === 'Z1' ? '0 0 20%' : 0,
                     minHeight: zoomLevel === 'Z2' || zoomLevel === 'Z1' ? 140 : 0,
                     borderBottom: '1px solid var(--shadow)',
                     overflow: 'hidden',

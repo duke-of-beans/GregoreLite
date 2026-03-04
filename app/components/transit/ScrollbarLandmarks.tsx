@@ -115,7 +115,7 @@ export function ScrollbarLandmarks({
       className="absolute right-0 top-0 bottom-0 w-3 pointer-events-none z-20"
       aria-hidden
     >
-      {landmarkEvents.map((e) => {
+      {landmarkEvents.map((e, idx) => {
         const sb = e.config!.scrollbar!;
 
         // Positioning: prefer message_index / total_messages for accuracy.
@@ -141,6 +141,7 @@ export function ScrollbarLandmarks({
             key={e.id}
             // pointer-events: auto on the landmark itself — enables tooltip hover
             // without affecting the scrollbar drag behavior (the container is none)
+            className="landmark-tick"
             style={{
               position: 'absolute',
               right: 0,
@@ -148,11 +149,12 @@ export function ScrollbarLandmarks({
               width: '100%',
               height: `${sb.height}px`,
               backgroundColor: sb.color,
-              opacity: sb.opacity,
+              '--landmark-opacity': sb.opacity,
+              '--landmark-delay': `${idx * 20}ms`,
               borderRadius: '1px',
               pointerEvents: 'auto',
               cursor: 'default',
-            }}
+            } as React.CSSProperties}
             title={tooltip}
           />
         );

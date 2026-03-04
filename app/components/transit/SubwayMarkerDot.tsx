@@ -36,19 +36,30 @@ export function SubwayMarkerDot({ event, cx, cy, onClick }: SubwayMarkerDotProps
   const r = dotRadius(marker.size);
   const label = event.config?.name ?? event.event_type;
 
+  // Ensure min 12px visual radius for touch targets (24px diameter)
+  const hitR = Math.max(12, r);
+
   return (
-    <circle
-      cx={cx}
-      cy={cy}
-      r={r}
-      fill={marker.color}
-      opacity={0.8}
+    <g
       style={{ cursor: 'pointer' }}
       onClick={() => onClick(event.id)}
       role="button"
+      tabIndex={0}
       aria-label={`Event: ${label}`}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(event.id); } }}
     >
+      {/* Invisible hit area for touch/click */}
+      <circle cx={cx} cy={cy} r={hitR} fill="transparent" />
+      {/* Visible dot */}
+      <circle
+        cx={cx}
+        cy={cy}
+        r={r}
+        fill={marker.color}
+        opacity={0.8}
+        style={{ transition: 'opacity 0.15s ease, r 0.15s ease' }}
+      />
       <title>{label}</title>
-    </circle>
+    </g>
   );
 }

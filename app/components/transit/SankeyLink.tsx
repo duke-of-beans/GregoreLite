@@ -71,7 +71,9 @@ export function SankeyLink({
       strokeWidth={Math.max(MIN_LINK_WIDTH, width)}
       strokeDasharray={isAbandoned ? '6 4' : undefined}
       opacity={isAbandoned ? 0.25 : opacity}
-      style={{ cursor: onClick ? 'pointer' : undefined, transition: 'opacity 0.2s' }}
+      style={{ cursor: onClick ? 'pointer' : undefined, transition: 'opacity 0.2s ease, stroke-width 0.15s ease' }}
+      onMouseEnter={(e) => { if (onClick) (e.currentTarget as SVGPathElement).style.opacity = String(Math.min(1, (isAbandoned ? 0.25 : opacity) + 0.2)); }}
+      onMouseLeave={(e) => { (e.currentTarget as SVGPathElement).style.opacity = String(isAbandoned ? 0.25 : opacity); }}
       onClick={onClick}
     >
       <title>{`${Math.round(width)}px flow`}</title>

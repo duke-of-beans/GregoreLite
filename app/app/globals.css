@@ -56,6 +56,28 @@
   --warning: #d97706;
   --error: #dc2626;
   --info: #2563eb;
+
+  /* Extended palette — light mode */
+  --purple-400: #7c3aed;
+  --green-400: #16a34a;
+  --amber-400: #d97706;
+  --red-400: #dc2626;
+
+  /* Glass overlays (dark-based for light mode) */
+  --glass-subtle: rgba(0, 0, 0, 0.03);
+  --glass-muted: rgba(0, 0, 0, 0.06);
+  --glass-dim: rgba(0, 0, 0, 0.09);
+  --glass-overlay: rgba(0, 0, 0, 0.05);
+
+  /* Status backgrounds (light mode) */
+  --status-pending-bg: rgba(217, 119, 6, 0.12);
+  --status-success-bg: rgba(22, 163, 74, 0.12);
+  --status-neutral-bg: rgba(100, 116, 139, 0.10);
+  --status-error-bg: rgba(220, 38, 38, 0.10);
+
+  /* Backdrop */
+  --backdrop: rgba(0, 0, 0, 0.35);
+  --backdrop-light: rgba(0, 0, 0, 0.2);
 }
 
 @theme inline {
@@ -240,6 +262,129 @@ pre {
 :root {
   --muted: #8895a5;        /* alias for --mist, used in War Room edges */
   --ghost-text: #4a5560;   /* subdued placeholder text */
+
+  /* ========== EXTENDED PALETTE — Transit Map Sprint 13.0 ========== */
+  --purple-400: #a78bfa;
+  --green-400: #34d399;
+  --amber-400: #fbbf24;
+  --red-400: #f87171;
+
+  /* Glass overlays (white-based for dark mode) */
+  --glass-subtle: rgba(255, 255, 255, 0.04);
+  --glass-muted: rgba(255, 255, 255, 0.07);
+  --glass-dim: rgba(255, 255, 255, 0.10);
+  --glass-overlay: rgba(255, 255, 255, 0.06);
+
+  /* Status backgrounds (translucent) */
+  --status-pending-bg: rgba(251, 191, 36, 0.15);
+  --status-success-bg: rgba(52, 211, 153, 0.15);
+  --status-neutral-bg: rgba(100, 116, 139, 0.15);
+  --status-error-bg: rgba(239, 68, 68, 0.12);
+
+  /* Backdrop */
+  --backdrop: rgba(0, 0, 0, 0.45);
+  --backdrop-light: rgba(0, 0, 0, 0.3);
+}
+
+/* ========== TRANSIT MAP — Sprint 13.0 ========== */
+
+/* Shared interactive base: buttons, clickable markers */
+.transit-interactive {
+  transition: opacity 0.15s ease, transform 0.15s ease, background 0.15s ease,
+    border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.transit-interactive:hover {
+  opacity: 1;
+}
+
+.transit-interactive:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--cyan);
+  border-radius: 4px;
+}
+
+/* Event marker button hover */
+.transit-marker-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  opacity: 0.85;
+  transition: opacity 0.15s ease, transform 0.1s ease, background 0.1s ease;
+}
+
+.transit-marker-btn:hover {
+  opacity: 1;
+  transform: scale(1.2);
+  background: var(--glass-subtle);
+}
+
+.transit-marker-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--cyan);
+}
+
+/* Station click pulse animation */
+@keyframes station-pulse {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+.station-pulse {
+  animation: station-pulse 0.2s ease-out;
+}
+
+/* EventDetailPanel slide-in */
+@keyframes slide-in-right {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+.slide-in-right {
+  animation: slide-in-right 0.25s ease-out;
+}
+
+/* ScrollbarLandmarks fade-in (stagger via custom property) */
+@keyframes landmark-fade-in {
+  from { opacity: 0; }
+  to   { opacity: var(--landmark-opacity, 0.8); }
+}
+
+.landmark-tick {
+  animation: landmark-fade-in 0.2s ease-out forwards;
+  animation-delay: var(--landmark-delay, 0ms);
+  opacity: 0;
+}
+
+/* Zoom crossfade */
+.transit-crossfade-enter {
+  opacity: 0;
+  transition: opacity 300ms ease-in-out;
+}
+
+.transit-crossfade-active {
+  opacity: 1;
+}
+
+.transit-crossfade-exit {
+  opacity: 0;
+  transition: opacity 300ms ease-in-out;
+}
+
+/* Subway station hover glow */
+.subway-station-hover {
+  filter: drop-shadow(0 0 0px transparent);
+  transition: filter 0.15s ease;
+}
+
+.subway-station-hover:hover {
+  filter: drop-shadow(0 0 4px var(--cyan));
 }
 
 /* ========== WAR ROOM ========== */

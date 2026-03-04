@@ -57,7 +57,7 @@ export function SubwayBranch({ segment }: SubwayBranchProps) {
         <text
           x={forkX + 4}
           y={branchY - 4}
-          fontSize={8}
+          fontSize={10}
           fill="var(--mist)"
           style={{ userSelect: 'none', pointerEvents: 'none' }}
         >

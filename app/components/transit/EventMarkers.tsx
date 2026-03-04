@@ -133,26 +133,7 @@ export function EventMarkers({ events, onMarkerClick }: EventMarkersProps) {
             onClick={() => onMarkerClick(e.id)}
             title={label}
             aria-label={`Event: ${label}`}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: '2px',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: '3px',
-              opacity: 0.85,
-              transition: 'opacity 0.15s, transform 0.1s',
-            }}
-            onMouseEnter={(el) => {
-              (el.currentTarget as HTMLButtonElement).style.opacity = '1';
-              (el.currentTarget as HTMLButtonElement).style.transform = 'scale(1.2)';
-            }}
-            onMouseLeave={(el) => {
-              (el.currentTarget as HTMLButtonElement).style.opacity = '0.85';
-              (el.currentTarget as HTMLButtonElement).style.transform = 'scale(1)';
-            }}
+            className="transit-marker-btn"
           >
             {renderMarkerShape(marker.shape, px, marker.color)}
           </button>

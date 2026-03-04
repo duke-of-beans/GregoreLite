@@ -32,7 +32,7 @@ export interface MessageMetadataProps {
 /** Derive short display name and color from a full model string */
 export function parseModelLabel(model: string): { label: string; color: string } {
   const lower = model.toLowerCase();
-  if (lower.includes('opus')) return { label: 'opus', color: 'var(--purple-400, #a78bfa)' };
+  if (lower.includes('opus')) return { label: 'opus', color: 'var(--purple-400)' };
   if (lower.includes('haiku')) return { label: 'haiku', color: 'var(--green-400)' };
   if (lower.includes('sonnet')) return { label: 'sonnet', color: 'var(--cyan)' };
   // Fallback: use first meaningful segment after 'claude-'
@@ -89,7 +89,7 @@ export function MessageMetadata({
         display: 'flex',
         alignItems: 'center',
         gap: '8px',
-        marginTop: '6px',
+        marginTop: '8px',
         flexWrap: 'wrap',
       }}
     >
@@ -99,7 +99,7 @@ export function MessageMetadata({
           style={{
             display: 'inline-flex',
             alignItems: 'center',
-            padding: '1px 7px',
+            padding: '2px 8px',
             borderRadius: '10px',
             fontSize: '10px',
             fontWeight: 600,

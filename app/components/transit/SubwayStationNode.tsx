@@ -9,6 +9,7 @@
 
 'use client';
 
+import { useState, useCallback } from 'react';
 import type { Station } from '@/lib/transit/types';
 
 export interface SubwayStationNodeProps {
@@ -29,6 +30,14 @@ export function SubwayStationNode({
   isActive,
   onClick,
 }: SubwayStationNodeProps) {
+  const [pulsing, setPulsing] = useState(false);
+
+  const handleClick = useCallback(() => {
+    setPulsing(true);
+    setTimeout(() => setPulsing(false), 200);
+    onClick(station);
+  }, [onClick, station]);
+
   // Truncate label to avoid overlap at high station density
   const label = station.icon + ' ' + (
     station.name.length > 18 ? station.name.slice(0, 16) + '…' : station.name
@@ -36,10 +45,13 @@ export function SubwayStationNode({
 
   return (
     <g
-      onClick={() => onClick(station)}
+      onClick={handleClick}
+      className={`subway-station-hover${pulsing ? ' station-pulse' : ''}`}
       style={{ cursor: 'pointer' }}
       role="button"
+      tabIndex={0}
       aria-label={`Station: ${station.name}`}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(station); } }}
     >
       {/* Active highlight ring */}
       {isActive && (
@@ -69,7 +81,7 @@ export function SubwayStationNode({
         x={cx}
         y={cy + RADIUS + 13}
         textAnchor="middle"
-        fontSize={9}
+        fontSize={10}
         fill={isActive ? 'var(--ice-white)' : 'var(--frost)'}
         style={{ userSelect: 'none', pointerEvents: 'none' }}
       >

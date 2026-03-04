@@ -53,8 +53,12 @@ export function SankeySegment({
       onClick={onClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onFocus={() => setHovered(true)}
+      onBlur={() => setHovered(false)}
       role="button"
-      aria-label={`Segment: ${node.label}`}
+      tabIndex={0}
+      aria-label={`Segment: ${node.label} — ${node.messageCount} messages, ${node.tokenCount.toLocaleString()} tokens`}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(); } }}
     >
       {/* Background rect */}
       <rect
@@ -71,7 +75,7 @@ export function SankeySegment({
         strokeOpacity={isAbandoned ? 0.4 : 0.8}
         strokeDasharray={isAbandoned ? '4 3' : undefined}
         opacity={isAbandoned ? 0.5 : 1}
-        style={{ transition: 'stroke-width 0.15s, opacity 0.15s' }}
+        style={{ transition: 'stroke-width 0.15s ease, opacity 0.15s ease, fill-opacity 0.15s ease' }}
       />
 
       {/* Label */}

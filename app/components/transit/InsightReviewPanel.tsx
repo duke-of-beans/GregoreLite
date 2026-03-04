@@ -65,7 +65,7 @@ function InsightCard({ insight, onAction, actioning }: InsightCardProps) {
 
   return (
     <div style={{
-      background: 'rgba(255,255,255,0.04)',
+      background: 'var(--glass-subtle)',
       border: '1px solid var(--shadow)',
       borderRadius: 8,
       padding: 12,
@@ -76,14 +76,14 @@ function InsightCard({ insight, onAction, actioning }: InsightCardProps) {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, marginBottom: 8 }}>
         <span style={{
-          fontSize: 9,
+          fontSize: 10,
           fontWeight: 700,
-          padding: '2px 5px',
-          borderRadius: 3,
+          padding: '2px 6px',
+          borderRadius: 4,
           background: patternColor(insight.pattern_type),
           color: 'var(--deep-space)',
           textTransform: 'uppercase',
-          letterSpacing: 0.5,
+          letterSpacing: '0.04em',
           flexShrink: 0,
           marginTop: 1,
         }}>
@@ -93,12 +93,12 @@ function InsightCard({ insight, onAction, actioning }: InsightCardProps) {
           {insight.title}
         </span>
         <span style={{
-          fontSize: 9,
+          fontSize: 10,
           color: 'var(--frost)',
           flexShrink: 0,
-          padding: '2px 5px',
-          background: 'rgba(255,255,255,0.06)',
-          borderRadius: 3,
+          padding: '2px 6px',
+          background: 'var(--glass-overlay)',
+          borderRadius: 4,
           marginTop: 1,
         }}>
           {statusLabel(insight.status)}
@@ -107,13 +107,13 @@ function InsightCard({ insight, onAction, actioning }: InsightCardProps) {
 
       {/* Confidence bar */}
       <div style={{ marginBottom: 8 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
           <span style={{ fontSize: 10, color: 'var(--frost)' }}>Confidence</span>
           <span style={{ fontSize: 10, color: confidenceColor(insight.confidence), fontWeight: 700 }}>
             {insight.confidence}%
           </span>
         </div>
-        <div style={{ height: 3, background: 'rgba(255,255,255,0.1)', borderRadius: 2 }}>
+        <div style={{ height: 3, background: 'var(--glass-dim)', borderRadius: 2 }}>
           <div style={{
             height: '100%',
             width: `${insight.confidence}%`,
@@ -125,15 +125,15 @@ function InsightCard({ insight, onAction, actioning }: InsightCardProps) {
       </div>
 
       {/* Sample + adjustment */}
-      <div style={{ fontSize: 11, color: 'var(--frost)', marginBottom: 6 }}>
+      <div style={{ fontSize: 11, color: 'var(--frost)', marginBottom: 8 }}>
         <strong style={{ color: 'var(--ice-white)' }}>{insight.sample_size}</strong> events analyzed
       </div>
       <div style={{
         fontSize: 10,
         color: 'var(--frost)',
-        background: 'rgba(0,0,0,0.3)',
+        background: 'var(--backdrop-light)',
         borderRadius: 4,
-        padding: '5px 8px',
+        padding: '4px 8px',
         marginBottom: 8,
         fontFamily: 'monospace',
         lineHeight: 1.5,
@@ -171,8 +171,9 @@ function InsightCard({ insight, onAction, actioning }: InsightCardProps) {
             <button
               disabled={actioning}
               onClick={() => onAction(insight.id, 'approve')}
+              aria-label={`Approve insight: ${insight.title}`}
               style={{
-                padding: '4px 10px', background: 'var(--green-400)',
+                padding: '4px 12px', background: 'var(--green-400)',
                 color: 'var(--deep-space)', border: 'none', borderRadius: 4,
                 fontSize: 11, fontWeight: 700,
                 cursor: actioning ? 'not-allowed' : 'pointer', opacity: actioning ? 0.6 : 1,
@@ -181,10 +182,12 @@ function InsightCard({ insight, onAction, actioning }: InsightCardProps) {
             <button
               disabled={actioning}
               onClick={() => onAction(insight.id, 'dismiss')}
+              aria-label={`Dismiss insight: ${insight.title}`}
               style={{
-                padding: '4px 10px', background: 'rgba(255,255,255,0.07)',
+                padding: '4px 12px', background: 'var(--glass-muted)',
                 color: 'var(--frost)', border: '1px solid var(--shadow)', borderRadius: 4,
                 fontSize: 11, cursor: actioning ? 'not-allowed' : 'pointer', opacity: actioning ? 0.6 : 1,
+                transition: 'background 0.15s ease, border-color 0.15s ease',
               }}
             >Dismiss</button>
           </>
@@ -193,8 +196,9 @@ function InsightCard({ insight, onAction, actioning }: InsightCardProps) {
           <button
             disabled={actioning}
             onClick={() => onAction(insight.id, 'rollback')}
+            aria-label={`Rollback insight: ${insight.title}`}
             style={{
-              padding: '4px 10px', background: 'var(--amber-400)',
+              padding: '4px 12px', background: 'var(--amber-400)',
               color: 'var(--deep-space)', border: 'none', borderRadius: 4,
               fontSize: 11, fontWeight: 700,
               cursor: actioning ? 'not-allowed' : 'pointer', opacity: actioning ? 0.6 : 1,
@@ -277,7 +281,7 @@ export function InsightReviewPanel() {
   return (
     <div>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
         <div>
           <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ice-white)' }}>
             Learning Insights
@@ -292,8 +296,8 @@ export function InsightReviewPanel() {
           disabled={pipelineRunning}
           onClick={() => void handleRunPipeline()}
           style={{
-            padding: '5px 11px',
-            background: pipelineRunning ? 'rgba(255,255,255,0.07)' : 'var(--cyan)',
+            padding: '4px 12px',
+            background: pipelineRunning ? 'var(--glass-muted)' : 'var(--cyan)',
             color: pipelineRunning ? 'var(--frost)' : 'var(--deep-space)',
             border: 'none', borderRadius: 6, fontSize: 11, fontWeight: 700,
             cursor: pipelineRunning ? 'not-allowed' : 'pointer',
@@ -307,7 +311,7 @@ export function InsightReviewPanel() {
       {/* Error banner */}
       {error && (
         <div style={{
-          background: 'rgba(239,68,68,0.12)', border: '1px solid var(--red-400)',
+          background: 'var(--status-error-bg)', border: '1px solid var(--red-400)',
           borderRadius: 6, padding: '7px 10px', fontSize: 11,
           color: 'var(--red-400)', marginBottom: 12,
         }}>
