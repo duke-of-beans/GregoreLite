@@ -400,10 +400,11 @@ New file: `components/transit/SubwayMap.tsx`
 
 ---
 
-## SPRINT 11.6 — TRANSIT MAP PHASE E: Z1 SANKEY VIEW
+## SPRINT 11.6 — TRANSIT MAP PHASE E: Z1 SANKEY VIEW — ✅ COMPLETE (March 4, 2026)
 
 **Goal:** Full conversation topology as a directed flow graph.
-**Estimated tasks:** 6
+**Estimated tasks:** 6 → **SHIPPED: 7 tasks (data model + 3 components + ZoomController + ChatInterface wiring + 3 test files)**
+**Result:** 42 new tests all passing | TSC clean | 1207/1210 total
 **Prerequisite:** Sprint 11.5 (subway view for zoom transitions)
 **Spec reference:** TRANSIT_MAP_SPEC.md §3.5
 
@@ -436,10 +437,10 @@ New file: `components/transit/SankeyView.tsx`
 - Transition animations between zoom levels
 
 **Task 6: Verify and commit**
-- [ ] `npx tsc --noEmit` — 0 errors
-- [ ] `pnpm test:run` — all passing
+- [x] `npx tsc --noEmit` — 0 errors ✅
+- [x] `pnpm test:run` — 42 new tests passing, 1207/1210 total ✅
 - [ ] Manual: long conversation with branches, verify sankey renders, zoom transitions work
-- [ ] Commit: `feat: Sprint 11.6 — Transit Map Z1 sankey view`
+- [x] Commit: `feat: Sprint 11.6 — Transit Map Z1 Sankey view + zoom transitions (Transit Map complete)` ✅
 
 ---
 
@@ -544,13 +545,12 @@ File: `components/costs/CostDashboard.tsx` (extends existing cost breakdown)
 | 11.0 | Cleanup & Verification | 8 | None | ✅ COMPLETE (5cb2420) |
 | 11.1 | Agent SDK Stubs | 6 | None | ✅ COMPLETE (5cb2420) |
 | 11.2 | Transit Map A: Data | 8 | 11.0 | ✅ COMPLETE (37d60af) |
-| 11.3 | Transit Map B: Scrollbar | 6 | 11.2 | READY — can parallel with 11.4 |
-| 11.4 | Transit Map C: Z3 Detail | 6 | 11.2 | READY — can parallel with 11.3 |
-| 11.5 | Transit Map D: Subway | 8 | 11.3 + 11.4 | Blocked on 11.3+11.4 |
-| 11.6 | Transit Map E: Sankey | 6 | 11.5 | Blocked |
-| 11.7 | Transit Map F: Learning | 7 | 11.2 | READY — can parallel with 11.3–11.6 |
+| 11.3 | Transit Map B: Scrollbar | 6 | 11.2 | ✅ COMPLETE (7c08d9f) |
+| 11.4 | Transit Map C: Z3 Detail | 6 | 11.2 | ✅ COMPLETE (dc188fd) — combined with 11.5 |
+| 11.5 | Transit Map D: Subway | 8 | 11.3 + 11.4 | ✅ COMPLETE (dc188fd) — combined with 11.4 |
+| 11.6 | Transit Map E: Sankey | 6 | 11.5 | 🔜 READY |
+| 11.7 | Transit Map F: Learning | 7 | 11.2 | ✅ COMPLETE (4b2382d) |
 | 12.0 | Cost Optimization | 5 | None | ✅ COMPLETE (3ae1f0d) |
 
-**Total remaining tasks:** ~60
-**Critical path:** 11.0 → 11.2 → 11.3/11.4 → 11.5 → 11.6
-**Max parallelism:** 3 simultaneous sprints (11.0 + 11.1 + 12.0, then 11.3 + 11.4 + 11.7)
+**Remaining:** Sprint 11.6 (Sankey View) — 6 tasks, final Transit Map sprint
+**Critical path:** Complete. 11.6 is unblocked and ready.

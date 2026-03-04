@@ -56,6 +56,10 @@ import { captureClientEvent } from '@/lib/transit/client';
 import { useDensityStore } from '@/lib/stores/density-store';
 import { useUIStore } from '@/lib/stores/ui-store';
 import { SubwayMap } from '@/components/transit/SubwayMap';
+import { SankeyView } from '@/components/transit/SankeyView';
+import { ZoomController, ZoomIndicator } from '@/components/transit/ZoomController';
+// ZoomLevel type used internally by ZoomController render props
+import type { SankeyNode } from '@/lib/transit/sankey';
 import type { EnrichedEvent } from '@/lib/transit/types';
 import type { Station } from '@/lib/transit/types';
 import type { ProcessingEvent } from './ProcessingStatus';
@@ -752,35 +756,91 @@ export function ChatInterface() {
           </div>
         )}
 
-        {/* ── Transit tab — SubwayMap (top 25%) + Messages (bottom 75%) ── */}
+        {/* ── Transit tab — ZoomController wraps Z1 Sankey / Z2 Subway / Z3 Messages ── */}
         {activeTab === 'transit' && (
-          <div className="flex flex-1 flex-col overflow-hidden">
-            {/* Subway map — top 25% */}
-            <div style={{ flex: '0 0 25%', minHeight: 140, borderBottom: '1px solid var(--shadow)', overflow: 'hidden' }}>
-              <SubwayMap
-                conversationId={activeConversationId ?? undefined}
-                events={transitEvents}
-                totalMessages={messages.length}
-                activeStationId={activeStationId}
-                onStationClick={handleStationClick}
-                onMarkerClick={() => { /* EventDetailPanel handles via MessageList */ }}
-              />
-            </div>
-            {/* Messages — bottom 75%, scrollable, transit metadata always on in this view */}
-            <div className="flex-1 overflow-hidden flex flex-col min-h-0">
-              <MessageList
-                messages={messages}
-                conversationId={activeConversationId ?? undefined}
-                showTransitMetadata={true}
-                events={transitEvents}
-                scrollToIndex={scrollToIndex}
-                onActiveIndexChange={handleActiveIndexChange}
-                onEditMessage={handleEditMessage}
-                onRegenerate={handleRegenerate}
-                isWaitingForResponse={sendButtonState === 'checking'}
-              />
-            </div>
-          </div>
+          <ZoomController shortcutsActive={activeTab === 'transit'}>
+            {({ zoomLevel, setZoomLevel, zoomToSegment, focusIndex: zoomFocusIndex, isTransitioning, previousZoom }) => (
+              <div className="flex flex-1 flex-col overflow-hidden">
+                {/* Zoom indicator bar */}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: '4px 12px',
+                  borderBottom: '1px solid var(--shadow)',
+                  background: 'var(--elevated)',
+                  flexShrink: 0,
+                  fontSize: 11,
+                  color: 'var(--mist)',
+                }}>
+                  <ZoomIndicator zoomLevel={zoomLevel} onSetZoom={setZoomLevel} />
+                  <span style={{ opacity: 0.5 }}>
+                    {zoomLevel === 'Z1' ? 'Topology' : zoomLevel === 'Z2' ? 'Route' : 'Detail'}
+                  </span>
+                </div>
+
+                {/* Z1: Sankey view — full conversation topology */}
+                {(zoomLevel === 'Z1' || previousZoom === 'Z1') && (
+                  <div style={{
+                    flex: zoomLevel === 'Z1' ? '0 0 25%' : 0,
+                    minHeight: zoomLevel === 'Z1' ? 140 : 0,
+                    borderBottom: '1px solid var(--shadow)',
+                    overflow: 'hidden',
+                    opacity: zoomLevel === 'Z1' ? 1 : 0,
+                    transition: `opacity ${300}ms ease-in-out`,
+                  }}>
+                    <SankeyView
+                      events={transitEvents}
+                      totalMessages={messages.length}
+                      onSegmentClick={(node: SankeyNode) => {
+                        setScrollToIndex(node.messageIndexStart);
+                        zoomToSegment(node.messageIndexStart);
+                      }}
+                    />
+                  </div>
+                )}
+
+                {/* Z2: Subway map — route with named stations */}
+                {(zoomLevel === 'Z2' || previousZoom === 'Z2' || zoomLevel === 'Z1') && (
+                  <div style={{
+                    flex: zoomLevel === 'Z2' || zoomLevel === 'Z1' ? '0 0 25%' : 0,
+                    minHeight: zoomLevel === 'Z2' || zoomLevel === 'Z1' ? 140 : 0,
+                    borderBottom: '1px solid var(--shadow)',
+                    overflow: 'hidden',
+                    opacity: zoomLevel === 'Z2' || zoomLevel === 'Z1' ? 1 : 0,
+                    transition: `opacity ${300}ms ease-in-out`,
+                  }}>
+                    <SubwayMap
+                      conversationId={activeConversationId ?? undefined}
+                      events={transitEvents}
+                      totalMessages={messages.length}
+                      activeStationId={activeStationId}
+                      onStationClick={handleStationClick}
+                      onMarkerClick={() => { /* EventDetailPanel handles via MessageList */ }}
+                    />
+                  </div>
+                )}
+
+                {/* Messages — fills remaining space, transit metadata always on */}
+                <div className="flex-1 overflow-hidden flex flex-col min-h-0" style={{
+                  opacity: isTransitioning ? 0.7 : 1,
+                  transition: `opacity ${300}ms ease-in-out`,
+                }}>
+                  <MessageList
+                    messages={messages}
+                    conversationId={activeConversationId ?? undefined}
+                    showTransitMetadata={true}
+                    events={transitEvents}
+                    scrollToIndex={zoomFocusIndex ?? scrollToIndex}
+                    onActiveIndexChange={handleActiveIndexChange}
+                    onEditMessage={handleEditMessage}
+                    onRegenerate={handleRegenerate}
+                    isWaitingForResponse={sendButtonState === 'checking'}
+                  />
+                </div>
+              </div>
+            )}
+          </ZoomController>
         )}
 
         {/* ── Workers tab ── */}

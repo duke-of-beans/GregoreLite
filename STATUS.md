@@ -1,12 +1,13 @@
 # GREGLITE — STATUS
-**Last Updated:** March 4, 2026 — Sprint 11.4+11.5 COMPLETE (Transit Map Z3 Annotations + Z2 Subway View).
+**Last Updated:** March 4, 2026 — Sprint 11.6 COMPLETE. Transit Map ALL PHASES (A–F) SHIPPED.
 **Version:** v1.0.0 (Phase 8 Ship Prep complete)
-**Test Count:** 1165/1168 (13 new SubwayMap tests from Sprint 11.5; 3 pre-existing failures unrelated to transit scope)
+**Test Count:** 1207/1210 (42 new Sprint 11.6 tests; 3 pre-existing failures in artifacts/detector + phase5-integration, unrelated to transit scope)
 **EoS Health:** 100/100
 **TSC:** 0 errors
-**Next:** Sprint 11.6 or product backlog triage
+**Next:** All Transit Map sprints complete. See FEATURE_BACKLOG.md for next priorities.
 **Feature Backlog:** FEATURE_BACKLOG.md
-**Transit Map Spec:** TRANSIT_MAP_SPEC.md — Phase A data foundation SHIPPED (Sprint 11.2, commit 37d60af)
+**Transit Map Spec:** TRANSIT_MAP_SPEC.md — ALL PHASES (A–F) SHIPPED.
+**Recent commits:** 7c08d9f (11.3), dc188fd (11.4+11.5), 4b2382d (11.7), [pending] (11.6)
 
 ### ⚠️ GROUND TRUTH AUDIT (March 4, 2026)
 1. ~~Transit Map "data foundation" listed in Sprint 10.6 was NOT shipped.~~ RESOLVED: Sprint 11.2 shipped data foundation (conversation_events table, 26 event types, capture hooks). commit 37d60af.
@@ -16,6 +17,16 @@
 5. ~~Decision gate trigger-detector.ts has 3 dead stub functions replaced by Haiku inference — cleanup needed.~~ — RESOLVED: Sprint 11.0 — detectHighTradeoffCount/detectMultiProjectTouch/detectLargeEstimate removed.
 
 ---
+
+- [x] **SPRINT 11.6** — Transit Map Phase E: Z1 Sankey View — **COMPLETE**
+  - `lib/transit/sankey.ts`: `buildSankeyGraph()` pure function, `getQualityColor()`, `QualitySignal`/`SankeyNode`/`SankeyLink`/`SankeyGraph` types; segment boundaries from stations, branch fork detection, quality signal aggregation (worst-wins), token/cost summation
+  - `components/transit/SankeyLink.tsx`: SVG cubic bezier path, `scaleLinkWidth()` (linear 2–40px), abandoned branch dashed styling
+  - `components/transit/SankeySegment.tsx`: rounded rect node, quality color fill (20% opacity) + border (80%), hover metrics tooltip, abandoned branch gray/dashed/50%
+  - `components/transit/SankeyView.tsx`: main SVG renderer, `indexToX()` proportional positioning (matches SubwayMap), node height ∝ tokenCount (30–80px), header bar (messages/tokens/cost), click-to-zoom
+  - `components/transit/ZoomController.tsx`: render-prop pattern, `ZoomLevel = 'Z1' | 'Z2' | 'Z3'`, 300ms crossfade transitions, `zoomToSegment()` / `zoomToMessage()`, `ZoomIndicator` inline component
+  - `components/chat/ChatInterface.tsx`: Transit tab wired with ZoomController — Z1 shows SankeyView, Z2 shows SubwayMap + MessageList, Z3 shows MessageList only
+  - 42 new tests across 3 files: `sankey.test.ts` (18), `SankeyView.test.tsx` (12), `ZoomController.test.tsx` (12) — all passing
+  - TSC: 0 errors | Tests: 1207/1210 (3 pre-existing unrelated failures unchanged)
 
 - [x] **SPRINT 11.7** — Transit Map Phase F: Learning Engine — **COMPLETE**
   - `lib/transit/learning/types.ts`: `InsightStatus`, `InsightAdjustment`, `LearningInsight`, `PatternResult`, `LearningInsightRow`
