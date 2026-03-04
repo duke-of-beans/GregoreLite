@@ -109,10 +109,12 @@ function _startQuerySession(
     onSchedulerComplete(id);
   };
 
-  // Fire-and-forget — state tracked via job_state table
-  runQuerySession(manifest, abortController.signal, {
-    onStatusChange(_id: string, _status: JobStatus) { /* job_state written by query.ts */ },
-    onStreamEvent(_event) { /* callers poll job_state or subscribe via 7F UI */ },
+  // Sprint 12.0: route to Batch API when manifest.protocol.batch === true (50% discount)
+  const isBatch = manifest.protocol?.batch === true;
+
+  const sessionCallbacks = {
+    onStatusChange(_id: string, _status: JobStatus) { /* job_state written by executor */ },
+    onStreamEvent(_event: import('./types').StreamEvent) { /* callers poll job_state */ },
     onLogLine(_id: string, _line: string) { /* logged internally */ },
     onComplete(id: string, _finalStatus: JobStatus) {
       // Sprint 7H: self-evolution post-processing (tests → PR → CI poll)
@@ -129,12 +131,18 @@ function _startQuerySession(
       }
     },
     onError(id: string, _err: Error) {
-      // Ensure self-evolution config is cleaned up on error path
       _selfEvolutionConfigs.delete(id);
       _complete(id);
     },
-  }).catch((err: unknown) => {
-    console.error(`[AgentSDK] Unhandled error in query session ${manifestId}:`, err);
+  };
+
+  // Fire-and-forget — state tracked via job_state / manifests table
+  (isBatch
+    ? import('./batch-executor').then(({ runBatchSession }) =>
+        runBatchSession(manifest, abortController.signal, sessionCallbacks))
+    : runQuerySession(manifest, abortController.signal, sessionCallbacks)
+  ).catch((err: unknown) => {
+    console.error(`[AgentSDK] Unhandled error in session ${manifestId}:`, err);
     _complete(manifestId);
   });
 }

@@ -20,6 +20,8 @@ const SYSTEM_PROMPT =
 
 interface AutoTitleRequest {
   message: string;
+  /** Sprint 12.0: override model for testing. Defaults to Haiku. */
+  model?: string;
 }
 
 export async function POST(request: Request): Promise<NextResponse> {
@@ -29,10 +31,10 @@ export async function POST(request: Request): Promise<NextResponse> {
       return successResponse({ title: 'Untitled' }, 200);
     }
 
-    const { message } = bodyResult.data;
+    const { message, model = 'claude-haiku-4-5-20251001' } = bodyResult.data;
 
     const response = await client.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+      model,
       max_tokens: 20,
       temperature: 0,
       system: SYSTEM_PROMPT,

@@ -12,7 +12,7 @@
  */
 
 import { loadDevProtocols } from './dev-protocols';
-import { buildContextPackage, DEFAULT_SYSTEM_PROMPT } from './context-builder';
+import { buildContextPackage, buildSystemPromptBlocks, DEFAULT_SYSTEM_PROMPT } from './context-builder';
 import { initAEGIS } from '../aegis';
 import { warmAll } from '../vector/cold-start';
 import { start as startIndexer } from '../indexer';
@@ -107,6 +107,23 @@ export async function runBootstrap(): Promise<BootstrapResult> {
  */
 export function getBootstrapSystemPrompt(): string {
   return _cachedPackage?.systemPrompt ?? DEFAULT_SYSTEM_PROMPT;
+}
+
+/**
+ * Sprint 12.0: Get system prompt as content blocks with prompt caching.
+ * Stable blocks (base identity + dev protocols) are marked cache_control: ephemeral
+ * for ~90% cost reduction on repeated requests.
+ * Returns a single un-cached text block if bootstrap hasn't run yet.
+ */
+export function getBootstrapSystemPromptBlocks(): Array<{
+  type: 'text';
+  text: string;
+  cache_control?: { type: 'ephemeral' };
+}> {
+  if (!_cachedPackage) {
+    return [{ type: 'text' as const, text: DEFAULT_SYSTEM_PROMPT }];
+  }
+  return buildSystemPromptBlocks(_cachedPackage.kernlContext, _cachedPackage.devProtocols);
 }
 
 /**

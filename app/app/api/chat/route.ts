@@ -31,7 +31,7 @@ import {
   addMessage,
 } from '@/lib/kernl';
 import { checkpoint } from '@/lib/continuity';
-import { getBootstrapSystemPrompt } from '@/lib/bootstrap';
+import { getBootstrapSystemPromptBlocks } from '@/lib/bootstrap';
 import { embed, persistEmbeddingsFull } from '@/lib/embeddings';
 import { recordUserActivity } from '@/lib/indexer';
 import { checkOnInput } from '@/lib/cross-context/proactive';
@@ -158,10 +158,21 @@ export const POST = safeHandler(async (request: Request) => {
   const start = Date.now();
 
   try {
+    // Sprint 12.0: use content blocks for prompt caching when no override is present.
+    // body.systemPrompt (string) takes precedence for custom overrides; otherwise use
+    // cached blocks so stable context (dev protocols, identity) hits Anthropic's cache.
+    // Cast through unknown to satisfy exactOptionalPropertyTypes: the blocks array
+    // is structurally compatible with TextBlockParam[] but our local type has
+    // cache_control?: {type:'ephemeral'} vs SDK's CacheControlEphemeralParam | null.
+    const systemBlocks = getBootstrapSystemPromptBlocks() as unknown as Anthropic.Messages.TextBlockParam[];
+    const systemParam: string | Anthropic.Messages.TextBlockParam[] = body.systemPrompt
+      ? body.systemPrompt
+      : systemBlocks;
+
     const stream = client.messages.stream({
       model: 'claude-sonnet-4-5',
       max_tokens: 8096,
-      system: body.systemPrompt ?? getBootstrapSystemPrompt(),
+      system: systemParam,
       messages: anthropicMessages,
     });
 
@@ -201,6 +212,12 @@ export const POST = safeHandler(async (request: Request) => {
           const textBlock = finalMessage.content.find((b) => b.type === 'text');
           const content = textBlock?.type === 'text' ? textBlock.text : '';
           const latencyMs = Date.now() - start;
+
+          // Sprint 12.0: capture cache token counts (SDK types may lag behind API)
+          // Double cast (through unknown) required because Usage lacks index signature.
+          const usageExt = finalMessage.usage as unknown as Record<string, unknown>;
+          const cacheCreationTokens = (usageExt.cache_creation_input_tokens as number | undefined) ?? 0;
+          const cacheReadTokens = (usageExt.cache_read_input_tokens as number | undefined) ?? 0;
 
           // Persist assistant response to KERNL
           const assistantMsg = addMessage({
@@ -270,6 +287,8 @@ export const POST = safeHandler(async (request: Request) => {
                 inputTokens: finalMessage.usage.input_tokens,
                 outputTokens: finalMessage.usage.output_tokens,
                 totalTokens: finalMessage.usage.input_tokens + finalMessage.usage.output_tokens,
+                cacheCreationTokens,
+                cacheReadTokens,
               },
               costUsd: 0,
               latencyMs,

@@ -248,6 +248,24 @@ export function CostBreakdown({ onClose }: CostBreakdownProps) {
           )}
         </div>
       </div>
+      {/* Sprint 12.0: Prompt caching + Batch API status notice */}
+      <div
+        style={{
+          padding: '8px 16px',
+          borderTop: '1px solid var(--shadow, #2a3040)',
+          fontSize: '11px',
+          color: 'var(--muted, #6b7280)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+        }}
+      >
+        <span style={{ color: 'var(--cyan, #22d3ee)' }}>⚡</span>
+        <span>
+          Prompt caching active — repeated context reads at 90% discount.
+          Batch API jobs run on Haiku for an additional 50% savings.
+        </span>
+      </div>
     </div>
   );
 }

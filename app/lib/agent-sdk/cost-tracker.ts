@@ -138,6 +138,10 @@ export interface SessionCostState {
   outputTokens: number;
   totalCostUsd: number;
   capStatus: CostCapStatus;
+  /** Sprint 12.0: tokens that populated the prompt cache (billed at 125% normal) */
+  cacheCreationInputTokens: number;
+  /** Sprint 12.0: tokens read from the prompt cache (billed at 10% normal) */
+  cacheReadInputTokens: number;
 }
 
 export class CostTracker {
@@ -154,6 +158,8 @@ export class CostTracker {
       outputTokens: 0,
       totalCostUsd: 0,
       capStatus: 'ok',
+      cacheCreationInputTokens: 0,
+      cacheReadInputTokens: 0,
     });
     return sessionId;
   }
@@ -166,6 +172,9 @@ export class CostTracker {
     }
     session.inputTokens += usage.inputTokens;
     session.outputTokens += usage.outputTokens;
+    // Sprint 12.0: accumulate cache token counts
+    session.cacheCreationInputTokens += usage.cacheCreationInputTokens ?? 0;
+    session.cacheReadInputTokens += usage.cacheReadInputTokens ?? 0;
     session.totalCostUsd = calculateCost(session.inputTokens, session.outputTokens, session.model);
     session.capStatus = this._evaluateCap(session.totalCostUsd);
     return { ...session };
@@ -220,3 +229,22 @@ export class CostTracker {
 
 /** Singleton — imported by index.ts and executor.ts */
 export const costTracker = new CostTracker();
+
+// ─── Sprint 12.0: Cache savings helper ───────────────────────────────────────
+
+/**
+ * Calculate USD saved by reading from the prompt cache.
+ * Cache reads are billed at 10% of normal input token cost, so the saving
+ * per cache-read token is 90% of what would have been charged without caching.
+ *
+ * @param cacheReadInputTokens  Number of tokens served from the cache.
+ * @param model                 Model string (used to look up per-token pricing).
+ * @returns                     USD amount saved (always >= 0).
+ */
+export function calculateCacheSavingsUsd(cacheReadInputTokens: number, model: string): number {
+  if (cacheReadInputTokens === 0) return 0;
+  // Full cost at normal rate minus what was actually charged (10%)
+  const normalCost = calculateCost(cacheReadInputTokens, 0, model);
+  const cacheCost = normalCost * 0.10;
+  return Math.max(0, normalCost - cacheCost);
+}

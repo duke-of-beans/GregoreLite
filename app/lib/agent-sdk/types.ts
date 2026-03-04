@@ -63,6 +63,8 @@ export interface TaskManifest {
     output_format: 'json' | 'markdown' | 'code' | 'mixed';
     reporting_interval: number; // seconds
     max_duration: number; // minutes
+    /** Sprint 12.0: route to Batch API for 50% discount — async, non-real-time jobs only */
+    batch?: boolean;
   };
   return_to_thread: {
     id: string;
@@ -146,6 +148,10 @@ export const TASK_PRIORITY: Record<TaskType, number> = {
 export interface TokenUsage {
   inputTokens: number;
   outputTokens: number;
+  /** Sprint 12.0: tokens used to populate the prompt cache (billed at 125% normal) */
+  cacheCreationInputTokens?: number;
+  /** Sprint 12.0: tokens read from the prompt cache (billed at 10% normal) */
+  cacheReadInputTokens?: number;
 }
 
 // ─── Phase 7A: Agent SDK Core Types ───────────────────────────────────────────

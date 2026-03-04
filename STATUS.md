@@ -1,9 +1,10 @@
 # GREGLITE — STATUS
-**Last Updated:** March 4, 2026 — Sprint 8D COMPLETE. Phase 8 Ship Prep verified and tagged v1.0.0.
+**Last Updated:** March 4, 2026 — Sprint 12.0 COMPLETE. API Cost Optimization: prompt caching, Batch API, Haiku routing.
 **Version:** v1.0.0 (Phase 8 Ship Prep complete)
-**Test Count:** 887/890 passing (40 test files, 3 pre-existing artifact detector failures)
+**Test Count:** 936/943 passing (48 test files, 27 new Sprint 12.0 tests, 7 pre-existing failures unchanged)
 **EoS Health:** 100/100 (target ≥ 85)
-**Next:** See SPRINT_ROADMAP.md for dependency-ordered remaining work (Sprints 11.0–12.0)
+**TSC:** 2 pre-existing errors in test-helpers.ts — 0 new errors from Sprint 12.0
+**Next:** See SPRINT_ROADMAP.md for remaining work (Sprint 11.0/11.1 if not yet complete)
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md (829-line spec, ZERO implementation — see SPRINT_ROADMAP.md)
 
@@ -15,6 +16,13 @@
 5. Decision gate trigger-detector.ts has 3 dead stub functions replaced by Haiku inference — cleanup needed.
 
 ---
+
+- [x] **SPRINT 12.0** — API Cost Optimization — **COMPLETE**
+  - Prompt caching: `buildSystemPromptBlocks()` with `cache_control: ephemeral` on stable block (~90% cost reduction on repeated context)
+  - Batch API: `batch-executor.ts` + `manifest.protocol.batch` flag routes jobs to Anthropic Message Batches API (50% discount)
+  - Haiku routing formalised: `generateSummary()` and `AutoTitleRequest` now accept explicit model param (default: Haiku); chat stays on Sonnet
+  - Cost monitoring: `SessionCostState` tracks cache token counts; `calculateCacheSavingsUsd()` helper; cache notice in CostBreakdown UI
+  - 27 new tests across 3 test files — all passing
 
 - [x] **SPRINT 10.9** — UX Audit & Functional Wiring — **COMPLETE**
   - Thread rename (inline edit) + delete with PATCH/DELETE API routes
