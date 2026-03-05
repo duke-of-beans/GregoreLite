@@ -96,7 +96,6 @@ const SACRED_PRINCIPLE_PHRASES = [
   'mvp of',
   'mvp version',
   'just for now',
-  'for now',
   'we can do this later',
   'fix later',
   'good enough for now',
@@ -111,14 +110,25 @@ const SACRED_PRINCIPLE_PHRASES = [
 
 /**
  * Fires when forbidden phrases indicating technical debt or temporary solutions
- * appear in the last 5 messages. These violate Option B Perfection.
+ * appear in the latest user message or the latest assistant message.
+ *
+ * Sprint 15.0: Tightened from last-5-messages to latest-pair-only.
+ * The assistant quoting external project descriptions (e.g. sprint options)
+ * was triggering false positives on the NEXT user message because the old
+ * window included multiple assistant messages containing phrases like
+ * "good enough for now".
  */
 export function detectSacredPrincipleRisk(messages: GateMessage[]): boolean {
-  const recent = messages
-    .slice(-5)
-    .map((m) => m.content.toLowerCase())
-    .join(' ');
-  return SACRED_PRINCIPLE_PHRASES.some((phrase) => recent.includes(phrase));
+  // Collect the latest user message and latest assistant message
+  const latestUser = [...messages].reverse().find((m) => m.role === 'user');
+  const latestAssistant = [...messages].reverse().find((m) => m.role === 'assistant');
+
+  const textsToScan: string[] = [];
+  if (latestUser) textsToScan.push(latestUser.content.toLowerCase());
+  if (latestAssistant) textsToScan.push(latestAssistant.content.toLowerCase());
+
+  const combined = textsToScan.join(' ');
+  return SACRED_PRINCIPLE_PHRASES.some((phrase) => combined.includes(phrase));
 }
 
 // ─── irreversible_action ──────────────────────────────────────────────────────

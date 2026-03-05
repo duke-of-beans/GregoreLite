@@ -1,10 +1,10 @@
 # GREGLITE — STATUS
-**Last Updated:** March 4, 2026 — Sprint 13.0 COMPLETE. Transit Map UX/UI audit & polish.
+**Last Updated:** March 5, 2026 — Sprint 15.0 COMPLETE. Bug fixes & quick wins from first real usage.
 **Version:** v1.0.0 (Phase 8 Ship Prep complete)
-**Test Count:** 1210/1210 transit tests all green (83 transit-specific); 3 pre-existing failures in artifacts/detector + phase5-integration, unrelated
+**Test Count:** 1211/1211 all green
 **EoS Health:** 100/100
 **TSC:** 0 errors
-**Next:** Sprint 13.0 shipped. See FEATURE_BACKLOG.md for next priorities.
+**Next:** Sprint 15.0 shipped. See FEATURE_BACKLOG.md for next priorities.
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md — ALL PHASES (A–F) SHIPPED.
 **Recent commits:** 7c08d9f (11.3), dc188fd (11.4+11.5), 4b2382d (11.7), [pending] (11.6)
@@ -17,6 +17,14 @@
 5. ~~Decision gate trigger-detector.ts has 3 dead stub functions replaced by Haiku inference — cleanup needed.~~ — RESOLVED: Sprint 11.0 — detectHighTradeoffCount/detectMultiProjectTouch/detectLargeEstimate removed.
 
 ---
+
+- [x] **SPRINT 15.0** — Bug Fixes & Quick Wins (First Real Usage) — **COMPLETE**
+  - **Task 1: Cost counter fix** — Chat route now writes per-message costs to `session_costs` table using `calculateCost()` from `cost-calculator.ts`. StatusBar `/api/costs/today` endpoint automatically aggregates both Agent SDK and chat costs. SSE `done` event now sends real `costUsd` instead of hardcoded 0.
+  - **Task 2: Decision gate false positive** — Removed overly broad `'for now'` from `SACRED_PRINCIPLE_PHRASES` (specific variants `'just for now'`, `'good enough for now'`, `'workaround for now'`, `'hack for now'` already cover real cases). Tightened scan window from last-5-messages to latest-user + latest-assistant only — prevents assistant quoting external project descriptions from triggering the gate on subsequent user messages. 2 new regression tests added.
+  - **Task 3: Collapsible tool/thinking blocks** — `CollapsibleBlock` now respects `defaultCollapseToolBlocks` preference from `ui-store` (persisted). Default: expanded. Toggle added to Settings → Appearance → Tool Blocks.
+  - **Task 4: Tool call visual distinction** — Tool blocks get: 3px cyan left border, `var(--elevated)` background, monospace font at 11px, tool name as cyan pill/badge. Thinking blocks get muted left border. Visually distinct from message text.
+  - Files modified: `app/api/chat/route.ts`, `lib/decision-gate/trigger-detector.ts`, `components/chat/CollapsibleBlock.tsx`, `components/chat/Message.tsx`, `components/settings/AppearanceSection.tsx`, `lib/stores/ui-store.ts`, `lib/__tests__/unit/decision-gate.test.ts`
+  - TSC: 0 errors | Tests: 1211/1211 all green
 
 - [x] **SPRINT 11.6** — Transit Map Phase E: Z1 Sankey View — **COMPLETE**
   - `lib/transit/sankey.ts`: `buildSankeyGraph()` pure function, `getQualityColor()`, `QualitySignal`/`SankeyNode`/`SankeyLink`/`SankeyGraph` types; segment boundaries from stations, branch fork detection, quality signal aggregation (worst-wins), token/cost summation

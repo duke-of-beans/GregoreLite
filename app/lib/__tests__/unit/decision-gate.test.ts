@@ -139,15 +139,27 @@ describe('detectSacredPrincipleRisk', () => {
     expect(detectSacredPrincipleRisk(messages)).toBe(true);
   });
 
-  it('only checks last 5 messages', () => {
+  it('only checks latest user + latest assistant message (not full history)', () => {
     const messages: GateMessage[] = [
       assistantMsg('This is a temporary fix for the auth issue'),
-      userMsg('message 2'),
-      userMsg('message 3'),
-      userMsg('message 4'),
-      userMsg('message 5'),
-      userMsg('message 6'), // message 1 now outside the window
+      userMsg('ok sounds good'),
+      assistantMsg('The proper approach is to build a full middleware layer.'),
+      userMsg('lets do that'),
     ];
+    // The "temporary fix" is in an older assistant message, not the latest pair
+    expect(detectSacredPrincipleRisk(messages)).toBe(false);
+  });
+
+  it('does not fire when assistant quotes project descriptions containing debt phrases', () => {
+    // Sprint 15.0 regression test: assistant describing external sprint options
+    // used phrases like "good enough for now" — should not trigger on the next
+    // user message if the latest assistant message is clean.
+    const messages: GateMessage[] = [
+      assistantMsg('Option A: good enough for now. Option B: full rebuild.'),
+      userMsg('wasnt there some manual work i had to do too?'),
+      assistantMsg('Yes, you need to run the migration script manually.'),
+    ];
+    // Latest assistant: clean. Latest user: clean. Old assistant had the phrase but is out of window.
     expect(detectSacredPrincipleRisk(messages)).toBe(false);
   });
 });

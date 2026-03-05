@@ -32,6 +32,8 @@ import {
 } from '@/lib/kernl';
 import { checkpoint } from '@/lib/continuity';
 import { getBootstrapSystemPromptBlocks } from '@/lib/bootstrap';
+import { calculateCost } from '@/lib/agent-sdk/cost-calculator';
+import { getDatabase } from '@/lib/kernl/database';
 import { embed, persistEmbeddingsFull } from '@/lib/embeddings';
 import { recordUserActivity } from '@/lib/indexer';
 import { checkOnInput } from '@/lib/cross-context/proactive';
@@ -254,6 +256,35 @@ export const POST = safeHandler(async (request: Request) => {
             latency_ms: latencyMs,
           });
 
+          // Sprint 15.0: Write chat message cost to session_costs so StatusBar picks it up.
+          // Uses the same calculateCost() and pricing.yaml as Agent SDK cost-tracker.
+          try {
+            const chatCostUsd = calculateCost(
+              finalMessage.usage.input_tokens,
+              finalMessage.usage.output_tokens,
+              finalMessage.model,
+            );
+            const db = getDatabase();
+            db.prepare(`
+              INSERT INTO session_costs
+                (manifest_id, session_type, model, input_tokens, output_tokens,
+                 total_tokens, estimated_cost_usd, project_id, started_at, completed_at, updated_at)
+              VALUES (?, 'chat', ?, ?, ?, ?, ?, NULL, ?, ?, ?)
+            `).run(
+              `chat-${assistantMsg.id}`,
+              finalMessage.model,
+              finalMessage.usage.input_tokens,
+              finalMessage.usage.output_tokens,
+              finalMessage.usage.input_tokens + finalMessage.usage.output_tokens,
+              chatCostUsd,
+              Date.now(),
+              Date.now(),
+              Date.now(),
+            );
+          } catch (costErr) {
+            console.warn('[chat/route] Failed to write chat cost:', costErr);
+          }
+
           // Continuity checkpoint
           checkpoint(threadId, assistantMsg.id);
 
@@ -320,6 +351,11 @@ export const POST = safeHandler(async (request: Request) => {
             );
 
           // Send completion event
+          const doneCostUsd = calculateCost(
+            finalMessage.usage.input_tokens,
+            finalMessage.usage.output_tokens,
+            finalMessage.model,
+          );
           controller.enqueue(encoder.encode(
             `data: ${JSON.stringify({
               type: 'done',
@@ -332,7 +368,7 @@ export const POST = safeHandler(async (request: Request) => {
                 cacheCreationTokens,
                 cacheReadTokens,
               },
-              costUsd: 0,
+              costUsd: doneCostUsd,
               latencyMs,
             })}\n\n`
           ));

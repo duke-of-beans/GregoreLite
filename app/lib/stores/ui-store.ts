@@ -84,6 +84,9 @@ export interface UIState {
   // Settings panel
   settingsOpen: boolean;
 
+  // Sprint 15.0: Collapse tool/thinking blocks by default
+  defaultCollapseToolBlocks: boolean;
+
   // Transit Map Z3 annotations toggle (default OFF — must be opted in)
   showTransitMetadata: boolean;
 }
@@ -135,6 +138,10 @@ export interface UIActions {
   toggleSettings: () => void;
   setSettingsOpen: (open: boolean) => void;
 
+  // Sprint 15.0: Collapse tool blocks preference
+  setDefaultCollapseToolBlocks: (collapse: boolean) => void;
+  toggleDefaultCollapseToolBlocks: () => void;
+
   // Transit Map Z3 annotations
   toggleTransitMetadata: () => void;
   setShowTransitMetadata: (show: boolean) => void;
@@ -179,6 +186,7 @@ const initialState: UIState = {
   focusedElement: null,
 
   settingsOpen: false,
+  defaultCollapseToolBlocks: false,
   showTransitMetadata: false,
 };
 
@@ -441,6 +449,18 @@ const createUISlice: StateCreator<UIStore> = (set, get) => ({
   },
 
   // ========================================================================
+  // SPRINT 15.0: COLLAPSE TOOL BLOCKS PREFERENCE
+  // ========================================================================
+
+  setDefaultCollapseToolBlocks: (collapse: boolean) => {
+    set({ defaultCollapseToolBlocks: collapse });
+  },
+
+  toggleDefaultCollapseToolBlocks: () => {
+    set((state) => ({ defaultCollapseToolBlocks: !state.defaultCollapseToolBlocks }));
+  },
+
+  // ========================================================================
   // TRANSIT MAP ANNOTATIONS
   // ========================================================================
 
@@ -474,6 +494,7 @@ export const useUIStore = create<UIStore>()(
       partialize: (state) => ({
         sidebar: state.sidebar,
         theme: state.theme,
+        defaultCollapseToolBlocks: state.defaultCollapseToolBlocks,
         commandPalette: {
           // Don't persist open state or query
           open: false,

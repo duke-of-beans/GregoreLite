@@ -28,6 +28,8 @@ export function AppearanceSection() {
   const setDensity = useDensityStore((s) => s.setDensity);
   const showTransitMetadata = useUIStore((s) => s.showTransitMetadata);
   const toggleTransitMetadata = useUIStore((s) => s.toggleTransitMetadata);
+  const defaultCollapseToolBlocks = useUIStore((s) => s.defaultCollapseToolBlocks);
+  const toggleDefaultCollapseToolBlocks = useUIStore((s) => s.toggleDefaultCollapseToolBlocks);
 
   const btnBase: React.CSSProperties = {
     flex: 1,
@@ -125,6 +127,42 @@ export function AppearanceSection() {
             left: showTransitMetadata ? 18 : 2,
             width: 16, height: 16, borderRadius: '50%',
             background: showTransitMetadata ? 'var(--deep-space)' : 'var(--frost)',
+            transition: 'left 0.2s',
+          }} />
+        </div>
+      </div>
+
+      {/* Sprint 15.0: Collapse tool blocks toggle */}
+      <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--ice-white)', marginBottom: 12, marginTop: 20, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        Tool Blocks
+      </h3>
+      <div
+        onClick={toggleDefaultCollapseToolBlocks}
+        style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '10px 14px', borderRadius: 8, cursor: 'pointer',
+          background: 'var(--elevated)', border: `1px solid ${defaultCollapseToolBlocks ? 'var(--cyan)' : 'var(--shadow)'}`,
+          transition: 'border-color 0.15s',
+        }}
+      >
+        <div>
+          <div style={{ fontSize: 13, color: 'var(--ice-white)', fontWeight: 500 }}>
+            Collapse tool calls by default
+          </div>
+          <div style={{ fontSize: 11, color: 'var(--mist)', marginTop: 2 }}>
+            Tool call and thinking blocks start collapsed with a one-line summary
+          </div>
+        </div>
+        <div style={{
+          width: 36, height: 20, borderRadius: 10, flexShrink: 0, marginLeft: 12,
+          background: defaultCollapseToolBlocks ? 'var(--cyan)' : 'var(--shadow)',
+          position: 'relative', transition: 'background 0.2s',
+        }}>
+          <div style={{
+            position: 'absolute', top: 2,
+            left: defaultCollapseToolBlocks ? 18 : 2,
+            width: 16, height: 16, borderRadius: '50%',
+            background: defaultCollapseToolBlocks ? 'var(--deep-space)' : 'var(--frost)',
             transition: 'left 0.2s',
           }} />
         </div>

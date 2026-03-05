@@ -341,10 +341,10 @@ export function Message({ role, content, timestamp, highlightQuery, isActiveMatc
                 );
               }
               if (block.type === 'tool_use') {
-                const toolName = (block.metadata?.name as string) ?? 'tool';
+                const tName = (block.metadata?.name as string) ?? 'tool';
                 return (
-                  <CollapsibleBlock key={i} type="tool_use" summary={`Used ${toolName}`}>
-                    <pre className="text-[11px] font-mono whitespace-pre-wrap text-[var(--frost)]">
+                  <CollapsibleBlock key={i} type="tool_use" summary={`Used ${tName}`} toolName={tName}>
+                    <pre className="whitespace-pre-wrap text-[var(--frost)]">
                       {block.content}
                     </pre>
                   </CollapsibleBlock>
