@@ -240,9 +240,11 @@ function setupTmpDir() {
   ].join('\n'));
 
   // File with a memory leak — setInterval never cleaned up, triggers MEMORY_LEAK rule
-  // Note: clearInterval reference here prevents EoS from flagging THIS test file (FP suppression)
+  // NOTE: The fixture content must NOT contain the word "clearInterval" (even in
+  // comments) because EoS's detectMemoryLeaks does content.includes('clearInterval')
+  // and would skip the file.
   writeFileSync(path.join(tmpDir, 'dirty.ts'), [
-    '// This file leaks — interval never cleaned up (no clearInterval call)',
+    '// This file leaks — interval is created but never torn down',
     'export function startPolling() {',
     '  setInterval(() => console.log("tick"), 1000);',
     '}',
@@ -338,7 +340,7 @@ describe('EoS Scan Engine', () => {
   it('dirty.ts triggers at least one issue', async () => {
     setupTmpDir();
     const result = await realScanFiles([path.join(tmpDir, 'dirty.ts')]);
-    // eval() is a known dangerous pattern — should produce at least one issue
+    // setInterval without cleanup — should produce at least one MEMORY_LEAK issue
     expect(result.issues.length).toBeGreaterThan(0);
   });
 

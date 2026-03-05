@@ -7,8 +7,9 @@
 
 import { NextResponse } from 'next/server';
 import { getGhostStatus } from '@/lib/ghost';
+import { safeHandler } from '@/lib/api/utils';
 
-export function GET(): NextResponse {
+export const GET = safeHandler(async () => {
   const status = getGhostStatus();
   return NextResponse.json(status);
-}
+});

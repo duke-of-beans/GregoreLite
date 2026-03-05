@@ -14,7 +14,12 @@ function getDbPath(): string {
 }
 
 function getSchemaPath(): string {
-  // Resolve schema.sql relative to this file at runtime
+  // In Next.js dev, __dirname resolves to .next/server/ which won't have schema.sql.
+  // Use cwd-relative path (Next.js always runs from the project root).
+  // Tauri production builds bundle the schema via INLINE_SCHEMA fallback.
+  const cwdPath = path.join(process.cwd(), 'lib', 'kernl', 'schema.sql');
+  if (fs.existsSync(cwdPath)) return cwdPath;
+  // Fallback: try __dirname for non-Next.js contexts (e.g. vitest)
   return path.join(__dirname, 'schema.sql');
 }
 
@@ -22,7 +27,30 @@ export function getDatabase(): Database.Database {
   if (_db) return _db;
 
   const dbPath = getDbPath();
-  _db = new Database(dbPath);
+
+  try {
+    _db = new Database(dbPath);
+  } catch (err) {
+    // If the DB file is corrupted, back it up and create a fresh one.
+    // This prevents the app from being permanently bricked by a bad DB.
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(`[kernl/database] Failed to open ${dbPath}: ${msg}`);
+
+    if (fs.existsSync(dbPath)) {
+      const backup = `${dbPath}.corrupt.${Date.now()}`;
+      console.warn(`[kernl/database] Backing up corrupted DB to ${backup}`);
+      try {
+        fs.renameSync(dbPath, backup);
+      } catch {
+        // If rename fails, try to remove the corrupted file
+        fs.unlinkSync(dbPath);
+      }
+    }
+
+    // Retry with fresh DB
+    _db = new Database(dbPath);
+    console.warn('[kernl/database] Created fresh database after corruption recovery');
+  }
 
   // Performance pragmas
   _db.pragma('journal_mode = WAL');
@@ -209,6 +237,7 @@ CREATE TABLE IF NOT EXISTS threads (id TEXT PRIMARY KEY, title TEXT NOT NULL DEF
 CREATE TABLE IF NOT EXISTS messages (id TEXT PRIMARY KEY, thread_id TEXT NOT NULL REFERENCES threads(id) ON DELETE CASCADE, role TEXT NOT NULL CHECK(role IN ('user','assistant','system')), content TEXT NOT NULL, model TEXT, input_tokens INTEGER DEFAULT 0, output_tokens INTEGER DEFAULT 0, cost_usd REAL DEFAULT 0, latency_ms INTEGER DEFAULT 0, created_at INTEGER NOT NULL DEFAULT (unixepoch('now','subsec')*1000), meta TEXT);
 CREATE INDEX IF NOT EXISTS idx_messages_thread ON messages(thread_id, created_at);
 CREATE TABLE IF NOT EXISTS decisions (id TEXT PRIMARY KEY, thread_id TEXT REFERENCES threads(id) ON DELETE SET NULL, category TEXT NOT NULL, title TEXT NOT NULL, rationale TEXT NOT NULL, alternatives TEXT, impact TEXT, created_at INTEGER NOT NULL DEFAULT (unixepoch('now','subsec')*1000), meta TEXT);
+CREATE TABLE IF NOT EXISTS projects (id TEXT PRIMARY KEY, name TEXT NOT NULL, path TEXT UNIQUE NOT NULL, description TEXT, health_score REAL, last_eos_scan TEXT, created_at INTEGER NOT NULL DEFAULT (unixepoch('now','subsec')*1000), updated_at INTEGER NOT NULL DEFAULT (unixepoch('now','subsec')*1000));
 CREATE TABLE IF NOT EXISTS checkpoints (id TEXT PRIMARY KEY, thread_id TEXT NOT NULL REFERENCES threads(id) ON DELETE CASCADE, message_id TEXT REFERENCES messages(id) ON DELETE SET NULL, snapshot TEXT NOT NULL, created_at INTEGER NOT NULL DEFAULT (unixepoch('now','subsec')*1000));
 CREATE INDEX IF NOT EXISTS idx_checkpoints_thread ON checkpoints(thread_id, created_at DESC);
 CREATE TABLE IF NOT EXISTS manifests (id TEXT PRIMARY KEY, version TEXT NOT NULL DEFAULT '1.0', spawned_by_thread TEXT NOT NULL REFERENCES threads(id) ON DELETE CASCADE, strategic_thread_id TEXT NOT NULL, created_at TEXT NOT NULL, updated_at INTEGER NOT NULL DEFAULT (unixepoch('now','subsec')*1000), status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','spawning','running','working','validating','completed','failed','interrupted')), task_type TEXT CHECK(task_type IN ('code','test','docs','research','deploy','self_evolution')), title TEXT, description TEXT, project_path TEXT, dependencies TEXT, quality_gates TEXT, is_self_evolution INTEGER DEFAULT 0, self_evolution_branch TEXT, result_report TEXT, tokens_used INTEGER DEFAULT 0, cost_usd REAL DEFAULT 0);

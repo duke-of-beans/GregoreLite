@@ -7,6 +7,7 @@
 
 import { NextResponse } from 'next/server';
 import { getDatabase } from '@/lib/kernl/database';
+import { safeHandler } from '@/lib/api/utils';
 
 interface ExclusionLogRow {
   id: string;
@@ -18,7 +19,7 @@ interface ExclusionLogRow {
   logged_at: number;
 }
 
-export function GET(): NextResponse {
+export const GET = safeHandler(async () => {
   const db = getDatabase();
 
   const rows = db
@@ -31,4 +32,4 @@ export function GET(): NextResponse {
     .all() as ExclusionLogRow[];
 
   return NextResponse.json({ entries: rows });
-}
+});

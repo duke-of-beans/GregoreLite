@@ -24,6 +24,9 @@ const AEGIS_PORT = parseInt(process.env.AEGIS_STATUS_PORT ?? '8743', 10);
 const AEGIS_BASE = `http://localhost:${AEGIS_PORT}`;
 const REQUEST_TIMEOUT_MS = 2000;
 
+// Log the offline warning once, not on every call
+let _offlineWarned = false;
+
 /**
  * Send a workload profile switch to AEGIS.
  * Maps GregLite WorkloadProfile → AEGIS native profile name.
@@ -41,7 +44,10 @@ export async function switchProfile(profile: WorkloadProfile): Promise<void> {
   } catch {
     // AEGIS offline or unreachable — log once, never throw.
     // This is expected when AEGIS hasn't been started.
-    console.warn(`[aegis:client] AEGIS offline — could not switch to ${aegisProfile} (${profile})`);
+    if (!_offlineWarned) {
+      console.warn(`[aegis:client] AEGIS offline — could not switch to ${aegisProfile} (${profile}). Suppressing further warnings.`);
+      _offlineWarned = true;
+    }
   }
 }
 

@@ -8,18 +8,17 @@
  * Returns: { released: boolean; mandatory: boolean; dismissCount: number }
  */
 
+import { NextResponse } from 'next/server';
 import { dismissLock, getDecisionLock } from '@/lib/decision-gate';
+import { safeHandler } from '@/lib/api/utils';
 
-export async function POST(): Promise<Response> {
+export const POST = safeHandler(async () => {
   dismissLock();
   const state = getDecisionLock();
 
-  return new Response(
-    JSON.stringify({
-      released: !state.locked,
-      mandatory: state.dismissCount >= 3,
-      dismissCount: state.dismissCount,
-    }),
-    { status: 200, headers: { 'Content-Type': 'application/json' } },
-  );
-}
+  return NextResponse.json({
+    released: !state.locked,
+    mandatory: state.dismissCount >= 3,
+    dismissCount: state.dismissCount,
+  });
+});

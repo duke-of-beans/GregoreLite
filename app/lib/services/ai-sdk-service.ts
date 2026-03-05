@@ -13,8 +13,20 @@
 
 import { generateText, streamText } from 'ai';
 import { anthropic } from '@ai-sdk/anthropic';
-import { openai } from '@ai-sdk/openai';
 import { calculateCost } from './pricing';
+
+// NOTE: @ai-sdk/openai removed from deps in Sprint 14.0 (GregLite is Claude-only).
+// This file is dead code — not imported anywhere. Re-add if multi-model support is needed.
+// openai provider loaded lazily to avoid webpack resolution failure.
+let _openai: ((model: string) => unknown) | null = null;
+async function getOpenAI(model: string) {
+  if (!_openai) {
+    const modName = '@ai-sdk/openai';
+    const mod = await import(/* webpackIgnore: true */ modName);
+    _openai = mod.openai;
+  }
+  return _openai!(model);
+}
 
 /**
  * Supported AI providers
@@ -74,7 +86,7 @@ export class AISDKService {
     const startTime = Date.now();
 
     const result = await generateText({
-      model: this.getModel(request.provider, request.model),
+      model: await this.getModel(request.provider, request.model),
       prompt: request.prompt,
       ...(request.systemPrompt && { system: request.systemPrompt }),
       ...(request.temperature !== undefined && { temperature: request.temperature }),
@@ -113,7 +125,7 @@ export class AISDKService {
     let accumulated = '';
 
     const result = await streamText({
-      model: this.getModel(request.provider, request.model),
+      model: await this.getModel(request.provider, request.model),
       prompt: request.prompt,
       ...(request.systemPrompt && { system: request.systemPrompt }),
       ...(request.temperature !== undefined && { temperature: request.temperature }),
@@ -150,12 +162,12 @@ export class AISDKService {
   /**
    * Get model instance from provider
    */
-  private getModel(provider: AIProvider, model: string) {
+  private async getModel(provider: AIProvider, model: string) {
     switch (provider) {
       case 'anthropic':
         return anthropic(model);
       case 'openai':
-        return openai(model);
+        return await getOpenAI(model) as ReturnType<typeof anthropic>;
       case 'google':
         throw new Error('Google provider not yet configured');
       case 'xai':

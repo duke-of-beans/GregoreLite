@@ -6,8 +6,9 @@
  */
 
 import { NextResponse } from 'next/server';
+import { safeHandler } from '@/lib/api/utils';
 
-export async function GET(): Promise<NextResponse> {
+export const GET = safeHandler(async () => {
   const apiKeyConfigured = !!process.env.ANTHROPIC_API_KEY;
 
   return NextResponse.json({
@@ -17,4 +18,4 @@ export async function GET(): Promise<NextResponse> {
       version: process.env.npm_package_version ?? 'unknown',
     },
   });
-}
+});

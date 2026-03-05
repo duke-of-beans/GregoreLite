@@ -7,8 +7,9 @@
 
 import { NextResponse } from 'next/server';
 import { checkHealth } from '@/lib/aegis/client';
+import { safeHandler } from '@/lib/api/utils';
 
-export async function GET() {
+export const GET = safeHandler(async () => {
   const alive = await checkHealth();
   return NextResponse.json({ data: { alive } });
-}
+});

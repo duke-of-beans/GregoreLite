@@ -12,6 +12,7 @@ import { useState, useEffect } from 'react';
 import { ChatInterface } from '@/components/chat/ChatInterface';
 import { ContextPanel } from '@/components/context';
 import { OnboardingFlow } from '@/components/onboarding';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 export default function Home() {
   const [showOnboarding, setShowOnboarding] = useState<boolean | null>(null);
@@ -45,13 +46,18 @@ export default function Home() {
     return <OnboardingFlow onComplete={() => setShowOnboarding(false)} />;
   }
 
-  // Main application
+  // Main application — ErrorBoundary wraps ChatInterface independently so a
+  // chat crash doesn't kill the context panel or the whole app.
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-[var(--deep-space)]">
-      <ContextPanel />
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <ChatInterface />
+    <ErrorBoundary region="Application">
+      <div className="flex h-screen w-full overflow-hidden bg-[var(--deep-space)]">
+        <ContextPanel />
+        <div className="flex flex-1 flex-col overflow-hidden">
+          <ErrorBoundary region="Chat">
+            <ChatInterface />
+          </ErrorBoundary>
+        </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 }

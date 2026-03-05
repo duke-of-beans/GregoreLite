@@ -149,6 +149,8 @@ if __name__ == '__main__':
 export const GREGLITE_VERSION = '0.1.0';
 export const SPRINT = '2D';
 export const FEATURE = 'artifact-rendering';
+export const DESCRIPTION = 'Artifact detection and rendering pipeline for GregLite cockpit UI';
+export const AUTHOR = 'GregLite Team';
 \`\`\`
     `;
     const a1 = detectArtifact(content);
@@ -159,8 +161,8 @@ export const FEATURE = 'artifact-rendering';
   });
 
   it('falls back to language "text" and type "unknown" for a bare fence', () => {
-    // Build a block long enough to pass the threshold but with no language tag
-    const code = 'A'.repeat(60);
+    // Build a block long enough to pass the MIN_ARTIFACT_LENGTH (120) threshold
+    const code = 'A'.repeat(150);
     const content = `\`\`\`\n${code}\n\`\`\``;
     const artifact = detectArtifact(content);
     expect(artifact!.type).toBe('unknown');

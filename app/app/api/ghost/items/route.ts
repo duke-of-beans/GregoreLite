@@ -7,9 +7,10 @@
  * DELETE /api/ghost/items?id=<id> — cascade delete one item
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getDatabase } from '@/lib/kernl/database';
 import { deleteGhostItem } from '@/lib/ghost/privacy';
+import { safeHandler } from '@/lib/api/utils';
 
 const PAGE_SIZE = 50;
 
@@ -22,8 +23,8 @@ interface IndexedItemRow {
   indexed_at: number;
 }
 
-export async function GET(req: NextRequest): Promise<NextResponse> {
-  const params = req.nextUrl.searchParams;
+export const GET = safeHandler(async (req: Request) => {
+  const params = new URL(req.url).searchParams;
   const page = Math.max(1, Number(params.get('page') ?? '1'));
   const type = params.get('type') ?? 'all';
   const search = (params.get('search') ?? '').trim();
@@ -76,10 +77,10 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     totalPages: Math.ceil(countRow.total / PAGE_SIZE),
     summary: { total: fileCt + emailCt, files: fileCt, emails: emailCt },
   });
-}
+});
 
-export async function DELETE(req: NextRequest): Promise<NextResponse> {
-  const id = req.nextUrl.searchParams.get('id');
+export const DELETE = safeHandler(async (req: Request) => {
+  const id = new URL(req.url).searchParams.get('id');
   if (!id) {
     return NextResponse.json({ error: 'id required' }, { status: 400 });
   }
@@ -93,4 +94,4 @@ export async function DELETE(req: NextRequest): Promise<NextResponse> {
   }
 
   return new NextResponse(null, { status: 204 });
-}
+});
