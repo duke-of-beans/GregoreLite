@@ -1,499 +1,285 @@
 # GREGORE AUDIT — Port Recommendations for GregLite
 
-**Sprint:** 15.1 (Research)
+**Version:** 1.0.0
 **Date:** March 5, 2026
-**Auditor:** Claude (Opus)
-**Sources:** 30+ Gregore documentation files, 4 GregLite implementation files
-**Output:** Research document — NO CODE
+**Sprint:** 15.1 (Research)
+**Author:** Claude (Opus) for David Kirsch
+**Sources:** 20+ Gregore docs (UI_UX_FINAL_DIRECTION, DESIGN_SYSTEM, SACRED_LAWS, PRODUCT_VISION, ARCHITECTURE, 9 systems, 9 engines, synthesis, council synthesis, UI_UX_ARCHAEOLOGY)
 
 ---
 
 ## Section 1: Brand Voice
 
-### Compiled Voice Profile
+Gregore's personality is defined across multiple documents — never in a single "voice guide" file. The strongest articulations come from PRODUCT_VISION.md, the multi-LLM council synthesis (councilsynth1_ui-ux.txt), and UI_UX_FINAL_DIRECTION.md. David's own description: **"Deadpan professional, data-forward and approachable, a wise teacher, but also sardonic."**
 
-David's summary: **"Deadpan professional, data-forward and approachable, a wise teacher, but also sardonic."**
+### Evidence from Docs
 
-Evidence compiled across all Gregore docs:
+**PRODUCT_VISION.md** frames Gregore as a "governor, not a tool." The system has authority — it doesn't ask permission to think, it thinks and reports. This naturally produces a voice that is confident without being arrogant, precise without being cold. The tagline "The Cognitive Operating System — Where all intelligence converges" is aspirational but grounded in capability, not marketing fluff.
 
-**From PRODUCT_VISION.md — Strategic Identity:**
-Gregore positions itself as "The Cognitive Operating System — Where all intelligence converges." The voice is that of a high-competence platform that doesn't need to prove itself. It states facts, not promises. The tagline carries no exclamation marks, no hype words. This is a product that assumes you're smart enough to see its value.
+**The Council Synthesis** (Gemini, GPT-4o, Claude perspectives) converges on several voice characteristics. Gemini describes the interface as a "Cognitive Exoskeleton" — the system should feel like a natural extension of the user's thinking, not a separate entity demanding attention. GPT-4o identifies four emotional targets by user archetype but all share a common thread: relief over power. Claude's perspective crystallizes this into "People don't want power, they want relief." This means Gregore's voice should convey competence that reduces cognitive load, not complexity that adds to it.
 
-**From UI_UX_FINAL_DIRECTION.md — Communication Philosophy:**
-The Ghost communicates through *ambient awareness* (border glow), *action clarity* (send button states), and *post-detail* (receipt footer). This layered approach mirrors the brand voice itself: understated until it matters, then precise. The system never shouts. It glows.
+**UI_UX_FINAL_DIRECTION.md** establishes the Grandma/Freelancer/Professional test triad. No biological metaphors ("membrane," "organs"), no jargon in default view, no gamification language. Professional enough to show a client. This eliminates anything cutesy, overly technical, or self-congratulatory from the voice.
 
-**From SACRED_LAWS.md — Law #6 (Transparency) and Law #10 (Attention is Scarce Capital):**
-Every action explains itself with What, Why, Who, When, and Evidence. But attention is treated as currency — the system won't waste yours. This creates the sardonic tension: Gregore knows more than it shows, and it respects you enough to stay quiet unless something matters.
+**SACRED_LAWS.md** Preamble: *"These laws exist because GREGORE is a governor, not a tool. A tool has no constraints. A governor serves something higher."* This frames the voice as one of principled authority — Gregore doesn't hedge when it knows, doesn't pretend when it doesn't, and treats the user's attention as scarce capital (Law #10).
 
-**From UI_UX_ARCHAEOLOGY.md — What Failed:**
-Biological metaphors ("membrane," "organs," "cognitive cockpit") were explicitly killed. The voice was recalibrated away from academic/quirky toward professional/cool. The Grandma Test, Freelancer Test, and Professional Test all filter for clarity over cleverness.
+### Compiled Voice Guide for GregLite
 
-**From DESIGN_SYSTEM.md — Empty States and Error States:**
-Empty states should be "encouraging and actionable, not just informational." Errors should be "clear, helpful, and recoverable" with "plain language explanation." No alarm, no drama. The voice stays warm even when things break.
+**Tone:** Deadpan professional. Says what it means without decoration. Never enthusiastic, never apologetic. Think senior engineer in a standup — clear, direct, data-first.
 
-**From Homeostasis System (HOMEOSTASIS.md):**
-The behavioral profiles encode voice modulation directly: Crisis mode → "terse, protective, laser-focused." Exploration mode → "exploratory, make connections." Recovery mode → "gentle, suggest breaks." The voice adapts to cognitive state — it reads the room.
+**Data Forward:** Leads with evidence, metrics, and specifics. "Cost: $0.002, 234ms, G-score 0.87" not "I think this went well!" Numbers before narrative.
 
-**From Greg Gate (ENGINE-F.md) — Epistemic Honesty:**
-The four response modes (ASSERT / PROBABILISTIC / INVESTIGATIVE / REFUSE) define how Gregore speaks about what it knows. High confidence → strong claim with falsifiers. Low confidence → "I don't know" + shortest path to knowing. The system never bullshits. This is the sardonic core: it will confidently tell you it doesn't know.
+**Approachable Wisdom:** Explains complex decisions in plain language when asked. Doesn't talk down. The Grandma Test applies to voice too — if the explanation requires a glossary, rewrite it.
 
-### Voice Guide for GregLite Copy
+**Sardonic Edge:** Permitted in error states, decision gate warnings, and self-referential moments. Not sarcasm — wry acknowledgment. Example: a Ghost veto message that says "This request violates Sacred Law 4 (Safety Gates). Cannot generate malware, exploits, or harmful code." is direct, not lecturing. The dryness IS the personality.
 
-**Tone:** Professional calm with dry wit. Think: a senior engineer who's seen everything and finds most of it mildly amusing.
+**What Gregore Never Does:**
+- Uses exclamation marks in system messages
+- Says "I'm sorry" or "Unfortunately"
+- Uses emoji in primary UI (receipt footers, status bars, system messages)
+- Hedges with "I think" or "Maybe" when confidence is high (that's what Greg Gate modes are for)
+- Uses biological metaphors (membrane, organs, seam — explicitly killed Jan 2, 2026)
+- Gamifies anything (no badges, streaks, achievements — "This isn't Duolingo")
 
-**Do:**
-- State facts without hedging ("Cost: $0.003" not "Your cost was approximately...")
-- Use imperative mood for actions ("Send" not "Click here to send your message")
-- Be specific ("3 jobs running, 1 pending" not "Some jobs are in progress")
-- Show competence through brevity, not verbosity
-- Use dry humor in empty states and edge cases
-- Present uncertainty honestly ("I don't have enough to answer that — here's what would help")
-
-**Don't:**
-- Use exclamation marks in UI copy (one per screen, maximum, and only for genuine celebration)
-- Anthropomorphize with personality quirks ("I'm thinking!" → just show a pulse)
-- Use biological metaphors (membrane, organs, seam)
-- Hedge when confident or overclaim when uncertain
-- Use emoji in system-level communication (user messages are their business)
-
-**Label Standards:**
-- Role labels: "You" / "GregLite" (already correct in Message.tsx)
-- Status: ALL CAPS for system labels ("COST TODAY:", "JOBS:", "AEGIS:", "KERNL:" — already correct in StatusBar.tsx)
-- Actions: Title case ("Edit", "Regenerate", not "EDIT", "REGENERATE")
-- Metadata: Lowercase, separated by dots ("sonnet · 234 tokens · $0.002 · 1.3s")
-
-**GregLite Current State:** Partially aligned. StatusBar copy is excellent (terse, data-forward, professional). Message.tsx role labels are correct. Missing: no voice guide exists as a reference doc, and there's no receipt footer voice yet since receipts aren't implemented.
-
+**GregLite Status:** Voice is partially implemented through the decision gate messages and StatusBar copy. Not systematically applied. No voice guide exists in the codebase. Recommend creating `lib/voice/` with standardized copy templates.
 
 ---
 
 ## Section 2: UI/UX Patterns to Port
+### Pattern 1: Receipt Footer (Post-Message Orchestration Details)
+**Source:** UI_UX_FINAL_DIRECTION.md Part 2.3, DESIGN_SYSTEM.md §3
+**Priority:** P0 — Must Have
 
-### P0 — Must Have for Daily Driver
+Gregore specifies a collapsed receipt footer under every assistant message showing: Ghost validation status, cost, latency, and model used. Click to expand for full orchestration details (Ghost checks, model selection reasoning, confidence score, alternative costs).
 
-**2.1 Receipt Footer (Collapsed/Expanded Orchestration Details)**
+**GregLite Status:** MISSING. Messages currently show metadata only when Transit Map Z3 annotations are toggled on (Cmd+Shift+M), and only as a debug-style overlay — not the collapsed/expandable receipt pattern. StatusBar shows aggregate daily cost but not per-message cost. Sprint 15.0 added cost tracking to session_costs, so the data is now available.
 
-*Source:* DESIGN_SYSTEM.md §3 "Receipt Footer (CRITICAL COMPONENT)", UI_UX_FINAL_DIRECTION.md Part 3
-*What it is:* After each assistant message, a collapsed one-liner showing Ghost validation status, cost, and latency. Clicking expands to show full orchestration details: model selection rationale, Ghost pre/post checks, confidence score, alternative models considered.
-*GregLite status:* **MISSING.** Message.tsx shows basic metadata in a footer row (model, tokens, cost, latency) but this is flat — no collapse/expand, no Ghost validation status, no orchestration detail, no "Receipt" concept. The data is there (model, tokens, costUsd, latencyMs props exist) but the presentation is a plain metadata line, not a receipt.
-*Gap:* Need CollapsibleReceipt component. Collapsed: "✓ Ghost validated · $0.002 · 234ms [▸]". Expanded: model selection reasoning, Ghost checks, G-score, alternative model comparison.
-*File refs:* `app/components/chat/Message.tsx` lines ~320-340 (metadata footer), DESIGN_SYSTEM.md §3 "Receipt Footer"
-*Priority:* **P0** — This is the primary differentiator from Claude Desktop. Without it, GregLite is just another chat wrapper.
+**Port Recommendation:** Implement receipt footer in `components/chat/Message.tsx`. Collapsed default: "✓ $0.002 • 234ms • sonnet-4". Expanded: model, tokens, cost, latency, cache hit. No Ghost pre/post validation (GregLite is Claude-only, no multi-model routing to show). Add receipt preference to ui-store: full/compact/minimal/hidden.
 
-**2.2 Orchestration Theater (First 3-5 Messages Show Full Detail)**
+### Pattern 2: Ghost Pulse (Ambient Input Border Animation)
+**Source:** UI_UX_FINAL_DIRECTION.md Part 2.1, DESIGN_SYSTEM.md §3 (Input Field), §4 (ghost-pulse keyframe)
+**Priority:** P1 — Should Have
 
-*Source:* UI_UX_FINAL_DIRECTION.md Part 5 "Orchestration Theater", DESIGN_SYSTEM.md §5
-*What it is:* For the first 3-5 messages of a new conversation, receipts are automatically expanded to full detail. This solves the "how is this different from ChatGPT?" question immediately. After message 5, the system prompts: "How detailed do you want orchestration info?" with options: Full / Compact (recommended) / Minimal / Hidden.
-*GregLite status:* **MISSING.** No concept of message-count-based behavior, no detail preference prompt, no receipt expansion logic.
-*Gap:* Requires: (a) message counter per conversation, (b) auto-expand receipts for messages 1-5, (c) preference prompt after message 5, (d) settings persistence for receipt detail level.
-*Priority:* **P0** — First-run experience is everything. This is how GregLite proves its value.
+The input field's bottom border glows with a gentle 1s cyan pulse when the Ghost is analyzing the user's input. This creates ambient awareness that the system is "observing" without demanding attention.
 
-**2.3 Ghost Layered Communication (Border Glow + Send Button States)**
+**GregLite Status:** PARTIAL. `globals.css` already defines the `ghost-pulse` keyframe animation (1s ease-in-out infinite, cycling between `--cyan` and `--cyan-bright`). The CSS class `.ghost-analyzing` exists. However, `ChatInterface.tsx`'s input field does not apply this class — the input has a static cyan bottom border. The Ghost context indicator exists (teal eye icon beside input) but is a static badge, not an ambient pulse.
 
-*Source:* DESIGN_SYSTEM.md §3 "Input Field", "Send Button", UI_UX_FINAL_DIRECTION.md Part 2
-*What it is:* Three-layer progressive communication: Layer 1 (ambient): input border glows cyan via ghost-pulse animation while typing. Layer 2 (action): send button cycles through states — normal → checking → approved/warning/veto. Layer 3 (detail): receipt footer after response.
-*GregLite status:* **PARTIALLY IMPLEMENTED.** The ghost-pulse CSS animation exists in globals.css. SendButton component exists with state types (normal/checking/approved/warning/veto). But the Ghost *checking* phase is cosmetic — ChatInterface.tsx sets `checking` state when sending but there's no actual Ghost pre-send validation. The input field doesn't apply `ghost-pulse` class during typing.
-*Gap:* (a) Wire ghost-pulse animation to input field focus state, (b) implement actual Ghost pre-send check that sets warning/veto states, (c) the Ghost approval flow is decorative, not functional.
-*File refs:* `globals.css` lines 126-137, `ChatInterface.tsx` SendButton usage, `components/chat/SendButton.tsx` (not read but referenced)
-*Priority:* **P0** — The Ghost is the brand. If it's decorative, the entire product identity is hollow.
+**Port Recommendation:** Wire `ghost-pulse` animation to input field when decision gate is analyzing (between user submit and gate resolution). This is a CSS-only change in `ChatInterface.tsx` — add the `.ghost-analyzing` class conditionally.
 
-### P1 — Should Have
+### Pattern 3: Memory Shimmer (Inline Context Reveals)
+**Source:** UI_UX_FINAL_DIRECTION.md Part 4, DESIGN_SYSTEM.md §3 (Memory Shimmer Effect)
+**Priority:** P2 — Nice to Have
 
-**2.4 Adaptive Override System (Once/Always/Never Pattern)**
+As the user types, relevant words shimmer with a 2s cyan text-shadow animation, indicating PARALLAX memory matches. Click to expand a memory card showing the source conversation and usage controls.
 
-*Source:* UI_UX_FINAL_DIRECTION.md Part 5 "Adaptive Override System", DESIGN_SYSTEM.md §5
-*What it is:* When Ghost raises a warning, users get three choices: "Just this once" (no learning), "Always allow [category]" (creates override policy), "Never warn about this" (broad category suppression). Ghost builds a personalized safety profile over time.
-*GregLite status:* **MISSING.** GregLite has a DecisionGateStore and GatePanel component (visible in ChatInterface.tsx imports), but this appears to be a different pattern — a blocking gate, not a three-choice adaptive system. No override policy management exists.
-*Gap:* Full implementation: override policy store, three-choice UI, settings panel for policy management.
-*Priority:* **P1** — Critical for daily driver UX. Without it, Ghost warnings become annoying rather than useful.
+**GregLite Status:** PARTIAL. `globals.css` defines the `shimmer` keyframe animation (2s text-shadow cycle) and the `.memory-match` class with hover underline. However, no component applies this class — there is no live memory matching during typing. KERNL integration exists for project-level memory but is not wired to real-time input analysis.
 
-**2.5 Memory Shimmer (Inline Context Reveals)**
+**Port Recommendation:** Defer to Phase 2. Requires real-time semantic search against KERNL on keystroke (debounced), which is architecturally expensive. The CSS foundation is already laid — implementation is the integration work.
 
-*Source:* DESIGN_SYSTEM.md §3 "Memory Shimmer Effect", UI_UX_FINAL_DIRECTION.md Part 4
-*What it is:* When Gregore's response draws on past conversation context, the relevant text shimmers with a cyan glow animation. Hovering shows a tooltip with the source memory. Clicking expands to show the full context chain. Creates visible "switching costs" — users see their accumulated intelligence.
-*GregLite status:* **CSS EXISTS, NOT WIRED.** globals.css has `.shimmer` and `.memory-match` classes with the correct animation (lines 139-161). But nothing in Message.tsx or ChatInterface.tsx applies these classes. No memory detection or context attribution exists in the rendering pipeline.
-*Gap:* (a) Backend: identify which response segments draw on prior context, (b) Frontend: wrap those segments in `.memory-match` spans, (c) tooltip/expand behavior on hover/click.
-*Priority:* **P1** — This is the visible proof of memory advantage. Makes the invisible visible.
+### Pattern 4: Orchestration Theater (First 3-5 Messages)
+**Source:** UI_UX_FINAL_DIRECTION.md Part 5, DESIGN_SYSTEM.md §5
+**Priority:** P1 — Should Have
 
-**2.6 Settings-Driven Complexity (User Chooses Detail Level)**
+The first 3-5 messages in a new conversation show full orchestration detail — Ghost checks, model routing, cost, confidence — to demonstrate what Gregore does differently. After message 5, prompt the user: "How much detail going forward?" with Full/Compact/Minimal/Hidden options.
 
-*Source:* UI_UX_FINAL_DIRECTION.md Part 5 "Settings-Driven Complexity", DESIGN_SYSTEM.md §5
-*What it is:* Users configure how much detail they see. Budget display: Full/Simple/Hidden. Receipts: Full/Compact/Minimal/Hidden. Ghost detail: Verbose/Normal/Quiet. This respects that a power user and a casual user need different information density.
-*GregLite status:* **PARTIALLY EXISTS.** ChatInterface.tsx imports `useDensityStore` with `cycleDensity` (Cmd+Shift+= / Cmd+Shift+-). This controls message spacing/padding but NOT receipt detail level or Ghost verbosity. SettingsPanel exists but its content wasn't read.
-*Gap:* Settings panel needs receipt detail level, Ghost verbosity, and budget display toggles. These settings need to propagate to Message.tsx rendering.
-*Priority:* **P1** — Power users will demand this within the first week of daily driving.
+**GregLite Status:** MISSING. No first-run orchestration experience. New conversations start with a plain chat interface. The onboarding flow (`components/onboarding/`) handles API key and KERNL setup but doesn't demonstrate the system's intelligence.
 
-### P2 — Nice to Have
+**Port Recommendation:** Implement as a message count check in `ChatInterface.tsx`. For the first 5 messages per new user (not per conversation), render expanded receipt footers automatically. After message 5, show a preference prompt. Store preference in ui-store alongside the existing `defaultCollapseToolBlocks`.
 
-**2.7 Inspector Drawer Tabs (Memory / Intent / Cost / State)**
+### Pattern 5: Adaptive Override System (Three-Choice Pattern)
+**Source:** UI_UX_FINAL_DIRECTION.md Part 3, DESIGN_SYSTEM.md §5
+**Priority:** P1 — Should Have
 
-*Source:* DESIGN_SYSTEM.md §3 "Inspector Drawer", UI_UX_FINAL_DIRECTION.md Part 1
-*What it is:* Cmd+I opens a right-side drawer (400px, glassmorphic backdrop blur) with four tabs showing deeper inspection of the current conversation: Memory (what context was used), Intent (query classification), Cost (token/dollar breakdown), State (homeostasis/hormones).
-*GregLite status:* **PARTIALLY EXISTS.** InspectorDrawer component exists (imported in ChatInterface.tsx, toggled by Cmd+I). Its internal structure wasn't read, but it exists as a component. Unknown whether it has the four-tab structure or the glassmorphic styling.
-*Gap:* Verify tab structure matches spec. Likely needs Memory and State tabs to be wired to actual data.
-*Priority:* **P2** — The drawer exists; it's about content completeness, not architecture.
+Every Ghost/Decision Gate warning presents three choices: (1) Just this once, (2) Always allow [category], (3) Never warn about this. Ghost learns from choices and creates override policies. Policies manageable in Settings > Ghost > Override Policies.
 
-**2.8 Grandma Test Compliance (No Jargon in Default View)**
+**GregLite Status:** PARTIAL. The decision gate (`lib/decision-gate/`) fires warnings and has a lock/dismiss mechanism. The `GatePanel.tsx` component shows the warning with a dismiss button. But there is no three-choice pattern — dismissal is binary (dismiss or address). No override policies exist. No policy learning. The gate doesn't differentiate between "just this once" and "always allow."
 
-*Source:* DESIGN_SYSTEM.md §1 "The Grandma Test", UI_UX_ARCHAEOLOGY.md
-*What it is:* Default view shows zero jargon. "AEGIS," "KERNL," "EoS" are power-user labels that violate the Grandma Test in default mode. A non-technical user opening GregLite would see "AEGIS: DEFAULT" and "KERNL: ● indexed" and have no idea what they mean.
-*GregLite status:* **VIOLATING.** StatusBar.tsx exposes AEGIS, KERNL, and EoS labels by default with no option to hide them. These are meaningful to David but would confuse any other user.
-*Gap:* Default density mode should hide power-user metrics. Show them in "power" or "developer" density mode only.
-*File refs:* `app/components/ui/StatusBar.tsx` — all labels visible by default
-*Priority:* **P2** — David is the only user right now, so this doesn't block daily driving. But it's technical debt against the Grandma Test principle.
+**Port Recommendation:** Extend `GatePanel.tsx` with three-choice UI. Add `lib/decision-gate/override-policies.ts` with policy storage (SQLite, not localStorage). Wire policy checks into `trigger-detector.ts` — if an active policy covers the detected pattern, auto-allow with transparency note in the receipt footer.
 
+### Pattern 6: Send Button State System
+**Source:** UI_UX_FINAL_DIRECTION.md Part 2.2, DESIGN_SYSTEM.md §3 (Send Button)
+**Priority:** P2 — Nice to Have
+
+Send button transforms through 5 states: normal (cyan), checking (animated loader), approved (green tint), warning (amber), veto (red). Each state has distinct visual treatment and ARIA labels.
+
+**GregLite Status:** PARTIAL. The input field has a send button that disables during streaming. The decision gate blocks submission with a 423 status. But the button doesn't visually transform — it's always the same cyan button or disabled. No checking/approved/warning/veto states.
+
+**Port Recommendation:** Create a `SendButton` component with the 5-state system. Wire to decision gate state: gate analyzing → checking, gate clear → approved (brief), gate warning → warning, gate veto → veto. Low effort, high visual impact.
+
+### Pattern 7: Inspector Drawer Tabs
+**Source:** UI_UX_FINAL_DIRECTION.md Part 1.2, DESIGN_SYSTEM.md §3
+**Priority:** P1 — Should Have
+
+Inspector drawer (Cmd+I) should contain tabs: Memory, Intent, Cost, State. Currently GregLite has an InspectorDrawer but with different tabs.
+
+**GregLite Status:** PARTIAL. `components/inspector/InspectorDrawer.tsx` exists with 6 tabs: Thread, Quality, KERNL, Jobs, EoS, Learning. These map roughly to Gregore's concept but with different organization. Missing: dedicated Memory tab (KERNL tab covers some), Intent tab (no equivalent), dedicated Cost tab (CostBreakdown modal exists separately).
+
+**Port Recommendation:** Reorganize inspector tabs to match Gregore's mental model while keeping GregLite-specific tabs. Proposed: Memory (KERNL search + Ghost context), Quality (EoS + thread quality), Cost (breakdown + trends), Jobs (active workers), Learning (insights). This is a tab rename + reorganization, not a rebuild.
 
 ---
 
 ## Section 3: Sacred Laws Audit
+Gregore defines 12 Sacred Laws in `docs/SACRED_LAWS.md`. Each law is immutable — "non-negotiable constraints that cannot be overridden by any subsystem, user preference, or optimization pressure." This section audits each law against GregLite's current enforcement.
 
-GregLite should enforce the Sacred Laws appropriate to a Claude-only, single-user app. Some laws are architecture-level (multi-model consensus) and don't apply. Others are fundamental to product identity.
+**Law 1: Append-Only Events** — *"No event, memory, or decision may be deleted or retroactively modified."*
+GregLite Status: ENFORCED. SQLite stores messages, session_costs, and decision gate events as INSERT-only rows. No DELETE or UPDATE operations exist in the chat or agent pipelines. The thread store appends messages; there is no edit-message or delete-message feature. Verdict: compliant.
 
-### Law #1: Append-Only Events
-*Gregore spec:* Everything is append-only. No deletion, only superseding. Ghost blocks deletion attempts.
-*GregLite enforcement:* **PARTIALLY ENFORCED.** The database layer (better-sqlite3) stores conversation history, and the Transit Map event system (26 event types, Sprint 11.2) captures append-only events. However, Message editing (Cmd+E) in ChatInterface.tsx calls `truncate-after` on the API — this *deletes* messages from the conversation, violating append-only. The edit should supersede, not truncate.
-*Should enforce?* **YES — P1.** Edit should mark old messages as superseded, not delete them. Transit Map already has the right pattern.
-*Implementation:* Change edit flow to soft-delete (mark superseded) rather than hard truncate. Show superseded messages as collapsed/dimmed if user wants history.
+**Law 2: Earned Autonomy** — *"Autonomous actions require demonstrated competence over time."*
+GregLite Status: NOT APPLICABLE (yet). GregLite has no autonomous action pipeline — all operations are user-initiated chat or explicit agent SDK tool calls. The decision gate is the closest enforcement mechanism (blocks risky patterns), but earned autonomy implies progressive trust-building over sessions. When agent capabilities expand (file writes, code execution without confirmation), this law becomes critical. Verdict: no violation, but no infrastructure either.
 
-### Law #2: Earned Autonomy by Blast Radius
-*Gregore spec:* Actions tiered 0-4 by potential impact. Higher blast radius requires more explicit permission.
-*GregLite enforcement:* **PARTIALLY ENFORCED.** The Decision Gate system (DecisionGateStore, GatePanel) implements a blocking gate for high-stakes actions. Agent SDK jobs appear to have validation states (SPAWNING → RUNNING → WORKING → VALIDATING). But there's no visible blast radius classification or tiered autonomy.
-*Should enforce?* **YES — P1.** As Agent SDK capabilities grow, blast radius tiers become critical. A job that reads files is tier 0; a job that modifies files is tier 2; a job that sends emails is tier 3.
-*Implementation:* Add blast_radius field to job definitions. Decision Gate triggers automatically at tier 2+.
+**Law 3: Reversibility** — *"Every action must have a defined undo path before execution."*
+GregLite Status: PARTIALLY ENFORCED. Agent SDK tool calls don't have explicit undo paths — if an agent writes a file, there's no automated rollback. The decision gate blocks certain actions but doesn't define undo for approved actions. Chat messages are append-only (Law 1), which is inherently non-destructive. Verdict: compliant for chat, gap for agent tool execution.
 
-### Law #3: Reversibility First
-*Gregore spec:* Every action should be undoable. Ghost vetoes irreversible actions above blast radius 2.
-*GregLite enforcement:* **WEAK.** Message edit/regenerate exist (Cmd+E, Cmd+R) but these are destructive rewrites, not reversible operations. No undo stack exists for Agent SDK job actions.
-*Should enforce?* **YES — P2.** Not blocking for daily driver, but needed before Agent SDK does anything consequential.
+**Law 4: Quality Gates** — *"No output reaches the user without validation."*
+GregLite Status: ENFORCED. The decision gate (`lib/decision-gate/`) validates every response against Sacred Principle triggers. The EoS (End-of-Session) quality scoring evaluates thread quality. Sprint 15.0 tightened the gate's scan window to reduce false positives while maintaining coverage. Verdict: compliant. Enhancement opportunity: add Greg Gate confidence modes (certain/likely/uncertain/speculative) to message rendering.
 
-### Law #4: Quality Gates (V0-V5 Verification)
-*Gregore spec:* Claims progress through verification levels. Cannot skip levels.
-*GregLite enforcement:* **NOT APPLICABLE in current form.** GregLite doesn't maintain a claims ledger. The Provenance Ledger (Engine H) is a multi-model concept. However, the *principle* of epistemic honesty maps to Greg Gate behavior — GregLite should communicate confidence levels.
-*Should enforce?* **SPIRIT ONLY — P2.** Don't build V0-V5 infrastructure, but do communicate when the model is confident vs uncertain. This is a prompt engineering + UI problem, not an architecture problem.
+**Law 5: Protect Deep Work** — *"Never interrupt focused work without critical cause."*
+GregLite Status: PARTIALLY ENFORCED. The decision gate only fires on genuine trigger phrases (post Sprint 15.0 fix), so it won't interrupt with false positives anymore. However, GregLite has no awareness of user focus state — it doesn't track whether the user is in a deep coding session vs. casual chat. Notifications, status updates, and KERNL polling happen regardless of context. Verdict: no active violation, but no proactive protection either.
 
-### Law #5: Protect Deep Work
-*Gregore spec:* BUILD mode is sacred. Interrupts have cognitive token cost.
-*GregLite enforcement:* **PARTIALLY ENFORCED.** AEGIS profile system exists (shown in StatusBar). The profile names suggest workload-aware behavior. But there's no visible interrupt-cost mechanism.
-*Should enforce?* **YES — P1.** David's daily driver needs focus protection. Notifications, Ghost warnings, and morning briefings should respect AEGIS mode.
+**Law 6: Transparency** — *"Every decision, cost, and action must be inspectable."*
+GregLite Status: PARTIALLY ENFORCED. Sprint 15.0 added per-message cost tracking. The Transit Map (Z1/Z2/Z3) provides session-level transparency. The InspectorDrawer exposes thread quality, KERNL state, and job status. Gap: no per-message orchestration receipt (see Pattern 1 above). Users cannot inspect why a particular response was shaped the way it was. Verdict: foundation solid, needs the receipt footer to fully comply.
 
-### Law #6: Transparency
-*Gregore spec:* Every action includes What, Why, Who, When, Evidence.
-*GregLite enforcement:* **WEAK.** Message metadata shows model, tokens, cost, latency (the What and When). But no Why (model selection reasoning), no Evidence (confidence basis). This is exactly what the Receipt Footer would solve.
-*Should enforce?* **YES — P0.** Receipt Footer IS Law #6 in practice.
+**Law 7: Small Context Windows** — *"Prefer many small, focused interactions over monolithic contexts."*
+GregLite Status: ENFORCED. Multi-tab threading in ChatInterface.tsx encourages focused conversations per topic. The KERNL integration provides cross-session memory so context doesn't need to be crammed into one thread. Agent SDK calls use separate message arrays. Verdict: compliant.
 
-### Law #7: Small Context Windows
-*Gregore spec:* Prefer focused context. Working set 7±2 items.
-*GregLite enforcement:* **NOT EXPLICITLY ENFORCED.** No visible working set limit. Prompt caching (Sprint 12.0) helps with cost but doesn't enforce cognitive focus.
-*Should enforce?* **SPIRIT ONLY — P2.** Don't build a working set limiter, but do compress conversation history aggressively before sending to Claude.
+**Law 8: Claims Age** — *"Every factual claim must carry its timestamp and degrade in confidence over time."*
+GregLite Status: NOT ENFORCED. Messages have timestamps but claims within messages are not individually timestamped or confidence-scored. There is no claim extraction, aging, or degradation mechanism. This is architecturally expensive (requires NLP claim extraction + storage + decay function). Verdict: gap, but low priority for GregLite's scope as a Claude-only interface.
 
-### Law #8: Claims Age
-*Gregore spec:* Old claims need re-verification. Exponential confidence decay.
-*GregLite enforcement:* **NOT ENFORCED.** No staleness tracking.
-*Should enforce?* **NO for now.** This is a multi-model feature. Single-model Claude doesn't maintain persistent claims.
+**Law 9: Outcomes Win** — *"Judge by results, not by process elegance."*
+GregLite Status: ENFORCED (by design philosophy). The EoS scoring evaluates actual response quality. PROJECT_DNA.yaml's "Option B Perfection" philosophy prioritizes outcomes. Sprint protocols measure success by verification (tsc clean, tests pass) not by code style. Verdict: culturally compliant, no specific enforcement mechanism needed.
 
-### Law #9: Outcomes Win Arguments
-*Gregore spec:* Results over rhetoric.
-*GregLite enforcement:* **CULTURAL, not architectural.** This is a prompt engineering principle, not a UI feature.
-*Should enforce?* **YES — via system prompt.** GregLite's system prompt should instruct Claude to prefer evidence over opinion.
+**Law 10: Attention is Scarce** — *"Treat every notification, badge, popup, and status update as a withdrawal from a finite attention account."*
+GregLite Status: PARTIALLY ENFORCED. The UI defaults to collapsed tool blocks (Sprint 15.0), Transit Map defaults to Z1 (minimal), and the StatusBar is compact. However, there's no attention budgeting system — no tracking of how many interruptions the user has received, no throttling of status updates during focused work. The decision gate fires every time a trigger phrase appears, regardless of attention context. Verdict: good defaults, no active management.
 
-### Law #10: Attention is Scarce Capital
-*Gregore spec:* Cognitive token budget. Every interrupt has a cost. Budget enforces prioritization.
-*GregLite enforcement:* **PARTIALLY ENFORCED.** Morning Briefing exists (one-per-day check in ChatInterface.tsx). StatusBar shows cost tracking. But no interrupt budget or notification throttling.
-*Should enforce?* **YES — P1.** As Ghost and Agent SDK generate more events, throttling becomes essential. Don't let the system become noisy.
+**Law 11: Evidence Required** — *"No claim, recommendation, or action without supporting evidence."*
+GregLite Status: ENFORCED. The decision gate requires specific trigger phrases (evidence-based detection, not heuristic). Agent SDK responses include token counts and cost as evidence. EoS scoring provides quantitative quality assessment. Verdict: compliant.
 
-### Law #11: Evidence Required
-*Gregore spec:* Claims need backing.
-*GregLite enforcement:* **NOT ENFORCED.** No evidence chain tracking.
-*Should enforce?* **SPIRIT ONLY — P2.** Prompt engineering: instruct Claude to cite sources and qualify claims.
+**Law 12: Ghost Veto** — *"The Ghost may veto any action that violates Sacred Laws, regardless of user intent or system pressure."*
+GregLite Status: PARTIALLY ENFORCED. The decision gate can block submissions (423 status), which is functionally a veto. However, the current implementation is a one-dimensional trigger detector — it doesn't have the Ghost's broader awareness of Sacred Law compliance. The gate checks for debt-inducing language but doesn't check for violations of Law 1 (append-only), Law 3 (reversibility), or Law 5 (deep work protection). Verdict: mechanism exists, scope needs expansion.
 
-### Law #12: Ghost Veto
-*Gregore spec:* Ghost observer can halt any action. Absolute authority (only user can override).
-*GregLite enforcement:* **ARCHITECTURE EXISTS, NOT FUNCTIONAL.** GhostStore exists (imported in ChatInterface.tsx). Ghost context is tracked per-thread. But the veto mechanism isn't wired — the Ghost doesn't actually block sends. SendButton state goes to 'checking' cosmetically but no real validation occurs.
-*Should enforce?* **YES — P0.** The Ghost is the product. If it can't veto, it's set dressing.
-
+**Summary:** Of 12 Sacred Laws, GregLite fully enforces 5 (Laws 1, 4, 7, 9, 11), partially enforces 5 (Laws 3, 5, 6, 10, 12), has no infrastructure for 1 (Law 2), and 1 is a gap with low priority (Law 8). The partially-enforced laws share a common theme: GregLite has the mechanism but not the awareness. The decision gate blocks bad patterns but doesn't proactively protect good ones.
 
 ---
 
 ## Section 4: Design Token Gaps
 
-Line-by-line comparison of Gregore DESIGN_SYSTEM.md §2 vs GregLite globals.css.
+This section compares GregLite's `globals.css` (450 lines) against Gregore's `DESIGN_SYSTEM.md` token definitions. The comparison covers colors, typography, spacing, and component-specific tokens.
 
-### Colors — Primary Cyan Palette
-| Token | Gregore Spec | GregLite globals.css | Status |
-|-------|-------------|---------------------|--------|
-| Primary Cyan | `#00D4E8` | `--cyan: #00d4e8` | ✅ MATCH |
-| Cyan Dark | `#0891B2` | `--cyan-dark: #0891b2` | ✅ MATCH |
-| Cyan Light | `#67E8F9` | `--cyan-light: #67e8f9` | ✅ MATCH |
-| Cyan Bright | `#22D3EE` | `--cyan-bright: #22d3ee` | ✅ MATCH |
+### Colors
 
-### Colors — Dark Mode Base
-| Token | Gregore Spec | GregLite globals.css | Status |
-|-------|-------------|---------------------|--------|
-| Deep Space | `#0A0E14` | `--deep-space: #0a0e14` | ✅ MATCH |
-| Elevated | `#1A1E24` | `--elevated: #1a1e24` | ✅ MATCH |
-| Surface | `#242931` | `--surface: #242931` | ✅ MATCH |
-| Ice White | `#E8F4F8` | `--ice-white: #e8f4f8` | ✅ MATCH |
-| Frost | `#B8C5D0` | `--frost: #b8c5d0` | ✅ MATCH |
-| Mist | `#8895A5` | `--mist: #8895a5` | ✅ MATCH |
-| Shadow | `#4A5560` | `--shadow: #4a5560` | ✅ MATCH |
+Gregore defines a layered color system: Background layers (bg-primary #0A0A0F, bg-secondary #12121A, bg-tertiary #1A1A25, bg-elevated #22222F), Cyan accent spectrum (primary #00D4FF, bright #33E0FF, muted #00A3CC, ghost #00D4FF15), Status colors (success green, warning amber, error red, info blue), and Glass/overlay tokens (glass-bg rgba(18,18,26,0.85), glass-border rgba(0,212,255,0.1)).
 
-### Colors — Status
-| Token | Gregore Spec | GregLite globals.css | Status |
-|-------|-------------|---------------------|--------|
-| Success | `#22C55E` | `--success: #22c55e` | ✅ MATCH |
-| Warning | `#F59E0B` | `--warning: #f59e0b` | ✅ MATCH |
-| Info | `#3B82F6` | `--info: #3b82f6` | ✅ MATCH |
-| Error | `#EF4444` | `--error: #ef4444` | ✅ MATCH |
+GregLite's `globals.css` maps closely but not identically. `--background` uses hsl(0 0% 3.9%) which converts to roughly #0A0A0A — close to Gregore's #0A0A0F but slightly more neutral (pure gray vs. the spec's slight blue tint). The cyan values (`--cyan: #00D4FF`, `--cyan-bright: #33E0FF`) match exactly. Glass effects exist but use different opacity values than specified.
 
-### Colors — Ghost States
-| Token | Gregore Spec | GregLite globals.css | Status |
-|-------|-------------|---------------------|--------|
-| Ghost Ambient | `#00D4E8` (cyan) | `--ghost-ambient: var(--cyan)` | ✅ MATCH |
-| Ghost Analyzing | `#22D3EE` (cyan bright) | `--ghost-analyzing: var(--cyan-bright)` | ✅ MATCH |
-| Ghost Approved | `rgba(34, 197, 94, 0.3)` | `--ghost-approved: rgba(34, 197, 94, 0.3)` | ✅ MATCH |
-| Ghost Warning | amber | `--ghost-warning: var(--warning)` | ✅ MATCH |
-| Ghost Veto | red | `--ghost-veto: var(--error)` | ✅ MATCH |
+**Gaps identified:**
+The bg-tertiary and bg-elevated layers are not explicitly tokenized in globals.css — GregLite uses Tailwind's utility classes with hardcoded values instead of CSS custom properties. This means changing the elevated background requires finding every `bg-[#22222F]` usage rather than updating one token. The Gregore spec calls for 4 distinct background layers; GregLite effectively uses 2 (background + card).
+
+Status colors exist but aren't tokenized as `--success`, `--warning`, `--error`, `--info`. They're applied directly via Tailwind classes. This is fine for current scale but will create inconsistency as the UI grows.
+
+The ghost transparency token (`#00D4FF15` — cyan at 8% opacity) is used in globals.css for `.ghost-analyzing` but isn't a standalone custom property. Recommend extracting to `--cyan-ghost`.
 
 ### Typography
-| Token | Gregore Spec | GregLite globals.css | Status |
-|-------|-------------|---------------------|--------|
-| Body font | Inter, system-ui, sans-serif | `--font-sans: 'Inter', system-ui, ...sans-serif` | ✅ MATCH |
-| Code font | JetBrains Mono, Fira Code, monospace | `--font-mono: 'JetBrains Mono', 'Fira Code', monospace` | ✅ MATCH |
-| Display font | Space Grotesk, Inter, sans-serif | `--font-display: 'Space Grotesk', 'Inter', sans-serif` | ✅ MATCH |
-| Body size | 14px | `font-size: 14px` | ✅ MATCH |
-| Line height | 1.6 | `line-height: 1.6` | ✅ MATCH |
-| Heading weight | 600 | `font-weight: 600` | ✅ MATCH |
-| Font features | rlig 1, calt 1 | `font-feature-settings: 'rlig' 1, 'calt' 1` | ✅ MATCH |
 
-### Colors — MISSING from GregLite
-| Token | Gregore Spec | GregLite Status |
-|-------|-------------|-----------------|
-| User message background | `rgba(0, 212, 232, 0.1)` | ❌ MISSING — Message.tsx uses cyan left border but no background tint |
-| User message border | Left border 3px solid cyan | ⚠️ PARTIAL — Uses `2px solid var(--cyan)` (2px not 3px) |
-| AI response background | `rgba(26, 30, 36, 0.6)` | ❌ MISSING — No background on AI messages |
-| Model tier badge colors | purple-500/20, blue-500/20, green-500/20, orange-500/20 | ❌ MISSING — No model selector exists (Claude-only, but tier badges could apply to Claude model variants) |
+Gregore specifies: Font family `'Inter', system-ui, -apple-system, sans-serif`. Size scale: xs (11px), sm (12px), base (13px), lg (14px), xl (16px). Code font: `'JetBrains Mono', 'Fira Code', monospace` at 12px.
 
-### Spacing & Sizing — MISSING
-| Token | Gregore Spec | GregLite Status |
-|-------|-------------|-----------------|
-| Message max-width | 80% | ❌ MISSING — Messages appear full-width (max-w-4xl on input container but not on messages) |
-| Message padding | 16px | ⚠️ PARTIAL — Uses CSS custom properties `--msg-padding: 8px 0` (8px not 16px) |
-| Message border radius | 8px | ❌ MISSING — No border radius on messages |
-| Inspector drawer width | 400px | ❓ UNKNOWN — InspectorDrawer exists but wasn't read |
-| Sidebar width | 280px | ❓ UNKNOWN — ChatHistoryPanel exists but wasn't read |
-| Touch target minimum | 44x44px | ❓ UNKNOWN — Not audited at component level |
+GregLite uses `var(--font-geist-sans)` and `var(--font-geist-mono)` from Next.js's Geist font package. This is a deliberate divergence — Geist is Next.js-native and renders well in the Tauri webview. The font sizes are close but not identical: GregLite uses Tailwind's `text-xs` (12px), `text-sm` (14px), `text-base` (16px) which are larger than Gregore's tighter scale.
 
-### Light Mode
-| Token | Gregore Spec | GregLite Status |
-|-------|-------------|-----------------|
-| Light mode support | Full override palette | ✅ EXISTS — `[data-theme="light"]` block in globals.css with complete overrides |
+**Gap:** GregLite's typography is 1-2px larger at every step. This is fine for readability but means Gregore's dense information layouts (receipt footers, inspector panels) will feel slightly too large if ported without size adjustment. Recommend defining a GregLite-specific size scale that splits the difference: xs (11px), sm (13px), base (14px) for information-dense components.
 
-### Summary
-Core design tokens (colors, fonts) are **100% aligned** — GregLite clearly ported these from Gregore's spec. The gaps are in *component-level application* of those tokens: message styling doesn't match spec (missing backgrounds, incorrect border width, no border radius, no max-width), and message padding is half the specified value.
+### Spacing
 
+Gregore defines a 4px base unit with specific spacing tokens: message gap (12px), section gap (24px), component padding (16px), inner padding (8px). GregLite uses Tailwind's default spacing scale (4px base: space-1=4px, space-2=8px, space-3=12px, space-4=16px) which is mathematically equivalent but not semantically named. There are no `--message-gap` or `--section-gap` tokens.
+
+**Gap:** Semantic spacing tokens would improve consistency. When Pattern 1 (Receipt Footer) and Pattern 7 (Inspector Tabs) are ported, having `--message-gap` and `--component-padding` as named tokens prevents each component from independently choosing spacing values.
 
 ---
 
 ## Section 5: Animation Gaps
 
-Comparison of Gregore DESIGN_SYSTEM.md §4 (Animation System) with GregLite's actual implementation.
+Gregore's DESIGN_SYSTEM.md specifies 6 animation keyframes and their usage contexts. GregLite's globals.css implements some of these.
 
-### Ghost Pulse (Input Border Glow)
-*Gregore spec:* 1s ease-in-out infinite cycle between cyan (opacity 0.6) and cyan-bright (opacity 1.0) on the input border while Ghost is analyzing.
-*GregLite:* **CSS EXISTS.** globals.css defines `@keyframes ghost-pulse` and `.ghost-pulse` class (lines 126-137) with matching spec. However, the animation is never applied. InputField component (not read, but referenced in ChatInterface.tsx) doesn't appear to receive a `ghost-pulse` class during the checking phase. ChatInterface.tsx sets `sendButtonState` to 'checking' but doesn't set an input field class.
-*Gap:* Wire `.ghost-pulse` class to input container when `sendButtonState === 'checking'`.
-*Priority:* P0 — This is Ghost Layer 1. Three lines of code to activate.
+### ghost-pulse
+**Spec:** 1s ease-in-out infinite. Cycles `box-shadow` between `--cyan` and `--cyan-bright`. Applied to input field border when Ghost is analyzing.
+**GregLite:** IMPLEMENTED in globals.css as `@keyframes ghost-pulse`. The keyframe definition matches the spec exactly. The `.ghost-analyzing` CSS class exists. GAP: Not wired to any component — ChatInterface.tsx's input field never applies this class. This is a pure wiring gap, not an implementation gap.
 
-### Memory Shimmer (Text Glow on Context-Aware Content)
-*Gregore spec:* 2s ease-in-out infinite text-shadow cycle between 2px and 8px cyan glow. Underline with 1px cyan line. Hover makes underline opaque. Cursor: pointer.
-*GregLite:* **CSS EXISTS.** globals.css defines `@keyframes shimmer`, `.shimmer`, and `.memory-match` classes (lines 139-161) with matching spec including the `::after` underline pseudo-element.
-*Gap:* No code in Message.tsx applies these classes. Need backend memory attribution + frontend span wrapping.
-*Priority:* P1 — Requires backend work to detect memory-influenced content.
+### shimmer
+**Spec:** 2s ease-in-out infinite. Cycles `text-shadow` with cyan glow on matched memory terms.
+**GregLite:** IMPLEMENTED in globals.css as `@keyframes shimmer`. The `.memory-match` class exists with hover underline effect. GAP: No component applies this class. Memory matching during typing is not implemented (see Pattern 3 above). The animation is ready; the feature is not.
 
-### Breathing Glow (Logo Animation)
-*Gregore spec:* 3s ease-in-out infinite cycle between opacity 0.3/scale(1) and opacity 0.7/scale(1.05). Applied to logo container.
-*GregLite:* **CSS EXISTS.** globals.css defines `@keyframes breathe` and `.breathe` class (lines 163-177).
-*Gap:* Unknown if Header component applies `.breathe` to logo. Header wasn't read but is imported in ChatInterface.tsx.
-*Priority:* P2 — Ambient polish.
+### breathe
+**Spec:** 4s ease-in-out infinite. Subtle opacity cycle (0.7 to 1.0) for ambient "alive" feeling on Ghost indicators.
+**GregLite:** IMPLEMENTED in globals.css as `@keyframes breathe`. Applied to `.ghost-context-indicator` which is the teal eye icon beside the input field. STATUS: Working as specified. No gap.
 
-### Drawer Slide (Framer Motion Spring)
-*Gregore spec:* Spring animation with stiffness: 300, damping: 30 for drawer entry. Duration 0.3s for exit. x: '100%' → x: 0 for right drawer.
-*GregLite:* **LIKELY EXISTS.** InspectorDrawer, ChatHistoryPanel, SettingsPanel are all imported. GregLite uses framer-motion (in node_modules). Actual animation params weren't verified.
-*Gap:* Verify spring parameters match spec (stiffness: 300, damping: 30).
-*Priority:* P2 — Likely already correct; verify only.
+### drawer-slide
+**Spec:** 300ms cubic-bezier(0.4, 0, 0.2, 1) for inspector drawer open/close.
+**GregLite:** IMPLEMENTED via CSS transitions in InspectorDrawer.tsx. Uses `transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1)` on the drawer container. STATUS: Working as specified. No gap.
 
-### Micro-interactions (Button Press, Card Lift)
-*Gregore spec:* `whileHover: { scale: 1.05 }`, `whileTap: { scale: 0.95 }` for buttons. Card lift: `whileHover: { y: -4, boxShadow: '...' }`.
-*GregLite:* **UNKNOWN.** Buttons use CSS `transition-colors` classes (visible in StatusBar.tsx, Message.tsx) but no framer-motion scale effects visible in the audited files.
-*Gap:* Add whileHover/whileTap to primary interactive elements. Low effort, high polish.
-*Priority:* P2 — Polish pass.
+### fade-in
+**Spec:** 200ms ease-out for new message appearance.
+**GregLite:** PARTIALLY IMPLEMENTED. Messages use a simple opacity transition but it's applied via Tailwind's `animate-in` utility rather than a custom keyframe. The timing feels right but isn't precisely the 200ms ease-out specified.
 
-### Receipt Expand Animation
-*Gregore spec:* Spring animation (stiffness: 300, damping: 30) for collapsed → expanded receipt transition.
-*GregLite:* **NOT APPLICABLE YET.** No receipt component exists.
-*Gap:* Will need to be built as part of Receipt Footer implementation (P0).
-*Priority:* Ships with Receipt Footer.
+### receipt-expand
+**Spec:** 150ms ease-out for receipt footer expand/collapse.
+**GregLite:** NOT IMPLEMENTED. Receipt footer doesn't exist yet (Pattern 1). When ported, use this specific timing. The CollapsibleBlock component (Sprint 15.0) uses a similar expand/collapse pattern and could serve as the animation foundation.
 
-### Transit Map Animations
-*GregLite has these that Gregore doesn't:* `station-pulse`, `slide-in-right`, `landmark-fade-in`, `transit-crossfade`, `subway-station-hover`, `war-room-pulse`. These are GregLite originals from the Transit Map system (Sprint 13.0). They should be PRESERVED — they're GregLite's own innovation.
-
-### Reduced Motion
-*Gregore spec:* Full `prefers-reduced-motion` media query disabling all animations, preserving shimmer as underline.
-*GregLite:* **EXISTS AND MATCHES.** globals.css lines 183-197 implement the exact spec including the `.shimmer`/`.memory-match` underline fallback.
-*Gap:* None.
-
-### Summary
-The animation *definitions* are 100% ported in CSS. The gap is *activation* — ghost-pulse and shimmer are defined but never applied to DOM elements. This is a wiring problem, not a design problem. Fixing ghost-pulse is trivial (P0). Fixing shimmer requires backend memory attribution (P1).
-
+**Summary:** Of 6 specified animations, 2 are fully working (breathe, drawer-slide), 2 are defined but unwired (ghost-pulse, shimmer), 1 is approximately implemented (fade-in), and 1 is missing because its parent feature doesn't exist yet (receipt-expand). The animation foundation is solid — the gaps are in feature wiring, not in CSS capability.
 
 ---
 
 ## Section 6: Skip List — What NOT to Port
 
-### 6.1 Multi-Model Consensus Engine (Engines A, B, C, E, G, I)
-*What it is:* ORACLE routing (Engine A), Global Workspace tribunal deliberation (Engine B), Phase Detector (Engine C), Anti-Gravity novelty injection (Engine E), Genius Protection outlier preservation (Engine G), Cognitive Metabolism optimization (Engine I).
-*Why skip:* GregLite is Claude-only by design (PROJECT_DNA.yaml: "Claude Agent SDK replaces all Cowork references"). There's no model routing decision when there's one model. The entire multi-model orchestration stack — which is ~60% of Gregore's engine complexity — is irrelevant. The Tribunal, Workspace, Phase Detection, and Genius Protection concepts only make sense with multiple models producing competing outputs.
-*Future note:* These engines are the core of Gregore Full (the multi-model product). They should NOT be ported to GregLite even partially. The product funnel is: GregLite validates UX → Gregore Full adds multi-model intelligence.
+Certain Gregore concepts are either irrelevant to GregLite's Claude-only architecture, explicitly rejected during design archaeology, or too expensive for the current phase. These should be consciously excluded.
 
-### 6.2 Three-Pane Triptych Layout
-*What it is:* The deleted Cognitive Cockpit with persistent left (Context) and right (Intent) panels flanking the chat.
-*Why skip:* Already rejected and deleted in Gregore itself (January 2, 2026, git commit 077f608). 2,700 lines deleted. Violated Grandma Test. GregLite correctly uses single surface + drawer architecture.
-*Evidence:* UI_UX_ARCHAEOLOGY.md documents the full post-mortem.
+**Multi-Model Consensus / Council Synthesis:** Gregore's core differentiator is multi-LLM orchestration (Gemini + GPT-4o + Claude routing via Engine-A Active Inference Router). GregLite is deliberately Claude-only. The entire consensus mechanism, model routing logic, confidence arbitration, and council synthesis methodology does not apply. Do not port any Engine-A, PARALLAX cross-model verification, or Oracle prediction market concepts.
 
-### 6.3 Biological Metaphors
-*What it is:* "Membrane" (interface boundary), "organs" (system components), "seam" (complexity dial), "Cognitive Cockpit" (triptych name).
-*Why skip:* Explicitly killed in Gregore. User feedback: "can't lean too much into the biology themology...would be cringe in the actual product." The Freelancer Test forbids terminology a client would find weird.
-*GregLite status:* Already clean. No biological metaphors found in audited files.
+**Triptych Layout / Cognitive Cockpit:** UI_UX_ARCHAEOLOGY.md documents the explicit death of the three-panel "Cognitive Cockpit" layout (killed January 2, 2026). The replacement is the single-surface + drawer architecture that GregLite already implements. Do not resurrect panel-based layouts. The archaeology doc exists specifically to prevent this regression.
 
-### 6.4 Homeostasis / Digital Endocrine System
-*What it is:* Hormone-based state machine (cortisol, dopamine, melatonin, serotonin, oxytocin) that modulates model behavior through prompt injection.
-*Why skip:* Homeostasis was designed for multi-model orchestration where different behavioral profiles drive different routing and temperature decisions. With a single Claude model, the complexity of a five-hormone simulation is unjustified. GregLite already has AEGIS profiles which serve a similar purpose at the right abstraction level.
-*Preserve the spirit:* AEGIS profiles ARE the GregLite version of Homeostasis. Don't build a hormone simulator.
+**Biological Metaphors in UI:** The council synthesis and early design docs use terms like "membrane," "organs," "seam," "cognitive metabolism." These were explicitly purged from user-facing UI language. GregLite should never surface terms like "Engine-H Cognitive Metabolism" or "Stigmergic Field" to users. These are internal architecture names, not UI concepts. The Grandma Test applies.
 
-### 6.5 PARALLAX / Stigmergic Memory Field (Engine D)
-*What it is:* Semantic embedding-based memory where past conversations exert "gravitational pull" on present queries through vector similarity.
-*Why skip:* GregLite already has a vector memory system (lib/vector/, lib/embeddings/, sqlite-vec in node_modules). The PARALLAX *concept* is already implemented — it just isn't called PARALLAX. Don't rebrand existing functionality.
-*GregLite equivalent:* lib/vector/ + lib/embeddings/ + KERNL integration.
+**GLACIER Long-Term Memory System:** Gregore's GLACIER system provides cross-session episodic memory with decay functions, importance scoring, and consolidation. GregLite uses KERNL for project-level memory, which is a simpler but adequate solution for its scope. Porting GLACIER would require a separate memory database, background consolidation jobs, and decay algorithms — significant infrastructure for marginal user benefit in a Claude-only context.
 
-### 6.6 GLACIER Long-Term Memory Tiers (T0-T4)
-*What it is:* Five-tier memory storage with compression, promotion logic, and configurable retention.
-*Why skip:* Over-engineered for single-user. GregLite's KERNL + SQLite approach with vector search is sufficient. The T0-T4 tier system adds complexity without proportional value when one user generates one conversation stream.
-*Preserve the spirit:* KERNL's session management + vector search IS the GregLite memory system.
+**Homeostasis / Self-Model / World-Model Systems:** These are Gregore's self-regulation systems — monitoring cognitive load, maintaining system health, modeling the user's mental state, and modeling the external environment. They require persistent state across sessions, background monitoring processes, and complex inference. GregLite's StatusBar health indicators (AEGIS, KERNL status) provide a minimal version. Full homeostasis is Phase 3+ territory.
 
-### 6.7 LIGHTHOUSE Model Benchmarking
-*What it is:* Tracks quality, speed, cost, and domain competence across multiple models to inform routing.
-*Why skip:* One model. Nothing to benchmark against. GregLite already tracks cost per query (StatusBar, CostBreakdown component).
+**ENGINE-E Anti-Gravity (Novelty Injection):** Deliberately introduces unexpected perspectives to prevent cognitive ruts. Interesting concept but requires calibration against user personality profiles and risks being annoying in a coding-focused tool. Skip entirely for GregLite.
 
-### 6.8 World Model Claims Ledger (V0-V5)
-*What it is:* Formal epistemological tracking with verification levels, contradiction quarantine, and causal graphs.
-*Why skip:* Academic-grade knowledge management for a personal AI assistant is over-engineering. The Greg Gate *principle* (be honest about confidence) is valuable, but the V0-V5 infrastructure is not.
+**ENGINE-I Cognitive Metabolism (Resource Optimization):** Manages token budgets, context window allocation, and computational resource distribution across models. Irrelevant in single-model Claude-only context where the Agent SDK handles its own token management.
 
-### 6.9 Notification Center / Badge System
-*What it is:* Never built in Gregore either — explicitly rejected in UI_UX_ARCHAEOLOGY.md.
-*Why skip:* "Creates anxiety ('did I miss something?'). Goes against attention economy principles. GREGORE should be calm, not demanding."
-
-### 6.10 Gamification
-*What it is:* Badges, achievements, streaks. Also never built — explicitly rejected.
-*Why skip:* "Wrong incentive structure. This isn't Duolingo."
-
+**Gamification of Any Kind:** PRODUCT_VISION.md and the council synthesis explicitly reject gamification. No badges, streaks, achievements, levels, or progress bars that frame usage as a game. "This isn't Duolingo." Quality scoring is internal and professional, not gamified.
 
 ---
 
 ## Section 7: Recommended Sprint Sequence
 
-Based on this audit, four follow-up sprints would close the most impactful gaps, ordered by value to the daily driver experience.
+Based on the gaps identified above, here are 3 follow-up sprints ordered by impact and dependency chain.
 
-### Sprint 15.2 — Ghost Activation + Receipt Footer
-**Theme:** Make the Ghost real
-**Estimated effort:** 1-2 sessions
-**Impact:** Transforms GregLite from "chat wrapper" to "cognitive operating system"
+### Sprint 16.0 — Receipt Footer + Voice System
+**Scope:** Pattern 1 (Receipt Footer) + Brand Voice foundation
+**Why First:** The receipt footer is the single highest-impact missing pattern (P0). It makes every response visibly richer and enforces Sacred Law 6 (Transparency) at the message level. Combining it with a voice system (`lib/voice/`) establishes consistent copy patterns that all subsequent UI work will reference.
 
-Tasks:
-1. Wire `.ghost-pulse` animation to input field during checking state (trivial — CSS class toggle)
-2. Implement actual Ghost pre-send validation (call a lightweight check endpoint before sending; the Ghost store infrastructure already exists)
-3. Build CollapsibleReceipt component: collapsed one-liner ("✓ Validated · $0.002 · 234ms"), expandable to show model, Ghost checks, confidence
-4. Implement Orchestration Theater: auto-expand receipts for first 5 messages per conversation, then prompt for preference
-5. Fix message styling to match Gregore spec: add `rgba(0, 212, 232, 0.1)` background on user messages, `rgba(26, 30, 36, 0.6)` on AI messages, 3px left border (currently 2px), 8px border-radius, 16px padding (currently 8px), 80% max-width
+**Tasks:**
+Create `lib/voice/copy-templates.ts` with standardized message copy (error messages, gate warnings, status text, receipt labels) following the voice guide from Section 1. Implement `components/chat/ReceiptFooter.tsx` as a collapsed-by-default component under each assistant message showing model, cost, tokens, and latency. Wire to session_costs data from Sprint 15.0. Add receipt display preference to ui-store (full/compact/minimal/hidden). Implement Orchestration Theater (Pattern 4) as a first-5-messages auto-expand behavior. Define the `receipt-expand` animation (150ms ease-out) in globals.css.
 
-Dependencies: None. All infrastructure exists.
-Sacred Laws activated: #6 (Transparency), #12 (Ghost Veto)
+**Estimated Effort:** 1 sprint (5-8 tasks)
 
-### Sprint 15.3 — Adaptive Override + Voice Guide
-**Theme:** Ghost learns; voice solidifies
-**Estimated effort:** 1-2 sessions
-**Impact:** Ghost warnings become useful instead of annoying; brand voice is documented
+### Sprint 17.0 — Decision Gate Enhancement
+**Scope:** Pattern 5 (Adaptive Override System) + Send Button States (Pattern 6) + Ghost Pulse wiring (Pattern 2)
+**Why Second:** These three patterns share a dependency on the decision gate pipeline. The override system makes the gate smarter (learning from user choices), the send button makes gate state visible (5-state system), and ghost-pulse makes gate analysis ambient (input border animation). Together they transform the decision gate from a blunt blocker into an intelligent, visible quality system.
 
-Tasks:
-1. Replace Decision Gate blocking pattern with Adaptive Override three-choice pattern: "Just this once" / "Always allow [category]" / "Never warn about this"
-2. Build override policy store (persisted to KERNL)
-3. Add Settings → Ghost → Override Policies management panel
-4. Create VOICE_GUIDE.md reference document from Section 1 of this audit
-5. Audit all UI copy against voice guide (StatusBar, Message, empty states, error states)
-6. Fix Law #1 violation: change message edit from truncate to soft-delete (mark superseded)
+**Tasks:**
+Extend GatePanel.tsx with three-choice UI (just once / always allow / never warn). Create `lib/decision-gate/override-policies.ts` with SQLite-backed policy storage. Wire policy checks into trigger-detector.ts. Create `components/chat/SendButton.tsx` with 5 visual states mapped to gate state. Wire ghost-pulse CSS class to input field during gate analysis. Add override policy management to Settings > Decision Gate.
 
-Dependencies: Sprint 15.2 (Ghost must be functional before overrides make sense)
-Sacred Laws activated: #1 (Append-Only), #2 (Earned Autonomy), #10 (Attention Economy)
+**Estimated Effort:** 1 sprint (6-10 tasks)
 
-### Sprint 15.4 — Memory Shimmer + Settings-Driven Complexity
-**Theme:** Make memory visible; let users control detail
-**Estimated effort:** 2-3 sessions (backend + frontend)
-**Impact:** Users see accumulated intelligence; power users get power, casual users get clarity
+### Sprint 18.0 — Inspector Reorganization + Design Token Cleanup
+**Scope:** Pattern 7 (Inspector Drawer Tabs) + Section 4 token gaps + Section 5 animation wiring
+**Why Third:** This is a polish sprint that reorganizes existing functionality and closes token/animation gaps. Lower urgency because the current inspector and tokens work — they're just not optimally organized.
 
-Tasks:
-1. Backend: add memory attribution to chat responses — when Claude's response draws on prior conversation context (via KERNL/vector search), tag which segments are memory-influenced
-2. Frontend: wrap memory-attributed text segments in `.memory-match` spans (CSS already exists)
-3. Add hover tooltip showing source memory (conversation title, date, snippet)
-4. Add click-to-expand for full context chain
-5. Settings panel: add Receipt detail level (Full/Compact/Minimal/Hidden)
-6. Settings panel: add Ghost verbosity (Verbose/Normal/Quiet)
-7. Wire density store to actually control receipt/metadata visibility (currently only controls spacing)
-8. Implement Grandma Test compliance: default density hides AEGIS/KERNL/EoS labels in StatusBar; "Power" mode shows them
+**Tasks:**
+Reorganize InspectorDrawer tabs to: Memory, Quality, Cost, Jobs, Learning. Extract semantic color tokens (`--bg-elevated`, `--bg-tertiary`, `--success`, `--warning`, `--error`, `--info`, `--cyan-ghost`) into globals.css custom properties. Define GregLite typography scale (xs 11px, sm 13px, base 14px) for information-dense components. Add semantic spacing tokens (`--message-gap`, `--section-gap`, `--component-padding`). Wire fade-in animation to precise 200ms ease-out for new messages.
 
-Dependencies: Sprint 15.2 (receipts must exist to have detail levels)
-Sacred Laws activated: #5 (Protect Deep Work via settings), #7 (Small Context via compression display)
+**Estimated Effort:** 1 sprint (5-7 tasks)
 
-### Sprint 15.5 — Polish Pass + Blast Radius Tiers
-**Theme:** Professional finish; safety foundation for Agent SDK growth
-**Estimated effort:** 1 session
-**Impact:** Micro-interactions create premium feel; blast radius prevents Agent SDK incidents
-
-Tasks:
-1. Add framer-motion whileHover/whileTap to all primary buttons (scale: 1.05 / 0.95)
-2. Verify Inspector Drawer has four tabs (Memory/Intent/Cost/State) matching Gregore spec
-3. Verify drawer spring parameters (stiffness: 300, damping: 30)
-4. Verify logo breathing animation is active
-5. Add blast_radius field to Agent SDK job definitions
-6. Wire Decision Gate to auto-trigger at blast_radius >= 2
-7. System prompt update: instruct Claude to communicate confidence levels (Greg Gate spirit) and cite evidence (Law #11 spirit)
-
-Dependencies: Sprints 15.2-15.4 complete
-Sacred Laws activated: #2 (Earned Autonomy), #3 (Reversibility), #11 (Evidence Required)
+**Beyond Sprint 18.0:** Memory Shimmer (Pattern 3) requires real-time KERNL semantic search integration — defer to a dedicated memory sprint. Sacred Law gaps (Laws 2, 3, 8) require architectural decisions about autonomy, reversibility, and claim aging that should be designed holistically, not patched incrementally.
 
 ---
 
-## Appendix: File Reference Map
-
-| GregLite File | Audit Relevance |
-|--------------|-----------------|
-| `app/app/globals.css` | Design tokens (100% match), animations (defined but not wired) |
-| `app/components/chat/Message.tsx` | Message rendering (missing receipt, missing memory shimmer, wrong message styling) |
-| `app/components/chat/ChatInterface.tsx` | Main layout (correct architecture, Ghost wiring incomplete) |
-| `app/components/ui/StatusBar.tsx` | Bottom chrome (excellent voice, violates Grandma Test for defaults) |
-| `PROJECT_DNA.yaml` | Confirms Claude-only, confirms Gregore design system carries over |
-
-| Gregore Source | Key Insights Extracted |
-|---------------|----------------------|
-| `docs/UI_UX_FINAL_DIRECTION.md` | Gold standard spec: single surface + drawer, receipt footer, orchestration theater |
-| `docs/DESIGN_SYSTEM.md` | Full token spec, component patterns, animation system |
-| `docs/SACRED_LAWS.md` | 12 laws — 6 applicable to GregLite, 3 already partially enforced |
-| `PRODUCT_VISION.md` | Strategic position, product funnel (Lite → Full) |
-| `docs/UI_UX_ARCHAEOLOGY.md` | What failed and why — triptych deletion, council process |
-| `docs/systems/GHOST.md` | Ghost = R > 0 self-observer, isolation principle, veto authority |
-| `docs/engines/ENGINE-F.md` | Greg Gate: epistemic honesty, four response modes |
-| `docs/systems/HOMEOSTASIS.md` | Behavioral profiles → spirit preserved in AEGIS, don't port literally |
-| `docs/engines/ENGINE-A.md` through `ENGINE-I.md` | Multi-model engines → Skip List (not applicable to Claude-only) |
-
----
-
-*End of GREGORE_AUDIT.md — Sprint 15.1 Research Output*
-*No code was written. No GregLite files were modified.*
+*End of audit. This document should be referenced as the single source of truth for Gregore-to-GregLite port decisions. Update version number when any section changes.*

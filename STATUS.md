@@ -1,10 +1,10 @@
 # GREGLITE — STATUS
-**Last Updated:** March 5, 2026 — Sprint 15.0 COMPLETE. Bug fixes & quick wins from first real usage.
+**Last Updated:** March 5, 2026 — Sprint 15.1 COMPLETE. Gregore audit research sprint.
 **Version:** v1.0.0 (Phase 8 Ship Prep complete)
 **Test Count:** 1211/1211 all green
 **EoS Health:** 100/100
 **TSC:** 0 errors
-**Next:** Sprint 15.0 shipped. See FEATURE_BACKLOG.md for next priorities.
+**Next:** Sprint 15.1 shipped. See GREGORE_AUDIT.md for port recommendations. Sprint 16.0 (Receipt Footer + Voice System) is next.
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md — ALL PHASES (A–F) SHIPPED.
 **Recent commits:** 7c08d9f (11.3), dc188fd (11.4+11.5), 4b2382d (11.7), [pending] (11.6)
@@ -17,6 +17,17 @@
 5. ~~Decision gate trigger-detector.ts has 3 dead stub functions replaced by Haiku inference — cleanup needed.~~ — RESOLVED: Sprint 11.0 — detectHighTradeoffCount/detectMultiProjectTouch/detectLargeEstimate removed.
 
 ---
+
+- [x] **SPRINT 15.1** — Gregore Audit (Research) — **COMPLETE**
+  - **Deliverable:** GREGORE_AUDIT.md (286 lines, 7 sections)
+  - Section 1: Brand Voice — compiled voice guide from PRODUCT_VISION, council synthesis, UI_UX_FINAL_DIRECTION. Tone: deadpan professional, data-forward, sardonic edge.
+  - Section 2: UI/UX Patterns to Port — 7 patterns prioritized (Receipt Footer P0, Ghost Pulse P1, Orchestration Theater P1, Adaptive Override P1, Inspector Tabs P1, Memory Shimmer P2, Send Button P2)
+  - Section 3: Sacred Laws Audit — 5/12 fully enforced, 5 partially, 1 N/A, 1 gap. Common theme: mechanism exists but awareness doesn't.
+  - Section 4: Design Token Gaps — bg-tertiary/bg-elevated not tokenized, status colors not tokenized, typography 1-2px larger than spec
+  - Section 5: Animation Gaps — 2/6 working (breathe, drawer-slide), 2 defined but unwired (ghost-pulse, shimmer), 1 approximate (fade-in), 1 missing feature (receipt-expand)
+  - Section 6: Skip List — multi-model consensus, triptych layout, biological metaphors, GLACIER, homeostasis, anti-gravity, cognitive metabolism, gamification
+  - Section 7: Recommended Sprint Sequence — Sprint 16.0 (Receipt Footer + Voice), Sprint 17.0 (Decision Gate Enhancement), Sprint 18.0 (Inspector + Tokens)
+  - Sources: 20+ Gregore docs (UI_UX_FINAL_DIRECTION, DESIGN_SYSTEM, SACRED_LAWS, PRODUCT_VISION, ARCHITECTURE, 9 systems, 9 engines, 2 synthesis, council synthesis, UI_UX_ARCHAEOLOGY)
 
 - [x] **SPRINT 15.0** — Bug Fixes & Quick Wins (First Real Usage) — **COMPLETE**
   - **Task 1: Cost counter fix** — Chat route now writes per-message costs to `session_costs` table using `calculateCost()` from `cost-calculator.ts`. StatusBar `/api/costs/today` endpoint automatically aggregates both Agent SDK and chat costs. SSE `done` event now sends real `costUsd` instead of hardcoded 0.
