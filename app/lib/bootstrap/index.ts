@@ -78,6 +78,15 @@ export async function runBootstrap(): Promise<BootstrapResult> {
       console.warn('[indexer] start failed', { err });
     }
 
+    // Sprint 24.0 — Portfolio Scanner (non-blocking, after AEGIS init)
+    try {
+      const { startPortfolioScanner } = await import('../portfolio/scanner');
+      startPortfolioScanner();
+    } catch (err) {
+      errors.push(`Portfolio scanner startup failed: ${err instanceof Error ? err.message : String(err)}`);
+      console.warn('[bootstrap] Portfolio scanner failed to start (degraded):', err);
+    }
+
     // Step 6: Start Ghost Thread (ambient intelligence)
     // Non-blocking — Ghost startup failure degrades gracefully (app still works).
     // lifecycle.ts handles per-component failures individually (7-step startup).

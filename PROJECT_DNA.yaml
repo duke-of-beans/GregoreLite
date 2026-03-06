@@ -1,5 +1,5 @@
 # GREGLITE PROJECT DNA
-# Version: v1.1.0 | Sprint 14.0 Production Readiness | March 5, 2026
+# Version: v1.1.0 | Sprint 24.0 Portfolio Dashboard | March 6, 2026
 # Feature Backlog: D:\Projects\GregLite\FEATURE_BACKLOG.md
 # Sprint Roadmap: D:\Projects\GregLite\SPRINT_ROADMAP.md
 
@@ -20,18 +20,19 @@ identity:
 
 current_state:
   version: "1.1.0"
-  phase: "v1.1.0 production readiness. Transit Map Phases A–D + F complete. Sprint 14.0 hardening."
+  phase: "v1.1.0 production readiness. All phases shipped through Sprint 24.0. Portfolio Dashboard: scanner + read-only UI complete."
   status: |
-    Phases 1–9 shipped. Phase 8 Ship Prep complete. Sprint 10.x UX polish complete.
-    Sprint 11.0 cleaned dead routes/code. Sprint 11.1 implemented all Agent SDK stubs.
-    Sprint 11.2 shipped Transit Map data foundation (26 event types, capture hooks).
-    Sprint 11.3 shipped scrollbar landmarks + topic shift detection.
-    Sprint 11.4+11.5 shipped Z3 detail annotations + Z2 subway view (mega-sprint).
-    Sprint 11.7 shipped learning engine (3 pattern detectors, insight approval gate, 6h scheduler).
-    Sprint 12.0 added prompt caching, batch API, Haiku routing, cache cost tracking.
-    EoS 100/100. 1165 tests. tsc clean. git tag v1.0.0.
+    Phases 1-9 shipped. Sprint 10.x-14.x polish and production readiness.
+    Sprint 15.x-17.x Gregore UX port. Sprint 18.0 Memory Shimmer + Adaptive Override.
+    Sprint 19.0 Sacred Laws enforcement. Sprint 20.0 Ghost Thread activation.
+    Sprint 21.0 Framer Motion animations. Sprint 22.0 first launch polish.
+    Sprint 23.0 voice audit + responsive breakpoints + UX fixes.
+    Sprint 24.0 Portfolio Dashboard: 3 SQLite tables, scanner, 3 API routes,
+    PortfolioDashboard + ProjectCard + ProjectDetail, Projects tab (leftmost),
+    WORKSPACES.yaml auto-seed, 33 new scanner unit tests.
+    EoS 100/100. 1377 tests. tsc clean.
   git_tag: "v1.1.0"
-  latest_commits: "7c08d9f (11.3), dc188fd (11.4+11.5), 4b2382d (11.7), 3ae1f0d (12.0)"
+  latest_commits: "4b00463 (24.0 Portfolio Dashboard), bb5efb4 (23.0 docs), fea24b5 (23.0 Phase C), 603cb8f (23.0 Phase A+B)"
 
 ground_truth_audit:
   date: "2026-03-04"

@@ -136,6 +136,112 @@ export const VOICE = {
   },
 } as const;
 
+// ── Portfolio Dashboard — Sprint 24.0 ────────────────────────────────────────
+
+export const PORTFOLIO = {
+  // Empty state
+  empty: {
+    title: 'No projects here yet.',
+    description: 'This is your command center. Every project you manage shows up here with its current status and what needs attention next.',
+    addButton: 'Add Project',
+  },
+
+  // Health signal labels
+  health: {
+    green: (reason: string) => reason,
+    amber: (reason: string) => reason,
+    red: (reason: string) => reason,
+    unknown: 'Not yet scanned',
+  },
+
+  // Project type labels
+  typeLabels: {
+    code: 'Code',
+    research: 'Research',
+    business: 'Business',
+    creative: 'Creative',
+    custom: 'Custom',
+  } as const,
+
+  // Status labels
+  statusLabels: {
+    active: 'Active',
+    paused: 'Paused',
+    archived: 'Archived',
+  } as const,
+
+  // Loading / error states
+  loading: 'Loading projects…',
+  error: (detail: string) => `Failed to load projects: ${detail}`,
+  scanError: (detail: string) => `Scan failed: ${detail}`,
+  refreshing: 'Scanning…',
+  refreshButton: 'Refresh',
+
+  // Detail panel
+  detail: {
+    startWorking: 'Start Working',
+    close: 'Close',
+    noStatus: 'No STATUS.md found.',
+    noNextAction: 'No next action recorded.',
+    noVersion: '—',
+    noPhase: '—',
+    noLastActivity: 'No activity recorded',
+    path: 'Path',
+    type: 'Type',
+    version: 'Version',
+    phase: 'Phase',
+    lastActivity: 'Last Activity',
+    health: 'Health',
+    nextAction: 'Next',
+    testsPassing: (passing: number, total: number) => `${passing}/${total} passing`,
+    tscErrors: (n: number) => (n === 0 ? 'Clean' : `${n} error${n > 1 ? 's' : ''}`),
+    statusExcerpt: 'Status',
+  },
+
+  // Relative time labels (used by formatRelativeTime)
+  relativeTime: {
+    justNow: 'just now',
+    minutesAgo: (n: number) => `${n}m ago`,
+    hoursAgo: (n: number) => `${n}h ago`,
+    daysAgo: (n: number) => `${n} days ago`,
+    weeksAgo: (n: number) => `${n}w ago`,
+    monthsAgo: (n: number) => `${n}mo ago`,
+    never: 'never',
+  },
+
+  // Add project (simplified Sprint 24 path input)
+  addProject: {
+    placeholder: 'Paste project path (e.g. D:\\Projects\\MyProject)',
+    registerButton: 'Register',
+    registering: 'Registering…',
+    successMessage: (name: string) => `${name} registered.`,
+    errorMessage: (detail: string) => `Registration failed: ${detail}`,
+  },
+
+  // Skeleton / skeleton count
+  skeletonCount: 6,
+} as const;
+
+// ── Relative time formatter ───────────────────────────────────────────────────
+
+export function formatRelativeTime(iso: string | null): string {
+  if (!iso) return PORTFOLIO.relativeTime.never;
+  const ms = new Date(iso).getTime();
+  if (isNaN(ms)) return PORTFOLIO.relativeTime.never;
+  const diffMs = Date.now() - ms;
+  const diffMin = Math.floor(diffMs / 60_000);
+  if (diffMin < 1) return PORTFOLIO.relativeTime.justNow;
+  if (diffMin < 60) return PORTFOLIO.relativeTime.minutesAgo(diffMin);
+  const diffHr = Math.floor(diffMin / 60);
+  if (diffHr < 24) return PORTFOLIO.relativeTime.hoursAgo(diffHr);
+  const diffDay = Math.floor(diffHr / 24);
+  if (diffDay < 7) return PORTFOLIO.relativeTime.daysAgo(diffDay);
+  const diffWk = Math.floor(diffDay / 7);
+  if (diffWk < 4) return PORTFOLIO.relativeTime.weeksAgo(diffWk);
+  const diffMo = Math.floor(diffDay / 30);
+  return PORTFOLIO.relativeTime.monthsAgo(diffMo);
+}
+
 // ── Formatters ────────────────────────────────────────────────────────────────
 
 /** Format cost for receipt footer — 4 decimal places, always shows $ */

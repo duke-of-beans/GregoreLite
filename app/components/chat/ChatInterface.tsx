@@ -16,7 +16,8 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef, type ReactNode } from 'react';
-import { MessageSquare, Cpu, LayoutGrid, GitBranch } from 'lucide-react';
+import { MessageSquare, Cpu, LayoutGrid, GitBranch, FolderKanban } from 'lucide-react';
+import { PortfolioDashboard } from '@/components/portfolio/PortfolioDashboard';
 import { Header } from '../ui/Header';
 import { MessageList } from './MessageList';
 import { InputField } from './InputField';
@@ -70,7 +71,7 @@ import type { Station } from '@/lib/transit/types';
 import type { ProcessingEvent } from './ProcessingStatus';
 import type { MessageBlock } from './Message';
 
-type ActiveTab = 'strategic' | 'workers' | 'warroom' | 'transit';
+type ActiveTab = 'portfolio' | 'strategic' | 'workers' | 'warroom' | 'transit';
 
 interface TabDef {
   id: ActiveTab;
@@ -81,6 +82,12 @@ interface TabDef {
 }
 
 const TABS: TabDef[] = [
+  {
+    id: 'portfolio',
+    label: 'Projects',
+    icon: <FolderKanban className="h-4 w-4" />,
+    tooltip: 'Portfolio command center — all your projects in one view',
+  },
   {
     id: 'strategic',
     label: 'Strategic',
@@ -226,7 +233,7 @@ export function ChatInterface() {
         void createTab();
         setActiveTab('strategic');
       }
-      // Cmd+F — open in-thread search (only in strategic tab)
+      // Cmd+F — open in-thread search (only in strategic tab; portfolio has no search)
       if (meta && e.key === 'f') {
         e.preventDefault();
         if (activeTab === 'strategic') {
@@ -802,6 +809,13 @@ export function ChatInterface() {
 
         {/* ── Tab content (War Room / Workers / Strategic) ── */}
         <div className="flex flex-1 overflow-hidden">
+
+        {/* ── Portfolio tab — standalone dashboard, no input/messages ── */}
+        {activeTab === 'portfolio' && (
+          <div className="flex flex-1 overflow-hidden">
+            <PortfolioDashboard />
+          </div>
+        )}
 
         {/* ── War Room ── */}
         {activeTab === 'warroom' && (

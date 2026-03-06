@@ -1,13 +1,13 @@
 # GREGLITE — STATUS
-**Last Updated:** March 6, 2026 — Sprint 23.0 COMPLETE. Voice & Terminology Audit (Greg handle, Background label, tooltip rewrites, What's-This guide modal), UX Fixes (Workers 404 fixed via /api/agent-sdk/jobs, lucide-react SVG tab icons, New Conversation moved to ContextPanel, scroll-wheel zoom on Transit Map), Global Responsiveness (breakpoints at 1024/768/640px, icon-only tabs at narrow widths, auto-collapse panel on mobile, secondary status metrics hidden at 768px, code block horizontal scroll).
+**Last Updated:** March 6, 2026 — Sprint 24.0 COMPLETE. Portfolio Dashboard: 3 SQLite tables, project scanner (reads DNA/STATUS.md from all registered workspaces, 30s background refresh, git last-commit via child_process), 3 API routes, PortfolioDashboard + ProjectCard + ProjectDetail components, Projects tab wired as leftmost tab, WORKSPACES.yaml auto-seed, voice copy, 33 new scanner unit tests.
 **Version:** v1.1.0
-**Test Count:** 1344/1344 all green
+**Test Count:** 1377/1377 all green
 **EoS Health:** 100/100
 **TSC:** 0 errors
-**Next:** Sprint 24.0 — TBD
+**Next:** Sprint 25.0 — Portfolio: Add Existing Project (onboarding flow, type selection, custom metrics config).
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md — ALL PHASES (A–F) SHIPPED.
-**Recent commits:** fea24b5 (Sprint 23.0 Phase C), 603cb8f (Sprint 23.0 Phase A+B), c6e9fd3 (Sprint 22.0), 3782407 (flaky test fix), 8837294 (Sprint 21.0)
+**Recent commits:** 4b00463 (Sprint 24.0), bb5efb4 (Sprint 23.0 docs), fea24b5 (Sprint 23.0 Phase C), 603cb8f (Sprint 23.0 Phase A+B), c6e9fd3 (Sprint 22.0)
 
 ### ⚠️ GROUND TRUTH AUDIT (March 4, 2026)
 1. ~~Transit Map "data foundation" listed in Sprint 10.6 was NOT shipped.~~ RESOLVED: Sprint 11.2 shipped data foundation (conversation_events table, 26 event types, capture hooks). commit 37d60af.
@@ -17,6 +17,17 @@
 5. ~~Decision gate trigger-detector.ts has 3 dead stub functions replaced by Haiku inference — cleanup needed.~~ — RESOLVED: Sprint 11.0 — detectHighTradeoffCount/detectMultiProjectTouch/detectLargeEstimate removed.
 
 ---
+
+- [x] **SPRINT 24.0** — Portfolio Dashboard: Scanner + Read-Only UI — **COMPLETE**
+  - **Deliverable:** 12 files created + 5 files modified. tsc 0 errors. 1377/1377 tests green (+33 new scanner unit tests). `yaml` 2.8.2 added as dependency.
+  - **SQLite schema:** 3 new tables via `CREATE TABLE IF NOT EXISTS` in `runMigrations()` — `portfolio_projects` (id, name, path, type, status, scan_data JSON blob), `portfolio_telemetry`, `portfolio_archives` — plus 3 covering indexes.
+  - **Type definitions:** `lib/portfolio/types.ts` — `ProjectType`, `ProjectHealth`, `ProjectStatus`, `ProjectCard`, `ScanResult`, `PortfolioProject`, `PortfolioScanData`.
+  - **Scanner:** `lib/portfolio/scanner.ts` — `scanPath()` reads `PROJECT_DNA.yaml` + `STATUS.md` via Node `fs`, `extractFromStatus()` regex extracts version/phase/testCount/tscErrors/nextAction/blockers, `calculateHealth()` green/amber/red thresholds (7/14 days + blockers/errors), `getLastCommit()` via `D:\Program Files\Git\cmd\git.exe` with 5s timeout, `seedFromWorkspaces()` reads `D:\Dev\WORKSPACES.yaml`, 30s background interval started non-blocking from `lib/bootstrap/index.ts`.
+  - **API routes:** `GET/POST /api/portfolio` (list all + register by path), `GET /api/portfolio/[id]` (single project with full statusFull), `POST /api/portfolio/scan` (trigger full rescan).
+  - **Components:** `PortfolioDashboard.tsx` (30s polling, responsive 3/2/1 grid, skeleton loading, empty state, AddProjectRow), `ProjectCard.tsx` (health dot, type badge, cardLift hover), `ProjectDetail.tsx` (drawerSlide panel, STATUS.md excerpt, "Start Working" dispatches `greglite:set-project`).
+  - **Tab integration:** `ChatInterface.tsx` — `'portfolio'` added to `ActiveTab` union; Projects tab wired as FIRST entry in TABS array using `FolderKanban` icon.
+  - **Voice copy:** `PORTFOLIO` export + `formatRelativeTime()` added to `copy-templates.ts`.
+  - **Tests:** `lib/portfolio/__tests__/scanner.test.ts` — 33 tests covering health calculation (11), STATUS.md extraction (11), type label mapping (5), formatRelativeTime (6).
 
 - [x] **SPRINT 23.0** — Voice Audit + UX Polish + Global Responsiveness — **COMPLETE**
   - **Deliverable:** 10 files modified + 1 new file. tsc 0 errors. 1344/1344 tests green. Two commits: 603cb8f (Phase A+B), fea24b5 (Phase C).

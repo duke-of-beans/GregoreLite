@@ -280,6 +280,54 @@ function runMigrations(db: Database.Database): void {
     // Table may already exist
   }
 
+  // Sprint 24.0 — Portfolio Dashboard: project registry, telemetry, and archive tables
+  try {
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS portfolio_projects (
+        id              TEXT    PRIMARY KEY,
+        name            TEXT    NOT NULL,
+        path            TEXT    NOT NULL UNIQUE,
+        type            TEXT    NOT NULL DEFAULT 'custom',
+        type_label      TEXT,
+        status          TEXT    NOT NULL DEFAULT 'active',
+        registered_at   INTEGER NOT NULL DEFAULT (unixepoch('now', 'subsec') * 1000),
+        last_scanned_at INTEGER,
+        scan_data       TEXT
+      );
+
+      CREATE TABLE IF NOT EXISTS portfolio_telemetry (
+        id                          INTEGER PRIMARY KEY AUTOINCREMENT,
+        project_type                TEXT    NOT NULL,
+        custom_type_label           TEXT,
+        questions_asked             TEXT,
+        metrics_configured          TEXT,
+        template_used               TEXT,
+        migration_vs_new            TEXT    NOT NULL,
+        onboarding_duration_seconds INTEGER,
+        created_at                  INTEGER NOT NULL DEFAULT (unixepoch('now', 'subsec') * 1000)
+      );
+
+      CREATE TABLE IF NOT EXISTS portfolio_archives (
+        id               TEXT    PRIMARY KEY,
+        project_id       TEXT    NOT NULL REFERENCES portfolio_projects(id),
+        original_path    TEXT    NOT NULL,
+        archive_path     TEXT    NOT NULL,
+        archived_at      INTEGER NOT NULL DEFAULT (unixepoch('now', 'subsec') * 1000),
+        verified_by_user INTEGER NOT NULL DEFAULT 0,
+        deleted_at       INTEGER
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_portfolio_projects_status
+        ON portfolio_projects(status);
+      CREATE INDEX IF NOT EXISTS idx_portfolio_projects_type
+        ON portfolio_projects(type);
+      CREATE INDEX IF NOT EXISTS idx_portfolio_archives_project
+        ON portfolio_archives(project_id);
+    `);
+  } catch {
+    // Tables may already exist
+  }
+
   // S9-21 — Log Memory Modal deprecation decision (idempotent via fixed ID)
   try {
     db.exec(`
