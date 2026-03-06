@@ -29,6 +29,8 @@ import { GhostFileWatcher } from '@/components/ghost/GhostFileWatcher';
 import { EoSSparkLine } from './EoSSparkLine';
 import { EoSHistoryPanel } from './EoSHistoryPanel';
 import { RecentChats } from './RecentChats';
+import { RecallCard } from '@/components/recall/RecallCard';
+import type { RecallEvent } from '@/lib/recall/types';
 
 // ─── Collapsed icon strip ─────────────────────────────────────────────────────
 
@@ -85,6 +87,38 @@ function PanelContent() {
   const { collapsed, toggleCollapsed, state } = useContextPanel();
   const [dismissedKeys, setDismissedKeys] = useState<Set<string>>(new Set());
   const [historyOpen, setHistoryOpen] = useState(false);
+
+  // Sprint 27.0: Ambient recall — active event polling
+  const [recallEvent, setRecallEvent] = useState<RecallEvent | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    async function fetchRecall() {
+      try {
+        const res = await fetch('/api/recall/active');
+        if (!res.ok || !mounted) return;
+        const body = await res.json() as { event: RecallEvent | null };
+        if (mounted) setRecallEvent(body.event);
+      } catch {
+        // Non-critical — recall is ambient
+      }
+    }
+    void fetchRecall();
+    const interval = setInterval(() => { void fetchRecall(); }, 60_000);
+    return () => { mounted = false; clearInterval(interval); };
+  }, []);
+
+  const handleRecallAction = async (
+    eventId: string,
+    action: 'appreciated' | 'dismissed' | 'snoozed',
+  ): Promise<void> => {
+    await fetch('/api/recall/action', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ eventId, action }),
+    });
+    setRecallEvent(null);
+  };
 
   const handleDismissed = (ruleId: string, file: string) => {
     setDismissedKeys((prev) => new Set(prev).add(`${ruleId}:${file}`));
@@ -188,6 +222,13 @@ function PanelContent() {
       <div className="mx-4 h-px bg-[var(--shadow)] opacity-30" />
       <DecisionList />
       <div className="mx-4 h-px bg-[var(--shadow)] opacity-30" />
+
+      {/* Sprint 27.0: Ambient memory highlight — invisible when no active recall */}
+      {recallEvent && (
+        <div className="px-3 py-2">
+          <RecallCard event={recallEvent} onAction={handleRecallAction} />
+        </div>
+      )}
 
       {/* Sprint 20.0: Watcher→ingest bridge (renders nothing, handles Tauri events) */}
       <GhostFileWatcher />

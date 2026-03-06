@@ -18,9 +18,10 @@ import { QualityTab } from './QualityTab';
 import { JobsTab } from './JobsTab';
 import { CostBreakdown } from '@/components/agent-sdk/CostBreakdown';
 import { InsightReviewPanel } from '@/components/transit/InsightReviewPanel';
+import { MemoryTab } from './MemoryTab';
 import { fadeIn, drawerSlide } from '@/lib/design/animations';
 
-type InspectorTab = 'kernl' | 'quality' | 'costs' | 'jobs' | 'learning';
+type InspectorTab = 'kernl' | 'quality' | 'costs' | 'jobs' | 'learning' | 'recall';
 
 interface TabDef {
   id: InspectorTab;
@@ -31,6 +32,7 @@ interface TabDef {
 
 const TABS: TabDef[] = [
   { id: 'kernl',   label: 'Memory',   icon: '🧠', tooltip: 'Cross-session memory — powered by KERNL' },
+  { id: 'recall',  label: 'Recall',   icon: '💭', tooltip: 'Ambient memory highlights — Sprint 27.0' },
   { id: 'quality', label: 'Quality',  icon: '📊', tooltip: 'Code quality analysis — powered by Eye of Sauron' },
   { id: 'costs',   label: 'Cost',     icon: '💰', tooltip: 'Token usage and spend breakdown' },
   { id: 'jobs',    label: 'Jobs',     icon: '⚡', tooltip: 'Background tasks and workers' },
@@ -174,6 +176,7 @@ export function InspectorDrawer({ open, onClose }: InspectorDrawerProps) {
               padding: 16,
             }}>
               {activeTab === 'kernl'    && <KernlTab />}
+              {activeTab === 'recall'   && <MemoryTab />}
               {activeTab === 'quality'  && <QualityTab />}
               {activeTab === 'costs'    && <CostBreakdown onClose={onClose} />}
               {activeTab === 'jobs'     && <JobsTab />}
