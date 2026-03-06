@@ -202,6 +202,24 @@ function runMigrations(db: Database.Database): void {
     db.exec(`CREATE INDEX IF NOT EXISTS idx_messages_parent ON messages(parent_id) WHERE parent_id IS NOT NULL`);
   } catch { /* index may already exist */ }
 
+  // Sprint 18.0 — Adaptive Override System: gate_override_policies table
+  try {
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS gate_override_policies (
+        id           TEXT PRIMARY KEY,
+        trigger_type TEXT NOT NULL,
+        scope        TEXT NOT NULL CHECK(scope IN ('once', 'category', 'always')),
+        category     TEXT,
+        created_at   INTEGER NOT NULL,
+        expires_at   INTEGER
+      );
+      CREATE INDEX IF NOT EXISTS idx_gate_policies_trigger
+        ON gate_override_policies(trigger_type);
+    `);
+  } catch {
+    // Table may already exist
+  }
+
   // S9-21 — Log Memory Modal deprecation decision (idempotent via fixed ID)
   try {
     db.exec(`

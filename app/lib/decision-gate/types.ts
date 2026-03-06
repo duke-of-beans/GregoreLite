@@ -32,6 +32,11 @@ export interface TriggerResult {
   trigger: GateTrigger | null;
   /** Human-readable explanation shown in gate panel (Sprint 4B) */
   reason: string;
+  /**
+   * Sprint 18.0: Set when a trigger was suppressed by an override policy.
+   * Used by receipt footer to show "ℹ Auto-allowed by override policy" transparency note.
+   */
+  autoAllowed?: { trigger: GateTrigger };
 }
 
 /** Module-level lock state — enforced at API layer in Sprint 4B */

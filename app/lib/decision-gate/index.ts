@@ -35,6 +35,7 @@ export {
 
 import type { GateMessage, GateTrigger, TriggerResult } from './types';
 import { acquireLock } from './lock';
+import { hasActivePolicy } from './override-policies';
 import {
   detectRepeatedQuestion,
   detectSacredPrincipleRisk,
@@ -48,6 +49,18 @@ import { inferStructuredTriggers } from './inference';
 function triggered(trigger: GateTrigger, reason: string): TriggerResult {
   acquireLock(trigger, reason);
   return { triggered: true, trigger, reason };
+}
+
+/**
+ * Sprint 18.0: Check if an override policy suppresses this trigger.
+ * Returns a non-triggered result with autoAllowed metadata if a policy exists,
+ * or null if the trigger should proceed normally.
+ * 'once' policies are auto-deleted inside hasActivePolicy on first match.
+ */
+function policyBypass(trigger: GateTrigger): TriggerResult | null {
+  if (!hasActivePolicy(trigger)) return null;
+  console.info(`[decision-gate] '${trigger}' suppressed by override policy`);
+  return { triggered: false, trigger: null, reason: '', autoAllowed: { trigger } };
 }
 
 /**
@@ -70,50 +83,84 @@ function triggered(trigger: GateTrigger, reason: string): TriggerResult {
 export async function analyze(messages: GateMessage[]): Promise<TriggerResult> {
   // ── Sync checks (ordered cheapest → most expensive) ──────────────────────
 
-  if (detectRepeatedQuestion(messages)) {
-    return triggered(
-      'repeated_question',
-      'You\'ve asked about this a few times. Want to dig deeper instead of circling back?',
-    );
+  {
+    const bypass = policyBypass('repeated_question');
+    if (bypass) return bypass;
+    if (detectRepeatedQuestion(messages)) {
+      return triggered(
+        'repeated_question',
+        'You\'ve asked about this a few times. Want to dig deeper instead of circling back?',
+      );
+    }
   }
 
-  if (detectSacredPrincipleRisk(messages)) {
-    return triggered(
-      'sacred_principle_risk',
-      'This looks like a temporary fix. Shortcuts tend to become permanent. Proceed anyway?',
-    );
+  {
+    const bypass = policyBypass('sacred_principle_risk');
+    if (bypass) return bypass;
+    if (detectSacredPrincipleRisk(messages)) {
+      return triggered(
+        'sacred_principle_risk',
+        'This looks like a temporary fix. Shortcuts tend to become permanent. Proceed anyway?',
+      );
+    }
   }
 
-  if (detectIrreversibleAction(messages)) {
-    return triggered(
-      'irreversible_action',
-      'This can\'t be undone — schema change, production deploy, or force push. Confirm?',
-    );
+  {
+    const bypass = policyBypass('irreversible_action');
+    if (bypass) return bypass;
+    if (detectIrreversibleAction(messages)) {
+      return triggered(
+        'irreversible_action',
+        'This can\'t be undone — schema change, production deploy, or force push. Confirm?',
+      );
+    }
   }
 
-  if (detectLowConfidence(messages)) {
-    return triggered(
-      'low_confidence',
-      'I\'m not confident about this one. Want me to verify before moving forward?',
-    );
+  {
+    const bypass = policyBypass('low_confidence');
+    if (bypass) return bypass;
+    if (detectLowConfidence(messages)) {
+      return triggered(
+        'low_confidence',
+        'I\'m not confident about this one. Want me to verify before moving forward?',
+      );
+    }
   }
 
   // ── Async checks ──────────────────────────────────────────────────────────
 
-  if (await detectContradiction(messages)) {
-    return triggered(
-      'contradicts_prior',
-      'This contradicts a previous decision. Worth reviewing before changing course.',
-    );
+  {
+    const bypass = policyBypass('contradicts_prior');
+    if (bypass) return bypass;
+    if (await detectContradiction(messages)) {
+      return triggered(
+        'contradicts_prior',
+        'This contradicts a previous decision. Worth reviewing before changing course.',
+      );
+    }
   }
 
   // ── Haiku inference — single call for three structured triggers ───────────
   // Sprint 4B: replaces the three always-false stubs from Sprint 4A.
   // One inference call returns all three results. Fails open on any error.
+  // Sprint 18.0: each trigger checked against override policies first.
+
+  const [bypassHT, bypassMP, bypassLE] = [
+    policyBypass('high_tradeoff_count'),
+    policyBypass('multi_project_touch'),
+    policyBypass('large_build_estimate'),
+  ];
+
+  // If all three Haiku triggers are bypassed, skip the inference call entirely
+  if (bypassHT && bypassMP && bypassLE) {
+    // Return the first bypass result (all three are equivalent non-triggered results)
+    return bypassHT;
+  }
 
   const inference = await inferStructuredTriggers(messages);
 
   if (inference.highTradeoff) {
+    if (bypassHT) return bypassHT;
     return triggered(
       'high_tradeoff_count',
       'This decision has 4+ major tradeoffs. Worth evaluating them before committing.',
@@ -121,6 +168,7 @@ export async function analyze(messages: GateMessage[]): Promise<TriggerResult> {
   }
 
   if (inference.multiProject) {
+    if (bypassMP) return bypassMP;
     return triggered(
       'multi_project_touch',
       'This touches multiple projects at once. Confirm the cross-project impact.',
@@ -128,6 +176,7 @@ export async function analyze(messages: GateMessage[]): Promise<TriggerResult> {
   }
 
   if (inference.largeEstimate) {
+    if (bypassLE) return bypassLE;
     return triggered(
       'large_build_estimate',
       'This is a big build — estimated to take 3+ sessions. Confirm scope before starting.',

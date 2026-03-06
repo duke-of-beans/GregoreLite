@@ -1,10 +1,10 @@
 # GREGLITE — STATUS
-**Last Updated:** March 6, 2026 — Sprint 17.0 COMPLETE. Receipt footer, ghost pulse, orchestration theater, send button states, glassmorphic inspector.
+**Last Updated:** March 6, 2026 — Sprint 18.0 COMPLETE. Memory Shimmer + Adaptive Override System.
 **Version:** v1.0.0 (Phase 8 Ship Prep complete)
-**Test Count:** 1211/1211 all green
+**Test Count:** 1245/1245 all green
 **EoS Health:** 100/100
 **TSC:** 0 errors
-**Next:** Sprint 17.0 shipped. Receipt footer visible under every assistant message. Sprint 18.0 (Inspector deep-dive + Memory Shimmer) is next.
+**Next:** Sprint 18.0 shipped. Memory shimmer glows on matching KERNL terms. Decision gate now three-choice with persistent SQLite override policies. Sprint 19.0 TBD.
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md — ALL PHASES (A–F) SHIPPED.
 **Recent commits:** 7c08d9f (11.3), dc188fd (11.4+11.5), 4b2382d (11.7), [pending] (11.6)
@@ -17,6 +17,11 @@
 5. ~~Decision gate trigger-detector.ts has 3 dead stub functions replaced by Haiku inference — cleanup needed.~~ — RESOLVED: Sprint 11.0 — detectHighTradeoffCount/detectMultiProjectTouch/detectLargeEstimate removed.
 
 ---
+
+- [x] **SPRINT 18.0** — Memory Shimmer + Adaptive Override System — **COMPLETE**
+  - **Deliverable:** 25+ files changed. tsc 0 errors. 1245/1245 tests green. Two-phase sprint: Phase 1 committed first, Phase 2 on top.
+  - **Phase 1 — Memory Shimmer:** As the user types, words matching KERNL memory glow with cyan shimmer. OVERLAY approach (never modifies textarea). `lib/memory/shimmer-query.ts`: server-side FTS5 query (messages + decisions, <50ms budget, 5-token limit, word-boundary matching, stop-word filtering). `app/api/shimmer-matches/route.ts`: POST endpoint, fails open. `ShimmerOverlay.tsx`: absolute-positioned overlay with `color: transparent` + `.memory-match` CSS class glow. `MemoryCard.tsx`: click-to-expand popover with source badge + "View source →". `useShimmerMatches.ts`: 300ms debounced client hook with AbortController. `ui-store.ts`: `shimmerEnabled` toggle. Settings → Appearance: "Memory Highlights" toggle. 15 shimmer tests.
+  - **Phase 2 — Adaptive Override System:** Every decision gate warning now offers three choices: "Just this once" / "Always allow [category]" / "Never warn about this again". `lib/decision-gate/override-policies.ts`: CRUD + `hasActivePolicy()` (self-destructs 'once' policies). `runMigrations()`: `gate_override_policies` SQLite table. `decision-gate/index.ts`: `policyBypass()` checked before each of the 8 triggers, fails open if DB unavailable. `GatePanel.tsx`: three-choice radio UI replaces binary Approve/Dismiss. `/api/decision-gate/policy`: creates policies. `/api/decision-gate/policies`: lists + resets. `OverridePoliciesSection.tsx`: full CRUD UI in Settings. 19 policy tests.
 
 - [x] **SPRINT 17.0** — Gregore UX Port: Receipt Footer + Ghost Pulse + Orchestration Theater — **COMPLETE**
   - **Deliverable:** 8 files changed, 519 insertions. tsc 0 errors. All tests green. Commit fc8ab55.

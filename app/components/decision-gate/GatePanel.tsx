@@ -1,18 +1,23 @@
 'use client';
 
 /**
- * GatePanel — non-modal Decision Gate panel (Blueprint §8)
+ * GatePanel — non-modal Decision Gate panel (Blueprint §8, Sprint 18.0)
  *
  * Slides in above the input field when a trigger fires.
  * Pushes the input down — does NOT cover the conversation.
  * David can still read the full thread context while deciding.
  *
  * States:
- *   Normal (dismissCount < 3): Approve + Dismiss buttons
+ *   Normal (dismissCount < 3): Three-choice radio + Proceed / Not now
  *   Mandatory (dismissCount >= 3): Approve + Override form (≥20 char rationale)
  *
- * Approve → POST /api/decision-gate/approve → releaseLock → clearTrigger
- * Dismiss → POST /api/decision-gate/dismiss → may releaseLock or go mandatory
+ * Three choices (Sprint 18.0):
+ *   Just this once     → creates 'once' policy (auto-deletes after next bypass)
+ *   Always allow [...] → creates 'category' policy for this trigger type
+ *   Never warn again   → creates 'always' policy (permanent bypass)
+ *
+ * Proceed → POST /api/decision-gate/policy (if non-once) + POST /api/decision-gate/approve
+ * Not now → POST /api/decision-gate/dismiss → may releaseLock or go mandatory
  * Override → POST /api/decision-gate/override → releaseLock → clearTrigger
  */
 
@@ -38,30 +43,57 @@ const TRIGGER_LABELS: Record<GateTrigger, string> = {
   low_confidence: 'Low Confidence',
 };
 
+type PolicyScope = 'once' | 'category' | 'always';
+
 export function GatePanel({ threadId, trigger }: GatePanelProps) {
   const { dismissCount, setDismissCount, clearTrigger } = useDecisionGateStore();
-  const [approving, setApproving] = useState(false);
+  const [proceeding, setProceeding] = useState(false);
   const [dismissing, setDismissing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Sprint 18.0: three-choice policy scope
+  const [policyScope, setPolicyScope] = useState<PolicyScope>('once');
 
   const mandatory = dismissCount >= 3;
   const dismissesLeft = Math.max(0, 3 - dismissCount);
   const label = trigger.trigger ? TRIGGER_LABELS[trigger.trigger] : 'Review Required';
 
-  const handleApprove = async () => {
+  /**
+   * Proceed: optionally create an override policy, then approve the gate.
+   * All three scopes create a policy — 'once' auto-deletes after next bypass.
+   */
+  const handleProceed = async () => {
     if (!trigger.trigger) return;
-    setApproving(true);
+    setProceeding(true);
     setError(null);
 
     try {
-      const res = await fetch('/api/decision-gate/approve', {
+      // Create the override policy for the selected scope
+      const policyRes = await fetch('/api/decision-gate/policy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          trigger: trigger.trigger,
+          scope: policyScope,
+          // 'category' scope uses the trigger type as category key
+          category: policyScope === 'category' ? trigger.trigger : undefined,
+        }),
+      });
+
+      if (!policyRes.ok) {
+        const data = await policyRes.json() as { error?: string };
+        setError(data.error ?? 'Failed to save policy');
+        return;
+      }
+
+      // Approve the gate
+      const approveRes = await fetch('/api/decision-gate/approve', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ threadId, trigger: trigger.trigger }),
       });
 
-      if (!res.ok) {
-        const data = await res.json() as { error?: string };
+      if (!approveRes.ok) {
+        const data = await approveRes.json() as { error?: string };
         setError(data.error ?? 'Approval failed');
         return;
       }
@@ -70,11 +102,12 @@ export function GatePanel({ threadId, trigger }: GatePanelProps) {
     } catch {
       setError('Network error — try again');
     } finally {
-      setApproving(false);
+      setProceeding(false);
     }
   };
 
-  const handleDismiss = async () => {
+  /** Not now: dismiss gate (increments counter; mandatory at 3). */
+  const handleNotNow = async () => {
     setDismissing(true);
     setError(null);
 
@@ -87,16 +120,38 @@ export function GatePanel({ threadId, trigger }: GatePanelProps) {
       };
 
       if (data.released) {
-        // Lock released — gate closes
         clearTrigger();
       } else {
-        // Now mandatory — update count, keep panel open
         setDismissCount(data.dismissCount);
       }
     } catch {
       setError('Network error — try again');
     } finally {
       setDismissing(false);
+    }
+  };
+
+  // Approve path still used by mandatory overlay's approve button
+  const handleApprove = async () => {
+    if (!trigger.trigger) return;
+    setProceeding(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/decision-gate/approve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ threadId, trigger: trigger.trigger }),
+      });
+      if (!res.ok) {
+        const data = await res.json() as { error?: string };
+        setError(data.error ?? 'Approval failed');
+        return;
+      }
+      clearTrigger();
+    } catch {
+      setError('Network error — try again');
+    } finally {
+      setProceeding(false);
     }
   };
 
@@ -142,23 +197,58 @@ export function GatePanel({ threadId, trigger }: GatePanelProps) {
           />
         )}
 
-        {/* Action buttons */}
+        {/* Sprint 18.0: Three-choice policy radio + Proceed / Not now */}
         {!mandatory && (
-          <div className="flex items-center gap-3 mt-3">
-            <button
-              onClick={() => void handleApprove()}
-              disabled={approving || dismissing}
-              className="rounded px-4 py-1.5 text-sm font-medium bg-[var(--cyan)] text-[var(--deep-space)] transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {approving ? 'Approving…' : 'Approve & Continue'}
-            </button>
-            <button
-              onClick={() => void handleDismiss()}
-              disabled={approving || dismissing}
-              className="rounded border border-[var(--shadow)] px-4 py-1.5 text-sm font-medium text-[var(--mist)] transition-colors hover:border-[var(--cyan)] hover:text-[var(--frost)] disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {dismissing ? 'Dismissing…' : `Dismiss (${dismissesLeft} left)`}
-            </button>
+          <div className="mt-4 space-y-3">
+            <p className="text-xs font-medium text-[var(--mist)] uppercase tracking-wide">
+              How should I handle this?
+            </p>
+
+            {/* Radio options */}
+            <div className="space-y-2">
+              {(
+                [
+                  { value: 'once',     label: 'Just this once' },
+                  { value: 'category', label: `Always allow ${label}` },
+                  { value: 'always',   label: 'Never warn about this again' },
+                ] as const
+              ).map(({ value, label: optLabel }) => (
+                <label
+                  key={value}
+                  className="flex items-center gap-2.5 cursor-pointer group"
+                >
+                  <input
+                    type="radio"
+                    name="gate-policy-scope"
+                    value={value}
+                    checked={policyScope === value}
+                    onChange={() => setPolicyScope(value)}
+                    className="accent-[var(--cyan)] cursor-pointer"
+                  />
+                  <span className="text-sm text-[var(--frost)] group-hover:text-[var(--ice-white)] transition-colors">
+                    {optLabel}
+                  </span>
+                </label>
+              ))}
+            </div>
+
+            {/* Proceed / Not now */}
+            <div className="flex items-center gap-3 pt-1">
+              <button
+                onClick={() => void handleProceed()}
+                disabled={proceeding || dismissing}
+                className="rounded px-4 py-1.5 text-sm font-medium bg-[var(--cyan)] text-[var(--deep-space)] transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {proceeding ? 'Proceeding…' : 'Proceed'}
+              </button>
+              <button
+                onClick={() => void handleNotNow()}
+                disabled={proceeding || dismissing}
+                className="rounded border border-[var(--shadow)] px-4 py-1.5 text-sm font-medium text-[var(--mist)] transition-colors hover:border-[var(--cyan)] hover:text-[var(--frost)] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {dismissing ? 'Dismissing…' : `Not now (${dismissesLeft} left)`}
+              </button>
+            </div>
           </div>
         )}
 
@@ -167,10 +257,10 @@ export function GatePanel({ threadId, trigger }: GatePanelProps) {
           <div className="mt-3">
             <button
               onClick={() => void handleApprove()}
-              disabled={approving}
+              disabled={proceeding}
               className="rounded px-4 py-1.5 text-sm font-medium bg-[var(--cyan)] text-[var(--deep-space)] transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {approving ? 'Approving…' : 'Approve & Continue'}
+              {proceeding ? 'Approving…' : 'Approve & Continue'}
             </button>
           </div>
         )}
