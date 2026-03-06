@@ -7,7 +7,7 @@
 **Next:** Sprint 24.0 — TBD
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md — ALL PHASES (A–F) SHIPPED.
-**Recent commits:** [Phase C hash TBD] (Sprint 23.0 Phase C), 603cb8f (Sprint 23.0 Phase A+B), c6e9fd3 (Sprint 22.0), 3782407 (flaky test fix), 8837294 (Sprint 21.0)
+**Recent commits:** fea24b5 (Sprint 23.0 Phase C), 603cb8f (Sprint 23.0 Phase A+B), c6e9fd3 (Sprint 22.0), 3782407 (flaky test fix), 8837294 (Sprint 21.0)
 
 ### ⚠️ GROUND TRUTH AUDIT (March 4, 2026)
 1. ~~Transit Map "data foundation" listed in Sprint 10.6 was NOT shipped.~~ RESOLVED: Sprint 11.2 shipped data foundation (conversation_events table, 26 event types, capture hooks). commit 37d60af.
@@ -19,7 +19,7 @@
 ---
 
 - [x] **SPRINT 23.0** — Voice Audit + UX Polish + Global Responsiveness — **COMPLETE**
-  - **Deliverable:** 10 files modified + 1 new file. tsc 0 errors. 1344/1344 tests green. Two commits: 603cb8f (Phase A+B), [Phase C].
+  - **Deliverable:** 10 files modified + 1 new file. tsc 0 errors. 1344/1344 tests green. Two commits: 603cb8f (Phase A+B), fea24b5 (Phase C).
   - **Phase A — Voice & Terminology Audit:** Message.tsx assistant handle renamed Greg. StatusBar GHOST label → BACKGROUND, all tooltip strings updated. copy-templates.ts: GUIDE_ITEMS export + background/tabs/safety VOICE sections added. HelpGuide.tsx: new What's-This modal with plain-language panel guide, opened via ? button in Header.
   - **Phase B — UX Fixes:** job-store.ts: all three /api/jobs calls → /api/agent-sdk/jobs (fixes Workers tab 404 since Sprint 11.0 cleanup). ChatInterface.tsx: emoji tab icons replaced with lucide-react SVG icons (MessageSquare, Cpu, LayoutGrid, GitBranch), TabDef gains tooltip field. Header.tsx: New Conversation button removed, logo dispatches greglite:switch-tab instead of greglite:new-thread. ContextPanel.tsx: New Conversation button added above RecentChats. ZoomController.tsx: scroll-wheel zoom with 150ms debounce; data-transit-messages escape hatch prevents intercepting message list scrolls.
   - **Phase C — Global Responsiveness:** globals.css: breakpoints at 1024px/768px/640px — job-queue-responsive, status-metric-secondary, receipt-footer-row, chat-input-area CSS classes. ChatInterface.tsx: tab labels hidden at <1024px (icon-only). Header.tsx: logo text hidden at <640px. StatusBar.tsx: SYSTEM/MEMORY/BACKGROUND/QUALITY hidden at <768px (COST+JOBS always visible). ContextPanel.tsx: auto-collapses via matchMedia on narrow viewports. InspectorDrawer.tsx: tab labels icon-only at <1024px. JobQueue.tsx: full-width at <1024px via CSS override.
