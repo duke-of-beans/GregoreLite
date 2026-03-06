@@ -1,0 +1,25 @@
+feat: Sprint 11.4 - Transit Map Z3 detail annotations (Phase 1 checkpoint)
+
+Phase 1 complete: MessageMetadata, EventMarkers, EventDetailPanel, visibility
+toggle (Cmd+Shift+M), user annotation PATCH route, single shared event fetch
+(N+1 rule enforced at MessageList level), Transit tab stub in ChatInterface.
+
+New files:
+- components/transit/MessageMetadata.tsx (model badge, tokens, cost, latency)
+- components/transit/EventMarkers.tsx (SVG shapes from registry, no hardcoding)
+- components/transit/EventDetailPanel.tsx (InspectorDrawer pattern, z=200)
+- components/transit/SubwayMap.tsx (stub - Phase 2 Task 9 builds renderer)
+- app/api/transit/events/[id]/route.ts (PATCH annotations endpoint)
+- __tests__/MessageMetadata.test.tsx (22 pure logic tests)
+- __tests__/EventMarkers.test.tsx (14 pure logic tests)
+
+Modified:
+- types.ts: EnrichedEvent + EventsApiResponse + Station + station? field
+- ui-store.ts: showTransitMetadata bool + toggleTransitMetadata()
+- Message.tsx: id/messageEvents/showTransitMetadata/onMarkerClick props
+- MessageList.tsx: single fetch, eventsMap, EventDetailPanel, annotations
+- ChatInterface.tsx: Cmd+Shift+M, Cmd+T, Transit tab split view
+- AppearanceSection.tsx: Transit Map toggle UI
+- ScrollbarLandmarks.tsx: accepts pre-fetched events prop (no double-fetch)
+
+TSC: 0 errors | Tests: 1040/1043 (36 new, all pass; 3 pre-existing failures)

@@ -5,17 +5,17 @@
 
 [1m[46m RUN [49m[22m [36mv4.0.17 [39m[90mD:/Projects/GregLite/app[39m
 
- [31m❯[39m lib/__tests__/unit/artifacts/detector.test.ts [2m([22m[2m11 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 18[2mms[22m[39m
+ [31m❯[39m lib/__tests__/unit/artifacts/detector.test.ts [2m([22m[2m11 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 22[2mms[22m[39m
      [32m✓[39m returns null for a message with no code blocks[32m 3[2mms[22m[39m
      [32m✓[39m returns null for a code block below the minimum length threshold[32m 1[2mms[22m[39m
-     [32m✓[39m detects a TypeScript code block and resolves type to code[32m 3[2mms[22m[39m
-     [32m✓[39m resolves jsx language tag to react type[32m 2[2mms[22m[39m
-     [32m✓[39m resolves tsx language tag to react type[32m 0[2mms[22m[39m
+     [32m✓[39m detects a TypeScript code block and resolves type to code[32m 4[2mms[22m[39m
+     [32m✓[39m resolves jsx language tag to react type[32m 1[2mms[22m[39m
+     [32m✓[39m resolves tsx language tag to react type[32m 1[2mms[22m[39m
      [32m✓[39m resolves html language tag to html type[32m 0[2mms[22m[39m
      [32m✓[39m resolves markdown language tag to markdown type[32m 0[2mms[22m[39m
      [32m✓[39m resolves mermaid language tag to mermaid type[32m 0[2mms[22m[39m
      [32m✓[39m picks the largest block when multiple code blocks are present[32m 0[2mms[22m[39m
-[31m     [31m×[31m generates a unique id for each detected artifact[39m[32m 4[2mms[22m[39m
+[31m     [31m×[31m generates a unique id for each detected artifact[39m[32m 6[2mms[22m[39m
 [31m     [31m×[31m falls back to language "text" and type "unknown" for a bare fence[39m[32m 1[2mms[22m[39m
 [90mstderr[2m | lib/ghost/__tests__/watcher-bridge.test.ts[2m > [22m[2mwatcher-bridge[2m > [22m[2mstartWatching[2m > [22m[2mdoes not throw when invoke fails
 [22m[39m[ghost] startWatching failed: Error: Tauri not available
@@ -43,7 +43,8 @@
     at trace [90m(file:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/vitest@4.0.17_@opentelemetr_d35252bf8e12afa7c116dd439feb2efc/node_modules/[4mvitest[24m/dist/chunks/test.B8ej_ZHS.js:239:21[90m)[39m
     at runTest [90m(file:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:1653:12[90m)[39m
 
- [32m✓[39m lib/__tests__/unit/hot-cache.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 94[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/hot-cache.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 82[2mms[22m[39m
+ [32m✓[39m lib/transit/learning/__tests__/regeneration.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 29[2mms[22m[39m
 [90mstdout[2m | lib/transit/learning/__tests__/pipeline.test.ts[2m > [22m[2mrunLearningPipeline — basic orchestration[2m > [22m[2mreturns empty array when no pending events exist
 [22m[39m[learning/pipeline] No pending learnable events — nothing to process
 
@@ -57,26 +58,6 @@
 [22m[39m[learning/pipeline] Processing 15 pending events
 [learning/pipeline] Marked 15 events as processed
 
- [31m❯[39m lib/transit/learning/__tests__/regeneration.test.ts [2m([22m[2m19 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 54[2mms[22m[39m
-     [32m✓[39m returns "code" for code-related keywords[32m 4[2mms[22m[39m
-     [32m✓[39m returns "writing" for composition keywords[32m 2[2mms[22m[39m
-[31m     [31m×[31m returns "explanation" for question/explanation keywords[39m[32m 24[2mms[22m[39m
-     [32m✓[39m returns "review" for review/audit keywords[32m 1[2mms[22m[39m
-     [32m✓[39m returns "debugging" for bug/fix keywords[32m 4[2mms[22m[39m
-     [32m✓[39m returns "general" for unmatched content[32m 0[2mms[22m[39m
-     [32m✓[39m is case-insensitive[32m 0[2mms[22m[39m
-     [32m✓[39m returns [] when 0 regen events[32m 1[2mms[22m[39m
-     [32m✓[39m returns [] when fewer than 10 regen events[32m 1[2mms[22m[39m
-     [32m✓[39m returns [] when regen events are spread evenly (none exceed 30% threshold)[32m 1[2mms[22m[39m
-     [32m✓[39m returns [] when a task type exceeds 30% but has fewer than 5 events[32m 3[2mms[22m[39m
-     [32m✓[39m detects a pattern when a task type has >30% of total regens[32m 1[2mms[22m[39m
-     [32m✓[39m uses flow event content when original_message_id resolves to a user message[32m 1[2mms[22m[39m
-     [32m✓[39m falls back to topic payload when no original_message_id is present[32m 0[2mms[22m[39m
-     [32m✓[39m can detect multiple task types simultaneously when both exceed threshold[32m 2[2mms[22m[39m
-     [32m✓[39m ignores assistant flow events for task type classification[32m 1[2mms[22m[39m
-     [32m✓[39m produces an insight with all required LearningInsight fields[32m 2[2mms[22m[39m
-     [32m✓[39m before_state is valid JSON containing task_type and regen_rate[32m 1[2mms[22m[39m
-     [32m✓[39m sets expires_at ~90 days from created_at[32m 1[2mms[22m[39m
 [90mstdout[2m | lib/transit/learning/__tests__/pipeline.test.ts[2m > [22m[2mrunLearningPipeline — minimum sample gate (§6.3)[2m > [22m[2mskips event group with fewer than 10 events
 [22m[39m[learning/pipeline] Processing 5 pending events
 [learning/pipeline] Skipping quality.interruption: 5 events < min 10
@@ -103,15 +84,17 @@
 [learning/pipeline] Stored 2 insights
 [learning/pipeline] Marked 12 events as processed
 
+ [32m✓[39m lib/__tests__/unit/war-room.test.ts [2m([22m[2m21 tests[22m[2m)[22m[33m 440[2mms[22m[39m
+       [33m[2m✓[22m[39m maps completed → complete [33m 351[2mms[22m[39m
 [90mstdout[2m | lib/transit/learning/__tests__/pipeline.test.ts[2m > [22m[2mrunLearningPipeline — error isolation (§6.1 never crashes app)[2m > [22m[2mdoes not throw when decayExpiredInsights fails
 [22m[39m[learning/pipeline] No pending learnable events — nothing to process
 
 [90mstderr[2m | lib/transit/learning/__tests__/pipeline.test.ts[2m > [22m[2mrunLearningPipeline — error isolation (§6.1 never crashes app)[2m > [22m[2mdoes not throw when decayExpiredInsights fails
 [22m[39m[learning/pipeline] decayExpiredInsights failed (non-fatal): Error: DB error during decay
-    at D:/Projects/GregLite/app/lib/transit/learning/__tests__/pipeline.test.ts:223:13
+    at D:/Projects/GregLite/app/lib/transit/learning/__tests__/pipeline.test.ts:224:13
     at Mock [90m(file:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+spy@4.0.17/node_modules/[4m@vitest[24m/spy/dist/index.js:285:34[90m)[39m
     at Module.runLearningPipeline (D:/Projects/GregLite/app/lib/transit/learning/pipeline.ts:148:23)
-    at D:/Projects/GregLite/app/lib/transit/learning/__tests__/pipeline.test.ts:226:18
+    at D:/Projects/GregLite/app/lib/transit/learning/__tests__/pipeline.test.ts:227:18
     at [90mfile:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:145:11
     at [90mfile:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:915:26
     at [90mfile:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:1243:20
@@ -121,11 +104,11 @@
 
 [90mstderr[2m | lib/transit/learning/__tests__/pipeline.test.ts[2m > [22m[2mrunLearningPipeline — error isolation (§6.1 never crashes app)[2m > [22m[2mreturns [] (not throws) when top-level unexpected error occurs
 [22m[39m[learning/pipeline] Pipeline run failed (non-fatal): Error: Registry completely unavailable
-    at D:/Projects/GregLite/app/lib/transit/learning/__tests__/pipeline.test.ts:232:13
+    at D:/Projects/GregLite/app/lib/transit/learning/__tests__/pipeline.test.ts:233:13
     at Mock [90m(file:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+spy@4.0.17/node_modules/[4m@vitest[24m/spy/dist/index.js:285:34[90m)[39m
     at getLearnableEventTypes (D:/Projects/GregLite/app/lib/transit/learning/pipeline.ts:31:10)
     at Module.runLearningPipeline (D:/Projects/GregLite/app/lib/transit/learning/pipeline.ts:155:28)
-    at D:/Projects/GregLite/app/lib/transit/learning/__tests__/pipeline.test.ts:234:27
+    at D:/Projects/GregLite/app/lib/transit/learning/__tests__/pipeline.test.ts:235:27
     at [90mfile:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:145:11
     at [90mfile:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:915:26
     at [90mfile:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:1243:20
@@ -138,10 +121,10 @@
 
 [90mstderr[2m | lib/transit/learning/__tests__/pipeline.test.ts[2m > [22m[2mrunLearningPipeline — error isolation (§6.1 never crashes app)[2m > [22m[2mdoes not throw when storeInsight fails for one insight
 [22m[39m[learning/pipeline] storeInsight failed (non-fatal): Error: Unique constraint violation
-    at D:/Projects/GregLite/app/lib/transit/learning/__tests__/pipeline.test.ts:241:13
+    at D:/Projects/GregLite/app/lib/transit/learning/__tests__/pipeline.test.ts:242:13
     at Mock [90m(file:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+spy@4.0.17/node_modules/[4m@vitest[24m/spy/dist/index.js:285:34[90m)[39m
     at Module.runLearningPipeline (D:/Projects/GregLite/app/lib/transit/learning/pipeline.ts:200:9)
-    at D:/Projects/GregLite/app/lib/transit/learning/__tests__/pipeline.test.ts:244:18
+    at D:/Projects/GregLite/app/lib/transit/learning/__tests__/pipeline.test.ts:245:18
     at [90mfile:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:145:11
     at [90mfile:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:915:26
     at [90mfile:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:1243:20
@@ -156,10 +139,10 @@
 
 [90mstderr[2m | lib/transit/learning/__tests__/pipeline.test.ts[2m > [22m[2mrunLearningPipeline — error isolation (§6.1 never crashes app)[2m > [22m[2mcontinues storing other insights after one storeInsight failure
 [22m[39m[learning/pipeline] storeInsight failed (non-fatal): Error: Constraint error
-    at D:/Projects/GregLite/app/lib/transit/learning/__tests__/pipeline.test.ts:252:45
+    at D:/Projects/GregLite/app/lib/transit/learning/__tests__/pipeline.test.ts:253:45
     at Mock [90m(file:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+spy@4.0.17/node_modules/[4m@vitest[24m/spy/dist/index.js:285:34[90m)[39m
     at Module.runLearningPipeline (D:/Projects/GregLite/app/lib/transit/learning/pipeline.ts:200:9)
-    at D:/Projects/GregLite/app/lib/transit/learning/__tests__/pipeline.test.ts:256:11
+    at D:/Projects/GregLite/app/lib/transit/learning/__tests__/pipeline.test.ts:257:11
     at [90mfile:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:145:11
     at [90mfile:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:915:26
     at [90mfile:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:1243:20
@@ -187,26 +170,7 @@
 [90mstdout[2m | lib/transit/learning/__tests__/pipeline.test.ts[2m > [22m[2mstartLearningScheduler / stopLearningScheduler[2m > [22m[2mcan be restarted after stopping
 [22m[39m[learning/pipeline] Scheduler stopped
 
- [31m❯[39m lib/transit/learning/__tests__/pipeline.test.ts [2m([22m[2m19 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[32m 56[2mms[22m[39m
-     [32m✓[39m returns empty array when no pending events exist[32m 7[2mms[22m[39m
-[31m     [31m×[31m calls decayExpiredInsights at the start of each run[39m[32m 11[2mms[22m[39m
-     [32m✓[39m returns empty array when no learnable event types are registered[32m 2[2mms[22m[39m
-     [32m✓[39m returns empty array when pending events exist but are all non-learnable types[32m 2[2mms[22m[39m
-     [32m✓[39m skips event group with fewer than 10 events[32m 1[2mms[22m[39m
-     [32m✓[39m processes event group with exactly 10 events[32m 2[2mms[22m[39m
-[31m     [31m×[31m processes groups meeting threshold while skipping those that do not[39m[32m 2[2mms[22m[39m
-     [32m✓[39m marks all processed event IDs with learning_status=processed[32m 1[2mms[22m[39m
-[31m     [31m×[31m calls generateInsights with the collected pattern results[39m[32m 2[2mms[22m[39m
-     [32m✓[39m calls storeInsight for each insight returned by generateInsights[32m 4[2mms[22m[39m
-     [32m✓[39m does not throw when decayExpiredInsights fails[32m 6[2mms[22m[39m
-     [32m✓[39m returns [] (not throws) when top-level unexpected error occurs[32m 2[2mms[22m[39m
-     [32m✓[39m does not throw when storeInsight fails for one insight[32m 2[2mms[22m[39m
-     [32m✓[39m continues storing other insights after one storeInsight failure[32m 2[2mms[22m[39m
-     [32m✓[39m does not throw when markEventsProcessed fails (DB error on UPDATE)[32m 1[2mms[22m[39m
-     [32m✓[39m starts and stops without throwing[32m 2[2mms[22m[39m
-     [32m✓[39m is idempotent — calling start twice does not create multiple intervals[32m 1[2mms[22m[39m
-     [32m✓[39m stop is safe to call when scheduler is not running[32m 1[2mms[22m[39m
-     [32m✓[39m can be restarted after stopping[32m 1[2mms[22m[39m
+ [32m✓[39m lib/transit/learning/__tests__/pipeline.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 55[2mms[22m[39m
 [90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstartGhost[2m > [22m[2mcalls all components in the correct startup order
 [22m[39m[ghost/lifecycle] Starting Ghost...
 [ghost/lifecycle] Watch paths: (none configured)
@@ -275,9 +239,16 @@
 [90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mstops components in reverse startup order
 [22m[39m[ghost/lifecycle] Stopping Ghost...
 
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mstarts all components in the correct order
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
 [90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mstops components in reverse startup order
 [22m[39m[ghost/lifecycle] Ghost stopped
 
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mstarts all components in the correct order
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
 [90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2memits state: "stopped" after shutdown
 [22m[39m[ghost/lifecycle] Starting Ghost...
 [ghost/lifecycle] Watch paths: (none configured)
@@ -285,8 +256,15 @@
 [90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2memits state: "stopped" after shutdown
 [22m[39m[ghost/lifecycle] Ghost started (state: running)
 
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mresolves stopGhost within 5 seconds even when watcher hangs
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
 [90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2memits state: "stopped" after shutdown
 [22m[39m[ghost/lifecycle] Stopping Ghost...
+
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mresolves stopGhost within 5 seconds even when watcher hangs
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
 
 [90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2memits state: "stopped" after shutdown
 [22m[39m[ghost/lifecycle] Ghost stopped
@@ -310,6 +288,15 @@
 
 [90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mresolves within 5 seconds even if watcher hangs
 [22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mresolves stopGhost within 5 seconds even when watcher hangs
+[22m[39m[ghost/lifecycle] Stopping Ghost...
+
+[90mstderr[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mresolves stopGhost within 5 seconds even when watcher hangs
+[22m[39m[ghost/lifecycle] Shutdown timeout (5s) — forcing close
+
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mresolves stopGhost within 5 seconds even when watcher hangs
+[22m[39m[ghost/lifecycle] Ghost stopped
 
 [90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mresolves within 5 seconds even if watcher hangs
 [22m[39m[ghost/lifecycle] Stopping Ghost...
@@ -330,6 +317,16 @@
 [90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mpauses email poller and ingest queue
 [22m[39m[ghost/lifecycle] Pausing Ghost components...
 
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mcontinues startup when one component fails (degraded mode)
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstderr[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mcontinues startup when one component fails (degraded mode)
+[22m[39m[ghost/lifecycle] Startup step "email-poller" failed: OAuth expired
+
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mcontinues startup when one component fails (degraded mode)
+[22m[39m[ghost/lifecycle] Ghost started (state: degraded)
+
 [90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2memits state: "paused" after pause
 [22m[39m[ghost/lifecycle] Starting Ghost...
 [ghost/lifecycle] Watch paths: (none configured)
@@ -347,14 +344,23 @@
 [90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mis idempotent — calling pauseGhost twice only pauses once
 [22m[39m[ghost/lifecycle] Ghost started (state: running)
 
- [32m✓[39m lib/__tests__/unit/war-room.test.ts [2m([22m[2m21 tests[22m[2m)[22m[33m 589[2mms[22m[39m
-       [33m[2m✓[22m[39m maps completed → complete [33m 484[2mms[22m[39m
 [90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mis idempotent — calling pauseGhost twice only pauses once
 [22m[39m[ghost/lifecycle] Pausing Ghost components...
+
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mpauses all components on AEGIS PARALLEL_BUILD and resumes on resume
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mpauses all components on AEGIS PARALLEL_BUILD and resumes on resume
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
 
 [90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mresumes email poller and ingest queue
 [22m[39m[ghost/lifecycle] Starting Ghost...
 [ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mpauses all components on AEGIS PARALLEL_BUILD and resumes on resume
+[22m[39m[ghost/lifecycle] Pausing Ghost components...
+[ghost/lifecycle] Resuming Ghost components...
 
 [90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mresumes email poller and ingest queue
 [22m[39m[ghost/lifecycle] Ghost started (state: running)
@@ -450,98 +456,59 @@
 [90mstderr[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mrestartComponent[2m > [22m[2memits ghost:error if restart also fails
 [22m[39m[ghost/lifecycle] Component "watcher" restart failed: Still broken
 
-[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mstarts all components in the correct order
-[22m[39m[ghost/lifecycle] Starting Ghost...
-[ghost/lifecycle] Watch paths: (none configured)
-
- [32m✓[39m lib/ghost/__tests__/lifecycle.test.ts [2m([22m[2m26 tests[22m[2m)[22m[33m 515[2mms[22m[39m
-       [33m[2m✓[22m[39m calls all components in the correct startup order [33m 426[2mms[22m[39m
-[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mstarts all components in the correct order
-[22m[39m[ghost/lifecycle] Ghost started (state: running)
-
-[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mresolves stopGhost within 5 seconds even when watcher hangs
-[22m[39m[ghost/lifecycle] Starting Ghost...
-[ghost/lifecycle] Watch paths: (none configured)
-
-[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mresolves stopGhost within 5 seconds even when watcher hangs
-[22m[39m[ghost/lifecycle] Ghost started (state: running)
-
-[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mresolves stopGhost within 5 seconds even when watcher hangs
-[22m[39m[ghost/lifecycle] Stopping Ghost...
-
-[90mstderr[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mresolves stopGhost within 5 seconds even when watcher hangs
-[22m[39m[ghost/lifecycle] Shutdown timeout (5s) — forcing close
-
-[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mresolves stopGhost within 5 seconds even when watcher hangs
-[22m[39m[ghost/lifecycle] Ghost stopped
-
-[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mcontinues startup when one component fails (degraded mode)
-[22m[39m[ghost/lifecycle] Starting Ghost...
-[ghost/lifecycle] Watch paths: (none configured)
-
-[90mstderr[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mcontinues startup when one component fails (degraded mode)
-[22m[39m[ghost/lifecycle] Startup step "email-poller" failed: OAuth expired
-
-[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mcontinues startup when one component fails (degraded mode)
-[22m[39m[ghost/lifecycle] Ghost started (state: degraded)
-
-[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mpauses all components on AEGIS PARALLEL_BUILD and resumes on resume
-[22m[39m[ghost/lifecycle] Starting Ghost...
-[ghost/lifecycle] Watch paths: (none configured)
-
-[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mpauses all components on AEGIS PARALLEL_BUILD and resumes on resume
-[22m[39m[ghost/lifecycle] Ghost started (state: running)
-
-[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mpauses all components on AEGIS PARALLEL_BUILD and resumes on resume
-[22m[39m[ghost/lifecycle] Pausing Ghost components...
-[ghost/lifecycle] Resuming Ghost components...
-
+ [32m✓[39m lib/ghost/__tests__/lifecycle.test.ts [2m([22m[2m26 tests[22m[2m)[22m[33m 607[2mms[22m[39m
+       [33m[2m✓[22m[39m calls all components in the correct startup order [33m 517[2mms[22m[39m
 [90mstderr[2m | lib/__tests__/integration/phase5-integration.test.ts[2m > [22m[2mAgent SDK Gate[2m > [22m[2mjob marked FAILED when eos_required is true and health score < 70
 [22m[39m[EoS gate] Job downgraded to FAILED — health score [33m45[39m < 70
 
- [31m❯[39m lib/__tests__/integration/phase5-integration.test.ts [2m([22m[2m31 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 95[2mms[22m[39m
-     [32m✓[39m scan() returns an EoSScanResult with healthScore in [0, 100][32m 12[2mms[22m[39m
+ [31m❯[39m lib/__tests__/integration/phase5-integration.test.ts [2m([22m[2m31 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 91[2mms[22m[39m
+     [32m✓[39m scan() returns an EoSScanResult with healthScore in [0, 100][32m 11[2mms[22m[39m
      [32m✓[39m scan() completes on a multi-file directory without throwing[32m 6[2mms[22m[39m
-     [32m✓[39m scanFiles() runs on a specific list of file paths[32m 6[2mms[22m[39m
-[31m     [31m×[31m dirty.ts triggers at least one issue[39m[32m 18[2mms[22m[39m
+     [32m✓[39m scanFiles() runs on a specific list of file paths[32m 5[2mms[22m[39m
+[31m     [31m×[31m dirty.ts triggers at least one issue[39m[32m 16[2mms[22m[39m
      [32m✓[39m scan() deep mode includes more files than quick mode (quick skips tests)[32m 7[2mms[22m[39m
      [32m✓[39m score with no issues is 100[32m 1[2mms[22m[39m
-     [32m✓[39m each critical issue deducts 8 points[32m 0[2mms[22m[39m
+     [32m✓[39m each critical issue deducts 8 points[32m 1[2mms[22m[39m
      [32m✓[39m each warning deducts 2 points[32m 0[2mms[22m[39m
-     [32m✓[39m dependency cycles deduct 10 points each[32m 0[2mms[22m[39m
-     [32m✓[39m score is clamped to [0, 100][32m 1[2mms[22m[39m
+     [32m✓[39m dependency cycles deduct 10 points each[32m 1[2mms[22m[39m
+     [32m✓[39m score is clamped to [0, 100][32m 0[2mms[22m[39m
      [32m✓[39m grade boundaries: 90→excellent, 70→good, 50→attention, 49→critical[32m 1[2mms[22m[39m
      [32m✓[39m computeDebt returns correct aggregate counts[32m 1[2mms[22m[39m
-     [32m✓[39m hotspots are sorted by debt descending[32m 0[2mms[22m[39m
-     [32m✓[39m recordOccurrence stores a row in eos_fp_log[32m 5[2mms[22m[39m
+     [32m✓[39m hotspots are sorted by debt descending[32m 1[2mms[22m[39m
+     [32m✓[39m recordOccurrence stores a row in eos_fp_log[32m 4[2mms[22m[39m
      [32m✓[39m markFalsePositive updates is_fp to 1[32m 1[2mms[22m[39m
      [32m✓[39m rule with >20% FP rate in last 100 occurrences appears in getSuppressedRules()[32m 6[2mms[22m[39m
      [32m✓[39m rule with low FP rate stays out of suppressed set[32m 2[2mms[22m[39m
      [32m✓[39m getRuleStats returns correct FP rate for a rule[32m 1[2mms[22m[39m
-     [32m✓[39m getSuppressedRules returns empty set for project with no records[32m 1[2mms[22m[39m
-     [32m✓[39m job marked FAILED when eos_required is true and health score < 70[32m 4[2mms[22m[39m
+     [32m✓[39m getSuppressedRules returns empty set for project with no records[32m 0[2mms[22m[39m
+     [32m✓[39m job marked FAILED when eos_required is true and health score < 70[32m 5[2mms[22m[39m
      [32m✓[39m job stays COMPLETED when eos_required is true and health score >= 70[32m 1[2mms[22m[39m
      [32m✓[39m job gate does not fire when eos_required is false[32m 1[2mms[22m[39m
-     [32m✓[39m EoS health score is backfilled into result_report for War Room display[32m 1[2mms[22m[39m
-     [32m✓[39m recordImprovement stores the record and persists to shim_improvements[32m 2[2mms[22m[39m
+     [32m✓[39m EoS health score is backfilled into result_report for War Room display[32m 0[2mms[22m[39m
+     [32m✓[39m recordImprovement stores the record and persists to shim_improvements[32m 1[2mms[22m[39m
      [32m✓[39m recordImprovement creates or accumulates a pattern entry[32m 1[2mms[22m[39m
      [32m✓[39m PatternLearner hydrates from KERNL DB on fresh construction[32m 1[2mms[22m[39m
-     [32m✓[39m predictSuccess returns a sorted PredictionScore array[32m 3[2mms[22m[39m
+     [32m✓[39m predictSuccess returns a sorted PredictionScore array[32m 2[2mms[22m[39m
      [32m✓[39m getTopPatterns returns patterns ordered by frequency × successRate[32m 1[2mms[22m[39m
      [32m✓[39m score >= 80 returns success (green)[32m 1[2mms[22m[39m
      [32m✓[39m score 60–79 returns warning (amber)[32m 0[2mms[22m[39m
      [32m✓[39m score < 60 returns error (red)[32m 0[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/indexer.test.ts [2m([22m[2m33 tests[22m[2m)[22m[33m 497[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/embeddings.test.ts [2m([22m[2m30 tests[22m[2m)[22m[33m 622[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/indexer.test.ts [2m([22m[2m33 tests[22m[2m)[22m[33m 476[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/embeddings.test.ts [2m([22m[2m30 tests[22m[2m)[22m[33m 592[2mms[22m[39m
 [90mstdout[2m | lib/ghost/__tests__/watcher-bridge.test.ts[2m > [22m[2mAEGIS → Ghost integration[2m > [22m[2mcalls ghost_pause when AEGIS transitions to PARALLEL_BUILD
 [22m[39m[ghost/lifecycle] Pausing Ghost components...
 
 [90mstdout[2m | lib/ghost/__tests__/watcher-bridge.test.ts[2m > [22m[2mAEGIS → Ghost integration[2m > [22m[2mcalls ghost_resume when AEGIS transitions to IDLE
 [22m[39m[ghost/lifecycle] Resuming Ghost components...
 
- [32m✓[39m lib/ghost/__tests__/watcher-bridge.test.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 849[2mms[22m[39m
-     [33m[2m✓[22m[39m calls ghost_pause when AEGIS transitions to PARALLEL_BUILD [33m 812[2mms[22m[39m
- [32m✓[39m lib/ghost/__tests__/phase6-integration.test.ts [2m([22m[2m33 tests[22m[2m)[22m[33m 436[2mms[22m[39m
+ [32m✓[39m lib/ghost/__tests__/watcher-bridge.test.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 845[2mms[22m[39m
+     [33m[2m✓[22m[39m calls ghost_pause when AEGIS transitions to PARALLEL_BUILD [33m 805[2mms[22m[39m
+ [32m✓[39m lib/ghost/__tests__/phase6-integration.test.ts [2m([22m[2m33 tests[22m[2m)[22m[33m 481[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/decision-gate.test.ts [2m([22m[2m40 tests[22m[2m)[22m[32m 108[2mms[22m[39m
+ [32m✓[39m lib/agent-sdk/__tests__/error-handling.test.ts [2m([22m[2m43 tests[22m[2m)[22m[32m 78[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/aegis.test.ts [2m([22m[2m33 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+ [32m✓[39m components/transit/__tests__/MessageMetadata.test.tsx [2m([22m[2m22 tests[22m[2m)[22m[32m 65[2mms[22m[39m
+ [32m✓[39m lib/agent-sdk/__tests__/sprint-12-cache-control.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 73[2mms[22m[39m
 [90mstderr[2m | lib/__tests__/unit/ui-store.test.ts[2m > [22m[2mUIStore[2m > [22m[2mSidebar[2m > [22m[2mshould toggle sidebar open/closed
 [22m[39m[zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
 
@@ -732,12 +699,29 @@
 [zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
 [zustand persist middleware] Unable to update item 'gregore-ui-storage', the given storage is currently unavailable.
 
- [32m✓[39m lib/__tests__/unit/ui-store.test.ts [2m([22m[2m24 tests[22m[2m)[22m[32m 56[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/decision-gate.test.ts [2m([22m[2m40 tests[22m[2m)[22m[32m 93[2mms[22m[39m
- [32m✓[39m lib/agent-sdk/__tests__/error-handling.test.ts [2m([22m[2m43 tests[22m[2m)[22m[32m 70[2mms[22m[39m
- [32m✓[39m lib/agent-sdk/__tests__/sprint-12-cache-control.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 69[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/shim/pattern-learner.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 35[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/vector.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 37[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/ui-store.test.ts [2m([22m[2m24 tests[22m[2m)[22m[32m 48[2mms[22m[39m
+[90mstderr[2m | lib/agent-sdk/__tests__/cost-accounting.test.ts[2m > [22m[2mcalculateCost[2m > [22m[2mreturns 0 for unknown model (never crashes)
+[22m[39m[cost-calculator] No pricing for model: "unknown-model-xyz". Cost will be $0.00.
+
+[90mstderr[2m | lib/agent-sdk/__tests__/cost-accounting.test.ts[2m > [22m[2mgetPricingForModel[2m > [22m[2munknown model returns zero rates
+[22m[39m[cost-calculator] No pricing for model: "does-not-exist". Cost will be $0.00.
+
+ [32m✓[39m lib/ghost/__tests__/scorer.test.ts [2m([22m[2m37 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+ [32m✓[39m lib/agent-sdk/__tests__/cost-accounting.test.ts [2m([22m[2m33 tests[22m[2m)[22m[32m 43[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/eos/fp-tracker.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 48[2mms[22m[39m
+[90mstdout[2m | lib/agent-sdk/__tests__/phase7-integration.test.ts[2m > [22m[2mPhase 7H: Orchestrator runPostProcessing gates[2m > [22m[2mexits early if job status is not completed
+[22m[39m[SelfEvolution] Post-processing skipped — status: failed
+
+[90mstderr[2m | lib/agent-sdk/__tests__/phase7-integration.test.ts[2m > [22m[2mPhase 7H: Orchestrator runPostProcessing gates[2m > [22m[2mexits early if SHIM score is below threshold
+[22m[39m[SelfEvolution] SHIM score 55 < 70 for manifest-002. Skipping PR creation.
+
+[90mstdout[2m | lib/agent-sdk/__tests__/phase7-integration.test.ts[2m > [22m[2mPhase 7H: Orchestrator runPostProcessing gates[2m > [22m[2mskips PR creation when githubOwner/githubRepo not provided
+[22m[39m[SelfEvolution] Local tests passed for manifest-003
+[SelfEvolution] GitHub owner/repo not configured — skipping PR for manifest-003
+
+ [32m✓[39m lib/agent-sdk/__tests__/phase7-integration.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 103[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/decision-gate-4b.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+ [32m✓[39m lib/agent-sdk/__tests__/permission-matrix.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 50[2mms[22m[39m
 [90mstderr[2m | lib/transit/__tests__/capture.test.ts[2m > [22m[2mcaptureEvent()[2m > [22m[2mnever throws when db.prepare throws
 [22m[39m[transit] captureEvent failed: Error: DB unavailable
     at Object.<anonymous> (D:/Projects/GregLite/app/lib/transit/__tests__/capture.test.ts:101:54)
@@ -751,7 +735,6 @@
     at Proxy.<anonymous> [90m(file:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+expect@4.0.17/node_modules/[4m@vitest[24m/expect/dist/index.js:1485:16[90m)[39m
     at Proxy.<anonymous> [90m(file:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+expect@4.0.17/node_modules/[4m@vitest[24m/expect/dist/index.js:1090:14[90m)[39m
 
- [32m✓[39m lib/__tests__/unit/eos/fp-tracker.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 50[2mms[22m[39m
 [90mstderr[2m | lib/transit/__tests__/capture.test.ts[2m > [22m[2mcaptureEvent()[2m > [22m[2mnever throws when run() throws
 [22m[39m[transit] captureEvent failed: Error: constraint violation
     at Object.<anonymous> (D:/Projects/GregLite/app/lib/transit/__tests__/capture.test.ts:110:50)
@@ -791,33 +774,20 @@
     at runWithTimeout [90m(file:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:1209:10[90m)[39m
     at [90mfile:///D:/Projects/GregLite/app/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@4.0.17/node_modules/[4m@vitest[24m/runner/dist/index.js:1653:37
 
- [32m✓[39m lib/transit/__tests__/capture.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 47[2mms[22m[39m
- [32m✓[39m lib/agent-sdk/__tests__/scheduler.test.ts [2m([22m[2m31 tests[22m[2m)[22m[32m 38[2mms[22m[39m
-[90mstdout[2m | lib/agent-sdk/__tests__/phase7-integration.test.ts[2m > [22m[2mPhase 7H: Orchestrator runPostProcessing gates[2m > [22m[2mexits early if job status is not completed
-[22m[39m[SelfEvolution] Post-processing skipped — status: failed
-
-[90mstderr[2m | lib/agent-sdk/__tests__/phase7-integration.test.ts[2m > [22m[2mPhase 7H: Orchestrator runPostProcessing gates[2m > [22m[2mexits early if SHIM score is below threshold
-[22m[39m[SelfEvolution] SHIM score 55 < 70 for manifest-002. Skipping PR creation.
-
-[90mstdout[2m | lib/agent-sdk/__tests__/phase7-integration.test.ts[2m > [22m[2mPhase 7H: Orchestrator runPostProcessing gates[2m > [22m[2mskips PR creation when githubOwner/githubRepo not provided
-[22m[39m[SelfEvolution] Local tests passed for manifest-003
-[SelfEvolution] GitHub owner/repo not configured — skipping PR for manifest-003
-
- [32m✓[39m lib/agent-sdk/__tests__/phase7-integration.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 55[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/aegis.test.ts [2m([22m[2m33 tests[22m[2m)[22m[32m 65[2mms[22m[39m
+ [32m✓[39m lib/transit/__tests__/capture.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 52[2mms[22m[39m
 [90mstdout[2m | lib/__tests__/unit/cold-start.test.ts[2m > [22m[2mwarmAll()[2m > [22m[2mcalls readHotCache() before buildWarmCache()
-[22m[39m[cold-start] Tier 1 ready: 1ms
+[22m[39m[cold-start] Tier 1 ready: 0ms
 
 [90mstdout[2m | lib/__tests__/unit/cold-start.test.ts[2m > [22m[2mwarmAll()[2m > [22m[2mcalls readHotCache() before buildWarmCache()
-[22m[39m[cold-start] Tier 2 ready: 3ms
-[cold-start] All tiers ready: 3ms
+[22m[39m[cold-start] Tier 2 ready: 2ms
+[cold-start] All tiers ready: 2ms
 
 [90mstdout[2m | lib/__tests__/unit/cold-start.test.ts[2m > [22m[2mwarmAll()[2m > [22m[2mcalls both readHotCache() and buildWarmCache() exactly once
 [22m[39m[cold-start] Tier 1 ready: 0ms
 
 [90mstdout[2m | lib/__tests__/unit/cold-start.test.ts[2m > [22m[2mwarmAll()[2m > [22m[2mcalls both readHotCache() and buildWarmCache() exactly once
-[22m[39m[cold-start] Tier 2 ready: 1ms
-[cold-start] All tiers ready: 1ms
+[22m[39m[cold-start] Tier 2 ready: 0ms
+[cold-start] All tiers ready: 0ms
 
 [90mstdout[2m | lib/__tests__/unit/cold-start.test.ts[2m > [22m[2mwarmAll()[2m > [22m[2mresolves without error when both tiers succeed
 [22m[39m[cold-start] Tier 1 ready: 2ms
@@ -826,64 +796,56 @@
 [22m[39m[cold-start] Tier 2 ready: 2ms
 [cold-start] All tiers ready: 2ms
 
+ [32m✓[39m lib/__tests__/unit/kernl-project-store.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 52[2mms[22m[39m
 [90mstdout[2m | lib/__tests__/unit/cold-start.test.ts[2m > [22m[2mwarmAll()[2m > [22m[2mpropagates rejection when buildWarmCache() fails
 [22m[39m[cold-start] Tier 1 ready: 0ms
 
- [32m✓[39m lib/__tests__/unit/cold-start.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 43[2mms[22m[39m
-[90mstderr[2m | lib/agent-sdk/__tests__/cost-accounting.test.ts[2m > [22m[2mcalculateCost[2m > [22m[2mreturns 0 for unknown model (never crashes)
-[22m[39m[cost-calculator] No pricing for model: "unknown-model-xyz". Cost will be $0.00.
-
-[90mstderr[2m | lib/agent-sdk/__tests__/cost-accounting.test.ts[2m > [22m[2mgetPricingForModel[2m > [22m[2munknown model returns zero rates
-[22m[39m[cost-calculator] No pricing for model: "does-not-exist". Cost will be $0.00.
-
+ [32m✓[39m lib/__tests__/unit/cold-start.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 37[2mms[22m[39m
 [90mstdout[2m | lib/__tests__/unit/agent-sdk.test.ts[2m > [22m[2mAgent SDK public API[2m > [22m[2mspawn returns a jobId and queued=false for the first job
 [22m[39m[AgentSDK] Marked 1 stale job(s) INTERRUPTED on boot
 
- [32m✓[39m lib/__tests__/unit/agent-sdk.test.ts [2m([22m[2m40 tests[22m[2m)[22m[32m 70[2mms[22m[39m
- [32m✓[39m lib/agent-sdk/__tests__/cost-accounting.test.ts [2m([22m[2m33 tests[22m[2m)[22m[32m 54[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/cross-context.test.ts [2m([22m[2m34 tests[22m[2m)[22m[32m 42[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/suggestion-store.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 38[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/kernl-project-store.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 43[2mms[22m[39m
- [32m✓[39m lib/agent-sdk/__tests__/permission-matrix.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 47[2mms[22m[39m
- [32m✓[39m components/transit/__tests__/MessageMetadata.test.tsx [2m([22m[2m22 tests[22m[2m)[22m[32m 65[2mms[22m[39m
- [32m✓[39m lib/agent-sdk/__tests__/sprint-12-batch-executor.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 35[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/agent-sdk.test.ts [2m([22m[2m40 tests[22m[2m)[22m[32m 74[2mms[22m[39m
+ [32m✓[39m lib/transit/learning/__tests__/verbosity.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/suggestion-store.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 30[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/cross-context.test.ts [2m([22m[2m34 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+ [32m✓[39m lib/agent-sdk/__tests__/scheduler.test.ts [2m([22m[2m31 tests[22m[2m)[22m[32m 40[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/vector.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 37[2mms[22m[39m
+ [32m✓[39m lib/transit/__tests__/registry.test.ts [2m([22m[2m24 tests[22m[2m)[22m[32m 37[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/gate.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 31[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/shim/pattern-learner.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+ [32m✓[39m lib/transit/learning/__tests__/registry.test.ts [2m([22m[2m28 tests[22m[2m)[22m[32m 40[2mms[22m[39m
 [90mstdout[2m | lib/__tests__/integration/phase4-integration.test.ts[2m > [22m[2mPerformance — sync analysis path timing[2m > [22m[2msync path (no Haiku) completes well under 100ms on 20-message conversation
 [22m[39m[perf] sync analyze() on 20-message conversation: 0ms
 
 [90mstdout[2m | lib/__tests__/integration/phase4-integration.test.ts[2m > [22m[2mPerformance — sync analysis path timing[2m > [22m[2mhaiku inference path is called only when all sync checks pass
 [22m[39m[perf] full analyze() path (sync + mocked Haiku): 0ms
 
- [32m✓[39m lib/__tests__/integration/phase4-integration.test.ts [2m([22m[2m34 tests[22m[2m)[22m[32m 34[2mms[22m[39m
- [32m✓[39m lib/transit/__tests__/registry.test.ts [2m([22m[2m24 tests[22m[2m)[22m[32m 37[2mms[22m[39m
- [32m✓[39m lib/transit/learning/__tests__/registry.test.ts [2m([22m[2m28 tests[22m[2m)[22m[32m 30[2mms[22m[39m
- [32m✓[39m lib/ghost/__tests__/scorer.test.ts [2m([22m[2m37 tests[22m[2m)[22m[32m 50[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/decision-gate-4b.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 49[2mms[22m[39m
- [32m✓[39m lib/transit/__tests__/topic-detector.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 22[2mms[22m[39m
- [32m✓[39m lib/transit/learning/__tests__/insights.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 27[2mms[22m[39m
- [32m✓[39m lib/__tests__/integration/phase3-integration.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 29[2mms[22m[39m
- [32m✓[39m lib/transit/learning/__tests__/verbosity.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+ [32m✓[39m lib/__tests__/integration/phase4-integration.test.ts [2m([22m[2m34 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+ [32m✓[39m lib/agent-sdk/__tests__/sprint-12-batch-executor.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+ [32m✓[39m lib/__tests__/integration/phase3-integration.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32m✓[39m lib/transit/learning/__tests__/insights.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/proactive.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 24[2mms[22m[39m
  [32m✓[39m lib/ghost/__tests__/privacy.test.ts [2m([22m[2m37 tests[22m[2m)[22m[32m 29[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/gate.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 36[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/proactive.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 28[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/warm-cache.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 25[2mms[22m[39m
- [32m✓[39m lib/agent-sdk/__tests__/shim-readonly-audit.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 16[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/shim/job-context.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/warm-cache.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32m✓[39m lib/transit/__tests__/topic-detector.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 17[2mms[22m[39m
  [32m✓[39m lib/agent-sdk/__tests__/test-runner.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 21[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/eos/batch.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 15[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/eos/character.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 19[2mms[22m[39m
- [32m✓[39m lib/transit/__tests__/stations.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/eos/character.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 21[2mms[22m[39m
  [32m✓[39m lib/agent-sdk/__tests__/markdown-linter.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 18[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/eos/health-score.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/context-provider.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/shim/job-context.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32m✓[39m lib/transit/__tests__/stations.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/eos/health-score.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 14[2mms[22m[39m
  [32m✓[39m lib/__tests__/unit/eos/patterns.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 17[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/context-provider.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 18[2mms[22m[39m
- [32m✓[39m lib/agent-sdk/__tests__/kernl-search.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 14[2mms[22m[39m
- [32m✓[39m lib/agent-sdk/__tests__/sprint-12-haiku-routing.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 10[2mms[22m[39m
- [32m✓[39m components/transit/__tests__/EventMarkers.test.tsx [2m([22m[2m14 tests[22m[2m)[22m[32m 9[2mms[22m[39m
- [32m✓[39m lib/__tests__/unit/artifacts/store.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 8[2mms[22m[39m
- [32m✓[39m components/transit/__tests__/ScrollbarLandmarks.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m lib/agent-sdk/__tests__/shim-readonly-audit.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/eos/batch.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m lib/agent-sdk/__tests__/kernl-search.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m lib/agent-sdk/__tests__/sprint-12-haiku-routing.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m components/transit/__tests__/EventMarkers.test.tsx [2m([22m[2m14 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/artifacts/store.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 7[2mms[22m[39m
  [32m✓[39m lib/agent-sdk/__tests__/failure-modes-shim-loop.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m components/transit/__tests__/ScrollbarLandmarks.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[32m 6[2mms[22m[39m
 
-[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 7 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 3 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
 
 [41m[1m FAIL [22m[49m lib/__tests__/integration/phase5-integration.test.ts[2m > [22mEoS Scan Engine[2m > [22mdirty.ts triggers at least one issue
 [31m[1mAssertionError[22m: expected 0 to be greater than 0[39m
@@ -895,59 +857,7 @@
     [90m343| [39m  })[33m;[39m
     [90m344| [39m
 
-[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯[22m[39m
-
-[41m[1m FAIL [22m[49m lib/transit/learning/__tests__/pipeline.test.ts[2m > [22mrunLearningPipeline — basic orchestration[2m > [22mcalls decayExpiredInsights at the start of each run
-[31m[1mAssertionError[22m: expected "vi.fn()" to be called once, but got 2 times[39m
-[36m [2m❯[22m lib/transit/learning/__tests__/pipeline.test.ts:[2m137:34[22m[39m
-    [90m135| [39m    mockAll[33m.[39m[34mmockReturnValue[39m([])[33m;[39m
-    [90m136| [39m    [35mawait[39m [34mrunLearningPipeline[39m()[33m;[39m
-    [90m137| [39m    [34mexpect[39m(decayExpiredInsights)[33m.[39m[34mtoHaveBeenCalledOnce[39m()[33m;[39m
-    [90m   | [39m                                 [31m^[39m
-    [90m138| [39m  })[33m;[39m
-    [90m139| [39m
-
-[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯[22m[39m
-
-[41m[1m FAIL [22m[49m lib/transit/learning/__tests__/pipeline.test.ts[2m > [22mrunLearningPipeline — minimum sample gate (§6.3)[2m > [22mprocesses groups meeting threshold while skipping those that do not
-[31m[1mAssertionError[22m: expected "vi.fn()" to be called once, but got 2 times[39m
-[36m [2m❯[22m lib/transit/learning/__tests__/pipeline.test.ts:[2m181:37[22m[39m
-    [90m179| [39m    [35mawait[39m [34mrunLearningPipeline[39m()[33m;[39m
-    [90m180| [39m    [90m// Verbosity detector called for interruption (12 >= 10)[39m
-    [90m181| [39m    [34mexpect[39m(detectVerbosityPatterns)[33m.[39m[34mtoHaveBeenCalledOnce[39m()[33m;[39m
-    [90m   | [39m                                    [31m^[39m
-    [90m182| [39m  })[33m;[39m
-    [90m183| [39m})[33m;[39m
-
-[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯[22m[39m
-
-[41m[1m FAIL [22m[49m lib/transit/learning/__tests__/pipeline.test.ts[2m > [22mrunLearningPipeline — event processing[2m > [22mcalls generateInsights with the collected pattern results
-[31m[1mAssertionError[22m: expected "vi.fn()" to be called once, but got 6 times[39m
-[36m [2m❯[22m lib/transit/learning/__tests__/pipeline.test.ts:[2m201:30[22m[39m
-    [90m199| [39m    mockAll.mockReturnValue(makePendingRows(12, 'quality.interruption'…
-    [90m200| [39m    [35mawait[39m [34mrunLearningPipeline[39m()[33m;[39m
-    [90m201| [39m    [34mexpect[39m(generateInsights)[33m.[39m[34mtoHaveBeenCalledOnce[39m()[33m;[39m
-    [90m   | [39m                             [31m^[39m
-    [90m202| [39m  })[33m;[39m
-    [90m203| [39m
-
-[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯[22m[39m
-
-[41m[1m FAIL [22m[49m lib/transit/learning/__tests__/regeneration.test.ts[2m > [22mclassifyTaskType[2m > [22mreturns "explanation" for question/explanation keywords
-[31m[1mAssertionError[22m: expected 'code' to be 'explanation' // Object.is equality[39m
-
-Expected: [32m"explanation"[39m
-Received: [31m"code"[39m
-
-[36m [2m❯[22m lib/transit/learning/__tests__/regeneration.test.ts:[2m71:66[22m[39m
-    [90m 69| [39m    expect(classifyTaskType('what is the difference between null and u…
-    [90m 70| [39m    expect(classifyTaskType('why does this cause a memory leak')).toBe…
-    [90m 71| [39m    expect(classifyTaskType('describe what this function does')).toBe(…
-    [90m   | [39m                                                                 [31m^[39m
-    [90m 72| [39m  })[33m;[39m
-    [90m 73| [39m
-
-[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯[22m[39m
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯[22m[39m
 
 [41m[1m FAIL [22m[49m lib/__tests__/unit/artifacts/detector.test.ts[2m > [22mdetectArtifact[2m > [22mgenerates a unique id for each detected artifact
 [31m[1mTypeError[22m: Cannot read properties of null (reading 'id')[39m
@@ -959,7 +869,7 @@ Received: [31m"code"[39m
     [90m157| [39m    [34mexpect[39m(a2[33m![39m[33m.[39mid)[33m.[39m[34mtoBeTruthy[39m()[33m;[39m
     [90m158| [39m    [34mexpect[39m(a1[33m![39m[33m.[39mid)[33m.[39mnot[33m.[39m[34mtoBe[39m(a2[33m![39m[33m.[39mid)[33m;[39m
 
-[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯[22m[39m
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯[22m[39m
 
 [41m[1m FAIL [22m[49m lib/__tests__/unit/artifacts/detector.test.ts[2m > [22mdetectArtifact[2m > [22mfalls back to language "text" and type "unknown" for a bare fence
 [31m[1mTypeError[22m: Cannot read properties of null (reading 'type')[39m
@@ -971,12 +881,12 @@ Received: [31m"code"[39m
     [90m167| [39m    [34mexpect[39m(artifact[33m![39m[33m.[39mlanguage)[33m.[39m[34mtoBe[39m([32m'text'[39m)[33m;[39m
     [90m168| [39m  })[33m;[39m
 
-[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯[22m[39m
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯[22m[39m
 
 
-[2m Test Files [22m [1m[31m4 failed[39m[22m[2m | [22m[1m[32m56 passed[39m[22m[90m (60)[39m
-[2m      Tests [22m [1m[31m7 failed[39m[22m[2m | [22m[1m[32m1148 passed[39m[22m[90m (1155)[39m
-[2m   Start at [22m 12:47:57
-[2m   Duration [22m 9.41s[2m (transform 9.06s, setup 34.64s, import 15.16s, tests 5.54s, environment 21ms)[22m
+[2m Test Files [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m58 passed[39m[22m[90m (60)[39m
+[2m      Tests [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m1152 passed[39m[22m[90m (1155)[39m
+[2m   Start at [22m 12:48:50
+[2m   Duration [22m 9.53s[2m (transform 9.75s, setup 35.43s, import 16.51s, tests 5.45s, environment 28ms)[22m
 
  ELIFECYCLE  Command failed with exit code 1.

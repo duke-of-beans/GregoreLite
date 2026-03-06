@@ -1,0 +1,30 @@
+feat: Sprint 11.4+11.5 — Transit Map Z3 annotations + Z2 subway view
+
+Phase C (Z3 Detail Annotations):
+- MessageMetadata.tsx: model badge, token counts, cost (4dp), latency; pure fns exported
+- EventMarkers.tsx: SVG shape renderers (circle/diamond/square/triangle/hexagon) from registry
+- EventDetailPanel.tsx: right slide-in drawer; annotation add form; PATCH endpoint wired
+- Message.tsx: id, messageEvents, showTransitMetadata, onMarkerClick props added
+- MessageList.tsx: single shared event fetch; Map<message_id, EnrichedEvent[]> O(1) lookup
+- ChatInterface.tsx: Cmd+Shift+M toggle, Cmd+T transit tab, 25/75 split view
+- AppearanceSection.tsx: Transit Map toggle pill
+- ui-store.ts: showTransitMetadata state + toggleTransitMetadata()
+- lib/transit/types.ts: EnrichedEvent, EventsApiResponse, Station types
+- api/transit/events/[id]/route.ts: PATCH for user annotations
+- 36 new tests: MessageMetadata.test.tsx (22), EventMarkers.test.tsx (14)
+
+Phase D (Z2 Subway View):
+- lib/transit/stations.ts: resolveTemplate() + generateStations() — pure, zero hardcoded entities
+- lib/transit/registry.ts: transit.manual_station event type registered
+- SubwayMap.tsx: full SVG renderer; indexToX() + extractBranchSegments() exported pure fns
+- SubwayStationNode.tsx: station label/icon; click-to-scroll via onStationClick
+- SubwayMarkerDot.tsx: event dots on track; colored by category; onMarkerClick wired
+- SubwayBranch.tsx: bezier fork/merge curves
+- Message.tsx Task 12: landmark hover button + inline form (emoji + name; Enter/Escape)
+- MessageList.tsx Task 12: handleMarkAsLandmark -> captureClientEvent + event refresh
+- MessageList.tsx: propEvents bypass skips internal fetch when ChatInterface provides events
+- ChatInterface.tsx: transit useEffect moved after store declarations (fixes TS2448 hoisting)
+- SubwayMap.test.tsx: 13 pure logic tests (indexToX x6, extractBranchSegments x7)
+- stations.test.ts: 13 pure logic tests (resolveTemplate, generateStations)
+
+TSC: 0 errors | Tests: 1165/1168 (+13 this sprint; 3 pre-existing unrelated failures)

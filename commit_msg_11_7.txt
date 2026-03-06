@@ -1,0 +1,32 @@
+feat: Sprint 11.7 - Transit Map learning engine (pattern detection, insight generation, approval gate)
+
+Transit Map Phase F complete. Builds a recursive self-improvement system that
+processes conversation_events telemetry to detect patterns and generate
+LearningInsight records with confidence scoring, human approval gates, and
+full rollback safety.
+
+New files:
+- app/lib/transit/learning/types.ts: LearningInsight, InsightStatus, InsightAdjustment, PatternResult
+- app/lib/transit/learning/insights.ts: calculateConfidence() (base+recency+consistency, 95% cap), generateInsights() with dedup/conflict detection
+- app/lib/transit/learning/verbosity.ts: token bucket detector on quality.interruption events (4 buckets, >50% threshold)
+- app/lib/transit/learning/regeneration.ts: task type classifier + quality.regeneration rate detector (>30% threshold)
+- app/lib/transit/learning/model-routing.ts: system.model_route vs quality failure cross-reference
+- app/lib/transit/learning/registry.ts: storeInsight (UPSERT), applyInsight, dismissInsight, rollbackInsight (returns before_state), decayExpiredInsights (90-day)
+- app/lib/transit/learning/pipeline.ts: runLearningPipeline() (full try/catch isolation) + 6h scheduler with .unref()
+- app/lib/transit/learning/index.ts: barrel export
+- app/components/transit/InsightReviewPanel.tsx: confidence bars, approve/dismiss/rollback, Run Pipeline button
+- app/app/api/transit/insights/route.ts: GET (list/filter by status) + POST (approve/dismiss/rollback/run_pipeline)
+- 5 test files, 148 tests, all passing
+
+Modified:
+- app/lib/kernl/schema.sql + database.ts: learning_insights migration (3 indexes: status, pattern_type, expires_at)
+- app/components/inspector/InspectorDrawer.tsx: 6th tab Learning wired to InsightReviewPanel
+
+Quality gates:
+- TSC: 0 errors in Sprint 11.7 files
+- Tests: 1152/1155 passing (148 new, all green; 3 pre-existing failures untouched)
+- Min sample: 10 events enforced in every detector (spec 6.3)
+- Confidence cap: 95% maximum (spec 6.3)
+- Human approval gate: all insights start status=proposed (no auto-apply)
+- Rollback: every applyInsight() stores before_state; rollbackInsight() always possible
+- Pipeline isolation: try/catch at top level and per-detector; learning never crashes app

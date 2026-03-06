@@ -101,6 +101,9 @@ export interface UIState {
 
   // Sprint 17.0: Total assistant messages received (lifetime, across conversations)
   theaterMessageCount: number;
+
+  // Sprint 18.0: Memory Shimmer — show cyan glow on words matching KERNL memory
+  shimmerEnabled: boolean;
 }
 
 // ============================================================================
@@ -167,6 +170,10 @@ export interface UIActions {
   // Sprint 17.0: Increment theater message count
   incrementTheaterMessageCount: () => void;
 
+  // Sprint 18.0: Memory Shimmer toggle
+  setShimmerEnabled: (enabled: boolean) => void;
+  toggleShimmerEnabled: () => void;
+
   // Reset
   resetUI: () => void;
 }
@@ -212,6 +219,7 @@ const initialState: UIState = {
   receiptDetail: 'compact',
   orchestrationTheaterComplete: false,
   theaterMessageCount: 0,
+  shimmerEnabled: true,
 };
 
 // ============================================================================
@@ -513,6 +521,18 @@ const createUISlice: StateCreator<UIStore> = (set, get) => ({
   },
 
   // ========================================================================
+  // SPRINT 18.0: MEMORY SHIMMER
+  // ========================================================================
+
+  setShimmerEnabled: (enabled: boolean) => {
+    set({ shimmerEnabled: enabled });
+  },
+
+  toggleShimmerEnabled: () => {
+    set((state) => ({ shimmerEnabled: !state.shimmerEnabled }));
+  },
+
+  // ========================================================================
   // RESET
   // ========================================================================
 
@@ -538,6 +558,7 @@ export const useUIStore = create<UIStore>()(
         receiptDetail: state.receiptDetail,
         orchestrationTheaterComplete: state.orchestrationTheaterComplete,
         theaterMessageCount: state.theaterMessageCount,
+        shimmerEnabled: state.shimmerEnabled,
         commandPalette: {
           // Don't persist open state or query
           open: false,

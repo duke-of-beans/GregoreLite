@@ -19,7 +19,11 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Header } from '../ui/Header';
 import { MessageList } from './MessageList';
 import { InputField } from './InputField';
+import { ShimmerOverlay } from './ShimmerOverlay';
+import { MemoryCard } from './MemoryCard';
 import { SendButton, type SendButtonState } from './SendButton';
+import { useShimmerMatches } from '@/lib/hooks/useShimmerMatches';
+import type { ShimmerMatch } from '@/lib/memory/shimmer-query';
 import { ArtifactPanel } from '../artifacts/ArtifactPanel';
 import { JobQueue } from '../jobs/JobQueue';
 import { WarRoom } from '../war-room';
@@ -155,6 +159,14 @@ export function ChatInterface() {
 
   const gateTrigger = useDecisionGateStore((s) => s.trigger);
   const setActiveThreadId = useGhostStore((s) => s.setActiveThreadId);
+
+  // ── Sprint 18.0: Memory Shimmer ───────────────────────────────────────────
+  const shimmerEnabled = useUIStore((s) => s.shimmerEnabled);
+  const [activeMemoryCard, setActiveMemoryCard] = useState<{
+    match: ShimmerMatch;
+    position: { x: number; y: number };
+  } | null>(null);
+  const shimmerMatches = useShimmerMatches(input, activeConversationId ?? '', shimmerEnabled);
 
   // Sync ghost store's activeThreadId when thread tab changes
   useEffect(() => {
@@ -961,7 +973,20 @@ export function ChatInterface() {
                         onSubmit={handleSubmit}
                         disabled={sendButtonState === 'checking' || restoring}
                         placeholder="Type message..."
-                      />
+                      >
+                        {shimmerEnabled && shimmerMatches.length > 0 && (
+                          <ShimmerOverlay
+                            matches={shimmerMatches}
+                            inputText={input}
+                            onMatchClick={(match, e) => {
+                              setActiveMemoryCard({
+                                match,
+                                position: { x: e.clientX, y: e.clientY },
+                              });
+                            }}
+                          />
+                        )}
+                      </InputField>
                     </div>
                     <SendButton
                       state={sendButtonState}
@@ -1026,6 +1051,19 @@ export function ChatInterface() {
           setArtifactLibraryOpen(false);
         }}
       />
+
+      {/* Sprint 18.0: Memory Card popover */}
+      {activeMemoryCard && (
+        <MemoryCard
+          match={activeMemoryCard.match}
+          position={activeMemoryCard.position}
+          onClose={() => setActiveMemoryCard(null)}
+          onNavigate={(sourceId) => {
+            void handleLoadThread(sourceId);
+            setActiveMemoryCard(null);
+          }}
+        />
+      )}
 
       <StatusBar />
     </div>

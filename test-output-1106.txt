@@ -1,0 +1,494 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.17 [39m[90mD:/Projects/GregLite/app[39m
+
+ [31m❯[39m lib/__tests__/unit/artifacts/detector.test.ts [2m([22m[2m11 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 14[2mms[22m[39m
+     [32m✓[39m returns null for a message with no code blocks[32m 2[2mms[22m[39m
+     [32m✓[39m returns null for a code block below the minimum length threshold[32m 1[2mms[22m[39m
+     [32m✓[39m detects a TypeScript code block and resolves type to code[32m 2[2mms[22m[39m
+     [32m✓[39m resolves jsx language tag to react type[32m 1[2mms[22m[39m
+     [32m✓[39m resolves tsx language tag to react type[32m 1[2mms[22m[39m
+     [32m✓[39m resolves html language tag to html type[32m 0[2mms[22m[39m
+     [32m✓[39m resolves markdown language tag to markdown type[32m 0[2mms[22m[39m
+     [32m✓[39m resolves mermaid language tag to mermaid type[32m 0[2mms[22m[39m
+     [32m✓[39m picks the largest block when multiple code blocks are present[32m 0[2mms[22m[39m
+[31m     [31m×[31m generates a unique id for each detected artifact[39m[32m 4[2mms[22m[39m
+[31m     [31m×[31m falls back to language "text" and type "unknown" for a bare fence[39m[32m 1[2mms[22m[39m
+ [32m✓[39m components/transit/__tests__/MessageMetadata.test.tsx [2m([22m[2m22 tests[22m[2m)[22m[32m 59[2mms[22m[39m
+ [32m✓[39m lib/agent-sdk/__tests__/error-handling.test.ts [2m([22m[2m43 tests[22m[2m)[22m[32m 51[2mms[22m[39m
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstartGhost[2m > [22m[2mcalls all components in the correct startup order
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstartGhost[2m > [22m[2mcalls all components in the correct startup order
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstartGhost[2m > [22m[2memits state: "running" when all steps succeed
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstartGhost[2m > [22m[2memits state: "running" when all steps succeed
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstartGhost[2m > [22m[2memits state: "starting" then "running"
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstartGhost[2m > [22m[2memits state: "starting" then "running"
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstartGhost[2m > [22m[2mis idempotent — calling twice does not double-start components
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstartGhost[2m > [22m[2mis idempotent — calling twice does not double-start components
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mdegraded mode[2m > [22m[2mcontinues startup when one component throws
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mdegraded mode[2m > [22m[2mcontinues startup when one component throws
+[22m[39m[ghost/lifecycle] Ghost started (state: degraded)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mdegraded mode[2m > [22m[2memits state: "degraded" when a component fails
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mdegraded mode[2m > [22m[2memits state: "degraded" when a component fails
+[22m[39m[ghost/lifecycle] Ghost started (state: degraded)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mdegraded mode[2m > [22m[2memits ghost:error for the failing component
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mdegraded mode[2m > [22m[2memits ghost:error for the failing component
+[22m[39m[ghost/lifecycle] Ghost started (state: degraded)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mstops components in reverse startup order
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mstops components in reverse startup order
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mstops components in reverse startup order
+[22m[39m[ghost/lifecycle] Stopping Ghost...
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mstops components in reverse startup order
+[22m[39m[ghost/lifecycle] Ghost stopped
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2memits state: "stopped" after shutdown
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2memits state: "stopped" after shutdown
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2memits state: "stopped" after shutdown
+[22m[39m[ghost/lifecycle] Stopping Ghost...
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2memits state: "stopped" after shutdown
+[22m[39m[ghost/lifecycle] Ghost stopped
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mis idempotent — calling twice does not error
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+ [32m✓[39m lib/__tests__/unit/war-room.test.ts [2m([22m[2m21 tests[22m[2m)[22m[33m 506[2mms[22m[39m
+       [33m[2m✓[22m[39m maps completed → complete [33m 403[2mms[22m[39m
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mis idempotent — calling twice does not error
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mis idempotent — calling twice does not error
+[22m[39m[ghost/lifecycle] Stopping Ghost...
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mis idempotent — calling twice does not error
+[22m[39m[ghost/lifecycle] Ghost stopped
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mresolves within 5 seconds even if watcher hangs
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mresolves within 5 seconds even if watcher hangs
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mresolves within 5 seconds even if watcher hangs
+[22m[39m[ghost/lifecycle] Stopping Ghost...
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstopGhost[2m > [22m[2mresolves within 5 seconds even if watcher hangs
+[22m[39m[ghost/lifecycle] Ghost stopped
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mpauses email poller and ingest queue
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mpauses email poller and ingest queue
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mpauses email poller and ingest queue
+[22m[39m[ghost/lifecycle] Pausing Ghost components...
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2memits state: "paused" after pause
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2memits state: "paused" after pause
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2memits state: "paused" after pause
+[22m[39m[ghost/lifecycle] Pausing Ghost components...
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mis idempotent — calling pauseGhost twice only pauses once
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mis idempotent — calling pauseGhost twice only pauses once
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mis idempotent — calling pauseGhost twice only pauses once
+[22m[39m[ghost/lifecycle] Pausing Ghost components...
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mresumes email poller and ingest queue
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mresumes email poller and ingest queue
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mresumes email poller and ingest queue
+[22m[39m[ghost/lifecycle] Pausing Ghost components...
+[ghost/lifecycle] Resuming Ghost components...
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2memits state: "running" after resume (no errors)
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2memits state: "running" after resume (no errors)
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2memits state: "running" after resume (no errors)
+[22m[39m[ghost/lifecycle] Pausing Ghost components...
+[ghost/lifecycle] Resuming Ghost components...
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mis idempotent — calling resumeGhost when not paused is a no-op
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mpauseGhost / resumeGhost[2m > [22m[2mis idempotent — calling resumeGhost when not paused is a no-op
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostRunning returns true after startGhost
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostRunning returns true after startGhost
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostRunning returns false after stopGhost
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostRunning returns false after stopGhost
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostRunning returns false after stopGhost
+[22m[39m[ghost/lifecycle] Stopping Ghost...
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostRunning returns false after stopGhost
+[22m[39m[ghost/lifecycle] Ghost stopped
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostPaused returns false before any pause
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostPaused returns false before any pause
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostPaused returns true after pauseGhost
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostPaused returns true after pauseGhost
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostPaused returns true after pauseGhost
+[22m[39m[ghost/lifecycle] Pausing Ghost components...
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostPaused returns false after resumeGhost
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostPaused returns false after resumeGhost
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mstate flags[2m > [22m[2misGhostPaused returns false after resumeGhost
+[22m[39m[ghost/lifecycle] Pausing Ghost components...
+[ghost/lifecycle] Resuming Ghost components...
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mrestartComponent[2m > [22m[2mcalls startFn after the 30-second delay
+[22m[39m[ghost/lifecycle] Scheduling restart for "test-component" in 30s...
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mrestartComponent[2m > [22m[2mcalls startFn after the 30-second delay
+[22m[39m[ghost/lifecycle] Component "test-component" restarted successfully
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mrestartComponent[2m > [22m[2mdoes not retry if first restart succeeds
+[22m[39m[ghost/lifecycle] Scheduling restart for "scorer" in 30s...
+
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mrestartComponent[2m > [22m[2mdoes not retry if first restart succeeds
+[22m[39m[ghost/lifecycle] Component "scorer" restarted successfully
+
+ [32m✓[39m lib/agent-sdk/__tests__/sprint-12-cache-control.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 79[2mms[22m[39m
+[90mstdout[2m | lib/ghost/__tests__/lifecycle.test.ts[2m > [22m[2mGhost Lifecycle[2m > [22m[2mrestartComponent[2m > [22m[2memits ghost:error if restart also fails
+[22m[39m[ghost/lifecycle] Scheduling restart for "watcher" in 30s...
+
+ [32m✓[39m lib/ghost/__tests__/lifecycle.test.ts [2m([22m[2m26 tests[22m[2m)[22m[33m 571[2mms[22m[39m
+       [33m[2m✓[22m[39m calls all components in the correct startup order [33m 475[2mms[22m[39m
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mstarts all components in the correct order
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mstarts all components in the correct order
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mresolves stopGhost within 5 seconds even when watcher hangs
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mresolves stopGhost within 5 seconds even when watcher hangs
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mresolves stopGhost within 5 seconds even when watcher hangs
+[22m[39m[ghost/lifecycle] Stopping Ghost...
+
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mresolves stopGhost within 5 seconds even when watcher hangs
+[22m[39m[ghost/lifecycle] Ghost stopped
+
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mcontinues startup when one component fails (degraded mode)
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mcontinues startup when one component fails (degraded mode)
+[22m[39m[ghost/lifecycle] Ghost started (state: degraded)
+
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mpauses all components on AEGIS PARALLEL_BUILD and resumes on resume
+[22m[39m[ghost/lifecycle] Starting Ghost...
+[ghost/lifecycle] Watch paths: (none configured)
+
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mpauses all components on AEGIS PARALLEL_BUILD and resumes on resume
+[22m[39m[ghost/lifecycle] Ghost started (state: running)
+
+[90mstdout[2m | lib/ghost/__tests__/phase6-integration.test.ts[2m > [22m[2mGhost Lifecycle — integration[2m > [22m[2mpauses all components on AEGIS PARALLEL_BUILD and resumes on resume
+[22m[39m[ghost/lifecycle] Pausing Ghost components...
+[ghost/lifecycle] Resuming Ghost components...
+
+ [32m✓[39m lib/__tests__/unit/indexer.test.ts [2m([22m[2m33 tests[22m[2m)[22m[33m 468[2mms[22m[39m
+ [31m❯[39m lib/__tests__/integration/phase5-integration.test.ts [2m([22m[2m31 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 180[2mms[22m[39m
+     [32m✓[39m scan() returns an EoSScanResult with healthScore in [0, 100][32m 39[2mms[22m[39m
+     [32m✓[39m scan() completes on a multi-file directory without throwing[32m 9[2mms[22m[39m
+     [32m✓[39m scanFiles() runs on a specific list of file paths[32m 9[2mms[22m[39m
+[31m     [31m×[31m dirty.ts triggers at least one issue[39m[32m 23[2mms[22m[39m
+     [32m✓[39m scan() deep mode includes more files than quick mode (quick skips tests)[32m 32[2mms[22m[39m
+     [32m✓[39m score with no issues is 100[32m 1[2mms[22m[39m
+     [32m✓[39m each critical issue deducts 8 points[32m 1[2mms[22m[39m
+     [32m✓[39m each warning deducts 2 points[32m 4[2mms[22m[39m
+     [32m✓[39m dependency cycles deduct 10 points each[32m 5[2mms[22m[39m
+     [32m✓[39m score is clamped to [0, 100][32m 1[2mms[22m[39m
+     [32m✓[39m grade boundaries: 90→excellent, 70→good, 50→attention, 49→critical[32m 2[2mms[22m[39m
+     [32m✓[39m computeDebt returns correct aggregate counts[32m 1[2mms[22m[39m
+     [32m✓[39m hotspots are sorted by debt descending[32m 1[2mms[22m[39m
+     [32m✓[39m recordOccurrence stores a row in eos_fp_log[32m 12[2mms[22m[39m
+     [32m✓[39m markFalsePositive updates is_fp to 1[32m 0[2mms[22m[39m
+     [32m✓[39m rule with >20% FP rate in last 100 occurrences appears in getSuppressedRules()[32m 4[2mms[22m[39m
+     [32m✓[39m rule with low FP rate stays out of suppressed set[32m 3[2mms[22m[39m
+     [32m✓[39m getRuleStats returns correct FP rate for a rule[32m 2[2mms[22m[39m
+     [32m✓[39m getSuppressedRules returns empty set for project with no records[32m 0[2mms[22m[39m
+     [32m✓[39m job marked FAILED when eos_required is true and health score < 70[32m 5[2mms[22m[39m
+     [32m✓[39m job stays COMPLETED when eos_required is true and health score >= 70[32m 1[2mms[22m[39m
+     [32m✓[39m job gate does not fire when eos_required is false[32m 1[2mms[22m[39m
+     [32m✓[39m EoS health score is backfilled into result_report for War Room display[32m 1[2mms[22m[39m
+     [32m✓[39m recordImprovement stores the record and persists to shim_improvements[32m 2[2mms[22m[39m
+     [32m✓[39m recordImprovement creates or accumulates a pattern entry[32m 1[2mms[22m[39m
+     [32m✓[39m PatternLearner hydrates from KERNL DB on fresh construction[32m 1[2mms[22m[39m
+     [32m✓[39m predictSuccess returns a sorted PredictionScore array[32m 3[2mms[22m[39m
+     [32m✓[39m getTopPatterns returns patterns ordered by frequency × successRate[32m 2[2mms[22m[39m
+     [32m✓[39m score >= 80 returns success (green)[32m 1[2mms[22m[39m
+     [32m✓[39m score 60–79 returns warning (amber)[32m 1[2mms[22m[39m
+     [32m✓[39m score < 60 returns error (red)[32m 0[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/embeddings.test.ts [2m([22m[2m30 tests[22m[2m)[22m[33m 591[2mms[22m[39m
+[90mstdout[2m | lib/ghost/__tests__/watcher-bridge.test.ts[2m > [22m[2mAEGIS → Ghost integration[2m > [22m[2mcalls ghost_pause when AEGIS transitions to PARALLEL_BUILD
+[22m[39m[ghost/lifecycle] Pausing Ghost components...
+
+[90mstdout[2m | lib/ghost/__tests__/watcher-bridge.test.ts[2m > [22m[2mAEGIS → Ghost integration[2m > [22m[2mcalls ghost_resume when AEGIS transitions to IDLE
+[22m[39m[ghost/lifecycle] Resuming Ghost components...
+
+ [32m✓[39m lib/ghost/__tests__/watcher-bridge.test.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 1020[2mms[22m[39m
+     [33m[2m✓[22m[39m calls ghost_pause when AEGIS transitions to PARALLEL_BUILD [33m 987[2mms[22m[39m
+ [32m✓[39m lib/ghost/__tests__/phase6-integration.test.ts [2m([22m[2m33 tests[22m[2m)[22m[33m 585[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/hot-cache.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 143[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/decision-gate.test.ts [2m([22m[2m40 tests[22m[2m)[22m[32m 85[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/vector.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 37[2mms[22m[39m
+ [32m✓[39m lib/agent-sdk/__tests__/sprint-12-batch-executor.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 36[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/kernl-project-store.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 42[2mms[22m[39m
+ [32m✓[39m lib/ghost/__tests__/scorer.test.ts [2m([22m[2m37 tests[22m[2m)[22m[32m 53[2mms[22m[39m
+ [32m✓[39m lib/transit/learning/__tests__/registry.test.ts [2m([22m[2m28 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+[90mstdout[2m | lib/agent-sdk/__tests__/phase7-integration.test.ts[2m > [22m[2mPhase 7H: Orchestrator runPostProcessing gates[2m > [22m[2mexits early if job status is not completed
+[22m[39m[SelfEvolution] Post-processing skipped — status: failed
+
+[90mstdout[2m | lib/agent-sdk/__tests__/phase7-integration.test.ts[2m > [22m[2mPhase 7H: Orchestrator runPostProcessing gates[2m > [22m[2mskips PR creation when githubOwner/githubRepo not provided
+[22m[39m[SelfEvolution] Local tests passed for manifest-003
+[SelfEvolution] GitHub owner/repo not configured — skipping PR for manifest-003
+
+ [32m✓[39m lib/agent-sdk/__tests__/phase7-integration.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 78[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/cross-context.test.ts [2m([22m[2m34 tests[22m[2m)[22m[32m 50[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/aegis.test.ts [2m([22m[2m33 tests[22m[2m)[22m[32m 68[2mms[22m[39m
+ [32m✓[39m lib/agent-sdk/__tests__/scheduler.test.ts [2m([22m[2m31 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+ [32m✓[39m lib/transit/learning/__tests__/regeneration.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+[90mstdout[2m | lib/__tests__/unit/agent-sdk.test.ts[2m > [22m[2mAgent SDK public API[2m > [22m[2mspawn returns a jobId and queued=false for the first job
+[22m[39m[AgentSDK] Marked 1 stale job(s) INTERRUPTED on boot
+
+ [32m✓[39m lib/__tests__/unit/agent-sdk.test.ts [2m([22m[2m40 tests[22m[2m)[22m[32m 65[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/gate.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/eos/fp-tracker.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 56[2mms[22m[39m
+ [32m✓[39m lib/agent-sdk/__tests__/cost-accounting.test.ts [2m([22m[2m33 tests[22m[2m)[22m[32m 52[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/suggestion-store.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 61[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/warm-cache.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/ui-store.test.ts [2m([22m[2m24 tests[22m[2m)[22m[32m 59[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/shim/pattern-learner.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 43[2mms[22m[39m
+ [32m✓[39m lib/transit/__tests__/capture.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 62[2mms[22m[39m
+[90mstdout[2m | lib/transit/learning/__tests__/pipeline.test.ts[2m > [22m[2mrunLearningPipeline — basic orchestration[2m > [22m[2mreturns empty array when no pending events exist
+[22m[39m[learning/pipeline] No pending learnable events — nothing to process
+
+[90mstdout[2m | lib/transit/learning/__tests__/pipeline.test.ts[2m > [22m[2mrunLearningPipeline — basic orchestration[2m > [22m[2mcalls decayExpiredInsights at the start of each run
+[22m[39m[learning/pipeline] No pending learnable events — nothing to process
+
+[90mstdout[2m | lib/transit/learning/__tests__/pipeline.test.ts[2m > [22m[2mrunLearningPipeline — basic orchestration[2m > [22m[2mreturns empty array when no learnable event types are registered
+[22m[39m[learning/pipeline] No learnable event types registered
+
+[90mstdout[2m | lib/transit/learning/__tests__/pipeline.test.ts[2m > [22m[2mrunLearningPipeline — basic orchestration[2m > [22m[2mreturns empty array when pending events exist but are all non-learnable types
+[22m[39m[learning/pipeline] Processing 15 pending events
+[learning/pipeline] Marked 15 events as processed
+
+[90mstdout[2m | lib/transit/learning/__tests__/pipeline.test.ts[2m > [22m[2mrunLearningPipeline — minimum sample gate (§6.3)[2m > [22m[2mskips event group with fewer than 10 events
+[22m[39m[learning/pipeline] Processing 5 pending events
+[learning/pipeline] Skipping quality.interruption: 5 events < min 10
+
+[90mstdout[2m | lib/transit/learning/__tests__/pipeline.test.ts[2m > [22m[2mrunLearningPipeline — minimum sample gate (§6.3)[2m > [22m[2mprocesses event group with exactly 10 events
+[22m[39m[learning/pipeline] Processing 10 pending events
+[learning/pipeline] Marked 10 events as processed
+
+[90mstdout[2m | lib/transit/learning/__tests__/pipeline.test.ts[2m > [22m[2mrunLearningPipeline — minimum sample gate (§6.3)[2m > [22m[2mprocesses groups meeting threshold while skipping those that do not
+[22m[39m[learning/pipeline] Processing 15 pending events
+[learning/pipeline] Skipping quality.regeneration: 3 events < min 10
+[learning/pipeline] Marked 12 events as processed
+
+[90mstdout[2m | lib/transit/learning/__tests__/pipeline.test.ts[2m > [22m[2mrunLearningPipeline — event processing[2m > [22m[2mmarks all processed event IDs with learning_status=processed
+[22m[39m[learning/pipeline] Processing 12 pending events
+[learning/pipeline] Marked 12 events as processed
+
+[90mstdout[2m | lib/transit/learning/__tests__/pipeline.test.ts[2m > [22m[2mrunLearningPipeline — event processing[2m > [22m[2mcalls generateInsights with the collected pattern results
+[22m[39m[learning/pipeline] Processing 12 pending events
+[learning/pipeline] Marked 12 events as processed
+
+[90mstdout[2m | lib/transit/learning/__tests__/pipeline.test.ts[2m > [22m[2mrunLearningPipeline — event processing[2m > [22m[2mcalls storeInsight for each insight returned by generateInsights
+[22m[39m[learning/pipeline] Processing 12 pending events
+[learning/pipeline] Stored 2 insights
+[learning/pipeline] Marked 12 events as processed
+
+ [32m✓[39m lib/transit/learning/__tests__/insights.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+[90mstdout[2m | lib/transit/learning/__tests__/pipeline.test.ts[2m > [22m[2mrunLearningPipeline — error isolation (§6.1 never crashes app)[2m > [22m[2mdoes not throw when decayExpiredInsights fails
+[22m[39m[learning/pipeline] No pending learnable events — nothing to process
+
+[90mstdout[2m | lib/transit/learning/__tests__/pipeline.test.ts[2m > [22m[2mrunLearningPipeline — error isolation (§6.1 never crashes app)[2m > [22m[2mdoes not throw when storeInsight fails for one insight
+[22m[39m[learning/pipeline] Processing 12 pending events
+[learning/pipeline] Marked 12 events as processed
+
+[90mstdout[2m | lib/transit/learning/__tests__/pipeline.test.ts[2m > [22m[2mrunLearningPipeline — error isolation (§6.1 never crashes app)[2m > [22m[2mcontinues storing other insights after one storeInsight failure
+[22m[39m[learning/pipeline] Processing 12 pending events
+[learning/pipeline] Stored 1 insights
+[learning/pipeline] Marked 12 events as processed
+
+[90mstdout[2m | lib/transit/learning/__tests__/pipeline.test.ts[2m > [22m[2mrunLearningPipeline — error isolation (§6.1 never crashes app)[2m > [22m[2mdoes not throw when markEventsProcessed fails (DB error on UPDATE)
+[22m[39m[learning/pipeline] Processing 12 pending events
+[learning/pipeline] Marked 12 events as processed
+
+[90mstdout[2m | lib/transit/learning/__tests__/pipeline.test.ts[2m > [22m[2mstartLearningScheduler / stopLearningScheduler[2m > [22m[2mstarts and stops without throwing
+[22m[39m[learning/pipeline] Scheduler started (interval: 2.7777777777777777h)
+[learning/pipeline] Scheduler stopped
+
+[90mstdout[2m | lib/transit/learning/__tests__/pipeline.test.ts[2m > [22m[2mstartLearningScheduler / stopLearningScheduler[2m > [22m[2mis idempotent — calling start twice does not create multiple intervals
+[22m[39m[learning/pipeline] Scheduler started (interval: 2.7777777777777777h)
+[learning/pipeline] Scheduler stopped
+
+[90mstdout[2m | lib/transit/learning/__tests__/pipeline.test.ts[2m > [22m[2mstartLearningScheduler / stopLearningScheduler[2m > [22m[2mcan be restarted after stopping
+[22m[39m[learning/pipeline] Scheduler started (interval: 2.7777777777777777h)
+[learning/pipeline] Scheduler stopped
+[learning/pipeline] Scheduler started (interval: 2.7777777777777777h)
+
+[90mstdout[2m | lib/transit/learning/__tests__/pipeline.test.ts[2m > [22m[2mstartLearningScheduler / stopLearningScheduler[2m > [22m[2mcan be restarted after stopping
+[22m[39m[learning/pipeline] Scheduler stopped
+
+ [32m✓[39m lib/transit/learning/__tests__/pipeline.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 62[2mms[22m[39m
+ [32m✓[39m lib/ghost/__tests__/privacy.test.ts [2m([22m[2m37 tests[22m[2m)[22m[32m 30[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/decision-gate-4b.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+ [32m✓[39m lib/transit/learning/__tests__/verbosity.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 41[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/eos/character.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m lib/agent-sdk/__tests__/permission-matrix.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 36[2mms[22m[39m
+ [32m✓[39m lib/transit/__tests__/stations.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/proactive.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 30[2mms[22m[39m
+ [32m✓[39m lib/__tests__/integration/phase3-integration.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+ [32m✓[39m lib/transit/__tests__/topic-detector.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32m✓[39m lib/agent-sdk/__tests__/shim-readonly-audit.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+[90mstdout[2m | lib/__tests__/unit/cold-start.test.ts[2m > [22m[2mwarmAll()[2m > [22m[2mcalls readHotCache() before buildWarmCache()
+[22m[39m[cold-start] Tier 1 ready: 1ms
+
+[90mstdout[2m | lib/__tests__/unit/cold-start.test.ts[2m > [22m[2mwarmAll()[2m > [22m[2mcalls readHotCache() before buildWarmCache()
+[22m[39m[cold-start] Tier 2 ready: 4ms
+[cold-start] All tiers ready: 4ms
+
+[90mstdout[2m | lib/__tests__/unit/cold-start.test.ts[2m > [22m[2mwarmAll()[2m > [22m[2mcalls both readHotCache() and buildWarmCache() exactly once
+[22m[39m[cold-start] Tier 1 ready: 0ms
+
+[90mstdout[2m | lib/__tests__/unit/cold-start.test.ts[2m > [22m[2mwarmAll()[2m > [22m[2mcalls both readHotCache() and buildWarmCache() exactly once
+[22m[39m[cold-start] Tier 2 ready: 1ms
+[cold-start] All tiers ready: 1ms
+
+[90mstdout[2m | lib/__tests__/unit/cold-start.test.ts[2m > [22m[2mwarmAll()[2m > [22m[2mresolves without error when both tiers succeed
+[22m[39m[cold-start] Tier 1 ready: 1ms
+
+[90mstdout[2m | lib/__tests__/unit/cold-start.test.ts[2m > [22m[2mwarmAll()[2m > [22m[2mresolves without error when both tiers succeed
+[22m[39m[cold-start] Tier 2 ready: 1ms
+[cold-start] All tiers ready: 1ms
+
+[90mstdout[2m | lib/__tests__/unit/cold-start.test.ts[2m > [22m[2mwarmAll()[2m > [22m[2mpropagates rejection when buildWarmCache() fails
+[22m[39m[cold-start] Tier 1 ready: 1ms
+
+ [32m✓[39m lib/__tests__/unit/cold-start.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 48[2mms[22m[39m
+ [32m✓[39m lib/transit/__tests__/sankey.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/shim/job-context.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m components/transit/__tests__/SubwayMap.test.tsx [2m([22m[2m13 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m lib/agent-sdk/__tests__/kernl-search.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m lib/agent-sdk/__tests__/test-runner.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32m✓[39m components/transit/__tests__/EventMarkers.test.tsx [2m([22m[2m14 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/context-provider.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/eos/patterns.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/eos/batch.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/eos/health-score.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+[90mstdout[2m | lib/__tests__/integration/phase4-integration.test.ts[2m > [22m[2mPerformance — sync analysis path timing[2m > [22m[2msync path (no Haiku) completes well under 100ms on 20-message conversation
+[22m[39m[perf] sync analyze() on 20-message conversation: 0ms
+
+[90mstdout[2m | lib/__tests__/integration/phase4-integration.test.ts[2m > [22m[2mPerformance — sync analysis path timing[2m > [22m[2mhaiku inference path is called only when all sync checks pass
+[22m[39m[perf] full analyze() path (sync + mocked Haiku): 0ms
+
+ [32m✓[39m lib/__tests__/integration/phase4-integration.test.ts [2m([22m[2m34 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+ [32m✓[39m lib/transit/__tests__/registry.test.ts [2m([22m[2m24 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+ [32m✓[39m lib/__tests__/unit/artifacts/store.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m lib/agent-sdk/__tests__/markdown-linter.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m lib/agent-sdk/__tests__/sprint-12-haiku-routing.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m lib/agent-sdk/__tests__/failure-modes-shim-loop.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m components/transit/__tests__/ScrollbarLandmarks.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+
+[2m Test Files [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m60 passed[39m[22m[90m (62)[39m
+[2m      Tests [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m1183 passed[39m[22m[90m (1186)[39m
+[2m   Start at [22m 14:48:11
+[2m   Duration [22m 10.72s[2m (transform 11.09s, setup 38.12s, import 17.76s, tests 6.02s, environment 23ms)[22m
+

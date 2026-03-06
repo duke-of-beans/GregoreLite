@@ -1,0 +1,22 @@
+fix: Sprint 10.8 database unification and runtime polish
+
+Wave 1 - Database unification:
+- connection.ts: auto-initialize gregore.db on first getDatabase() call,
+  remove @tauri-apps/api/path import, run migrations on first connect
+- /api/conversations: return empty 200 instead of 500 when DB unavailable
+- /api/threads: new KERNL-backed endpoint returning real thread list
+- RecentChats: wired to /api/threads instead of broken /api/conversations
+
+Wave 2 - Dev noise suppression:
+- oauth.ts: webpackIgnore on @tauri-apps/plugin-shell import, guard with
+  __TAURI__ check to prevent Turbopack module resolution warning
+- settings/costs/morning-briefing routes: table-existence guards, downgrade
+  console.warn to console.debug for expected missing-table errors
+
+Wave 3 - UX polish:
+- ui-store: add settingsOpen/toggleSettings/setSettingsOpen state
+- Header: settings gear icon (opens SettingsPanel), tooltip hints on buttons
+- ChatInterface: settingsOpen lifted to ui-store, add useUIStore import,
+  fix Cmd+, handler to use toggleSettings(), add min-h-0 to scroll wrapper
+- AppearanceSection: add density selector (compact/comfortable/spacious)
+- MessageList: add min-h-0 to root for proper flex scroll containment

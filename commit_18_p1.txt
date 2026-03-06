@@ -1,0 +1,1 @@
+feat: Sprint 18.0 Phase 1 — Memory Shimmer (real-time context reveals)

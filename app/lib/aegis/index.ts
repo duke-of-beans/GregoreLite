@@ -1,32 +1,35 @@
 /**
- * AEGIS public API — Sprint 2C
+ * AEGIS public API — Sprint 16.0
  *
  * Lifecycle:
- *   initAEGIS()   → health check, log STARTUP, start governor
- *   shutdownAEGIS() → stop governor, log SUSPEND
+ *   initAEGIS()          → check Tauri availability, start governor
+ *   shutdownAEGIS()      → stop governor, log SUSPEND
  *
  * Override:
  *   overrideAEGISProfile() → forceEvaluate + log is_override=1 to KERNL
  *
  * Status:
- *   getAEGISStatus() → { online: boolean; lastProfile: WorkloadProfile | null }
+ *   getAEGISStatus()     → { online: boolean; lastProfile: WorkloadProfile | null }
+ *
+ * Sprint 16.0: HTTP replaced with Tauri IPC. Dev mode falls back gracefully.
  */
 
 import { logAegisSignal } from '@/lib/kernl/aegis-store';
 import { ghostPause, ghostResume } from '@/lib/ghost/watcher-bridge';
 import { pauseGhost, resumeGhost } from '@/lib/ghost/lifecycle';
 import { AEGISGovernor } from './governor';
+import { switchProfile as ipcSwitchProfile, isTauriAvailable } from './client';
+import { AEGIS_PROFILE_MAP } from './types';
 import type { WorkloadProfile } from './types';
 
 // Profiles that require Ghost indexing to pause (intensive CPU/IO workloads)
 const GHOST_PAUSE_PROFILES = new Set<WorkloadProfile>(['PARALLEL_BUILD', 'COUNCIL']);
 
-export type { WorkloadProfile, AEGISState } from './types';
+export type { WorkloadProfile, AEGISState, AegisStatus, SystemMetrics, ProfileSummary, TimerState } from './types';
 export { AEGIS_PROFILE_MAP } from './types';
 
-// ── Config ────────────────────────────────────────────────────────────────────
-
-const AEGIS_BASE_URL: string = process.env['AEGIS_URL'] ?? 'http://localhost:8999';
+// Re-export IPC client functions for direct use by components
+export { getStatus, getMetrics, listProfiles, setTimer, cancelTimer, isTauriAvailable } from './client';
 
 // ── Module-level state ────────────────────────────────────────────────────────
 
@@ -36,20 +39,14 @@ let _governor: AEGISGovernor | null = null;
 // ── Governor switch-profile callback ─────────────────────────────────────────
 
 async function switchProfile(profile: WorkloadProfile): Promise<void> {
-  try {
-    await fetch(`${AEGIS_BASE_URL}/setprofile`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ profile }),
-    });
-  } catch {
-    // AEGIS offline — KERNL log still happens below
-  }
+  // Send profile switch via Tauri IPC (no-op in dev mode)
+  const aegisName = AEGIS_PROFILE_MAP[profile];
+  await ipcSwitchProfile(aegisName);
+
+  // Always log to KERNL regardless of Tauri availability
   logAegisSignal(profile, undefined, false);
 
   // Ghost Thread: pause during intensive profiles, resume otherwise.
-  // ghostPause/ghostResume → Tauri IPC (watcher-bridge, Rust side)
-  // pauseGhost/resumeGhost → Node.js lifecycle (email poller, ingest queue)
   if (GHOST_PAUSE_PROFILES.has(profile)) {
     await ghostPause();
     pauseGhost();
@@ -69,19 +66,14 @@ function ensureGovernor(): AEGISGovernor {
 // ── Lifecycle ─────────────────────────────────────────────────────────────────
 
 /**
- * Health-check AEGIS, log STARTUP signal to KERNL, start governor.
- * Returns true if AEGIS HTTP server is reachable, false otherwise.
- * Never throws — offline AEGIS is a degraded-mode signal, not a fatal error.
+ * Check Tauri IPC availability, log STARTUP signal, start governor.
+ * Returns true if AEGIS backend is reachable (Tauri running), false in dev mode.
+ * Never throws — dev mode is a degraded-mode signal, not a fatal error.
  */
 export async function initAEGIS(): Promise<boolean> {
-  try {
-    const res = await fetch(`${AEGIS_BASE_URL}/health`);
-    _online = res.ok;
-  } catch {
-    _online = false;
-  }
+  _online = await isTauriAvailable();
 
-  // Always log STARTUP to KERNL regardless of AEGIS health
+  // Always log STARTUP to KERNL regardless of AEGIS availability
   logAegisSignal('STARTUP', undefined, false);
 
   // Set governor's initial profile and start polling
@@ -116,12 +108,7 @@ export function getAEGISStatus(): { online: boolean; lastProfile: WorkloadProfil
 
 /**
  * Update the active worker count and trigger an AEGIS profile re-evaluation.
- * Called by the Session Scheduler (Sprint 7E) whenever a session starts or ends.
- *
- * Profile transitions driven by activeWorkers:
- *   0          → DEEP_FOCUS   (hasActiveThread=true assumed while app is running)
- *   1–2        → COWORK_BATCH
- *   3+         → PARALLEL_BUILD  (Ghost Thread also paused — GHOST_PAUSE_PROFILES)
+ * Called by the Session Scheduler whenever a session starts or ends.
  */
 export async function updateWorkerCount(activeWorkers: number): Promise<void> {
   const gov = ensureGovernor();

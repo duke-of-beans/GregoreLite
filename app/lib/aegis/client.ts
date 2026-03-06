@@ -1,72 +1,172 @@
 /**
- * AEGIS HTTP Client — Sprint 2C
+ * AEGIS IPC Client — Sprint 16.0
  *
- * Fire-and-forget HTTP client for AEGIS v2.0 status server.
+ * Replaces HTTP client (port 8743) with Tauri IPC invoke().
+ * Dev mode fallback: when running `pnpm dev` without Tauri,
+ * all calls return safe defaults instead of throwing.
  *
- * Real API shape (read from D:\Dev\aegis\src\status\server.ts):
- *   POST /switch  { profile: string }  — switch workload profile
- *   GET  /health  → { alive: boolean } — liveness check
- *
- * Port: 8743 (status_window.port in aegis-config.yaml).
- * Override via AEGIS_STATUS_PORT env var.
- *
- * CRITICAL: AEGIS being offline is a normal operating condition.
- * This client NEVER throws. Silent failure is the correct behavior.
- * GregLite must work regardless of AEGIS state.
+ * CRITICAL: AEGIS being unavailable (dev mode) is normal.
+ * This client NEVER throws. Silent fallback is correct behavior.
  */
 
-import { AEGIS_PROFILE_MAP, type WorkloadProfile } from './types';
+import type { AegisStatus, SystemMetrics, ProfileSummary, TimerState } from './types';
 
-// Port read from aegis-config.yaml: status_window.port = 8743
-// Configurable via env var for flexibility across environments.
-const AEGIS_PORT = parseInt(process.env.AEGIS_STATUS_PORT ?? '8743', 10);
+// ── Tauri detection ───────────────────────────────────────────────────────────
 
-const AEGIS_BASE = `http://localhost:${AEGIS_PORT}`;
-const REQUEST_TIMEOUT_MS = 2000;
+let _invoke: ((cmd: string, args?: Record<string, unknown>) => Promise<unknown>) | null = null;
+let _tauriChecked = false;
 
-// Log the offline warning once, not on every call
-let _offlineWarned = false;
+async function getInvoke() {
+  if (_tauriChecked) return _invoke;
+  _tauriChecked = true;
+  try {
+    // Dynamic import — only resolves inside Tauri WebView
+    const tauri = await import('@tauri-apps/api/core');
+    _invoke = tauri.invoke;
+  } catch {
+    _invoke = null;
+  }
+  return _invoke;
+}
+
+/** Returns true if running inside Tauri WebView. */
+export async function isTauriAvailable(): Promise<boolean> {
+  return (await getInvoke()) !== null;
+}
+
+// ── Dev mode defaults ─────────────────────────────────────────────────────────
+
+const DEV_STATUS: AegisStatus = {
+  active_profile: 'dev-mode',
+  active_profile_display: 'Dev Mode',
+  active_profile_color: '#666',
+  profiles: [],
+  timer: {
+    active: false,
+    target_profile: null,
+    return_profile: null,
+    started_at: null,
+    duration_min: null,
+    expires_at: null,
+  },
+  metrics: {
+    timestamp: '',
+    cpu_percent: 0,
+    memory_percent: 0,
+    memory_mb_used: 0,
+    memory_mb_available: 0,
+    power_plan: '',
+  },
+  version: 'dev',
+};
+
+const DEV_METRICS: SystemMetrics = {
+  timestamp: '',
+  cpu_percent: 0,
+  memory_percent: 0,
+  memory_mb_used: 0,
+  memory_mb_available: 0,
+  power_plan: '',
+};
+
+// ── Public API ────────────────────────────────────────────────────────────────
 
 /**
- * Send a workload profile switch to AEGIS.
- * Maps GregLite WorkloadProfile → AEGIS native profile name.
- * Fire-and-forget: never throws, logs warning if AEGIS is offline.
+ * Get full AEGIS status: active profile, all profiles, timer, metrics.
+ * Returns dev-mode defaults when running outside Tauri.
  */
-export async function switchProfile(profile: WorkloadProfile): Promise<void> {
-  const aegisProfile = AEGIS_PROFILE_MAP[profile];
+export async function getStatus(): Promise<AegisStatus> {
   try {
-    await fetch(`${AEGIS_BASE}/switch`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ profile: aegisProfile }),
-      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
-    });
+    const invoke = await getInvoke();
+    if (!invoke) return { ...DEV_STATUS, metrics: { ...DEV_STATUS.metrics, timestamp: new Date().toISOString() } };
+    return (await invoke('aegis_status')) as AegisStatus;
   } catch {
-    // AEGIS offline or unreachable — log once, never throw.
-    // This is expected when AEGIS hasn't been started.
-    if (!_offlineWarned) {
-      console.warn(`[aegis:client] AEGIS offline — could not switch to ${aegisProfile} (${profile}). Suppressing further warnings.`);
-      _offlineWarned = true;
-    }
+    return { ...DEV_STATUS, metrics: { ...DEV_STATUS.metrics, timestamp: new Date().toISOString() } };
   }
 }
 
 /**
- * Check if AEGIS is reachable.
- * Returns false on any network error — never throws.
+ * Switch to a named AEGIS profile.
+ * No-op in dev mode.
+ */
+export async function switchProfile(name: string): Promise<void> {
+  try {
+    const invoke = await getInvoke();
+    if (!invoke) return;
+    await invoke('aegis_switch_profile', { name });
+  } catch {
+    // Silent failure — expected in dev mode
+  }
+}
+
+/**
+ * Get lightweight CPU/memory metrics only.
+ * Returns zeroed defaults in dev mode.
+ */
+export async function getMetrics(): Promise<SystemMetrics> {
+  try {
+    const invoke = await getInvoke();
+    if (!invoke) return { ...DEV_METRICS, timestamp: new Date().toISOString() };
+    return (await invoke('aegis_metrics')) as SystemMetrics;
+  } catch {
+    return { ...DEV_METRICS, timestamp: new Date().toISOString() };
+  }
+}
+
+/**
+ * List all available profiles.
+ * Returns empty array in dev mode.
+ */
+export async function listProfiles(): Promise<ProfileSummary[]> {
+  try {
+    const invoke = await getInvoke();
+    if (!invoke) return [];
+    return (await invoke('aegis_list_profiles')) as ProfileSummary[];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Start a timed profile switch.
+ * No-op in dev mode.
+ */
+export async function setTimer(
+  targetProfile: string,
+  returnProfile: string,
+  durationMin: number,
+): Promise<TimerState | null> {
+  try {
+    const invoke = await getInvoke();
+    if (!invoke) return null;
+    return (await invoke('aegis_set_timer', {
+      targetProfile,
+      returnProfile,
+      durationMin,
+    })) as TimerState;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Cancel the active timer.
+ * No-op in dev mode.
+ */
+export async function cancelTimer(): Promise<void> {
+  try {
+    const invoke = await getInvoke();
+    if (!invoke) return;
+    await invoke('aegis_cancel_timer');
+  } catch {
+    // Silent
+  }
+}
+
+/**
+ * Health check — always true in Tauri, always false in dev mode.
+ * Kept for backward compatibility with existing callers.
  */
 export async function checkHealth(): Promise<boolean> {
-  try {
-    const res = await fetch(`${AEGIS_BASE}/health`, {
-      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
-    });
-    return res.ok;
-  } catch {
-    return false;
-  }
-}
-
-/** Expose the configured port for status bar display */
-export function getAegisPort(): number {
-  return AEGIS_PORT;
+  return isTauriAvailable();
 }
