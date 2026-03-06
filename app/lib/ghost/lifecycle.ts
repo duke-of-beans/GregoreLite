@@ -31,6 +31,12 @@ import { startIngestQueue, stopIngestQueue, pauseIngestQueue, resumeIngestQueue 
 import { startWatching, stopWatching } from './watcher-bridge';
 import { startEmailPoller, stopEmailPoller, pauseEmailPoller, resumeEmailPoller } from './email/poller';
 import { startScorerSchedule, stopScorerSchedule } from './scorer';
+import {
+  startRecallScheduler,
+  stopRecallScheduler,
+  pauseRecallScheduler,
+  resumeRecallScheduler,
+} from '@/lib/recall/scheduler';
 import { getUserExclusions } from './privacy/layer4';
 import { getDatabase } from '@/lib/kernl/database';
 import {
@@ -132,6 +138,9 @@ export async function startGhost(): Promise<void> {
   // Step 6: Start interrupt scorer schedule
   await tryStep('scorer', () => startScorerSchedule());
 
+  // Step 6b: Start recall scheduler (ambient memory)
+  await tryStep('recall-scheduler', () => startRecallScheduler());
+
   // Step 7: Determine final state
   const status = getGhostStatus();
   const hasDegraded = status.errors.length > 0;
@@ -154,6 +163,11 @@ export async function stopGhost(): Promise<void> {
     // Step 1: Stop scorer
     try { stopScorerSchedule(); } catch (err) {
       console.warn('[ghost/lifecycle] Scorer stop error:', err);
+    }
+
+    // Step 1b: Stop recall scheduler
+    try { stopRecallScheduler(); } catch (err) {
+      console.warn('[ghost/lifecycle] Recall scheduler stop error:', err);
     }
 
     // Step 2: Stop email poller
@@ -202,6 +216,7 @@ export function pauseGhost(): void {
 
   try { pauseEmailPoller(); } catch { /* best effort */ }
   try { pauseIngestQueue(); } catch { /* best effort */ }
+  try { pauseRecallScheduler(); } catch { /* best effort */ }
   // Scorer and watcher self-pause via AEGIS signal reads — no explicit call needed
 
   updateGhostStatus({ state: 'paused' });
@@ -218,6 +233,7 @@ export function resumeGhost(): void {
 
   try { resumeEmailPoller(); } catch { /* best effort */ }
   try { resumeIngestQueue(); } catch { /* best effort */ }
+  try { resumeRecallScheduler(); } catch { /* best effort */ }
 
   const status = getGhostStatus();
   const hasDegraded = status.errors.length > 0;

@@ -6,7 +6,7 @@
  * and attention queue sorting/limits.
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
 
@@ -45,6 +45,9 @@ vi.mock('@/lib/portfolio/scanner', () => ({
 // ── Imports (after mocks) ─────────────────────────────────────────────────────
 
 import * as fsMod from 'fs';
+// scaffold.ts uses `import fs from 'fs'` (default import) — cast for mock access
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const fsDefault = (fsMod as any).default as typeof fsMod;
 import { getScaffoldTemplate, scaffoldProject } from '../scaffold';
 import { inferTypeFromDescription, getNewProjectQuestions } from '../onboarding';
 import { analyzeAttention } from '../analyzer';
@@ -121,7 +124,7 @@ describe('scaffoldProject — substituteAnswers', () => {
   it('skips existing files without overwriting', () => {
     // scaffold.ts uses `import fs from 'fs'` (default import) so mock via default.
     // existsSync call order: [dirPath, parentDir₁, filePath₁, parentDir₂, filePath₂, …]
-    vi.mocked(fsMod.default.existsSync)
+    vi.mocked(fsDefault.existsSync)
       .mockReturnValueOnce(true)  // dirPath exists — skip top-level mkdir
       .mockReturnValueOnce(true)  // parentDir of file 1 exists
       .mockReturnValueOnce(true); // filePath of file 1 exists → skip write
