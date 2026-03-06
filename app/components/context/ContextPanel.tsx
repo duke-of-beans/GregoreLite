@@ -115,6 +115,19 @@ function PanelContent() {
     return () => window.removeEventListener('greglite:open-context-panel', handleExpand);
   }, [collapsed, toggleCollapsed]);
 
+  // Sprint 23.0: Auto-collapse at narrow viewports (<1024px)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 1024px)');
+    const handler = (e: MediaQueryListEvent) => {
+      if (e.matches && !collapsed) toggleCollapsed();
+    };
+    // Collapse immediately if already narrow on mount
+    if (mq.matches && !collapsed) toggleCollapsed();
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   if (collapsed) {
     return <CollapsedStrip onExpand={toggleCollapsed} />;
   }

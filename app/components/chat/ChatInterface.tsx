@@ -791,7 +791,7 @@ export function ChatInterface() {
               title={tab.shortcut ? `${tab.tooltip} (${tab.shortcut})` : tab.tooltip}
             >
               <span aria-hidden="true">{tab.icon}</span>
-              <span>{tab.label}</span>
+              <span className="hidden lg:inline">{tab.label}</span>
             </button>
           );
         })}

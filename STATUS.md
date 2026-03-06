@@ -1,13 +1,13 @@
 # GREGLITE — STATUS
-**Last Updated:** March 6, 2026 — Sprint 21.0 COMPLETE. Framer Motion spring animations on all interactive surfaces: InspectorDrawer (spring slide), EventDetailPanel (spring slide + backdrop), GatePanel (panelSlideUp), MemoryCard (popover spring), ReceiptFooter (height collapse), SendButton (buttonPress micro-interaction on primary states), GhostCard (cardLift hover). Centralised in lib/design/animations.ts. prefers-reduced-motion respected via useAnimationConfig(). tsc 0 errors, 1344/1344 tests.
-**Version:** v1.0.0 (Phase 8 Ship Prep complete)
+**Last Updated:** March 6, 2026 — Sprint 23.0 COMPLETE. Voice & Terminology Audit (Greg handle, Background label, tooltip rewrites, What's-This guide modal), UX Fixes (Workers 404 fixed via /api/agent-sdk/jobs, lucide-react SVG tab icons, New Conversation moved to ContextPanel, scroll-wheel zoom on Transit Map), Global Responsiveness (breakpoints at 1024/768/640px, icon-only tabs at narrow widths, auto-collapse panel on mobile, secondary status metrics hidden at 768px, code block horizontal scroll).
+**Version:** v1.1.0
 **Test Count:** 1344/1344 all green
 **EoS Health:** 100/100
 **TSC:** 0 errors
-**Next:** Sprint 22.0 — First Launch Polish + Missing Dependency. 8 tasks: always open new conversation, visible New Conversation button, fix Chat History drawer transparency, clickable scrollbar landmark ticks, hide ATTN from StatusBar (move to Inspector), install @xenova/transformers, fix SQLite schema gaps, TypeScript gate. Brief: SPRINT_22_0_BRIEF.md.
+**Next:** Sprint 24.0 — TBD
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md — ALL PHASES (A–F) SHIPPED.
-**Recent commits:** d01c919 (Sprint 20.0), 5d7b5c9 (Sprint 19.0), 1c3228c (Sprint 18.0 Phase 2), 08f8df3 (Sprint 18.0 Phase 1), d515fc8 (Sprint 17.0 docs)
+**Recent commits:** [Phase C hash TBD] (Sprint 23.0 Phase C), 603cb8f (Sprint 23.0 Phase A+B), c6e9fd3 (Sprint 22.0), 3782407 (flaky test fix), 8837294 (Sprint 21.0)
 
 ### ⚠️ GROUND TRUTH AUDIT (March 4, 2026)
 1. ~~Transit Map "data foundation" listed in Sprint 10.6 was NOT shipped.~~ RESOLVED: Sprint 11.2 shipped data foundation (conversation_events table, 26 event types, capture hooks). commit 37d60af.
@@ -17,6 +17,23 @@
 5. ~~Decision gate trigger-detector.ts has 3 dead stub functions replaced by Haiku inference — cleanup needed.~~ — RESOLVED: Sprint 11.0 — detectHighTradeoffCount/detectMultiProjectTouch/detectLargeEstimate removed.
 
 ---
+
+- [x] **SPRINT 23.0** — Voice Audit + UX Polish + Global Responsiveness — **COMPLETE**
+  - **Deliverable:** 10 files modified + 1 new file. tsc 0 errors. 1344/1344 tests green. Two commits: 603cb8f (Phase A+B), [Phase C].
+  - **Phase A — Voice & Terminology Audit:** Message.tsx assistant handle renamed Greg. StatusBar GHOST label → BACKGROUND, all tooltip strings updated. copy-templates.ts: GUIDE_ITEMS export + background/tabs/safety VOICE sections added. HelpGuide.tsx: new What's-This modal with plain-language panel guide, opened via ? button in Header.
+  - **Phase B — UX Fixes:** job-store.ts: all three /api/jobs calls → /api/agent-sdk/jobs (fixes Workers tab 404 since Sprint 11.0 cleanup). ChatInterface.tsx: emoji tab icons replaced with lucide-react SVG icons (MessageSquare, Cpu, LayoutGrid, GitBranch), TabDef gains tooltip field. Header.tsx: New Conversation button removed, logo dispatches greglite:switch-tab instead of greglite:new-thread. ContextPanel.tsx: New Conversation button added above RecentChats. ZoomController.tsx: scroll-wheel zoom with 150ms debounce; data-transit-messages escape hatch prevents intercepting message list scrolls.
+  - **Phase C — Global Responsiveness:** globals.css: breakpoints at 1024px/768px/640px — job-queue-responsive, status-metric-secondary, receipt-footer-row, chat-input-area CSS classes. ChatInterface.tsx: tab labels hidden at <1024px (icon-only). Header.tsx: logo text hidden at <640px. StatusBar.tsx: SYSTEM/MEMORY/BACKGROUND/QUALITY hidden at <768px (COST+JOBS always visible). ContextPanel.tsx: auto-collapses via matchMedia on narrow viewports. InspectorDrawer.tsx: tab labels icon-only at <1024px. JobQueue.tsx: full-width at <1024px via CSS override.
+
+- [x] **SPRINT 22.0** — First Launch Polish + Missing Dependency — **COMPLETE**
+  - **Deliverable:** 8 tasks shipped. tsc 0 errors. 1344/1344 tests green. Commit c6e9fd3.
+  - **Task 1:** Cold boot always opens fresh conversation — thread-tabs-store no longer auto-restores last active thread on app launch. Conversations accessible via Chat History or See All.
+  - **Task 2:** Visible `+` New Conversation button in Header — same style as settings gear and Cmd+K buttons. Dispatches `greglite:new-thread`. Tooltip: "New conversation (Cmd+N)".
+  - **Task 3:** Chat History drawer transparency fixed — background changed from `var(--bg)` to `var(--deep-space, #0a0e17)`. Backdrop opacity 0.3 → 0.5. Solid panel, no bleed-through.
+  - **Task 4:** Scrollbar landmark ticks clickable — `onScrollToMessage` prop added to ScrollbarLandmarks. Click a tick → proportional scroll to that message position. `cursor: pointer` on ticks with valid `message_index`.
+  - **Task 5:** ATTN budget removed from StatusBar — moved to Inspector drawer Quality tab. Attention budget system still gates interrupts internally, just no longer visible in the chrome.
+  - **Task 6:** `@xenova/transformers 2.17.2` installed — Ghost scorer embedding model dependency. `turbopackIgnore` comment added alongside existing `webpackIgnore` for Next.js 16 Turbopack compat.
+  - **Task 7:** SQLite schema gaps patched — `conversation_events.created_at`, `eos_reports.scanned_at` columns added via ALTER TABLE with try/catch for existing DBs. `kernl_settings` table CREATE IF NOT EXISTS added to runMigrations().
+  - **Task 8:** Pre-existing `policies/[id]/route.ts` Next.js 15 route params typing error fixed as part of TypeScript gate pass.
 
 - [x] **SPRINT 21.0** — Framer Motion Spring Animations — **COMPLETE**
   - **Deliverable:** 9 files modified + 2 new files. tsc 0 errors. 1344/1344 tests (unchanged). All CSS transition hacks replaced with Framer Motion spring physics.

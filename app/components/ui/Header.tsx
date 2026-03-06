@@ -38,7 +38,7 @@ export function Header() {
           width={32}
           height={32}
         />
-        <span className="text-lg font-semibold tracking-tight text-[var(--ice-white)]">
+        <span className="hidden sm:inline text-lg font-semibold tracking-tight text-[var(--ice-white)]">
           GregLite
         </span>
       </button>

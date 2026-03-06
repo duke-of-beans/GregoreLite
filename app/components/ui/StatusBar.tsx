@@ -148,7 +148,7 @@ export function StatusBar() {
         {/* System Monitor */}
         <button
           onClick={handleAegisClick}
-          className="flex items-center gap-1.5 text-[var(--frost)] transition-colors hover:text-[var(--ice-white)]"
+          className="status-metric-secondary flex items-center gap-1.5 text-[var(--frost)] transition-colors hover:text-[var(--ice-white)]"
           title="System resource profile — CPU and memory load. Click to view details."
         >
           <span className="text-[var(--mist)]">SYSTEM:</span>
@@ -161,7 +161,7 @@ export function StatusBar() {
         {/* Memory (KERNL) */}
         <button
           onClick={handleKernlClick}
-          className="flex items-center gap-1.5 text-[var(--frost)] transition-colors hover:text-[var(--ice-white)]"
+          className="status-metric-secondary flex items-center gap-1.5 text-[var(--frost)] transition-colors hover:text-[var(--ice-white)]"
           title="Memory index status — Greg's persistent knowledge from past conversations"
         >
           <span className="text-[var(--mist)]">MEMORY:</span>
@@ -176,7 +176,7 @@ export function StatusBar() {
         {/* Background Assistant (Sprint 23.0: renamed from Ghost Thread) */}
         <button
           onClick={handleGhostClick}
-          className="flex items-center gap-1.5 text-[var(--frost)] transition-colors hover:text-[var(--ice-white)]"
+          className="status-metric-secondary flex items-center gap-1.5 text-[var(--frost)] transition-colors hover:text-[var(--ice-white)]"
           title={ghostTooltip(ghostStatus)}
         >
           <span className="text-[var(--mist)]">BACKGROUND:</span>
@@ -189,7 +189,7 @@ export function StatusBar() {
 
       {/* Right side — Code Quality score if available */}
       {ctx.eosSummary && (
-        <div className="flex items-center gap-1.5 text-[var(--frost)]" title="Code quality score — powered by Eye of Sauron">
+        <div className="status-metric-secondary flex items-center gap-1.5 text-[var(--frost)]" title="Code quality score — powered by Eye of Sauron">
           <span className="text-[var(--mist)]">QUALITY:</span>
           <span
             className={`font-mono font-medium ${

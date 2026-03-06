@@ -521,3 +521,48 @@ pre {
   --bg-elevated: #ffffff;
   --cyan-ghost: rgba(8, 145, 178, 0.06);
 }
+
+/* ========== RESPONSIVE LAYOUT — Sprint 23.0 Phase C ========== */
+
+/* Code blocks: always horizontal-scroll, never word-wrap */
+pre {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+code:not(pre code) {
+  overflow-wrap: break-word;
+  word-break: break-all;
+}
+
+/* 1024px — Compact: JobQueue takes full width in Workers tab */
+@media (max-width: 1024px) {
+  .job-queue-responsive {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    border-left: none !important;
+  }
+}
+
+/* 768px — Tablet: hide secondary status bar metrics */
+@media (max-width: 768px) {
+  .status-metric-secondary {
+    display: none !important;
+  }
+  .status-separator-secondary {
+    display: none !important;
+  }
+}
+
+/* 640px — Mobile: receipt footer metadata rows stack, input padding tightens */
+@media (max-width: 640px) {
+  .receipt-footer-row {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .chat-input-area {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}

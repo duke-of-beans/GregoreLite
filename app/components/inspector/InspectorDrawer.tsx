@@ -162,7 +162,7 @@ export function InspectorDrawer({ open, onClose }: InspectorDrawerProps) {
                   }}
                 >
                   <span style={{ fontSize: 14 }}>{tab.icon}</span>
-                  <span>{tab.label}</span>
+                  <span className="hidden lg:inline">{tab.label}</span>
                 </button>
               ))}
             </div>

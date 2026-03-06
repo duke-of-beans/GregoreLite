@@ -31,6 +31,7 @@ export function JobQueue() {
 
   return (
     <div
+      className="job-queue-responsive"
       style={{
         width: '25%',
         minWidth: '220px',
