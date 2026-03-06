@@ -54,6 +54,7 @@ export function ZoomController({
   const [focusIndex, setFocusIndex] = useState<number | null>(null);
   const [focusMessageId, setFocusMessageId] = useState<string | null>(null);
   const transitionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Animated zoom level change with crossfade
   const setZoomLevel = useCallback((newLevel: ZoomLevel) => {
@@ -122,6 +123,39 @@ export function ZoomController({
     return () => window.removeEventListener('keydown', handler);
   }, [shortcutsActive, setZoomLevel, zoomLevel]);
 
+  // Scroll-wheel zoom — Sprint 23.0
+  // Scroll up (deltaY < 0) → zoom in (Z1→Z2→Z3). Scroll down → zoom out.
+  // Debounced 150ms. Does not intercept scroll inside [data-transit-messages].
+  useEffect(() => {
+    if (!shortcutsActive) return;
+    const container = containerRef.current;
+    if (!container) return;
+
+    let lastWheelTime = 0;
+
+    const handleWheel = (e: WheelEvent) => {
+      // Let native scroll happen inside the message list
+      const target = e.target as Element;
+      if (target.closest('[data-transit-messages]')) return;
+
+      const idx = ZOOM_ORDER.indexOf(zoomLevel);
+      const canZoomIn  = e.deltaY < 0 && idx < ZOOM_ORDER.length - 1;
+      const canZoomOut = e.deltaY > 0 && idx > 0;
+      if (!canZoomIn && !canZoomOut) return; // at boundary — don't intercept
+
+      const now = Date.now();
+      if (now - lastWheelTime < 150) return; // debounce
+      lastWheelTime = now;
+
+      e.preventDefault();
+      if (canZoomIn)  setZoomLevel(ZOOM_ORDER[idx + 1]!);
+      else            setZoomLevel(ZOOM_ORDER[idx - 1]!);
+    };
+
+    container.addEventListener('wheel', handleWheel, { passive: false });
+    return () => container.removeEventListener('wheel', handleWheel);
+  }, [shortcutsActive, zoomLevel, setZoomLevel]);
+
   // Cleanup
   useEffect(() => {
     return () => {
@@ -130,7 +164,7 @@ export function ZoomController({
   }, []);
 
   return (
-    <>
+    <div ref={containerRef} style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
       {children({
         zoomLevel,
         setZoomLevel,
@@ -141,7 +175,7 @@ export function ZoomController({
         isTransitioning,
         previousZoom,
       })}
-    </>
+    </div>
   );
 }
 

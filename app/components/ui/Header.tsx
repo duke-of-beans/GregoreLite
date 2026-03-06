@@ -6,26 +6,30 @@
 
 'use client';
 
+import { useState } from 'react';
 import { useDecisionGateStore } from '@/lib/stores/decision-gate-store';
 import { TriggerBadge } from '@/components/decision-gate';
 import { useUIStore } from '@/lib/stores/ui-store';
 import { NotificationBell } from './NotificationBell';
+import { HelpGuide } from './HelpGuide';
 
 export function Header() {
   const { trigger: gateTrigger } = useDecisionGateStore();
   const toggleCommandPalette = useUIStore((s) => s.toggleCommandPalette);
   const toggleSettings = useUIStore((s) => s.toggleSettings);
+  const [helpOpen, setHelpOpen] = useState(false);
 
   return (
+    <>
     <header className="flex h-16 w-full items-center justify-between border-b border-[var(--shadow)] bg-[var(--deep-space)] px-6">
-      {/* Logo Section — click to open new thread (Sprint 10.9 Task 7) */}
+      {/* Logo Section — click switches to Strategic tab (Sprint 23.0: removed new-thread dispatch) */}
       <button
         onClick={() => {
-          window.dispatchEvent(new CustomEvent('greglite:new-thread'));
+          window.dispatchEvent(new CustomEvent('greglite:switch-tab', { detail: { tab: 'strategic' } }));
         }}
         className="flex items-center gap-3 rounded-lg px-2 py-1 transition-colors hover:bg-[var(--elevated)]"
-        title="New conversation (home)"
-        aria-label="GregLite — start new conversation"
+        title="Go to Strategic view"
+        aria-label="GregLite — go to Strategic view"
       >
         <img
           src="/gregore-logo.png"
@@ -39,19 +43,20 @@ export function Header() {
         </span>
       </button>
 
-      {/* Right section: gate badge + new thread + notifications + settings + command palette */}
+      {/* Right section: gate badge + ? guide + notifications + settings + command palette */}
+      {/* New Conversation moved to ContextPanel left panel — Sprint 23.0 */}
       <div className="flex items-center gap-3">
         {gateTrigger && <TriggerBadge />}
 
-        {/* New Conversation — Sprint 22.0 */}
+        {/* What's this? guide button — Sprint 23.0 */}
         <button
-          onClick={() => window.dispatchEvent(new CustomEvent('greglite:new-thread'))}
+          onClick={() => setHelpOpen(true)}
           className="flex items-center justify-center rounded-lg border border-[var(--shadow)] bg-[var(--elevated)] p-2 text-[var(--frost)] transition-colors hover:border-[var(--cyan)] hover:bg-[var(--surface)] hover:text-[var(--ice-white)]"
-          aria-label="New conversation"
-          title="New conversation (Cmd+N)"
+          aria-label="Open panel guide"
+          title="What's this? — Panel guide"
         >
           <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </button>
 
@@ -99,5 +104,9 @@ export function Header() {
         </button>
       </div>
     </header>
+
+    {/* What's This? Guide — Sprint 23.0 */}
+    <HelpGuide open={helpOpen} onClose={() => setHelpOpen(false)} />
+    </>
   );
 }

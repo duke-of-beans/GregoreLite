@@ -12,6 +12,23 @@
  * Source: GREGORE_AUDIT.md §1, SPRINT_17_0_BRIEF.md Task 1
  */
 
+// ── What's This? guide content ────────────────────────────────────────────────
+// Accessed via the ? button in the Header. Plain-language panel glossary.
+// No jargon. Passes the Grandma Test.
+
+export const GUIDE_ITEMS = [
+  { label: 'Strategic', description: 'Your main conversation thread with Greg' },
+  { label: 'Workers', description: 'Automated background tasks — code generation, testing, research' },
+  { label: 'Task Board', description: 'Visual status of all running and queued worker tasks' },
+  { label: 'Conversation Map', description: 'Visual timeline of your conversation\'s key moments' },
+  { label: 'Background Assistant', description: 'Watches your files and email for relevant context' },
+  { label: 'System Monitor', description: 'Tracks CPU/memory to manage workload intensity' },
+  { label: 'Review Prompts', description: 'Greg pauses to double-check before risky actions' },
+  { label: 'Memory', description: 'Greg\'s persistent knowledge from past conversations' },
+  { label: 'Code Quality', description: 'Automated code health scoring' },
+  { label: 'Inspector', description: 'Detailed diagnostics panel — cost, quality, learning insights' },
+] as const;
+
 export const VOICE = {
   // ── Receipt footer ────────────────────────────────────────────────────────
   receipt: {
@@ -63,6 +80,42 @@ export const VOICE = {
     memory_ready: 'Ready',
     memory_indexing: 'Indexing',
     memory_error: 'Error',
+    // Background Assistant labels (replaces "Ghost Thread" in UI)
+    background_active: 'Active',
+    background_partial: 'Partial',
+    background_paused: 'Paused',
+    background_starting: 'Starting',
+    background_off: 'Off',
+  },
+
+  // ── Background Assistant (replaces "Ghost" in all user-facing copy) ────────
+  background: {
+    label: 'BACKGROUND',
+    tooltip_off: 'Background Assistant not running',
+    tooltip_active: 'Monitoring filesystem and email for relevant context',
+    tooltip_degraded: (failed: string) =>
+      `Partial: ${failed || 'some components'} failed — email + scoring still active`,
+    tooltip_paused: 'Paused due to high system load',
+    tooltip_starting: 'Background Assistant starting up…',
+    settings_label: 'Background Assistant',
+    settings_description: 'Watches your files and email for context to surface in conversations',
+  },
+
+  // ── Tabs & navigation ─────────────────────────────────────────────────────
+  tabs: {
+    strategic_tooltip: 'Your main conversation thread with Greg',
+    workers_tooltip: 'Automated background tasks — code generation, testing, research',
+    workers_heading_tooltip: 'Background task runners for automated code, testing, and research jobs',
+    taskboard_tooltip: 'Visual status of all running and queued worker tasks',
+    map_tooltip: 'Visual timeline of your conversation\'s key moments',
+  },
+
+  // ── Safety / Decision Gate (replaces "Sacred Laws" / "Decision Gate" jargon) ─
+  safety: {
+    review_prompt_heading: 'Safety Check',
+    review_prompt_description: 'Greg paused before this action. Review and decide.',
+    guardrails_label: 'Safety Rules',
+    guardrails_description: 'Boundaries Greg enforces to keep actions reversible and safe',
   },
 
   // ── Empty states (sardonic edge permitted here) ───────────────────────────

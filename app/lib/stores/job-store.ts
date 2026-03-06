@@ -53,8 +53,8 @@ export const useJobStore = create<JobStoreState>((set, get) => ({
 
   async fetchJobs() {
     try {
-      const res = await fetch('/api/jobs');
-      if (!res.ok) throw new Error(`/api/jobs returned ${res.status}`);
+      const res = await fetch('/api/agent-sdk/jobs');
+      if (!res.ok) throw new Error(`/api/agent-sdk/jobs returned ${res.status}`);
       const body = await res.json();
       const newJobs: JobRecord[] = body.data ?? [];
       const prevJobs = get().jobs;
@@ -95,7 +95,7 @@ export const useJobStore = create<JobStoreState>((set, get) => ({
   async spawnJob(manifest) {
     set({ loading: true, error: null });
     try {
-      const res = await fetch('/api/jobs', {
+      const res = await fetch('/api/agent-sdk/jobs', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(manifest),
@@ -115,7 +115,7 @@ export const useJobStore = create<JobStoreState>((set, get) => ({
 
   async killJob(jobId) {
     try {
-      const res = await fetch(`/api/jobs/${jobId}`, { method: 'DELETE' });
+      const res = await fetch(`/api/agent-sdk/jobs/${jobId}`, { method: 'DELETE' });
       if (!res.ok) {
         const body = await res.json();
         throw new Error(body.error ?? 'Kill failed');

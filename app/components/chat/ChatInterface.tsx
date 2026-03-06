@@ -15,7 +15,8 @@
 
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, type ReactNode } from 'react';
+import { MessageSquare, Cpu, LayoutGrid, GitBranch } from 'lucide-react';
 import { Header } from '../ui/Header';
 import { MessageList } from './MessageList';
 import { InputField } from './InputField';
@@ -74,15 +75,38 @@ type ActiveTab = 'strategic' | 'workers' | 'warroom' | 'transit';
 interface TabDef {
   id: ActiveTab;
   label: string;
-  icon: string;
+  icon: ReactNode;
+  tooltip: string;
   shortcut?: string;
 }
 
 const TABS: TabDef[] = [
-  { id: 'strategic', label: 'Strategic', icon: '★' },
-  { id: 'workers',   label: 'Workers',   icon: '⚙' },
-  { id: 'warroom',   label: 'War Room',  icon: '🗺', shortcut: 'Cmd+W' },
-  { id: 'transit',   label: 'Transit',   icon: '🚇', shortcut: 'Cmd+T' },
+  {
+    id: 'strategic',
+    label: 'Strategic',
+    icon: <MessageSquare className="h-4 w-4" />,
+    tooltip: 'Your main conversation with Greg',
+  },
+  {
+    id: 'workers',
+    label: 'Workers',
+    icon: <Cpu className="h-4 w-4" />,
+    tooltip: 'Automated background tasks — code generation, testing, research',
+  },
+  {
+    id: 'warroom',
+    label: 'Task Board',
+    icon: <LayoutGrid className="h-4 w-4" />,
+    tooltip: 'Visual status of all running and queued worker tasks',
+    shortcut: 'Cmd+W',
+  },
+  {
+    id: 'transit',
+    label: 'Map',
+    icon: <GitBranch className="h-4 w-4" />,
+    tooltip: 'Visual timeline of your conversation\'s key moments',
+    shortcut: 'Cmd+T',
+  },
 ];
 
 export function ChatInterface() {
@@ -764,7 +788,7 @@ export function ChatInterface() {
               ].join(' ')}
               aria-selected={active}
               role="tab"
-              title={tab.shortcut ? `${tab.label} (${tab.shortcut})` : tab.label}
+              title={tab.shortcut ? `${tab.tooltip} (${tab.shortcut})` : tab.tooltip}
             >
               <span aria-hidden="true">{tab.icon}</span>
               <span>{tab.label}</span>
@@ -852,10 +876,14 @@ export function ChatInterface() {
                 )}
 
                 {/* Messages — fills remaining space, transit metadata always on */}
-                <div className="flex-1 overflow-hidden flex flex-col min-h-0" style={{
-                  opacity: isTransitioning ? 0.7 : 1,
-                  transition: `opacity ${300}ms ease-in-out`,
-                }}>
+                <div
+                  className="flex-1 overflow-hidden flex flex-col min-h-0"
+                  data-transit-messages
+                  style={{
+                    opacity: isTransitioning ? 0.7 : 1,
+                    transition: `opacity ${300}ms ease-in-out`,
+                  }}
+                >
                   <MessageList
                     messages={messages}
                     conversationId={activeConversationId ?? undefined}

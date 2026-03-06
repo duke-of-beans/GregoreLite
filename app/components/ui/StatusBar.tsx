@@ -35,15 +35,15 @@ function ghostColor(status: GhostStatus | null): string {
 }
 
 function ghostTooltip(status: GhostStatus | null): string {
-  if (!status || status.state === 'stopped') return 'Ghost Thread not running';
+  if (!status || status.state === 'stopped') return 'Background Assistant not running';
   if (status.state === 'running') return 'Monitoring filesystem and email for relevant context';
   if (status.state === 'degraded') {
     const failed = status.errors.map((e) => e.component).join(', ');
-    return `Partial: ${failed || 'some components'} failed — email + scorer still active`;
+    return `Partial: ${failed || 'some components'} failed — email + scoring still active`;
   }
-  if (status.state === 'paused') return 'Paused due to high system load (AEGIS)';
-  if (status.state === 'starting') return 'Ghost Thread starting up…';
-  return 'Ghost Thread not running';
+  if (status.state === 'paused') return 'Paused due to high system load';
+  if (status.state === 'starting') return 'Background Assistant starting up…';
+  return 'Background Assistant not running';
 }
 
 export function StatusBar() {
@@ -145,11 +145,11 @@ export function StatusBar() {
         {/* Separator */}
         <span className="text-[var(--shadow)]">│</span>
 
-        {/* System Monitor (AEGIS) */}
+        {/* System Monitor */}
         <button
           onClick={handleAegisClick}
           className="flex items-center gap-1.5 text-[var(--frost)] transition-colors hover:text-[var(--ice-white)]"
-          title="System resource profile — powered by AEGIS"
+          title="System resource profile — CPU and memory load. Click to view details."
         >
           <span className="text-[var(--mist)]">SYSTEM:</span>
           <span className="font-mono font-medium uppercase">{ctx.aegisProfile}</span>
@@ -162,7 +162,7 @@ export function StatusBar() {
         <button
           onClick={handleKernlClick}
           className="flex items-center gap-1.5 text-[var(--frost)] transition-colors hover:text-[var(--ice-white)]"
-          title="Memory index status — powered by KERNL"
+          title="Memory index status — Greg's persistent knowledge from past conversations"
         >
           <span className="text-[var(--mist)]">MEMORY:</span>
           <span className={`font-mono font-medium ${kernlColor}`}>
@@ -173,13 +173,13 @@ export function StatusBar() {
         {/* Separator */}
         <span className="text-[var(--shadow)]">│</span>
 
-        {/* Ghost Thread (Sprint 20.0) */}
+        {/* Background Assistant (Sprint 23.0: renamed from Ghost Thread) */}
         <button
           onClick={handleGhostClick}
           className="flex items-center gap-1.5 text-[var(--frost)] transition-colors hover:text-[var(--ice-white)]"
           title={ghostTooltip(ghostStatus)}
         >
-          <span className="text-[var(--mist)]">GHOST:</span>
+          <span className="text-[var(--mist)]">BACKGROUND:</span>
           <span className={`font-mono font-medium ${ghostColor(ghostStatus)}`}>
             {ghostLabel(ghostStatus)}
           </span>

@@ -321,7 +321,7 @@ export function Message({ role, content, timestamp, highlightQuery, isActiveMatc
           color: isUser ? 'var(--cyan)' : 'var(--frost)',
         }}
       >
-        {isUser ? 'You' : 'GregLite'}
+        {isUser ? 'You' : 'Greg'}
       </div>
 
       {/* Content — subtle left border for user messages only */}

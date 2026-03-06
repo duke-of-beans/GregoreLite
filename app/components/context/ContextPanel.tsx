@@ -141,6 +141,21 @@ function PanelContent() {
         </button>
       </div>
 
+      {/* New Conversation button — Sprint 23.0: moved here from Header */}
+      <div className="px-3 pt-3 pb-1">
+        <button
+          onClick={() => window.dispatchEvent(new CustomEvent('greglite:new-thread'))}
+          className="flex w-full items-center gap-2 rounded-lg border border-[var(--shadow)] px-3 py-2 text-sm text-[var(--frost)] transition-colors hover:border-[var(--cyan)] hover:bg-[var(--surface)] hover:text-[var(--ice-white)]"
+          title="Start a new conversation (Cmd+N)"
+          aria-label="New conversation"
+        >
+          <svg className="h-3.5 w-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          <span>New Conversation</span>
+        </button>
+      </div>
+
       {/* Recent Chats */}
       <RecentChats
         onLoadThread={(id) => {
