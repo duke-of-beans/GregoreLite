@@ -1,6 +1,6 @@
 /**
  * Portfolio Dashboard — Type Definitions
- * Sprint 24.0
+ * Sprint 24.0 + Sprint 25.0 + Sprint 26.0
  *
  * Covers: ProjectType, ProjectHealth, ProjectCard, ScanResult, PortfolioProject.
  * Scanner reads disk, produces ScanResult → normalized into ProjectCard for UI.
@@ -50,6 +50,8 @@ export interface ProjectCard {
   tscErrors?: number;
   /** Type-specific metrics — flexible key/value pairs */
   customMetrics: Record<string, string | number>;
+  /** Sprint 26: attention muted until this timestamp (ms) — null = not muted */
+  attentionMutedUntil?: number | null;
 }
 
 // ── ScanResult — raw data from a single project scan ─────────────────────────
@@ -96,6 +98,8 @@ export interface PortfolioProject {
   last_scanned_at: number | null;
   /** JSON blob — parsed ScanResult + computed ProjectCard fields */
   scan_data: string | null;
+  /** Sprint 26: mute attention signals until this ms timestamp */
+  attention_muted_until: number | null;
 }
 
 // ── Parsed scan_data blob stored in SQLite ────────────────────────────────────
@@ -194,4 +198,55 @@ export interface DependencyWarning {
   path: string;
   detail: string;
   count?: number;
+}
+
+// ── Sprint 26.0 — Scaffold + Attention Types ──────────────────────────────────
+
+/** A single file definition in a scaffold template */
+export interface ScaffoldFile {
+  /** Relative path within the new project directory */
+  path: string;
+  /** File content — string or function that receives onboarding answers */
+  content: string | ((answers: Record<string, string>) => string);
+  /** Short human-readable description shown in scaffold preview step */
+  description?: string;
+}
+
+/** A complete scaffold template for a project type */
+export interface ScaffoldTemplate {
+  type: ProjectType;
+  /** Human-readable label for this template */
+  label: string;
+  /** Files to create in the new project directory */
+  files: ScaffoldFile[];
+}
+
+/** Result of scaffolding a new project directory */
+export interface ScaffoldResult {
+  success: boolean;
+  filesCreated: string[];
+  error?: string;
+}
+
+/** Severity level for an attention item */
+export type AttentionSeverity = 'high' | 'medium' | 'low';
+
+/** A single item in the attention queue */
+export interface AttentionItem {
+  projectId: string;
+  projectName: string;
+  severity: AttentionSeverity;
+  /** One-line reason in Greg's voice */
+  reason: string;
+  /** Suggested action for the user */
+  actionSuggestion: string;
+  /** What triggered this item: staleness | blockers | tests | deadline | velocity */
+  triggerType: 'staleness' | 'blockers' | 'tests' | 'deadline' | 'velocity';
+}
+
+/** Infer result from a free-text description (Create New flow) */
+export interface NewProjectInferResult {
+  type: ProjectType;
+  confidence: 'high' | 'medium' | 'low';
+  reason: string;
 }

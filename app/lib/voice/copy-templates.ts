@@ -380,6 +380,247 @@ export const ONBOARDING = {
   },
 } as const;
 
+// ── Sprint 26.0: Scaffold copy ────────────────────────────────────────────────
+
+export const SCAFFOLD = {
+  // Create New flow prompts
+  initialPrompt:  'What are you building?',
+  inferredType:   (type: string, confidence: string) =>
+    confidence === 'high'
+      ? `Looks like a ${type} project.`
+      : `This could be a ${type} project — confirming a few details.`,
+  unknownType:    'Not sure what type this is. Answering a few questions will help.',
+
+  // Type-specific question headers
+  questionHeaders: {
+    code:     'A few questions about the codebase:',
+    research: 'A few questions about the research:',
+    business: 'A few questions about the project:',
+    creative: 'A few questions about the work:',
+    custom:   'A few questions to set this up right:',
+  } as const,
+
+  // Scaffold preview descriptions per file type
+  fileDescriptions: {
+    'PROJECT_DNA.yaml':  'Project identity, type, and metrics',
+    'STATUS.md':         'Build status and sprint tracking',
+    'FEATURE_BACKLOG.md':'Feature backlog with priority tiers',
+    'RESEARCH_LOG.md':   'Date-ordered research findings log',
+    'METHODOLOGY.md':    'Research methodology and approach',
+    'MILESTONES.md':     'Milestone tracker with dates and status',
+    'TASK_LIST.md':      'Simple task list',
+    'README.md':         'Project description and getting started',
+  } as const,
+
+  // Preview step
+  previewHeader:  (fileCount: number) => `${fileCount} files will be created.`,
+  previewConfirm: 'Create project',
+
+  // Path selection
+  pathPrompt:  'Where should this be created?',
+  pathDefault: (dir: string) => `Default: ${dir}`,
+  pathOverride:'Choose a different location',
+
+  // Completion
+  done:    (name: string) => `${name} created.`,
+  viewBtn: 'View project',
+  error:   (detail: string) => `Scaffold failed: ${detail}`,
+
+  // Steps (button labels + step indicator labels)
+  steps: {
+    describe:    'Describe',
+    questions:   'Setup',
+    preview:     'Preview',
+    location:    'Location',
+    done:        'Done',
+    // Button labels
+    continue:    'Continue',
+    analyzing:   'Analyzing\u2026',
+    choosePath:  'Choose Location',
+    create:      'Create Project',
+    scaffolding: 'Setting up\u2026',
+    viewProject: 'View Project',
+    cancel:      'Cancel',
+  } as const,
+
+  // Step indicator labels (maps FlowStep keys)
+  stepLabels: {
+    describe:    'Describe your project',
+    questions:   'A few details',
+    preview:     'Files that will be created',
+    path:        'Choose a location',
+    scaffolding: 'Creating\u2026',
+    complete:    'Done',
+  } as const,
+
+  // Named prompts used in component JSX
+  title: 'New Project',
+  prompts: {
+    describe:            'What are you building?',
+    describePlaceholder: "I\u2019m building a\u2026",
+    pathPrompt:          'Where should this be created?',
+    pathHint:            'The directory will be created if it does not exist.',
+  } as const,
+
+  // Type inference banner
+  inference: {
+    detected: (type: string, confidence: string) =>
+      confidence === 'high'
+        ? `Looks like a ${type} project.`
+        : `This could be a ${type} project \u2014 confirming a few details.`,
+  },
+
+  // Scaffold preview step
+  preview: {
+    intro: (name: string, count: number) =>
+      `${name} \u2014 ${count} file${count !== 1 ? 's' : ''} will be created.`,
+  },
+
+  // Completion step
+  completion: {
+    title:        (name: string) => `${name} created.`,
+    filesCreated: (n: number)    => `${n} file${n !== 1 ? 's' : ''} created.`,
+    hint:         'Your project is registered. Open the card to pick up where you left off.',
+  },
+} as const;
+
+// ── Sprint 26.0: Attention queue copy ─────────────────────────────────────────
+
+export const ATTENTION = {
+  // Section header
+  header: (count: number) =>
+    count === 1 ? '1 project needs attention' : `${count} projects need attention`,
+  allOnTrack: 'All projects on track.',
+
+  // Staleness messages
+  staleRed:   (name: string, days: number, next: string) =>
+    `${name} hasn't been touched in ${days} days.${next}`,
+  staleAmber: (name: string, days: number) =>
+    `${name} — ${days} days since last activity.`,
+  neverActive:(name: string) =>
+    `${name} was registered but never started.`,
+
+  // Blocker message
+  blockers:   (name: string) =>
+    `${name} has items marked blocked.`,
+
+  // Test failure message
+  testFailures:(name: string, count: number) =>
+    `${name} — ${count} test${count > 1 ? 's' : ''} failing.`,
+
+  // Deadline message
+  deadlineApproaching: (name: string, daysLeft: number) =>
+    daysLeft === 0
+      ? `${name} has a deadline today.`
+      : `${name} has a deadline in ${daysLeft} day${daysLeft > 1 ? 's' : ''}.`,
+
+  // High-velocity acknowledgment
+  velocity: (name: string) => `${name} — on track. High activity.`,
+
+  // Action suggestions
+  actionPickUp:         'Pick up where you left off',
+  actionReviewBlockers: 'Review blockers',
+  actionRunTests:       'Run tests',
+  actionReviewDeadline: 'Review deadline',
+  actionKeepGoing:      'Keep going',
+
+  // Mute — flat keys (legacy, kept for compatibility)
+  muteTitle:       'Mute attention signals',
+  mute30Days:      'Mute for 30 days',
+  muteUntilResume: 'Mute until I resume',
+  mutePermanent:   'Mute permanently',
+  muteConfirm:     'Muted.',
+  unmuteLabel:     'Unmute',
+
+  // Mute — nested form used by AttentionQueue.tsx
+  mute: {
+    label: 'Mute',
+    confirm: 'Muted.',
+    options: {
+      oneHour:   'Mute for 1 hour',
+      fourHours: 'Mute for 4 hours',
+      oneDay:    'Mute for 1 day',
+      threeDays: 'Mute for 3 days',
+      oneWeek:   'Mute for 1 week',
+    } as const,
+  } as const,
+
+  // Dismiss — nested form used by AttentionQueue.tsx
+  dismiss: {
+    label: 'Dismiss',
+  } as const,
+
+  // Queue header — nested form used by AttentionQueue.tsx
+  queue: {
+    summary: (count: number, highCount: number) => {
+      const base = count === 1
+        ? '1 project needs attention'
+        : `${count} projects need attention`;
+      return highCount > 0 ? base : base;
+    },
+  },
+} as const;
+
+// ── Sprint 27.0: Recall (Ambient Memory) copy ─────────────────────────────────
+
+export const RECALL = {
+  // File revisit
+  file_revisit_intensive:   (filename: string, month: string) =>
+    `You worked on ${filename} pretty intensively last ${month}. Haven't touched it since.`,
+  file_revisit_conversations:(filename: string, count: number, month: string) =>
+    `This came up in ${count} conversations back in ${month}: ${filename}.`,
+  file_revisit_forgotten:   (filename: string, days: number) =>
+    `${filename}. ${days} days since you last opened it. Still relevant?`,
+
+  // Conversation callback
+  conversation_decision:    (topic: string, timeAgo: string) =>
+    `You made a call on ${topic} ${timeAgo}. Worth checking how that played out?`,
+  conversation_deep:        (project: string, title: string, date: string) =>
+    `${project}: you worked through ${title} on ${date}. Still holding up?`,
+
+  // Project milestone
+  project_version:          (project: string, version: string, sprintCount: number) =>
+    `${project} hit ${version}. That's ${sprintCount} sprints since you started.`,
+  project_reactivated:      (project: string, days: number) =>
+    `${project} is active again after ${days} days. Welcome back.`,
+
+  // Pattern insight
+  pattern_focus:            (project: string) =>
+    `You've been on ${project} every day this week. That's not your usual rotation.`,
+  pattern_topic:            (topic: string, count: number) =>
+    `${count} of your last conversations circled back to ${topic}. Turning into a focus area?`,
+
+  // Personal moment
+  moment_anniversary:       (project: string, duration: string, sprintCount: number) =>
+    `${project} turns ${duration} old today. ${sprintCount} sprints shipped.`,
+  moment_first:             (description: string) =>
+    `First time: ${description}.`,
+
+  // Actions
+  action_appreciated: 'Noted.',
+  action_dismissed:   'Gone.',
+  action_snoozed:     'Will circle back tomorrow.',
+
+  // Settings
+  settings_title:             'Memory Highlights',
+  settings_description:       'Greg surfaces things worth remembering — old files, past decisions, project milestones. Adjust how often and what types.',
+  settings_frequency_label:   'How often Greg looks for things to surface',
+  settings_max_per_day_label: 'Maximum highlights per day',
+  settings_type_toggles_label:'What Greg looks for',
+
+  // Inspector / diagnostics
+  inspector_tab:    'Memory',
+  inspector_last_run: (time: string) => `Last detection run: ${time}`,
+  inspector_no_events: 'No recall events yet.',
+
+  // Auto-calibration messages (shown in settings)
+  calibration_reducing:   "Dialing it back. You've been dismissing most highlights — I'll surface fewer.",
+  calibration_increasing: "You seem to like these. Want me to surface more?",
+
+  // Empty state (section is invisible when no active recall — but used in Inspector)
+  no_active: 'Nothing to surface right now.',
+} as const;
+
 /** Shorten model name for receipt footer display */
 export function formatReceiptModel(model: string | undefined): string {
   if (!model) return '—';

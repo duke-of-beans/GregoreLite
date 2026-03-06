@@ -19,7 +19,9 @@ import { PORTFOLIO } from '@/lib/voice/copy-templates';
 import { ProjectCard } from './ProjectCard';
 import { ProjectDetail } from './ProjectDetail';
 import { AddProjectFlow } from './AddProjectFlow';
-import type { ProjectCard as ProjectCardData } from '@/lib/portfolio/types';
+import AttentionQueue from './AttentionQueue';
+import NewProjectFlow from './NewProjectFlow';
+import type { ProjectCard as ProjectCardData, AttentionItem } from '@/lib/portfolio/types';
 
 const POLL_INTERVAL_MS = 30_000;
 
@@ -96,6 +98,8 @@ export function PortfolioDashboard() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [detailStatusFull, setDetailStatusFull] = useState<string | null>(null);
   const [showAddFlow, setShowAddFlow] = useState(false);
+  const [showNewFlow, setShowNewFlow] = useState(false);
+  const [attentionItems, setAttentionItems] = useState<AttentionItem[]>([]);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const fetchProjects = useCallback(async (silent = false) => {
@@ -114,6 +118,34 @@ export function PortfolioDashboard() {
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  const fetchAttention = useCallback(async () => {
+    try {
+      const res = await fetch('/api/portfolio/attention');
+      const body = await res.json() as { success: boolean; data?: { items: AttentionItem[] } };
+      if (body.success && body.data) {
+        setAttentionItems(body.data.items);
+      }
+    } catch { /* non-critical */ }
+  }, []);
+
+  const handleMute = useCallback(async (projectId: string, hours: number) => {
+    try {
+      await fetch('/api/portfolio/mute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projectId, hours }),
+      });
+      // Optimistically remove from queue then re-fetch
+      setAttentionItems((prev) => prev.filter((i) => i.projectId !== projectId));
+      void fetchAttention();
+    } catch { /* silent */ }
+  }, [fetchAttention]);
+
+  const handleDismiss = useCallback((projectId: string) => {
+    // Optimistically remove from queue — session-only, no persistence
+    setAttentionItems((prev) => prev.filter((i) => i.projectId !== projectId));
   }, []);
 
   const handleRefresh = useCallback(async () => {
@@ -146,13 +178,27 @@ export function PortfolioDashboard() {
   // Mount + poll
   useEffect(() => {
     void fetchProjects();
-    pollRef.current = setInterval(() => { void fetchProjects(true); }, POLL_INTERVAL_MS);
+    void fetchAttention();
+    pollRef.current = setInterval(() => {
+      void fetchProjects(true);
+      void fetchAttention();
+    }, POLL_INTERVAL_MS);
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
     };
-  }, [fetchProjects]);
+  }, [fetchProjects, fetchAttention]);
 
   const selectedProject = projects.find((p) => p.id === selectedId) ?? null;
+
+  // Build a map of projectId → severity for attention glow on cards
+  const attentionMap = new Map(
+    attentionItems.map((i) => [i.projectId, i.severity]),
+  );
+
+  const handleScrollToProject = useCallback((projectId: string) => {
+    const el = document.querySelector(`[data-project-id="${projectId}"]`);
+    el?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, []);
 
   return (
     <div
@@ -185,6 +231,27 @@ export function PortfolioDashboard() {
           </span>
         )}
         <button
+          onClick={() => setShowNewFlow(true)}
+          title="Create new project"
+          style={{
+            background: 'var(--elevated)',
+            border: '1px solid var(--shadow)',
+            borderRadius: 6,
+            cursor: 'pointer',
+            color: 'var(--cyan)',
+            padding: '4px 10px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 5,
+            fontSize: 12,
+            fontWeight: 500,
+          }}
+          aria-label="Create new project"
+        >
+          <Plus size={13} />
+          New
+        </button>
+        <button
           onClick={() => setShowAddFlow(true)}
           title="Add existing project"
           style={{
@@ -203,7 +270,7 @@ export function PortfolioDashboard() {
           aria-label="Add existing project"
         >
           <Plus size={13} />
-          Add Project
+          Add
         </button>
         <button
           onClick={() => { void handleRefresh(); }}
@@ -232,6 +299,18 @@ export function PortfolioDashboard() {
 
       {/* Scrollable body */}
       <div style={{ flex: 1, overflow: 'auto', padding: '20px' }}>
+
+        {/* Attention queue — above grid, invisible when empty */}
+        {attentionItems.length > 0 && (
+          <div style={{ marginBottom: 16 }}>
+            <AttentionQueue
+              items={attentionItems}
+              onProjectClick={handleScrollToProject}
+              onMute={handleMute}
+              onDismiss={handleDismiss}
+            />
+          </div>
+        )}
 
         {/* Loading */}
         {loading && (
@@ -276,11 +355,13 @@ export function PortfolioDashboard() {
         {!loading && !error && projects.length > 0 && (
           <div style={gridStyle} data-portfolio-grid>
             {projects.map((project) => (
-              <ProjectCard
-                key={project.id}
-                project={project}
-                onSelect={(id) => { void handleSelect(id); }}
-              />
+              <div key={project.id} data-project-id={project.id}>
+                <ProjectCard
+                  project={project}
+                  attentionSeverity={attentionMap.get(project.id)}
+                  onSelect={(id) => { void handleSelect(id); }}
+                />
+              </div>
             ))}
           </div>
         )}
@@ -304,6 +385,35 @@ export function PortfolioDashboard() {
           onCancel={() => setShowAddFlow(false)}
         />
       )}
+
+      {/* Create new project flow */}
+      {showNewFlow && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 50,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'rgba(0,0,0,0.5)',
+            padding: 20,
+          }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowNewFlow(false);
+          }}
+        >
+          <NewProjectFlow
+            onComplete={(projectId) => {
+              setShowNewFlow(false);
+              void fetchProjects(true);
+              void fetchAttention();
+              void handleSelect(projectId);
+            }}
+            onCancel={() => setShowNewFlow(false)}
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -325,6 +435,10 @@ if (typeof document !== 'undefined' && !document.getElementById('portfolio-grid-
     @keyframes pulse {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.4; }
+    }
+    @keyframes attentionPulse {
+      0%, 100% { transform: scale(1); opacity: 0.6; }
+      50% { transform: scale(1.8); opacity: 0; }
     }
     @media (max-width: 1023px) {
       [data-portfolio-grid] { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }

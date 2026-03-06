@@ -104,6 +104,9 @@ function runMigrations(db: Database.Database): void {
     // Phase 7H — PR tracking for self-evolution [Merge PR] button
     'ALTER TABLE manifests ADD COLUMN pr_number  INTEGER DEFAULT NULL',
     'ALTER TABLE manifests ADD COLUMN ci_passed  INTEGER DEFAULT NULL',
+    // Sprint 26 — Portfolio attention mute preference
+    'ALTER TABLE portfolio_projects ADD COLUMN attention_muted_until INTEGER DEFAULT NULL',
+    // Sprint 27 — Recall events table (CREATE handled in runMigrations block below)
   ];
 
   for (const sql of alterStatements) {
@@ -326,6 +329,30 @@ function runMigrations(db: Database.Database): void {
     `);
   } catch {
     // Tables may already exist
+  }
+
+  // Sprint 27 — Recall events: ambient memory surfacing
+  try {
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS recall_events (
+        id              TEXT    PRIMARY KEY,
+        type            TEXT    NOT NULL,
+        source_type     TEXT    NOT NULL,
+        source_id       TEXT,
+        source_name     TEXT    NOT NULL,
+        message         TEXT    NOT NULL,
+        context_data    TEXT,
+        relevance_score REAL    NOT NULL DEFAULT 0.5,
+        surfaced_at     INTEGER,
+        user_action     TEXT,
+        acted_at        INTEGER,
+        created_at      INTEGER NOT NULL DEFAULT (unixepoch('now','subsec') * 1000)
+      );
+      CREATE INDEX IF NOT EXISTS idx_recall_surfaced ON recall_events(surfaced_at, user_action);
+      CREATE INDEX IF NOT EXISTS idx_recall_type     ON recall_events(type, created_at DESC);
+    `);
+  } catch {
+    // Table may already exist
   }
 
   // S9-21 — Log Memory Modal deprecation decision (idempotent via fixed ID)

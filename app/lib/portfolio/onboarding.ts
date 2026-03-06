@@ -20,6 +20,7 @@ import type {
   OnboardingQuestion,
   ProjectDnaYaml,
   ProjectType,
+  NewProjectInferResult,
 } from './types';
 
 // ── Question definitions ──────────────────────────────────────────────────────
@@ -275,5 +276,153 @@ export function captureOnboardingTelemetry(params: TelemetryParams): void {
   }
 }
 
+// ── Sprint 26.0: Type inference from free-text description ───────────────────
+
+/** Keyword maps for fast deterministic type inference from a description */
+const CODE_KEYWORDS = [
+  'app', 'api', 'website', 'web app', 'cli', 'library', 'package', 'plugin',
+  'server', 'backend', 'frontend', 'database', 'typescript', 'javascript',
+  'python', 'react', 'node', 'rust', 'go ', 'java ', 'swift', 'kotlin',
+  'mobile', 'ios', 'android', 'extension', 'script', 'bot', 'automation',
+  'microservice', 'sdk', 'framework', 'compiler', 'tool',
+];
+
+const RESEARCH_KEYWORDS = [
+  'paper', 'study', 'analysis', 'research', 'thesis', 'dissertation',
+  'literature review', 'survey', 'methodology', 'data analysis', 'report',
+  'journal', 'academic', 'hypothesis', 'experiment', 'corpus', 'findings',
+  'investigation', 'review', 'meta-analysis',
+];
+
+const BUSINESS_KEYWORDS = [
+  'client', 'agency', 'deliverable', 'contract', 'invoice', 'proposal',
+  'marketing', 'sales', 'business', 'consulting', 'service', 'campaign',
+  'brand', 'revenue', 'pipeline', 'launch', 'go-to-market', 'seo',
+  'dashboard', 'strategy', 'pitch', 'deck', 'plan',
+];
+
+const CREATIVE_KEYWORDS = [
+  'novel', 'book', 'story', 'writing', 'album', 'music', 'song', 'podcast',
+  'film', 'video', 'design', 'illustration', 'art', 'photography',
+  'creative', 'game', 'animation', 'screenplay', 'comic', 'blog',
+  'newsletter', 'course', 'tutorial',
+];
+
+/**
+ * Infer project type from a free-text description.
+ * Keyword-based heuristic only — no LLM call. Fast and deterministic.
+ */
+export function inferTypeFromDescription(description: string): NewProjectInferResult {
+  const lower = description.toLowerCase();
+
+  function score(keywords: string[]): number {
+    return keywords.reduce((acc, kw) => acc + (lower.includes(kw) ? 1 : 0), 0);
+  }
+
+  const scores = {
+    code:     score(CODE_KEYWORDS),
+    research: score(RESEARCH_KEYWORDS),
+    business: score(BUSINESS_KEYWORDS),
+    creative: score(CREATIVE_KEYWORDS),
+  };
+
+  const max = Math.max(...Object.values(scores));
+
+  if (max === 0) {
+    return { type: 'custom', confidence: 'low', reason: 'No clear type signals in description' };
+  }
+
+  const winner = (Object.entries(scores) as [ProjectType, number][])
+    .find(([, v]) => v === max)![0];
+
+  const confidence = max >= 3 ? 'high' : max >= 1 ? 'medium' : 'low';
+  const reasonMap: Record<ProjectType, string> = {
+    code:     'Sounds like a code project',
+    research: 'Sounds like a research project',
+    business: 'Sounds like a business project',
+    creative: 'Sounds like a creative project',
+    custom:   'Custom project type',
+  };
+
+  return { type: winner, confidence, reason: reasonMap[winner] };
+}
+
+// ── Sprint 26.0: Questions for Create New flow ────────────────────────────────
+
+const NEW_PROJECT_CODE_QUESTIONS: OnboardingQuestion[] = [
+  { id: 'language',  question: 'Language and framework?', context: 'e.g. TypeScript + Next.js, Python + FastAPI, Rust' },
+  { id: 'platform',  question: 'Target platform?', context: 'Web, desktop, mobile, CLI, server, library' },
+  { id: 'team',      question: 'Solo or team?', options: ['Solo', 'Small team (2-5)', 'Larger team'] },
+];
+
+const NEW_PROJECT_RESEARCH_QUESTIONS: OnboardingQuestion[] = [
+  { id: 'research_question', question: 'Research question?', context: 'The specific question you\'re trying to answer' },
+  { id: 'methodology',       question: 'Methodology or framework?', context: 'Qualitative, quantitative, mixed, or domain-specific' },
+  { id: 'timeline',          question: 'Timeline or deadline?', context: 'Conference, journal, or internal deadline. Skip if none.' },
+];
+
+const NEW_PROJECT_BUSINESS_QUESTIONS: OnboardingQuestion[] = [
+  { id: 'deliverable',  question: 'Primary deliverable?', context: 'What you\'re building or shipping' },
+  { id: 'client',       question: 'Client or audience?', context: 'Internal, external client, or end users' },
+  { id: 'milestones',   question: 'Key milestones?', context: 'Named phases, due dates, or gates' },
+];
+
+const NEW_PROJECT_CREATIVE_QUESTIONS: OnboardingQuestion[] = [
+  { id: 'medium',            question: 'Medium?', options: ['Writing', 'Music', 'Visual art', 'Video', 'Game', 'Mixed', 'Other'] },
+  { id: 'audience',          question: 'Who\'s this for?', context: 'Audience, client, or intended viewers/readers/listeners' },
+  { id: 'target_completion', question: 'Target completion date?', context: 'Skip if ongoing practice' },
+];
+
+/**
+ * Returns questions for the Create New Project flow.
+ * Different from getOnboardingQuestions (which is for EXISTING projects).
+ * These questions are about what the user WANTS to build.
+ */
+export function getNewProjectQuestions(
+  _description: string,
+  inferred: NewProjectInferResult,
+): OnboardingQuestion[] {
+  switch (inferred.type) {
+    case 'code':     return NEW_PROJECT_CODE_QUESTIONS;
+    case 'research': return NEW_PROJECT_RESEARCH_QUESTIONS;
+    case 'business': return NEW_PROJECT_BUSINESS_QUESTIONS;
+    case 'creative': return NEW_PROJECT_CREATIVE_QUESTIONS;
+    default:         return CORE_QUESTIONS; // custom/unknown → 5 core questions
+  }
+}
+
+// ── Sprint 26.0: Telemetry for Create New ────────────────────────────────────
+
+export interface NewProjectTelemetryParams {
+  projectType: ProjectType;
+  customTypeLabel?: string | undefined;
+  questionsAsked: string[];
+  metricsConfigured: string[];
+  templateUsed: string;
+  onboardingDurationSeconds: number;
+}
+
+export function captureNewProjectTelemetry(params: NewProjectTelemetryParams): void {
+  try {
+    const db = getDatabase();
+    db.prepare(`
+      INSERT INTO portfolio_telemetry
+        (project_type, custom_type_label, questions_asked, metrics_configured,
+         template_used, migration_vs_new, onboarding_duration_seconds, created_at)
+      VALUES (?, ?, ?, ?, ?, 'new', ?, ?)
+    `).run(
+      params.projectType,
+      params.customTypeLabel ?? null,
+      JSON.stringify(params.questionsAsked),
+      JSON.stringify(params.metricsConfigured),
+      params.templateUsed,
+      params.onboardingDurationSeconds,
+      Date.now(),
+    );
+  } catch (err) {
+    console.warn('[portfolio/onboarding] New project telemetry write failed:', err);
+  }
+}
+
 // ── Re-export types ───────────────────────────────────────────────────────────
-export type { OnboardingQuestion, ProjectDnaYaml };
+export type { OnboardingQuestion, ProjectDnaYaml, NewProjectInferResult };
