@@ -547,3 +547,25 @@ CREATE TABLE IF NOT EXISTS learning_insights (
 CREATE INDEX IF NOT EXISTS idx_insights_status  ON learning_insights(status);
 CREATE INDEX IF NOT EXISTS idx_insights_pattern ON learning_insights(pattern_type);
 CREATE INDEX IF NOT EXISTS idx_insights_expires ON learning_insights(expires_at);
+
+-- ─── SPRINT 19.0: ACTION JOURNAL ─────────────────────────────────────────────
+-- Per-tool-call undo log. Every agent file write is journaled BEFORE execution
+-- so before_state can restore the file on undo. Law 3 (Reversibility) enforcement.
+CREATE TABLE IF NOT EXISTS action_journal (
+  id           TEXT    PRIMARY KEY,
+  session_id   TEXT    NOT NULL,
+  tool_name    TEXT    NOT NULL,
+  action_type  TEXT    NOT NULL CHECK(action_type IN ('file_write','file_delete','command','git_commit')),
+  target_path  TEXT,               -- absolute path for file actions
+  before_state TEXT,               -- file contents before write; NULL = file was new
+  after_state  TEXT,               -- file contents after write; NULL until journalAfterWrite()
+  command      TEXT,               -- command string for run_command / git_commit
+  reversible   INTEGER NOT NULL DEFAULT 1,  -- 0 for commands and git ops
+  undone       INTEGER NOT NULL DEFAULT 0,  -- 1 once successfully undone
+  created_at   INTEGER NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_action_journal_session
+  ON action_journal (session_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_action_journal_undone
+  ON action_journal (undone, reversible);

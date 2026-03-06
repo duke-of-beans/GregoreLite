@@ -13,16 +13,35 @@
  * - Reads activeThreadId from ghost store (written by ChatInterface on thread set).
  */
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import type { GhostSuggestion } from '@/lib/ghost/scorer/types';
 import { useGhostStore } from '@/lib/stores/ghost-store';
 import { GhostCard } from './GhostCard';
+import { shouldInterrupt, onQueueDrain } from '@/lib/focus/interrupt-gate';
 
 export function GhostCardList() {
   const ghostSuggestions = useGhostStore((s) => s.ghostSuggestions);
   const addGhostSuggestion = useGhostStore((s) => s.addGhostSuggestion);
   const dismissGhostSuggestion = useGhostStore((s) => s.dismissGhostSuggestion);
   const activeThreadId = useGhostStore((s) => s.activeThreadId);
+
+  // Law 5: hold suggestions blocked by the interrupt gate until focus drops
+  const pendingMap = useRef<Map<string, GhostSuggestion>>(new Map());
+
+  // Release queued ghost suggestions when focus transitions downward
+  useEffect(() => {
+    return onQueueDrain((released) => {
+      for (const req of released) {
+        if (req.type === 'ghost_suggestion' && req.id) {
+          const suggestion = pendingMap.current.get(req.id);
+          if (suggestion) {
+            pendingMap.current.delete(req.id);
+            addGhostSuggestion(suggestion);
+          }
+        }
+      }
+    });
+  }, [addGhostSuggestion]);
 
   // ── Tauri event listener for ghost:suggestion-ready ───────────────────────
   useEffect(() => {
@@ -36,7 +55,20 @@ export function GhostCardList() {
         const fn = await eventMod.listen<GhostSuggestion>(
           'ghost:suggestion-ready',
           (event) => {
-            addGhostSuggestion(event.payload);
+            const suggestion = event.payload;
+            // Law 5: check interrupt gate before surfacing suggestion
+            const allowed = shouldInterrupt({
+              type: 'ghost_suggestion',
+              severity: 'low',
+              message: `Ghost suggestion: ${suggestion.id}`,
+              id: suggestion.id,
+            });
+            if (allowed) {
+              addGhostSuggestion(suggestion);
+            } else {
+              // Interrupt gate queued it; store payload for drain release
+              pendingMap.current.set(suggestion.id, suggestion);
+            }
           }
         );
         unlisten = fn;

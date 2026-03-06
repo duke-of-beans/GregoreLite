@@ -12,12 +12,15 @@ import { useState, useEffect, useCallback } from 'react';
 import { useJobStore } from '@/lib/stores/job-store';
 import { useContextPanel } from '@/lib/context/context-provider';
 import { CostBreakdown } from '../agent-sdk/CostBreakdown';
+import { getAttentionTooltip } from '@/lib/focus/attention-budget';
 
 const COST_POLL_MS = 60_000;
 
 export function StatusBar() {
   const [costToday, setCostToday] = useState<number>(0);
   const [costBreakdownOpen, setCostBreakdownOpen] = useState(false);
+  // Sprint 19.0 — Law 10: attention budget display, polled every 10s
+  const [attentionText, setAttentionText] = useState(() => getAttentionTooltip());
   const jobs = useJobStore((s) => s.jobs);
   const { state: ctx } = useContextPanel();
 
@@ -39,6 +42,11 @@ export function StatusBar() {
     const handle = setInterval(fetchCost, COST_POLL_MS);
     return () => clearInterval(handle);
   }, [fetchCost]);
+
+  useEffect(() => {
+    const handle = setInterval(() => setAttentionText(getAttentionTooltip()), 10_000);
+    return () => clearInterval(handle);
+  }, []);
 
   // Derive job counts (JobRecord.state is uppercase JobState)
   const activeJobs = jobs.filter(
@@ -132,6 +140,20 @@ export function StatusBar() {
             {kernlDot} {ctx.kernlStatus === 'indexed' ? 'Ready' : ctx.kernlStatus === 'indexing' ? 'Syncing' : 'Offline'}
           </span>
         </button>
+
+        {/* Separator */}
+        <span className="text-[var(--shadow)]">│</span>
+
+        {/* Attention Budget — Law 10 */}
+        <div
+          className="flex items-center gap-1.5 text-[var(--frost)]"
+          title={attentionText}
+        >
+          <span className="text-[var(--mist)]">ATTN:</span>
+          <span className="font-mono font-medium">
+            {attentionText.replace('Attention: ', '').replace(' remaining', '')}
+          </span>
+        </div>
       </div>
 
       {/* Right side — Code Quality score if available */}

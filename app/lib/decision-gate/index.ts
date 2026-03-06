@@ -41,6 +41,9 @@ import {
   detectSacredPrincipleRisk,
   detectIrreversibleAction,
   detectLowConfidence,
+  detectAppendOnlyViolation,
+  detectReversibilityMissing,
+  detectDeepWorkInterruption,
 } from './trigger-detector';
 import { detectContradiction } from './contradiction';
 import { inferStructuredTriggers } from './inference';
@@ -123,6 +126,41 @@ export async function analyze(messages: GateMessage[]): Promise<TriggerResult> {
       return triggered(
         'low_confidence',
         'I\'m not confident about this one. Want me to verify before moving forward?',
+      );
+    }
+  }
+
+  // ── Sprint 19.0: Law 1/3/5 sync checks ───────────────────────────────────
+
+  {
+    const bypass = policyBypass('append_only_violation');
+    if (bypass) return bypass;
+    if (detectAppendOnlyViolation(messages)) {
+      return triggered(
+        'append_only_violation',
+        'Audit log or journal table is append-only. Modification not allowed.',
+      );
+    }
+  }
+
+  {
+    const bypass = policyBypass('reversibility_missing');
+    if (bypass) return bypass;
+    if (detectReversibilityMissing(messages)) {
+      return triggered(
+        'reversibility_missing',
+        'No reversibility mechanism in scope for this file write. Add journal capture before proceeding.',
+      );
+    }
+  }
+
+  {
+    const bypass = policyBypass('deep_work_interruption');
+    if (bypass) return bypass;
+    if (detectDeepWorkInterruption(messages)) {
+      return triggered(
+        'deep_work_interruption',
+        'Deep work session in progress. This status update can wait until a natural break.',
       );
     }
   }

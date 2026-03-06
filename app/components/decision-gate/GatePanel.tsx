@@ -21,9 +21,10 @@
  * Override → POST /api/decision-gate/override → releaseLock → clearTrigger
  */
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import type { GateTrigger, TriggerResult } from '@/lib/decision-gate';
 import { useDecisionGateStore } from '@/lib/stores/decision-gate-store';
+import { shouldInterrupt, onQueueDrain } from '@/lib/focus/interrupt-gate';
 import { ContradictionView } from './ContradictionView';
 import { MandatoryOverlay } from './MandatoryOverlay';
 
@@ -41,6 +42,10 @@ const TRIGGER_LABELS: Record<GateTrigger, string> = {
   large_build_estimate: 'Large Scope',
   contradicts_prior: 'Contradicts Prior',
   low_confidence: 'Low Confidence',
+  // Sprint 19.0 — Law 1/3/5 enforcement triggers
+  append_only_violation: 'Append-Only Violation',
+  reversibility_missing: 'Reversibility Gap',
+  deep_work_interruption: 'Deep Work Guard',
 };
 
 type PolicyScope = 'once' | 'category' | 'always';
@@ -52,6 +57,30 @@ export function GatePanel({ threadId, trigger }: GatePanelProps) {
   const [error, setError] = useState<string | null>(null);
   // Sprint 18.0: three-choice policy scope
   const [policyScope, setPolicyScope] = useState<PolicyScope>('once');
+
+  // Sprint 19.0 — Law 5: check interrupt gate before rendering.
+  // Critical gates (sacred_principle_risk) always pass. Others queue during deep work.
+  const interruptId = useRef(`gate-${trigger.trigger ?? 'unknown'}-${Date.now()}`);
+  const [show, setShow] = useState<boolean>(() => {
+    if (!trigger.trigger) return true;
+    const isCritical = trigger.trigger === 'sacred_principle_risk';
+    return shouldInterrupt({
+      type: 'gate',
+      severity: isCritical ? 'critical' : 'high',
+      message: trigger.reason,
+      id: interruptId.current,
+    });
+  });
+
+  // Release gate when focus drops and interrupt queue drains
+  useEffect(() => {
+    if (show) return;
+    return onQueueDrain((released) => {
+      if (released.some((r) => r.id === interruptId.current)) {
+        setShow(true);
+      }
+    });
+  }, [show]);
 
   const mandatory = dismissCount >= 3;
   const dismissesLeft = Math.max(0, 3 - dismissCount);
@@ -154,6 +183,9 @@ export function GatePanel({ threadId, trigger }: GatePanelProps) {
       setProceeding(false);
     }
   };
+
+  // Suppress render until interrupt gate allows it (Law 5)
+  if (!show) return null;
 
   return (
     <div

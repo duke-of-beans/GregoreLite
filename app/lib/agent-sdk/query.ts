@@ -49,6 +49,8 @@ import { runShimReadonlyAudit } from './tools/shim-readonly-audit';
 import { runMarkdownLinter } from './tools/markdown-linter';
 import { runKernlSearch } from './tools/kernl-search';
 import { detectShimLoop } from './failure-modes';
+// Sprint 19.0: action journal for Law 3 (Reversibility)
+import { journalBeforeWrite, journalAfterWrite, journalCommand } from './action-journal';
 
 const client = new Anthropic();
 
@@ -77,6 +79,7 @@ async function executeTool(
   toolName: string,
   input: Record<string, unknown>,
   manifest: TaskManifest,
+  sessionId: string,
 ): Promise<string> {
   const projectPath = manifest.context.project_path;
 
@@ -104,8 +107,11 @@ async function executeTool(
         if (!check.allowed) return `ERROR: ${check.errorMessage}`;
         const filePath = path.isAbsolute(rawPath) ? rawPath : path.resolve(projectPath, rawPath);
         const content = String(input['content'] ?? '');
+        // Sprint 19.0: journal before write (Law 3 — Reversibility)
+        const jwEntryId = journalBeforeWrite(sessionId, filePath, 'fs_write');
         fs.mkdirSync(path.dirname(filePath), { recursive: true });
         fs.writeFileSync(filePath, content, 'utf8');
+        journalAfterWrite(jwEntryId, filePath);
         return `OK: Wrote ${content.length} bytes to ${filePath}`;
       }
 
@@ -115,8 +121,11 @@ async function executeTool(
         if (!check.allowed) return `ERROR: ${check.errorMessage}`;
         const filePath = path.isAbsolute(rawPath) ? rawPath : path.resolve(projectPath, rawPath);
         const content = String(input['content'] ?? '');
+        // Sprint 19.0: journal before write (Law 3 — Reversibility)
+        const jwDocsEntryId = journalBeforeWrite(sessionId, filePath, 'fs_write_docs_only');
         fs.mkdirSync(path.dirname(filePath), { recursive: true });
         fs.writeFileSync(filePath, content, 'utf8');
+        journalAfterWrite(jwDocsEntryId, filePath);
         return `OK: Wrote ${content.length} bytes to ${filePath}`;
       }
 
@@ -131,6 +140,8 @@ async function executeTool(
       case 'run_command': {
         const command = String(input['command'] ?? '');
         const cwd = input['cwd'] ? String(input['cwd']) : projectPath;
+        // Sprint 19.0: journal command (not undoable, but logged for audit — Law 3)
+        journalCommand(sessionId, command, 'run_command');
         try {
           const output = execSync(command, {
             cwd,
@@ -238,6 +249,8 @@ async function executeTool(
           ? rawFiles.map((f) => String(f))
           : [];
         if (files.length === 0) return 'ERROR: git_commit requires at least one file';
+        // Sprint 19.0: journal git commit (commit hash captured in after_state — Law 3)
+        journalCommand(sessionId, `git commit -m "${message}" [files: ${files.join(', ')}]`, 'git_commit');
         return executeGitCommit({ message, files }, projectPath);
       }
 
@@ -627,7 +640,7 @@ export async function runQuerySession(
             parsedInput = block.input as Record<string, unknown>;
           }
 
-          const result = await executeTool(block.name, parsedInput, manifest);
+          const result = await executeTool(block.name, parsedInput, manifest, manifestId);
           logger.append(`[tool_result] ${block.name}: ${result.slice(0, 200)}`);
 
           // Sprint 11.1: detectShimLoop via failure-modes pure function.

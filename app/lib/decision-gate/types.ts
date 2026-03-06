@@ -24,7 +24,10 @@ export type GateTrigger =
   | 'irreversible_action'     // delete, deploy to prod, breaking schema change
   | 'large_build_estimate'    // build time >3 Agent SDK sessions — Haiku inference
   | 'contradicts_prior'       // contradicts a KERNL-logged decision
-  | 'low_confidence';         // Claude expresses confidence <60%
+  | 'low_confidence'          // Claude expresses confidence <60%
+  | 'append_only_violation'  // Law 1: attempting to modify append-only protected data
+  | 'reversibility_missing'  // Law 3: irreversible action with no reversibility mechanism
+  | 'deep_work_interruption'; // Law 5: non-critical interrupt requested during deep work
 
 /** Result returned by analyze() — consumed by chat route + UI (Sprint 4B) */
 export interface TriggerResult {

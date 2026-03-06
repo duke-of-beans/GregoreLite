@@ -1,10 +1,10 @@
 # GREGLITE — STATUS
-**Last Updated:** March 6, 2026 — Sprint 18.0 COMPLETE. Memory Shimmer + Adaptive Override System.
+**Last Updated:** March 6, 2026 — Sprint 19.0 COMPLETE. Sacred Laws enforcement (reversibility journal, focus protection, attention budget, expanded gate).
 **Version:** v1.0.0 (Phase 8 Ship Prep complete)
-**Test Count:** 1245/1245 all green
+**Test Count:** 1344/1344 all green
 **EoS Health:** 100/100
 **TSC:** 0 errors
-**Next:** Sprint 18.0 shipped. Memory shimmer glows on matching KERNL terms. Decision gate now three-choice with persistent SQLite override policies. Sprint 19.0 TBD.
+**Next:** Sprint 19.0 shipped. Action journal captures pre/post file state for undo. Focus tracker + interrupt gate block non-critical noise during deep work. Attention budget limits 100 CT/day. Decision gate expanded to 11 triggers (Law 1/3/5). Sprint 20.0 TBD.
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md — ALL PHASES (A–F) SHIPPED.
 **Recent commits:** 7c08d9f (11.3), dc188fd (11.4+11.5), 4b2382d (11.7), [pending] (11.6)
@@ -17,6 +17,13 @@
 5. ~~Decision gate trigger-detector.ts has 3 dead stub functions replaced by Haiku inference — cleanup needed.~~ — RESOLVED: Sprint 11.0 — detectHighTradeoffCount/detectMultiProjectTouch/detectLargeEstimate removed.
 
 ---
+
+- [x] **SPRINT 19.0** — Sacred Laws Enforcement — **COMPLETE**
+  - **Deliverable:** 15+ files changed. tsc 0 errors. 1344/1344 tests green (99 new). Laws 1, 3, 5, 10, 12 enforced.
+  - **Law 3 — Reversibility:** `lib/agent-sdk/action-journal.ts`: WAL-mode SQLite journal captures before/after file state + command history. `journalBeforeWrite` / `journalAfterWrite` / `journalCommand` wired into `query.ts` tool execution loop (pre/post hooks). `undoAction()` restores file or deletes new file. `/api/agent-sdk/undo/route.ts`: POST endpoint for Inspector UI. Inspector Jobs tab → Action History panel shows reversible entries with Undo button.
+  - **Law 5 — Protect Deep Work:** `lib/focus/focus-tracker.ts`: 4-state machine (`idle | browsing | composing | deep_work`) driven by keydown/click/scroll/message_sent events. Deep work triggered by 60s sustained typing or 4+ messages in 2min window. `lib/focus/interrupt-gate.ts`: severity × focus_state matrix — idle allows all, browsing allows medium+, composing allows high+, deep_work allows critical only. `onQueueDrain` releases held interrupts when focus drops. `GhostCardList.tsx` + `ToastStack.tsx` + `GatePanel.tsx` all gated.
+  - **Law 10 — Attention Budget:** `lib/focus/attention-budget.ts`: 100 CT/day, 5 spend types (ghost_suggestion=1, status_notification=3, gate_mandatory=5, gate_override=8, critical_alert=15). Auto-resets at midnight. `isBudgetExhausted()` blocks non-critical interrupts. `StatusBar.tsx`: live `ATTN: 97/100` display with 10s polling.
+  - **Law 1/3/5 Gate Triggers:** Decision gate expanded 8→11 triggers. `detectAppendOnlyViolation` (UPDATE/DELETE/DROP on audit tables), `detectReversibilityMissing` (fs_write without journal/undo/backup mention), `detectDeepWorkInterruption` (status requests during high-velocity sessions). Voice templates added for all 3. `GatePanel.tsx` + `OverridePoliciesSection.tsx` updated with new trigger labels.
 
 - [x] **SPRINT 18.0** — Memory Shimmer + Adaptive Override System — **COMPLETE**
   - **Deliverable:** 25+ files changed. tsc 0 errors. 1245/1245 tests green. Two-phase sprint: Phase 1 committed first, Phase 2 on top.

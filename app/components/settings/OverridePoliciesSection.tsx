@@ -21,6 +21,10 @@ const TRIGGER_LABELS: Record<GateTrigger, string> = {
   large_build_estimate: 'Large Scope',
   contradicts_prior: 'Contradicts Prior',
   low_confidence: 'Low Confidence',
+  // Sprint 19.0 — Law 1/3/5 enforcement triggers
+  append_only_violation: 'Append-Only Violation',
+  reversibility_missing: 'Reversibility Gap',
+  deep_work_interruption: 'Deep Work Guard',
 };
 
 const SCOPE_LABELS: Record<OverridePolicy['scope'], string> = {

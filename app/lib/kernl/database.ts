@@ -220,6 +220,31 @@ function runMigrations(db: Database.Database): void {
     // Table may already exist
   }
 
+  // Sprint 19.0 — Action Journal: agent tool undo infrastructure (Law 3)
+  try {
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS action_journal (
+        id           TEXT    PRIMARY KEY,
+        session_id   TEXT    NOT NULL,
+        tool_name    TEXT    NOT NULL,
+        action_type  TEXT    NOT NULL CHECK(action_type IN ('file_write','file_delete','command','git_commit')),
+        target_path  TEXT,
+        before_state TEXT,
+        after_state  TEXT,
+        command      TEXT,
+        reversible   INTEGER NOT NULL DEFAULT 1,
+        undone       INTEGER NOT NULL DEFAULT 0,
+        created_at   INTEGER NOT NULL
+      );
+      CREATE INDEX IF NOT EXISTS idx_action_journal_session
+        ON action_journal (session_id, created_at DESC);
+      CREATE INDEX IF NOT EXISTS idx_action_journal_undone
+        ON action_journal (undone, reversible);
+    `);
+  } catch {
+    // Table may already exist
+  }
+
   // S9-21 — Log Memory Modal deprecation decision (idempotent via fixed ID)
   try {
     db.exec(`

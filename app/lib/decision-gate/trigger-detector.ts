@@ -202,4 +202,111 @@ export function detectLowConfidence(messages: GateMessage[]): boolean {
   return matchCount >= 2;
 }
 
+// ─── append_only_violation ────────────────────────────────────────────────────
+
+/**
+ * Patterns that indicate an attempt to mutate append-only tables.
+ * These tables (action_journal, learning_insights, message_history) must
+ * never be UPDATE'd or DELETE'd — only INSERTs are allowed (Law 1).
+ */
+const APPEND_ONLY_PATTERNS = [
+  /edit\s+(the\s+)?audit\s+(log|trail)/i,
+  /modify\s+(the\s+)?audit\s+(log|trail)/i,
+  /delete\s+(from\s+)?(the\s+)?audit/i,
+  /overwrite\s+(the\s+)?log/i,
+  /clear\s+(the\s+)?(audit\s+)?(log|history)/i,
+  /truncate\s+(the\s+)?(audit|journal|history)/i,
+  /update\s+(action_journal|learning_insights|message_history)\s+set/i,
+  /delete\s+from\s+(action_journal|learning_insights|message_history)/i,
+  /drop\s+(table\s+)?(action_journal|learning_insights|message_history)/i,
+];
+
+/**
+ * Fires when the last assistant message proposes mutating append-only tables —
+ * audit log, action journal, learning insights, or message history.
+ * Enforces Law 1 (Immutable Audit Trail).
+ */
+export function detectAppendOnlyViolation(messages: GateMessage[]): boolean {
+  const lastAssistant = [...messages].reverse().find((m) => m.role === 'assistant');
+  if (!lastAssistant) return false;
+  return APPEND_ONLY_PATTERNS.some((p) => p.test(lastAssistant.content));
+}
+
+// ─── reversibility_missing ────────────────────────────────────────────────────
+
+const REVERSIBLE_EVIDENCE_PHRASES = [
+  'journal',
+  'journalbeforewrite',
+  'before_state',
+  'action_journal',
+  'undo',
+  'backup',
+  'snapshot',
+  'rollback',
+  'restore',
+];
+
+/**
+ * Fires when the assistant proposes a file-write or schema mutation but mentions
+ * no reversibility mechanism. The action_journal (Law 3) should always be in scope
+ * for fs_write operations — this trigger catches gaps in coverage.
+ * Distinct from irreversible_action: this is about MISSING protection, not inherent
+ * irreversibility.
+ */
+export function detectReversibilityMissing(messages: GateMessage[]): boolean {
+  const lastAssistant = [...messages].reverse().find((m) => m.role === 'assistant');
+  if (!lastAssistant) return false;
+  const lower = lastAssistant.content.toLowerCase();
+
+  // File-write or schema-mutation intent required to trigger
+  const hasMutableOp =
+    lower.includes('fs_write') ||
+    lower.includes('overwrite the file') ||
+    lower.includes('write to the file') ||
+    lower.includes('update the schema') ||
+    /edit\s+the\s+file/i.test(lastAssistant.content);
+
+  if (!hasMutableOp) return false;
+
+  // Reversibility evidence absent → trigger
+  return !REVERSIBLE_EVIDENCE_PHRASES.some((p) => lower.includes(p));
+}
+
+// ─── deep_work_interruption ───────────────────────────────────────────────────
+
+const DEEP_WORK_INTERRUPT_PHRASES = [
+  'what is the status',
+  "what's the status",
+  'give me a summary',
+  'summarize what',
+  'what did you do',
+  'what have you done',
+  'progress update',
+  'how is it going',
+  "how's it going",
+  'quick update',
+  'brief update',
+  'what are you working on',
+];
+
+/**
+ * Fires when the user asks for a status/summary-style update during an active
+ * high-velocity session (6+ recent messages → proxy for deep work state).
+ * These interruptions can wait until a natural break. Enforces Law 5.
+ *
+ * Note: focus-tracker.ts manages the true focus state client-side.
+ * This detector uses message velocity as a server-side proxy.
+ */
+export function detectDeepWorkInterruption(messages: GateMessage[]): boolean {
+  // High message velocity = likely deep work in progress
+  const recentMessages = messages.slice(-10);
+  if (recentMessages.length < 6) return false;
+
+  const lastUser = [...messages].reverse().find((m) => m.role === 'user');
+  if (!lastUser) return false;
+  const lower = lastUser.content.toLowerCase();
+
+  return DEEP_WORK_INTERRUPT_PHRASES.some((p) => lower.includes(p));
+}
+
 
