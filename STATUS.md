@@ -18,6 +18,12 @@
 
 ---
 
+- [x] **SPRINT 21.0** — Framer Motion Spring Animations — **COMPLETE**
+  - **Deliverable:** 9 files modified + 2 new files. tsc 0 errors. 1344/1344 tests (unchanged). All CSS transition hacks replaced with Framer Motion spring physics.
+  - **New:** `lib/design/animations.ts` — single source of truth for all variants: `drawerSlide`, `panelSlideUp`, `modalVariants`, `popoverVariants`, `expandCollapse`, `buttonPress`, `cardLift`, `useAnimationConfig()` hook with `useReducedMotion`.
+  - **Components:** InspectorDrawer (spring slide from right, stiffness 300/30), EventDetailPanel (two AnimatePresence blocks, keyed on event.id), GatePanel (panelSlideUp y:40→0), MemoryCard (popoverVariants scale 0.95→1), ReceiptFooter (height:0→auto collapse), SendButton (buttonPress on normal/approved only), GhostCard (cardLift hover +2px cyan shadow; fixed CSSProperties/MotionStyle under exactOptionalPropertyTypes).
+  - **Reduced motion:** `useAnimationConfig()` returns instant transitions when `prefers-reduced-motion` active. FM v12 framework-level auto-respect also active.
+
 - [x] **SPRINT 20.0** — Ghost Thread Activation — **COMPLETE**
   - **Deliverable:** 7 files modified + 4 new files. tsc 0 errors. cargo check 0 errors. 1344/1344 tests (unchanged). Ghost Thread live.
   - **Bootstrap wiring:** `lib/bootstrap/index.ts` Step 6: `startGhost()` called non-blocking after AEGIS init. Errors degrade gracefully — app continues if Ghost fails to start.

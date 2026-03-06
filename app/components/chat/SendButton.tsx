@@ -12,6 +12,9 @@
 
 'use client';
 
+import { motion } from 'framer-motion';
+import { buttonPress } from '@/lib/design/animations';
+
 export type SendButtonState =
   | 'normal' // [Send] - cyan
   | 'checking' // [◉ Checking] - animated
@@ -142,24 +145,46 @@ export function SendButton({
   const config = stateConfig[state];
   const isDisabled = disabled || state === 'checking';
 
-  return (
-    <button
-      onClick={onClick}
-      disabled={isDisabled}
-      className={`
-        flex items-center gap-2 rounded-lg px-4 py-2 font-medium
-        transition-all duration-150
-        ${config.bgColor}
-        ${config.hoverBg}
-        ${config.textColor}
-        ${isDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
-      `}
-      aria-label={`${config.label} - Ghost state: ${state}`}
-      title={ghostMessage || config.label}
-      data-send-button
-    >
+  // Primary action states (normal, approved) get spring micro-interactions.
+  // Secondary/warning states keep a plain button — no bounce on dangerous actions.
+  const isPrimary = state === 'normal' || state === 'approved';
+
+  const sharedClassName = `
+    flex items-center gap-2 rounded-lg px-4 py-2 font-medium
+    transition-all duration-150
+    ${config.bgColor}
+    ${config.hoverBg}
+    ${config.textColor}
+    ${isDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
+  `;
+
+  const sharedProps = {
+    onClick,
+    disabled: isDisabled,
+    className: sharedClassName,
+    'aria-label': `${config.label} - Ghost state: ${state}`,
+    title: ghostMessage || config.label,
+    'data-send-button': true,
+  } as const;
+
+  const children = (
+    <>
       {config.icon && <span>{config.icon}</span>}
       <span className="text-sm">{config.label}</span>
+    </>
+  );
+
+  if (isPrimary) {
+    return (
+      <motion.button {...sharedProps} {...buttonPress}>
+        {children}
+      </motion.button>
+    );
+  }
+
+  return (
+    <button {...sharedProps}>
+      {children}
     </button>
   );
 }

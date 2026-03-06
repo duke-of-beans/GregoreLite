@@ -20,6 +20,7 @@
 'use client';
 
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { VOICE, formatReceiptCost, formatReceiptLatency, formatReceiptModel } from '@/lib/voice';
 import type { ReceiptDetail } from '@/lib/stores/ui-store';
 
@@ -100,8 +101,6 @@ export function ReceiptFooter({
 
   return (
     <div
-      className="receipt-footer"
-      data-expanded={isExpanded ? 'true' : 'false'}
       style={{ marginTop: 4 }}
       aria-label="Message receipt"
     >
@@ -132,37 +131,48 @@ export function ReceiptFooter({
         )}
       </div>
 
-      {/* Expanded detail — only rendered when expanded */}
-      {isExpanded && (
-        <div
-          style={{
-            marginTop: 4,
-            padding: '6px 8px',
-            borderLeft: '2px solid var(--cyan-ghost, rgba(0,212,232,0.08))',
-            background: 'var(--bg-elevated, var(--elevated))',
-            borderRadius: '0 4px 4px 0',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 3,
-          }}
-        >
-          {tokenStr && (
-            <div style={{ fontSize: 'var(--text-xs, 11px)', color: 'var(--mist)' }}>
-              Tokens: {tokenStr}
-              {cacheHit !== undefined && (
-                <span style={{ marginLeft: 8, color: 'var(--frost)', opacity: 0.7 }}>
-                  {cacheHit ? VOICE.receipt.cacheHit : VOICE.receipt.cacheMiss}
-                </span>
+      {/* Expanded detail — Framer Motion height animation replaces CSS max-height hack */}
+      <AnimatePresence initial={false}>
+        {isExpanded && (
+          <motion.div
+            key="receipt-expanded"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2, ease: 'easeInOut' }}
+            style={{ overflow: 'hidden' }}
+          >
+            <div
+              style={{
+                marginTop: 4,
+                padding: '6px 8px',
+                borderLeft: '2px solid var(--cyan-ghost, rgba(0,212,232,0.08))',
+                background: 'var(--bg-elevated, var(--elevated))',
+                borderRadius: '0 4px 4px 0',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 3,
+              }}
+            >
+              {tokenStr && (
+                <div style={{ fontSize: 'var(--text-xs, 11px)', color: 'var(--mist)' }}>
+                  Tokens: {tokenStr}
+                  {cacheHit !== undefined && (
+                    <span style={{ marginLeft: 8, color: 'var(--frost)', opacity: 0.7 }}>
+                      {cacheHit ? VOICE.receipt.cacheHit : VOICE.receipt.cacheMiss}
+                    </span>
+                  )}
+                </div>
+              )}
+              {model && (
+                <div style={{ fontSize: 'var(--text-xs, 11px)', color: 'var(--mist)' }}>
+                  Model: {model}
+                </div>
               )}
             </div>
-          )}
-          {model && (
-            <div style={{ fontSize: 'var(--text-xs, 11px)', color: 'var(--mist)' }}>
-              Model: {model}
-            </div>
-          )}
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -9,7 +9,9 @@
  */
 
 import { useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 import type { ShimmerMatch } from '@/lib/memory/shimmer-query';
+import { popoverVariants } from '@/lib/design/animations';
 
 interface MemoryCardProps {
   match: ShimmerMatch;
@@ -68,10 +70,13 @@ export function MemoryCard({ match, position, onClose, onNavigate }: MemoryCardP
     : position.y + 20;
 
   return (
-    <div
+    <motion.div
       ref={cardRef}
       role="dialog"
       aria-label="Memory match"
+      variants={popoverVariants}
+      initial="hidden"
+      animate="visible"
       style={{
         position: 'fixed',
         left: x,
@@ -83,17 +88,10 @@ export function MemoryCard({ match, position, onClose, onNavigate }: MemoryCardP
         padding: '12px 14px',
         zIndex: 9999,
         boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
-        animation: 'fadeInCard 150ms ease-out forwards',
         fontSize: '13px',
         color: 'var(--frost)',
       }}
     >
-      <style>{`
-        @keyframes fadeInCard {
-          from { opacity: 0; transform: translateY(-4px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
 
       {/* Header row: badge + close */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
@@ -160,6 +158,6 @@ export function MemoryCard({ match, position, onClose, onNavigate }: MemoryCardP
       >
         View source →
       </button>
-    </div>
+    </motion.div>
   );
 }
