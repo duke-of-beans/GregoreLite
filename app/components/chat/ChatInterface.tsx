@@ -163,6 +163,20 @@ export function ChatInterface() {
     }
   }, [activeConversationId, setActiveThreadId]);
 
+  // Sprint 17.0 Task 6+8: Sync gate trigger → send button state
+  // When gate fires, button transitions to 'warning'; clearing gate returns to 'normal'
+  useEffect(() => {
+    if (gateTrigger) {
+      // Mandatory gate (3+ dismissals) → veto; otherwise → warning
+      setSendButtonState('warning');
+    } else {
+      // Only reset to normal if not currently streaming or checking
+      setSendButtonState((prev: SendButtonState) =>
+        prev === 'warning' || prev === 'veto' ? 'normal' : prev
+      );
+    }
+  }, [gateTrigger]);
+
   // ── Keyboard shortcuts ───────────────────────────────────────────────────
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -596,6 +610,10 @@ export function ChatInterface() {
                 costUsd: event.costUsd,
                 latencyMs: event.latencyMs,
               }, blocks.length > 0 ? blocks : undefined);
+              // Sprint 17.0 Task 5: Orchestration Theater — increment lifetime message count
+              if (!useUIStore.getState().orchestrationTheaterComplete) {
+                useUIStore.getState().incrementTheaterMessageCount();
+              }
 
               const artifact = detectArtifact(fullContent);
               if (artifact) {
@@ -936,7 +954,7 @@ export function ChatInterface() {
                   )}
 
                   <div className="flex items-end gap-3">
-                    <div className="flex-1">
+                    <div className={`flex-1${sendButtonState === 'checking' ? ' ghost-analyzing' : ''}`}>
                       <InputField
                         value={input}
                         onChange={setInput}

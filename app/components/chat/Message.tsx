@@ -22,6 +22,8 @@ import type { Artifact } from '@/lib/artifacts/types';
 import { CollapsibleBlock } from './CollapsibleBlock';
 import { MessageMetadata } from '@/components/transit/MessageMetadata';
 import { EventMarkers } from '@/components/transit/EventMarkers';
+import { ReceiptFooter } from './ReceiptFooter';
+import { useUIStore } from '@/lib/stores/ui-store';
 import type { EnrichedEvent } from '@/lib/transit/types';
 
 // ─── Shiki singleton ─────────────────────────────────────────────────────────
@@ -242,6 +244,10 @@ export interface MessageProps {
   onMarkerClick?: ((eventId: string) => void) | undefined;
   /** Mark this message as a manual subway station */
   onMarkAsLandmark?: ((messageId: string, name: string, icon: string) => void) | undefined;
+  /** Sprint 17.0: Force receipt expanded (Orchestration Theater — first 5 messages) */
+  forceReceiptExpanded?: boolean | undefined;
+  /** Sprint 17.0: Show orchestration theater preference prompt (last assistant message only) */
+  showOrchestrationPrompt?: boolean | undefined;
 }
 
 // ─── Highlight helper ─────────────────────────────────────────────────────────
@@ -273,9 +279,22 @@ function highlightText(text: string, query: string): React.ReactNode {
 
 export function Message({ role, content, timestamp, highlightQuery, isActiveMatch,
   onEdit, onRegenerate, isStreaming, model, tokens, costUsd, latencyMs, blocks,
-  id, messageEvents, showTransitMetadata, onMarkerClick, onMarkAsLandmark }: MessageProps) {
+  id, messageEvents, showTransitMetadata, onMarkerClick, onMarkAsLandmark,
+  forceReceiptExpanded, showOrchestrationPrompt }: MessageProps) {
   const isUser = role === 'user';
   const showActions = onEdit || onRegenerate || onMarkAsLandmark;
+
+  // Sprint 17.0: Receipt display preference from ui-store
+  const receiptDetail = useUIStore((s) => s.receiptDetail);
+  const setReceiptDetail = useUIStore((s) => s.setReceiptDetail);
+  const setOrchestrationTheaterComplete = useUIStore((s) => s.setOrchestrationTheaterComplete);
+
+  // Show receipt footer: assistant messages, not streaming, and preference is not hidden
+  const showReceipt = !isUser && !isStreaming && receiptDetail !== 'hidden';
+
+  // Show orchestration theater preference prompt — explicitly passed from MessageList
+  // Only appears on the last assistant message when theater is active (first 5 messages)
+  const showTheaterPrompt = showOrchestrationPrompt === true && !isUser && !isStreaming;
 
   // ── Landmark form state (Task 12) ──────────────────────────────────────────
   const [landmarkFormOpen, setLandmarkFormOpen] = useState(false);
@@ -285,7 +304,7 @@ export function Message({ role, content, timestamp, highlightQuery, isActiveMatc
   return (
     <div
       id={id ? `message-${id}` : undefined}
-      className="group/msg w-full"
+      className="group/msg w-full message-enter"
       role="article"
       aria-label={`${isUser ? 'User' : 'AI'} message`}
       data-active-match={isActiveMatch ? 'true' : undefined}
@@ -459,39 +478,76 @@ export function Message({ role, content, timestamp, highlightQuery, isActiveMatc
         />
       )}
 
-      {/* Timestamp + metadata footer */}
+      {/* Sprint 17.0: Receipt Footer — always visible under assistant messages (collapsed) */}
+      {/* SEPARATE from Transit Map MessageMetadata — they coexist */}
+      {showReceipt && (
+        <ReceiptFooter
+          model={model}
+          tokens={tokens}
+          cost={costUsd}
+          latencyMs={latencyMs}
+          displayMode={receiptDetail}
+          forceExpanded={forceReceiptExpanded}
+        />
+      )}
+
+      {/* Sprint 17.0: Orchestration Theater preference prompt (first 5 messages only) */}
+      {showTheaterPrompt && (
+        <div
+          style={{
+            marginTop: 8,
+            padding: '8px 10px',
+            borderRadius: 6,
+            background: 'var(--bg-elevated, var(--elevated))',
+            border: '1px solid rgba(0, 212, 232, 0.2)',
+            fontSize: 'var(--text-xs, 11px)',
+            color: 'var(--frost)',
+          }}
+        >
+          <div style={{ marginBottom: 6, color: 'var(--ice-white)' }}>
+            How much detail going forward?
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+            {(
+              [
+                { key: 'full', label: 'Full' },
+                { key: 'compact', label: 'Compact' },
+                { key: 'minimal', label: 'Minimal' },
+                { key: 'hidden', label: 'Hidden' },
+              ] as const
+            ).map(({ key, label }) => (
+              <button
+                key={key}
+                onClick={() => {
+                  setReceiptDetail(key);
+                  setOrchestrationTheaterComplete(true);
+                }}
+                style={{
+                  padding: '3px 8px',
+                  borderRadius: 4,
+                  border: '1px solid var(--shadow)',
+                  background: receiptDetail === key ? 'var(--cyan)' : 'transparent',
+                  color: receiptDetail === key ? 'white' : 'var(--frost)',
+                  cursor: 'pointer',
+                  fontSize: 11,
+                  transition: 'all 0.1s ease',
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Timestamp footer — timestamp only; model/cost/tokens moved to ReceiptFooter */}
       <div className="mt-1 flex items-center gap-2 text-[10px] text-[var(--mist)]">
         {timestamp !== undefined && (
           <span>{timestamp.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
         )}
-        {/* Basic model/token info — shown only when Transit layer is OFF */}
-        {!showTransitMetadata && !isStreaming && model && (
-          <>
-            <span>·</span>
-            <span>{model.replace('claude-', '').split('-')[0]}</span>
-          </>
-        )}
-        {!showTransitMetadata && !isStreaming && tokens !== undefined && tokens > 0 && (
-          <>
-            <span>·</span>
-            <span>{tokens.toLocaleString()} tokens</span>
-          </>
-        )}
-        {!showTransitMetadata && !isStreaming && costUsd !== undefined && costUsd > 0 && (
-          <>
-            <span>·</span>
-            <span>${costUsd.toFixed(4)}</span>
-          </>
-        )}
-        {!showTransitMetadata && !isStreaming && latencyMs !== undefined && latencyMs > 0 && (
-          <>
-            <span>·</span>
-            <span>{(latencyMs / 1000).toFixed(1)}s</span>
-          </>
-        )}
       </div>
 
-      {/* Transit Map Z3 — MessageMetadata (richer styled version, replaces basic row) */}
+      {/* Transit Map Z3 — MessageMetadata (richer styled version, coexists with ReceiptFooter) */}
       {showTransitMetadata && !isUser && !isStreaming && (
         <MessageMetadata
           model={model}

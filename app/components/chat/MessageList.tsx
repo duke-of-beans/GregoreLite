@@ -18,6 +18,7 @@ import { CustomScrollbar } from './CustomScrollbar';
 import { ScrollbarLandmarks } from '@/components/transit/ScrollbarLandmarks';
 import { ThinkingIndicator } from './ThinkingIndicator';
 import { useDensityStore, DENSITY_CONFIG } from '@/lib/stores/density-store';
+import { useUIStore } from '@/lib/stores/ui-store';
 import type { EnrichedEvent } from '@/lib/transit/types';
 import { EventDetailPanel } from '@/components/transit/EventDetailPanel';
 import { captureClientEvent } from '@/lib/transit/client';
@@ -67,6 +68,10 @@ export function MessageList({
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [hasNewContent, setHasNewContent] = useState(false);
   const [containerHeight, setContainerHeight] = useState(0);
+
+  // Sprint 17.0: Orchestration Theater — expand receipts for first 5 messages
+  const orchestrationTheaterComplete = useUIStore((s) => s.orchestrationTheaterComplete);
+  const theaterMessageCount = useUIStore((s) => s.theaterMessageCount);
 
   // Density
   const density = useDensityStore((s) => s.density);
@@ -274,6 +279,11 @@ export function MessageList({
     if (lastUserIdx !== -1 && lastAssistantIdx !== -1) break;
   }
 
+  // Sprint 17.0: Theater — force-expand receipts while theater is active
+  // Theater prompt shows on the last assistant message once theaterMessageCount >= 5
+  const theaterActive = !orchestrationTheaterComplete;
+  const theaterPromptReady = theaterActive && theaterMessageCount >= 5;
+
   const matchIndices = new Set(searchMatches?.map((m) => m.messageIndex));
   const activeMessageIndex =
     searchMatches && activeMatchIdx !== undefined
@@ -361,6 +371,12 @@ export function MessageList({
                   message.id
                     ? (msgId, name, icon) => void handleMarkAsLandmark(msgId, name, icon)
                     : undefined
+                }
+                forceReceiptExpanded={
+                  message.role === 'assistant' && theaterActive ? true : undefined
+                }
+                showOrchestrationPrompt={
+                  index === lastAssistantIdx && theaterPromptReady ? true : undefined
                 }
               />
             ))}

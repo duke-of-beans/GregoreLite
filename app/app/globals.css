@@ -448,3 +448,76 @@ pre {
 .war-room-pulse {
   animation: war-room-pulse-anim 0.6s ease-out;
 }
+
+/* ========== SPRINT 17.0 — Gregore Port ========== */
+
+/* Ghost Analyzing — wire existing ghost-pulse keyframe to input field */
+/* Applied conditionally in ChatInterface when gate is analyzing */
+.ghost-analyzing {
+  animation: ghost-pulse 1s ease-in-out infinite;
+  border-color: var(--cyan) !important;
+}
+
+/* Receipt Footer — expand/collapse animation (150ms ease-out per spec) */
+@keyframes receipt-expand {
+  from { max-height: 0; opacity: 0; }
+  to   { max-height: 200px; opacity: 1; }
+}
+
+.receipt-footer {
+  overflow: hidden;
+  transition: max-height 150ms ease-out, opacity 150ms ease-out;
+}
+
+.receipt-footer[data-expanded="false"] {
+  max-height: 28px;
+}
+
+.receipt-footer[data-expanded="true"] {
+  max-height: 200px;
+}
+
+/* Message Enter — new message fade-in (200ms ease-out per spec) */
+@keyframes message-enter {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.message-enter {
+  animation: message-enter 200ms ease-out forwards;
+}
+
+/* ========== DESIGN TOKENS — Sprint 17.0 §4 gaps ========== */
+/* Added per GREGORE_AUDIT.md §4 — DO NOT change existing token values */
+
+:root {
+  /* Background layers (tertiary + elevated not previously tokenized) */
+  --bg-tertiary: #1a1a25;
+  --bg-elevated: #22222f;
+
+  /* Status colors as semantic tokens (alias existing values) */
+  --status-success: var(--success);
+  --status-warning: var(--warning);
+  --status-error: var(--error);
+  --status-info: var(--info);
+
+  /* Ghost transparency token */
+  --cyan-ghost: rgba(0, 212, 232, 0.08);
+
+  /* Semantic spacing */
+  --message-gap: 12px;
+  --section-gap: 24px;
+  --component-padding: 16px;
+  --inner-padding: 8px;
+
+  /* Dense typography scale (information-dense components) */
+  --text-xs: 11px;
+  --text-sm: 13px;
+  --text-base: 14px;
+}
+
+[data-theme="light"] {
+  --bg-tertiary: #e8edf2;
+  --bg-elevated: #ffffff;
+  --cyan-ghost: rgba(8, 145, 178, 0.06);
+}

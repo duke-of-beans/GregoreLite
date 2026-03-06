@@ -22,6 +22,9 @@ import type { StateCreator } from 'zustand';
 
 export type ThemeMode = 'light' | 'dark' | 'system';
 
+/** Receipt footer display preference (Sprint 17.0) */
+export type ReceiptDetail = 'full' | 'compact' | 'minimal' | 'hidden';
+
 export type NotificationType = 'info' | 'success' | 'warning' | 'error';
 
 export interface Notification {
@@ -89,6 +92,15 @@ export interface UIState {
 
   // Transit Map Z3 annotations toggle (default OFF — must be opted in)
   showTransitMetadata: boolean;
+
+  // Sprint 17.0: Receipt footer display preference
+  receiptDetail: ReceiptDetail;
+
+  // Sprint 17.0: Orchestration Theater — true after first 5 messages, preference set
+  orchestrationTheaterComplete: boolean;
+
+  // Sprint 17.0: Total assistant messages received (lifetime, across conversations)
+  theaterMessageCount: number;
 }
 
 // ============================================================================
@@ -146,6 +158,15 @@ export interface UIActions {
   toggleTransitMetadata: () => void;
   setShowTransitMetadata: (show: boolean) => void;
 
+  // Sprint 17.0: Receipt detail preference
+  setReceiptDetail: (detail: ReceiptDetail) => void;
+
+  // Sprint 17.0: Orchestration Theater completion
+  setOrchestrationTheaterComplete: (complete: boolean) => void;
+
+  // Sprint 17.0: Increment theater message count
+  incrementTheaterMessageCount: () => void;
+
   // Reset
   resetUI: () => void;
 }
@@ -188,6 +209,9 @@ const initialState: UIState = {
   settingsOpen: false,
   defaultCollapseToolBlocks: false,
   showTransitMetadata: false,
+  receiptDetail: 'compact',
+  orchestrationTheaterComplete: false,
+  theaterMessageCount: 0,
 };
 
 // ============================================================================
@@ -473,6 +497,22 @@ const createUISlice: StateCreator<UIStore> = (set, get) => ({
   },
 
   // ========================================================================
+  // SPRINT 17.0: RECEIPT DETAIL + ORCHESTRATION THEATER
+  // ========================================================================
+
+  setReceiptDetail: (detail: ReceiptDetail) => {
+    set({ receiptDetail: detail });
+  },
+
+  setOrchestrationTheaterComplete: (complete: boolean) => {
+    set({ orchestrationTheaterComplete: complete });
+  },
+
+  incrementTheaterMessageCount: () => {
+    set((state) => ({ theaterMessageCount: state.theaterMessageCount + 1 }));
+  },
+
+  // ========================================================================
   // RESET
   // ========================================================================
 
@@ -495,6 +535,9 @@ export const useUIStore = create<UIStore>()(
         sidebar: state.sidebar,
         theme: state.theme,
         defaultCollapseToolBlocks: state.defaultCollapseToolBlocks,
+        receiptDetail: state.receiptDetail,
+        orchestrationTheaterComplete: state.orchestrationTheaterComplete,
+        theaterMessageCount: state.theaterMessageCount,
         commandPalette: {
           // Don't persist open state or query
           open: false,
