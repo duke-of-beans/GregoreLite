@@ -221,9 +221,13 @@ describe('watcher-bridge', () => {
 describe('AEGIS → Ghost integration', () => {
   // Test that the AEGIS switchProfile callback correctly calls ghost pause/resume
   // We test this by importing and calling the AEGIS module directly
+  //
+  // CRITICAL: vi.resetModules() before each test so the AEGIS governor singleton
+  // is recreated fresh — otherwise lastProfile dedup swallows expected calls.
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
     // Stub fetch for AEGIS HTTP calls
     fetchMock.mockResolvedValue(makeFetchResponse({ ok: true }));
   });

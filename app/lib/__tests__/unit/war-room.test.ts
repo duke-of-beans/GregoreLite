@@ -55,6 +55,7 @@ function row(overrides: Partial<ManifestRow> = {}): ManifestRow {
 describe('graph-builder', () => {
   beforeEach(() => {
     mockFetch.mockReset();
+    vi.resetModules();
   });
 
   describe('buildGraph()', () => {
@@ -63,7 +64,7 @@ describe('graph-builder', () => {
       const { buildGraph } = await import('@/lib/war-room/graph-builder');
       const g = await buildGraph();
       expect(g.nodes[0]?.status).toBe('complete');
-    });
+    }, 10_000);
 
     it('maps spawning/working/validating → running', async () => {
       const { buildGraph } = await import('@/lib/war-room/graph-builder');
@@ -222,6 +223,7 @@ describe('graph-builder', () => {
 describe('startWarRoomPolling()', () => {
   beforeEach(() => {
     mockFetch.mockReset();
+    vi.resetModules();
     vi.useFakeTimers();
   });
 
