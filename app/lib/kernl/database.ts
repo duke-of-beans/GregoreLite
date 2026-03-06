@@ -250,8 +250,8 @@ function runMigrations(db: Database.Database): void {
   // Sprint 22.0 — Schema gap fixes: conversation_events.created_at, eos_reports.scanned_at
   // These handle existing DBs that were created before these columns were added.
   const sprint22Migrations = [
-    // conversation_events: add created_at (mirrors timestamp for query compatibility)
-    `ALTER TABLE conversation_events ADD COLUMN created_at TEXT DEFAULT (datetime('now'))`,
+    // conversation_events: add created_at (literal default for ALTER TABLE compat)
+    `ALTER TABLE conversation_events ADD COLUMN created_at TEXT DEFAULT ''`,
     // eos_reports: add scanned_at (alias for created_at used by scanner pipeline)
     `ALTER TABLE eos_reports ADD COLUMN scanned_at TEXT DEFAULT NULL`,
   ];
