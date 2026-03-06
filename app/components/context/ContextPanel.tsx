@@ -7,7 +7,7 @@
  * Cmd+B toggles via KeyboardShortcuts handler.
  * Collapse preference persisted in localStorage.
  *
- * Sprint 2B: Context Panel + KERNL UI
+ * Sprint 2B: Context Panel + Memory UI
  */
 
 import { useEffect } from 'react';
@@ -69,10 +69,10 @@ function CollapsedStrip({ onExpand }: { onExpand: () => void }) {
         />
       </svg>
       </span>
-      {/* KERNL dot */}
+      {/* Memory dot */}
       <div
         className="h-2 w-2 rounded-full bg-[var(--success)]"
-        title="KERNL indexed"
+        title="Memory index ready"
       />
     </aside>
   );

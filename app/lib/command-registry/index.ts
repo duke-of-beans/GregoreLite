@@ -12,7 +12,7 @@ export type CommandCategory =
   | 'Jobs'
   | 'Ghost'
   | 'Settings'
-  | 'KERNL';
+  | 'Memory';
 
 export interface CommandDef {
   id: string;

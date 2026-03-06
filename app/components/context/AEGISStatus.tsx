@@ -68,10 +68,10 @@ export function AEGISStatus() {
       <Dialog.Trigger asChild>
         <button
           className="flex items-center gap-1 px-4 py-1 hover:bg-[var(--shadow)] rounded transition-colors cursor-pointer"
-          title="Click to override AEGIS profile"
+          title="Click to override system profile"
         >
           <span className="text-[11px] text-[var(--mist)]">
-            <span className="font-medium text-[var(--frost)]">AEGIS</span>
+            <span className="font-medium text-[var(--frost)]">System</span>
             {'  '}
             {isOnline ? (
               <span className="font-mono text-[var(--cyan-light)]">{state.aegisProfile}</span>
@@ -89,14 +89,14 @@ export function AEGISStatus() {
         <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-80 rounded-lg bg-[var(--surface)] border border-[var(--border)] shadow-xl p-4">
 
           <Dialog.Title className="text-sm font-medium text-[var(--frost)] mb-1">
-            Override AEGIS Profile
+            Override System Profile
           </Dialog.Title>
 
           <Dialog.Description className="text-[11px] text-[var(--mist)] mb-4">
-            Bypasses anti-flap. Logged as manual override in KERNL.
+            Manually set the workload profile. Logged as a manual override.
             {!isOnline && (
               <span className="block mt-1 text-[var(--amber,#f59e0b)]">
-                ⚠ AEGIS offline — KERNL will log but signal won&apos;t reach AEGIS.
+                ⚠ System Monitor offline — override will be logged but won&apos;t take effect until reconnected.
               </span>
             )}
           </Dialog.Description>

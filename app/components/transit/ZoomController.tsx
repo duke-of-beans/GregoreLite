@@ -181,7 +181,7 @@ export function ZoomIndicator({ zoomLevel, onSetZoom }: ZoomIndicatorProps) {
             fontSize: 10,
             fontWeight: level === zoomLevel ? 700 : 400,
           }}
-          title={`Switch to ${level}`}
+          title={level === 'Z1' ? 'Overview — session flow' : level === 'Z2' ? 'Timeline — message sequence' : 'Detail — full message view'}
         >
           {level}
         </button>

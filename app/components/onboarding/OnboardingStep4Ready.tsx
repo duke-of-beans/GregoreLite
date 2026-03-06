@@ -56,8 +56,8 @@ export function OnboardingStep4Ready({ onComplete }: Props) {
   const items = status
     ? [
         { label: 'Anthropic API Key', ok: status.apiKeyConfigured },
-        { label: 'KERNL Memory', ok: status.kernlReady },
-        { label: 'AEGIS Orchestrator', ok: status.aegisConnected, optional: true },
+        { label: 'Memory Database', ok: status.kernlReady },
+        { label: 'System Monitor', ok: status.aegisConnected, optional: true },
       ]
     : [];
 
@@ -66,7 +66,7 @@ export function OnboardingStep4Ready({ onComplete }: Props) {
       <div>
         <h2 className="text-xl font-semibold text-white mb-2">Ready to Launch</h2>
         <p className="text-sm text-gray-400">
-          Here's a summary of your setup. You can always change these later in Settings.
+          Here's where things stand. Everything here can be changed later in Settings.
         </p>
       </div>
 

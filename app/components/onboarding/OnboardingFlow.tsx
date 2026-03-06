@@ -13,8 +13,8 @@ import { OnboardingStep4Ready } from './OnboardingStep4Ready';
 
 const STEPS = [
   { key: 'api-key', label: 'API Key' },
-  { key: 'kernl', label: 'KERNL' },
-  { key: 'aegis', label: 'AEGIS' },
+  { key: 'kernl', label: 'Memory' },
+  { key: 'aegis', label: 'System Monitor' },
   { key: 'ready', label: 'Launch' },
 ] as const;
 

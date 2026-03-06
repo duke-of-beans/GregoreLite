@@ -1,6 +1,6 @@
 /**
- * KernlTab — S9-14
- * KERNL DB stats: file size, total threads, total chunks, last indexer run.
+ * KernlTab (Memory) — S9-14
+ * Memory database stats: file size, total threads, total chunks, last indexer run.
  */
 
 'use client';
@@ -44,11 +44,11 @@ export function KernlTab() {
   }, []);
 
   if (loading) {
-    return <div style={{ fontSize: 12, color: 'var(--frost)', padding: 12 }}>Loading KERNL stats…</div>;
+    return <div style={{ fontSize: 12, color: 'var(--frost)', padding: 12 }}>Loading memory stats…</div>;
   }
 
   if (!stats) {
-    return <div style={{ fontSize: 12, color: 'var(--error)', padding: 12 }}>Failed to load stats</div>;
+    return <div style={{ fontSize: 12, color: 'var(--error)', padding: 12 }}>Couldn't load memory stats. Check Settings.</div>;
   }
 
   const rows = [
@@ -65,7 +65,7 @@ export function KernlTab() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
       <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--cyan)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
-        KERNL Database
+        Memory Database
       </h3>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {rows.map((r) => (

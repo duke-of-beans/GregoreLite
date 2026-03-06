@@ -73,28 +73,28 @@ export async function analyze(messages: GateMessage[]): Promise<TriggerResult> {
   if (detectRepeatedQuestion(messages)) {
     return triggered(
       'repeated_question',
-      'The same architectural question has come up 3+ times. Worth pausing to make a clear decision.',
+      'You\'ve asked about this a few times. Want to dig deeper instead of circling back?',
     );
   }
 
   if (detectSacredPrincipleRisk(messages)) {
     return triggered(
       'sacred_principle_risk',
-      'Detected language suggesting a temporary fix or technical debt. This conflicts with Option B Perfection.',
+      'This looks like a temporary fix. Shortcuts tend to become permanent. Proceed anyway?',
     );
   }
 
   if (detectIrreversibleAction(messages)) {
     return triggered(
       'irreversible_action',
-      'The proposed action appears irreversible (schema change, production deploy, or force push). Confirm before proceeding.',
+      'This can\'t be undone — schema change, production deploy, or force push. Confirm?',
     );
   }
 
   if (detectLowConfidence(messages)) {
     return triggered(
       'low_confidence',
-      'Claude expressed uncertainty multiple times in this response. Worth confirming direction before continuing.',
+      'I\'m not confident about this one. Want me to verify before moving forward?',
     );
   }
 
@@ -103,7 +103,7 @@ export async function analyze(messages: GateMessage[]): Promise<TriggerResult> {
   if (await detectContradiction(messages)) {
     return triggered(
       'contradicts_prior',
-      'This may contradict a prior decision logged in KERNL. Review before proceeding.',
+      'This contradicts a previous decision. Worth reviewing before changing course.',
     );
   }
 
@@ -116,21 +116,21 @@ export async function analyze(messages: GateMessage[]): Promise<TriggerResult> {
   if (inference.highTradeoff) {
     return triggered(
       'high_tradeoff_count',
-      'This decision involves 4 or more major tradeoffs. Worth pausing to evaluate them explicitly.',
+      'This decision has 4+ major tradeoffs. Worth evaluating them before committing.',
     );
   }
 
   if (inference.multiProject) {
     return triggered(
       'multi_project_touch',
-      'This decision touches multiple projects simultaneously. Confirm the cross-project impact.',
+      'This touches multiple projects at once. Confirm the cross-project impact.',
     );
   }
 
   if (inference.largeEstimate) {
     return triggered(
       'large_build_estimate',
-      'The proposed build is estimated to take more than 3 Agent SDK sessions. Confirm scope before starting.',
+      'This is a big build — estimated to take 3+ sessions. Confirm scope before starting.',
     );
   }
 

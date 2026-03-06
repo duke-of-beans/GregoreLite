@@ -105,7 +105,7 @@ export function JobNode({ node, position, width, height, selected, onClick }: Jo
               <span
                 className="war-room-node-eos"
                 style={{ color: eosScoreColor(node.eosScore) }}
-                title={`EoS health score: ${node.eosScore}/100`}
+                title={`Quality score: ${node.eosScore}/100`}
               >
                 {node.eosScore}
               </span>

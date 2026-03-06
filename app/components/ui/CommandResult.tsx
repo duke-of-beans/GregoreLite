@@ -22,7 +22,7 @@ const categoryColors: Record<string, string> = {
   Jobs: 'text-green-400 bg-green-400/10 border-green-400/30',
   Ghost: 'text-purple-400 bg-purple-400/10 border-purple-400/30',
   Settings: 'text-[var(--frost)] bg-[var(--frost)]/10 border-[var(--frost)]/30',
-  KERNL: 'text-orange-400 bg-orange-400/10 border-orange-400/30',
+  Memory: 'text-orange-400 bg-orange-400/10 border-orange-400/30',
 };
 
 export function CommandResult({ command, selected, onExecute, onHover }: CommandResultProps) {

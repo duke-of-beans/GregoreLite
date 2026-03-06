@@ -231,19 +231,19 @@ export function registerBuiltins(): void {
       label: 'Open Settings',
       category: 'Navigation',
       shortcut: 'Cmd+,',
-      keywords: ['settings', 'preferences', 'config', 'theme', 'budget', 'aegis'],
+      keywords: ['settings', 'preferences', 'config', 'theme', 'budget', 'monitor'],
       icon: '⚙',
       action: () => {
         useUIStore.getState().openModal('settings');
       },
     },
 
-    // ── KERNL ────────────────────────────────────────────────────────────────
+    // ── Memory ────────────────────────────────────────────────────────────────
     {
       id: 'kernl.decisions',
       label: 'Browse Decisions',
-      category: 'KERNL',
-      keywords: ['decisions', 'browse', 'history', 'kernl'],
+      category: 'Memory',
+      keywords: ['decisions', 'browse', 'history', 'memory'],
       icon: '⚖',
       action: () => {
         useUIStore.getState().openModal('decision-browser');
@@ -251,9 +251,9 @@ export function registerBuiltins(): void {
     },
     {
       id: 'kernl.search',
-      label: 'Search KERNL',
-      category: 'KERNL',
-      keywords: ['search', 'kernl', 'decisions', 'patterns', 'find'],
+      label: 'Search Memory',
+      category: 'Memory',
+      keywords: ['search', 'memory', 'decisions', 'patterns', 'find'],
       icon: '🔎',
       action: () => {
         useUIStore.getState().openModal('kernl-search');

@@ -21,7 +21,7 @@ const CATEGORY_ORDER: CommandCategory[] = [
   'Jobs',
   'Ghost',
   'Settings',
-  'KERNL',
+  'Memory',
 ];
 
 // ── Component ─────────────────────────────────────────────────────────────────

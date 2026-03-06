@@ -28,13 +28,13 @@ interface GatePanelProps {
 }
 
 const TRIGGER_LABELS: Record<GateTrigger, string> = {
-  repeated_question: 'Repeated Question',
-  high_tradeoff_count: 'High Tradeoff Count',
-  multi_project_touch: 'Multi-Project Impact',
-  sacred_principle_risk: 'Sacred Principle Risk',
-  irreversible_action: 'Irreversible Action',
-  large_build_estimate: 'Large Build Estimate',
-  contradicts_prior: 'Contradicts Prior Decision',
+  repeated_question: 'Recurring Topic',
+  high_tradeoff_count: 'Complex Decision',
+  multi_project_touch: 'Cross-Project Impact',
+  sacred_principle_risk: 'Shortcut Detected',
+  irreversible_action: 'Irreversible',
+  large_build_estimate: 'Large Scope',
+  contradicts_prior: 'Contradicts Prior',
   low_confidence: 'Low Confidence',
 };
 
@@ -46,7 +46,7 @@ export function GatePanel({ threadId, trigger }: GatePanelProps) {
 
   const mandatory = dismissCount >= 3;
   const dismissesLeft = Math.max(0, 3 - dismissCount);
-  const label = trigger.trigger ? TRIGGER_LABELS[trigger.trigger] : 'Decision Gate';
+  const label = trigger.trigger ? TRIGGER_LABELS[trigger.trigger] : 'Review Required';
 
   const handleApprove = async () => {
     if (!trigger.trigger) return;
@@ -103,7 +103,7 @@ export function GatePanel({ threadId, trigger }: GatePanelProps) {
   return (
     <div
       role="alertdialog"
-      aria-label="Decision Gate"
+      aria-label="Review Required"
       className="border-t border-[var(--amber,#f59e0b)]/40 bg-[var(--elevated)] px-6 py-4 flex-shrink-0"
     >
       <div className="mx-auto max-w-4xl">
@@ -112,7 +112,7 @@ export function GatePanel({ threadId, trigger }: GatePanelProps) {
           <div className="flex items-center gap-2">
             <span className="text-[var(--amber,#f59e0b)]" aria-hidden="true">⚠</span>
             <span className="text-sm font-semibold text-[var(--ice-white)] uppercase tracking-wide">
-              Decision Gate
+              Review Required
             </span>
             <span className="rounded-full bg-[var(--amber,#f59e0b)]/20 px-2 py-0.5 text-xs text-[var(--amber,#f59e0b)]">
               {label}

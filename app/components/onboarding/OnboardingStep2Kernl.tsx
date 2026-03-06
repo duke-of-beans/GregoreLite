@@ -1,8 +1,8 @@
 'use client';
 
 /**
- * Onboarding Step 2 — KERNL Database Status
- * Sprint 8D: shows table counts, confirms DB initialized.
+ * Onboarding Step 2 — Memory Setup
+ * Sprint 8D: shows table counts, confirms memory database initialized.
  */
 
 import { useState, useEffect } from 'react';
@@ -42,10 +42,10 @@ export function OnboardingStep2Kernl({ onComplete }: Props) {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h2 className="text-xl font-semibold text-white mb-2">KERNL Memory</h2>
+        <h2 className="text-xl font-semibold text-white mb-2">Memory Setup</h2>
         <p className="text-sm text-gray-400">
-          KERNL is the persistent memory layer — threads, decisions, context, and agent jobs
-          are all stored here.
+          GregLite remembers your conversations, decisions, and context across sessions.
+          This database stores everything so you never lose track.
         </p>
       </div>
 

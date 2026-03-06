@@ -1,6 +1,6 @@
 /**
  * QualitySection — S9-13
- * EoS soft/hard thresholds, SHIM retry ceiling.
+ * Code quality thresholds and pattern analysis retry settings.
  */
 
 'use client';
@@ -17,9 +17,9 @@ interface QualityField {
 }
 
 const FIELDS: QualityField[] = [
-  { key: 'eos_soft_threshold', label: 'EoS Soft Threshold', description: 'Warning fires at this score', fallback: '0.6', step: '0.05', min: '0' },
-  { key: 'eos_hard_threshold', label: 'EoS Hard Threshold', description: 'Session flagged at this score', fallback: '0.4', step: '0.05', min: '0' },
-  { key: 'shim_retry_ceiling', label: 'SHIM Retry Ceiling', description: 'Max auto-retries before escalation', fallback: '3', step: '1', min: '1' },
+  { key: 'eos_soft_threshold', label: 'Quality Warning', description: 'Show a warning when quality drops below this score', fallback: '0.6', step: '0.05', min: '0' },
+  { key: 'eos_hard_threshold', label: 'Quality Alert', description: 'Flag the session when quality drops below this score', fallback: '0.4', step: '0.05', min: '0' },
+  { key: 'shim_retry_ceiling', label: 'Auto-Retry Limit', description: 'Max automatic retries before asking you to decide', fallback: '3', step: '1', min: '1' },
 ];
 
 export function QualitySection() {
@@ -52,9 +52,10 @@ export function QualitySection() {
 
   return (
     <div style={{ marginBottom: 24 }}>
-      <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--ice-white)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-        Quality
+      <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--ice-white)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        Code Quality
       </h3>
+      <p style={{ fontSize: 11, color: 'var(--frost)', opacity: 0.7, marginBottom: 12 }}>Analysis thresholds and retry behavior</p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {FIELDS.map((f) => (
           <div key={f.key}>

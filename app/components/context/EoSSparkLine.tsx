@@ -92,8 +92,8 @@ export function EoSSparkLine({ projectId, currentScore, onOpenHistory }: EoSSpar
         cursor: 'pointer',
         padding: 0,
       }}
-      title="Click to view EoS scan history"
-      aria-label={`Health score ${currentScore}, delta ${deltaStr}. Click for history.`}
+      title="Click to view quality scan history"
+      aria-label={`Quality score ${currentScore}, delta ${deltaStr}. Click for history.`}
     >
       <svg
         width={w}

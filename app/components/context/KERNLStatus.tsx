@@ -3,9 +3,9 @@
 import { useContextPanel } from '@/lib/context/context-provider';
 
 const STATUS_CONFIG = {
-  indexed: { dot: 'bg-[var(--success)]', label: 'indexed', title: 'KERNL index is up to date' },
-  indexing: { dot: 'bg-[var(--warning)] animate-pulse', label: 'indexing', title: 'KERNL is indexing...' },
-  error: { dot: 'bg-[var(--error)]', label: 'error', title: 'KERNL index error' },
+  indexed: { dot: 'bg-[var(--success)]', label: 'ready', title: 'Memory index is up to date' },
+  indexing: { dot: 'bg-[var(--warning)] animate-pulse', label: 'syncing', title: 'Memory is syncing...' },
+  error: { dot: 'bg-[var(--error)]', label: 'error', title: 'Memory index error — check Settings' },
 } as const;
 
 export function KERNLStatus() {
@@ -26,7 +26,7 @@ export function KERNLStatus() {
     <div className="flex items-center gap-2 px-4 py-1" title={cfg.title}>
       <span className={`h-2 w-2 flex-shrink-0 rounded-full ${cfg.dot}`} />
       <span className="text-[11px] text-[var(--mist)]">
-        <span className="font-medium text-[var(--frost)]">KERNL</span>
+        <span className="font-medium text-[var(--frost)]">Memory</span>
         {'  '}
         {cfg.label}
       </span>

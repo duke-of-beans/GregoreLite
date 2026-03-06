@@ -1,6 +1,6 @@
 /**
  * QualityTab — S9-14
- * Full EoS issue list (not just top 5) + EoS sparkline.
+ * Full code quality issue list (not just top 5) + quality sparkline.
  */
 
 'use client';
@@ -32,7 +32,7 @@ export function QualityTab() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
       <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--cyan)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
-        Code Quality (EoS)
+        Code Quality
       </h3>
 
       {/* Score + Sparkline */}
@@ -68,7 +68,7 @@ export function QualityTab() {
       {/* Full issue list */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4, maxHeight: 400, overflowY: 'auto' }}>
         {visibleIssues.length === 0 ? (
-          <div style={{ fontSize: 12, color: 'var(--frost)', padding: 8 }}>No issues found</div>
+          <div style={{ fontSize: 12, color: 'var(--frost)', padding: 8 }}>Clean bill of health. No issues detected.</div>
         ) : (
           visibleIssues.map((issue) => (
             <EoSIssueRow

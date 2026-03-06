@@ -2,7 +2,7 @@
  * StatusBar — Sprint S9-04
  *
  * Thin 32px bottom chrome strip showing live system data:
- * cost today, active jobs, AEGIS profile, KERNL status.
+ * cost today, active jobs, system profile, memory status.
  * Each item is clickable for drill-down navigation.
  */
 
@@ -48,7 +48,7 @@ export function StatusBar() {
     (j) => j.state === 'SPAWNING'
   ).length;
 
-  // KERNL indicator
+  // Memory indicator (KERNL)
   const kernlColor =
     ctx.kernlStatus === 'indexed'
       ? 'text-green-400'
@@ -68,12 +68,12 @@ export function StatusBar() {
   };
 
   const handleAegisClick = () => {
-    // Opens context panel which shows AEGIS override dialog (Sprint 10.9 Task 11)
+    // Opens context panel which shows System Monitor override dialog (Sprint 10.9 Task 11)
     window.dispatchEvent(new CustomEvent('greglite:open-context-panel'));
   };
 
   const handleKernlClick = () => {
-    // Opens context panel which shows KERNL status (Sprint 10.9 Task 11)
+    // Opens context panel which shows Memory status (Sprint 10.9 Task 11)
     window.dispatchEvent(new CustomEvent('greglite:open-context-panel'));
   };
 
@@ -108,36 +108,36 @@ export function StatusBar() {
         {/* Separator */}
         <span className="text-[var(--shadow)]">│</span>
 
-        {/* AEGIS */}
+        {/* System Monitor (AEGIS) */}
         <button
           onClick={handleAegisClick}
           className="flex items-center gap-1.5 text-[var(--frost)] transition-colors hover:text-[var(--ice-white)]"
-          title="AEGIS cognitive profile"
+          title="System resource profile — powered by AEGIS"
         >
-          <span className="text-[var(--mist)]">AEGIS:</span>
+          <span className="text-[var(--mist)]">SYSTEM:</span>
           <span className="font-mono font-medium uppercase">{ctx.aegisProfile}</span>
         </button>
 
         {/* Separator */}
         <span className="text-[var(--shadow)]">│</span>
 
-        {/* KERNL */}
+        {/* Memory (KERNL) */}
         <button
           onClick={handleKernlClick}
           className="flex items-center gap-1.5 text-[var(--frost)] transition-colors hover:text-[var(--ice-white)]"
-          title="KERNL index status"
+          title="Memory index status — powered by KERNL"
         >
-          <span className="text-[var(--mist)]">KERNL:</span>
+          <span className="text-[var(--mist)]">MEMORY:</span>
           <span className={`font-mono font-medium ${kernlColor}`}>
-            {kernlDot} {ctx.kernlStatus}
+            {kernlDot} {ctx.kernlStatus === 'indexed' ? 'Ready' : ctx.kernlStatus === 'indexing' ? 'Syncing' : 'Offline'}
           </span>
         </button>
       </div>
 
-      {/* Right side — EoS score if available */}
+      {/* Right side — Code Quality score if available */}
       {ctx.eosSummary && (
-        <div className="flex items-center gap-1.5 text-[var(--frost)]">
-          <span className="text-[var(--mist)]">EoS:</span>
+        <div className="flex items-center gap-1.5 text-[var(--frost)]" title="Code quality score — powered by Eye of Sauron">
+          <span className="text-[var(--mist)]">QUALITY:</span>
           <span
             className={`font-mono font-medium ${
               ctx.eosSummary.healthScore >= 80

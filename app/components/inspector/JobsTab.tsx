@@ -135,7 +135,7 @@ export function JobsTab() {
           )}
         </div>
       ) : jobs.length === 0 ? (
-        <div style={{ fontSize: 12, color: 'var(--frost)', padding: 8 }}>No jobs to inspect</div>
+        <div style={{ fontSize: 12, color: 'var(--frost)', padding: 8 }}>Nothing running. The workers are on break.</div>
       ) : (
         <div style={{ fontSize: 12, color: 'var(--frost)', padding: 8 }}>Loading…</div>
       )}
