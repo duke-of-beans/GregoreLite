@@ -17,24 +17,27 @@
  */
 
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import type { GhostSuggestion } from '@/lib/ghost/scorer/types';
 import { GhostCardActions } from './GhostCardActions';
 import { TeachGhostDrawer } from './TeachGhostDrawer';
+import { cardLift } from '@/lib/design/animations';
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
-const cardBase: React.CSSProperties = {
+// Typed without React.CSSProperties so spread result is compatible with MotionStyle
+const cardBase = {
   background: 'var(--ghost-card-bg, #1a1f2e)',
   border: '1px solid var(--ghost-card-border, #2a3040)',
   borderRadius: '4px',
   padding: '8px 10px',
   marginBottom: '6px',
-};
+} as const;
 
-const criticalBorder: React.CSSProperties = {
+const criticalBorder = {
   borderLeft: '2px solid var(--amber, #f59e0b)',
   paddingLeft: '8px',
-};
+} as const;
 
 const headerStyle: React.CSSProperties = {
   display: 'flex',
@@ -116,13 +119,13 @@ export function GhostCard({ suggestion, threadId }: GhostCardProps) {
   // Extract source_type from the source label prefix ("File: ..." or "Email: ...")
   const sourceType = suggestion.source.startsWith('Email') ? 'email' : 'file';
 
-  const cardStyle: React.CSSProperties = {
+  const cardStyle = {
     ...cardBase,
     ...(suggestion.isCritical ? criticalBorder : {}),
   };
 
   return (
-    <div style={cardStyle}>
+    <motion.div {...cardLift} style={cardStyle}>
       {/* Header: eye icon + Ghost label + optional high-relevance dot */}
       <div style={headerStyle}>
         <EyeIcon />
@@ -166,6 +169,6 @@ export function GhostCard({ suggestion, threadId }: GhostCardProps) {
           onClose={() => setTeachOpen(false)}
         />
       )}
-    </div>
+    </motion.div>
   );
 }

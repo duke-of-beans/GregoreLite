@@ -1,9 +1,10 @@
 /**
  * EventDetailPanel — Sprint 11.4 (Z3 Detail Annotations)
+ * Sprint 21.0: Replaced CSS slide-in-right with Framer Motion spring physics.
  *
- * Right slide-in drawer (follows InspectorDrawer pattern) shown when the
- * user clicks an event marker on a message. Displays full event payload,
- * learning status, and allows adding user annotations.
+ * Right slide-in drawer shown when the user clicks an event marker on a
+ * message. Displays full event payload, learning status, and allows adding
+ * user annotations.
  *
  * Spec: TRANSIT_MAP_SPEC.md §3.7
  */
@@ -11,6 +12,8 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { fadeIn, drawerSlide } from '@/lib/design/animations';
 import type { EnrichedEvent } from '@/lib/transit/types';
 
 // ── Props ─────────────────────────────────────────────────────────────────────
@@ -127,22 +130,12 @@ export function EventDetailPanel({ event, onClose, onAnnotationAdd }: EventDetai
     return () => window.removeEventListener('keydown', handler);
   }, [event, onClose]);
 
-  if (!event) return null;
-
-  const config = event.config;
-  const ts = new Intl.DateTimeFormat('en-US', {
-    month: 'short', day: 'numeric',
-    hour: '2-digit', minute: '2-digit', second: '2-digit',
-  }).format(new Date(event.created_at));
-
-  const payloadEntries = Object.entries(event.payload ?? {});
-
   const handleSaveNote = async () => {
     const note = noteText.trim();
     if (!note) return;
     setSaving(true);
     try {
-      onAnnotationAdd(event.id, note);
+      onAnnotationAdd(event!.id, note);
     } finally {
       setSaving(false);
       setNoteText('');
@@ -150,153 +143,186 @@ export function EventDetailPanel({ event, onClose, onAnnotationAdd }: EventDetai
     }
   };
 
+  const config = event?.config;
+  const ts = event
+    ? new Intl.DateTimeFormat('en-US', {
+        month: 'short', day: 'numeric',
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+      }).format(new Date(event.created_at))
+    : '';
+
+  const payloadEntries = Object.entries(event?.payload ?? {});
+
   return (
     <>
       {/* Backdrop */}
-      <div
-        onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'var(--backdrop)', zIndex: 199 }}
-      />
+      <AnimatePresence>
+        {event && (
+          <motion.div
+            key="event-backdrop"
+            variants={fadeIn}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            onClick={onClose}
+            style={{ position: 'fixed', inset: 0, background: 'var(--backdrop)', zIndex: 199 }}
+          />
+        )}
+      </AnimatePresence>
 
-      {/* Panel */}
-      <div ref={panelRef} tabIndex={-1} className="slide-in-right" role="dialog" aria-label={`Event detail: ${config?.name ?? event.event_type}`} style={{
-        position: 'fixed', top: 0, right: 0, bottom: 0, width: 400,
-        background: 'var(--deep-space)', borderLeft: '1px solid var(--shadow)',
-        zIndex: 200, display: 'flex', flexDirection: 'column', overflow: 'hidden',
-        outline: 'none',
-      }}>
-
-        {/* Header */}
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '12px 16px', borderBottom: '1px solid var(--shadow)',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ice-white)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {config?.name ?? event.event_type}
-            </span>
-            <CategoryBadge category={event.category} />
-          </div>
-          <button onClick={onClose} style={{
-            background: 'none', border: 'none', color: 'var(--frost)', cursor: 'pointer',
-            fontSize: 18, padding: '4px 8px', borderRadius: 4, flexShrink: 0,
-          }} aria-label="Close event panel">✕</button>
-        </div>
-
-        {/* Scrollable content */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
-
-          {/* Timestamp + learning status */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-            <span style={{ fontSize: 11, color: 'var(--mist)' }}>{ts}</span>
-            <LearningStatusPill status={event.learning_status ?? undefined} />
-          </div>
-
-          {/* Event type code */}
-          <div style={{ marginBottom: 16 }}>
-            <span style={{
-              fontSize: 10, fontFamily: 'monospace', color: 'var(--cyan)',
-              background: 'var(--elevated)', padding: '4px 8px', borderRadius: 4,
+      {/* Panel — spring slide from right, keyed on event.id so it re-enters on new event */}
+      <AnimatePresence>
+        {event && (
+          <motion.div
+            key={event.id}
+            ref={panelRef}
+            tabIndex={-1}
+            variants={drawerSlide}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            role="dialog"
+            aria-label={`Event detail: ${config?.name ?? event.event_type}`}
+            style={{
+              position: 'fixed', top: 0, right: 0, bottom: 0, width: 400,
+              background: 'var(--deep-space)', borderLeft: '1px solid var(--shadow)',
+              zIndex: 200, display: 'flex', flexDirection: 'column', overflow: 'hidden',
+              outline: 'none',
+            }}
+          >
+            {/* Header */}
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '12px 16px', borderBottom: '1px solid var(--shadow)',
             }}>
-              {event.event_type}
-            </span>
-          </div>
-
-          {/* Description */}
-          {config?.description && (
-            <p style={{ fontSize: 12, color: 'var(--frost)', marginBottom: 16, lineHeight: 1.5 }}>
-              {config.description}
-            </p>
-          )}
-
-          {/* Payload */}
-          {payloadEntries.length > 0 && (
-            <div style={{ marginBottom: 16 }}>
-              <h4 style={{ fontSize: 11, fontWeight: 600, color: 'var(--mist)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
-                Payload
-              </h4>
-              <div style={{ borderLeft: '2px solid var(--shadow)', paddingLeft: 12 }}>
-                {payloadEntries.map(([k, v]) => (
-                  <PayloadEntry key={k} k={k} v={v} />
-                ))}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ice-white)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {config?.name ?? event.event_type}
+                </span>
+                <CategoryBadge category={event.category} />
               </div>
+              <button onClick={onClose} style={{
+                background: 'none', border: 'none', color: 'var(--frost)', cursor: 'pointer',
+                fontSize: 18, padding: '4px 8px', borderRadius: 4, flexShrink: 0,
+              }} aria-label="Close event panel">✕</button>
             </div>
-          )}
 
-          {/* Existing annotations */}
-          {Array.isArray(event.annotations) && event.annotations.length > 0 && (
-            <div style={{ marginBottom: 16 }}>
-              <h4 style={{ fontSize: 11, fontWeight: 600, color: 'var(--mist)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
-                Notes
-              </h4>
-              {event.annotations.map((note: unknown, i: number) => (
-                <div key={i} style={{
-                  fontSize: 12, color: 'var(--frost)', background: 'var(--elevated)',
-                  borderRadius: 6, padding: '8px 12px', marginBottom: 8, lineHeight: 1.4,
+            {/* Scrollable content */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
+
+              {/* Timestamp + learning status */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                <span style={{ fontSize: 11, color: 'var(--mist)' }}>{ts}</span>
+                <LearningStatusPill status={event.learning_status ?? undefined} />
+              </div>
+
+              {/* Event type code */}
+              <div style={{ marginBottom: 16 }}>
+                <span style={{
+                  fontSize: 10, fontFamily: 'monospace', color: 'var(--cyan)',
+                  background: 'var(--elevated)', padding: '4px 8px', borderRadius: 4,
                 }}>
-                  {String(note)}
-                </div>
-              ))}
-            </div>
-          )}
+                  {event.event_type}
+                </span>
+              </div>
 
-          {/* Add note UI */}
-          {!noteOpen ? (
-            <button
-              onClick={() => setNoteOpen(true)}
-              className="transit-interactive"
-              style={{
-                background: 'none', border: '1px solid var(--shadow)', borderRadius: 6,
-                color: 'var(--frost)', cursor: 'pointer', fontSize: 12, padding: '8px 16px',
-                width: '100%', textAlign: 'left',
-              }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--cyan)'; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--shadow)'; }}
-            >
-              + Add Note
-            </button>
-          ) : (
-            <div>
-              <textarea
-                value={noteText}
-                onChange={(e) => setNoteText(e.target.value)}
-                placeholder="Enter note…"
-                rows={3}
-                autoFocus
-                style={{
-                  width: '100%', background: 'var(--elevated)', border: '1px solid var(--cyan)',
-                  borderRadius: 6, color: 'var(--ice-white)', fontSize: 12, padding: '8px 12px',
-                  resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.4, boxSizing: 'border-box',
-                }}
-              />
-              <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+              {/* Description */}
+              {config?.description && (
+                <p style={{ fontSize: 12, color: 'var(--frost)', marginBottom: 16, lineHeight: 1.5 }}>
+                  {config.description}
+                </p>
+              )}
+
+              {/* Payload */}
+              {payloadEntries.length > 0 && (
+                <div style={{ marginBottom: 16 }}>
+                  <h4 style={{ fontSize: 11, fontWeight: 600, color: 'var(--mist)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
+                    Payload
+                  </h4>
+                  <div style={{ borderLeft: '2px solid var(--shadow)', paddingLeft: 12 }}>
+                    {payloadEntries.map(([k, v]) => (
+                      <PayloadEntry key={k} k={k} v={v} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Existing annotations */}
+              {Array.isArray(event.annotations) && event.annotations.length > 0 && (
+                <div style={{ marginBottom: 16 }}>
+                  <h4 style={{ fontSize: 11, fontWeight: 600, color: 'var(--mist)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
+                    Notes
+                  </h4>
+                  {event.annotations.map((note: unknown, i: number) => (
+                    <div key={i} style={{
+                      fontSize: 12, color: 'var(--frost)', background: 'var(--elevated)',
+                      borderRadius: 6, padding: '8px 12px', marginBottom: 8, lineHeight: 1.4,
+                    }}>
+                      {String(note)}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Add note UI */}
+              {!noteOpen ? (
                 <button
-                  onClick={() => void handleSaveNote()}
-                  disabled={!noteText.trim() || saving}
-                  style={{
-                    flex: 1, background: saving ? 'var(--elevated)' : 'var(--cyan)',
-                    border: 'none', borderRadius: 6, color: saving ? 'var(--frost)' : 'var(--deep-space)',
-                    cursor: saving ? 'not-allowed' : 'pointer', fontSize: 12, fontWeight: 600,
-                    padding: '8px 0', transition: 'background 0.15s ease',
-                  }}
-                >
-                  {saving ? 'Saving…' : 'Save Note'}
-                </button>
-                <button
-                  onClick={() => { setNoteOpen(false); setNoteText(''); }}
+                  onClick={() => setNoteOpen(true)}
+                  className="transit-interactive"
                   style={{
                     background: 'none', border: '1px solid var(--shadow)', borderRadius: 6,
                     color: 'var(--frost)', cursor: 'pointer', fontSize: 12, padding: '8px 16px',
-                    transition: 'border-color 0.15s ease',
+                    width: '100%', textAlign: 'left',
                   }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--cyan)'; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--shadow)'; }}
                 >
-                  Cancel
+                  + Add Note
                 </button>
-              </div>
+              ) : (
+                <div>
+                  <textarea
+                    value={noteText}
+                    onChange={(e) => setNoteText(e.target.value)}
+                    placeholder="Enter note…"
+                    rows={3}
+                    autoFocus
+                    style={{
+                      width: '100%', background: 'var(--elevated)', border: '1px solid var(--cyan)',
+                      borderRadius: 6, color: 'var(--ice-white)', fontSize: 12, padding: '8px 12px',
+                      resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.4, boxSizing: 'border-box',
+                    }}
+                  />
+                  <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                    <button
+                      onClick={() => void handleSaveNote()}
+                      disabled={!noteText.trim() || saving}
+                      style={{
+                        flex: 1, background: saving ? 'var(--elevated)' : 'var(--cyan)',
+                        border: 'none', borderRadius: 6, color: saving ? 'var(--frost)' : 'var(--deep-space)',
+                        cursor: saving ? 'not-allowed' : 'pointer', fontSize: 12, fontWeight: 600,
+                        padding: '8px 0', transition: 'background 0.15s ease',
+                      }}
+                    >
+                      {saving ? 'Saving…' : 'Save Note'}
+                    </button>
+                    <button
+                      onClick={() => { setNoteOpen(false); setNoteText(''); }}
+                      style={{
+                        background: 'none', border: '1px solid var(--shadow)', borderRadius: 6,
+                        color: 'var(--frost)', cursor: 'pointer', fontSize: 12, padding: '8px 16px',
+                        transition: 'border-color 0.15s ease',
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

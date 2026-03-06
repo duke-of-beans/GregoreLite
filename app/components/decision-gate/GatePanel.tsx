@@ -22,11 +22,13 @@
  */
 
 import { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { GateTrigger, TriggerResult } from '@/lib/decision-gate';
 import { useDecisionGateStore } from '@/lib/stores/decision-gate-store';
 import { shouldInterrupt, onQueueDrain } from '@/lib/focus/interrupt-gate';
 import { ContradictionView } from './ContradictionView';
 import { MandatoryOverlay } from './MandatoryOverlay';
+import { panelSlideUp } from '@/lib/design/animations';
 
 interface GatePanelProps {
   threadId: string | null;
@@ -184,11 +186,16 @@ export function GatePanel({ threadId, trigger }: GatePanelProps) {
     }
   };
 
-  // Suppress render until interrupt gate allows it (Law 5)
-  if (!show) return null;
-
   return (
-    <div
+    <AnimatePresence>
+      {/* Suppressed until interrupt gate allows it (Law 5) */}
+      {show && (
+    <motion.div
+      key="gate-panel"
+      variants={panelSlideUp}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
       role="alertdialog"
       aria-label="Review Required"
       className="border-t border-[var(--amber,#f59e0b)]/40 bg-[var(--elevated)] px-6 py-4 flex-shrink-0"
@@ -297,6 +304,8 @@ export function GatePanel({ threadId, trigger }: GatePanelProps) {
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

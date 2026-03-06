@@ -1,13 +1,13 @@
 # GREGLITE — STATUS
-**Last Updated:** March 6, 2026 — Sprint 20.0 COMPLETE. Ghost Thread activation: startGhost() wired to bootstrap, dual-path shutdown (sendBeacon + Rust Destroyed event), watcher→ingest bridge, StatusBar ghost status, Settings > Ghost rework.
+**Last Updated:** March 6, 2026 — Sprint 21.0 COMPLETE. Framer Motion spring animations on all interactive surfaces: InspectorDrawer (spring slide), EventDetailPanel (spring slide + backdrop), GatePanel (panelSlideUp), MemoryCard (popover spring), ReceiptFooter (height collapse), SendButton (buttonPress micro-interaction on primary states), GhostCard (cardLift hover). Centralised in lib/design/animations.ts. prefers-reduced-motion respected via useAnimationConfig(). tsc 0 errors, 1344/1344 tests.
 **Version:** v1.0.0 (Phase 8 Ship Prep complete)
 **Test Count:** 1344/1344 all green
 **EoS Health:** 100/100
 **TSC:** 0 errors
-**Next:** Sprint 20.0 shipped. Ghost Thread now live — filesystem watching, email polling, and interrupt scorer all active. Graceful degradation in dev mode (no Tauri watcher; email + scorer still run). Ghost: Active/Partial/Paused/Off visible in StatusBar. Sprint 21.0: Framer Motion spring animations (see SPRINT_21_0_BRIEF.md).
+**Next:** Sprint 21.0 shipped. All CSS transition hacks replaced with Framer Motion spring physics. No known regressions. Next sprint TBD.
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md — ALL PHASES (A–F) SHIPPED.
-**Recent commits:** 5d7b5c9 (Sprint 19.0), 1c3228c (Sprint 18.0 Phase 2), 08f8df3 (Sprint 18.0 Phase 1), d515fc8 (Sprint 17.0 docs), fc8ab55 (Sprint 17.0)
+**Recent commits:** d01c919 (Sprint 20.0), 5d7b5c9 (Sprint 19.0), 1c3228c (Sprint 18.0 Phase 2), 08f8df3 (Sprint 18.0 Phase 1), d515fc8 (Sprint 17.0 docs)
 
 ### ⚠️ GROUND TRUTH AUDIT (March 4, 2026)
 1. ~~Transit Map "data foundation" listed in Sprint 10.6 was NOT shipped.~~ RESOLVED: Sprint 11.2 shipped data foundation (conversation_events table, 26 event types, capture hooks). commit 37d60af.
