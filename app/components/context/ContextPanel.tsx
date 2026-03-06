@@ -25,6 +25,7 @@ import { SuggestionSlot } from './SuggestionSlot';
 import { EoSIssueRow } from './EoSIssueRow';
 import { scoreClass } from '@/lib/eos/score-class';
 import { GhostCardList } from '@/components/ghost/GhostCardList';
+import { GhostFileWatcher } from '@/components/ghost/GhostFileWatcher';
 import { EoSSparkLine } from './EoSSparkLine';
 import { EoSHistoryPanel } from './EoSHistoryPanel';
 import { RecentChats } from './RecentChats';
@@ -159,6 +160,9 @@ function PanelContent() {
       <div className="mx-4 h-px bg-[var(--shadow)] opacity-30" />
       <DecisionList />
       <div className="mx-4 h-px bg-[var(--shadow)] opacity-30" />
+
+      {/* Sprint 20.0: Watcher→ingest bridge (renders nothing, handles Tauri events) */}
+      <GhostFileWatcher />
 
       {/* Ghost suggestion cards — shown only when suggestions are active */}
       <GhostCardList />

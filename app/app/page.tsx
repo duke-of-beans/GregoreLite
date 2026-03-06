@@ -21,6 +21,17 @@ export default function Home() {
     checkFirstRun();
   }, []);
 
+  // Sprint 20.0 — Wire Ghost shutdown on app close.
+  // Works in both dev mode (Next.js browser) and Tauri WebView.
+  // sendBeacon is fire-and-forget and works during the beforeunload event.
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      navigator.sendBeacon('/api/ghost/stop', '{}');
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
+
   async function checkFirstRun() {
     try {
       const res = await fetch('/api/onboarding');

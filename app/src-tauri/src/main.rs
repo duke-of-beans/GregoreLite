@@ -6,6 +6,7 @@ mod ghost;
 mod notifications;
 mod tray;
 
+use tauri::Manager;
 use aegis::{
     aegis_cancel_timer, aegis_list_profiles, aegis_metrics, aegis_set_timer, aegis_status,
     aegis_switch_profile,
@@ -41,6 +42,17 @@ fn main() {
             aegis_set_timer,
             aegis_cancel_timer,
         ])
+        // Sprint 20.0: Belt-and-suspenders Ghost shutdown on window close.
+        // Primary path: TypeScript beforeunload → POST /api/ghost/stop (JS-side lifecycle).
+        // Suspenders: Destroyed event → stop Rust-side watcher directly via managed state.
+        .on_window_event(|window, event| {
+            if let tauri::WindowEvent::Destroyed = event {
+                // Chain state() + lock() + stop() in one expression so no
+                // intermediate borrow outlives its owner (avoids E0597).
+                let app = window.app_handle().clone();
+                let _ = app.state::<ghost::GhostState>().lock().map(|mut w| w.stop());
+            }
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

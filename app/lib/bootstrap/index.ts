@@ -78,6 +78,20 @@ export async function runBootstrap(): Promise<BootstrapResult> {
       console.warn('[indexer] start failed', { err });
     }
 
+    // Step 6: Start Ghost Thread (ambient intelligence)
+    // Non-blocking — Ghost startup failure degrades gracefully (app still works).
+    // lifecycle.ts handles per-component failures individually (7-step startup).
+    // Watcher IPC (Tauri invoke) no-ops silently in server-side context;
+    // email poller and scorer still start and provide value in dev mode.
+    try {
+      const { startGhost } = await import('../ghost');
+      await startGhost();
+      console.log('[bootstrap] Ghost started');
+    } catch (err) {
+      errors.push(`Ghost startup failed: ${err instanceof Error ? err.message : String(err)}`);
+      console.warn('[bootstrap] Ghost startup failed (degraded):', err);
+    }
+
     // Cache the result
     _cachedPackage = pkg;
     _cacheExpiresAt = Date.now() + CACHE_TTL_MS;

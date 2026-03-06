@@ -11,10 +11,41 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useJobStore } from '@/lib/stores/job-store';
 import { useContextPanel } from '@/lib/context/context-provider';
+import { useGhostStore } from '@/lib/stores/ghost-store';
 import { CostBreakdown } from '../agent-sdk/CostBreakdown';
 import { getAttentionTooltip } from '@/lib/focus/attention-budget';
+import type { GhostStatus } from '@/lib/ghost/status';
 
 const COST_POLL_MS = 60_000;
+
+// ── Ghost status helpers (Sprint 20.0) ────────────────────────────────────────
+
+function ghostLabel(status: GhostStatus | null): string {
+  if (!status || status.state === 'stopped' || status.state === 'error') return 'Off';
+  if (status.state === 'running') return 'Active';
+  if (status.state === 'degraded') return 'Partial';
+  if (status.state === 'paused') return 'Paused';
+  if (status.state === 'starting') return 'Starting';
+  return 'Off';
+}
+
+function ghostColor(status: GhostStatus | null): string {
+  if (!status || status.state === 'stopped' || status.state === 'error') return 'text-[var(--mist)]';
+  if (status.state === 'running') return 'text-green-400';
+  return 'text-amber-400'; // starting, degraded, paused
+}
+
+function ghostTooltip(status: GhostStatus | null): string {
+  if (!status || status.state === 'stopped') return 'Ghost Thread not running';
+  if (status.state === 'running') return 'Monitoring filesystem and email for relevant context';
+  if (status.state === 'degraded') {
+    const failed = status.errors.map((e) => e.component).join(', ');
+    return `Partial: ${failed || 'some components'} failed — email + scorer still active`;
+  }
+  if (status.state === 'paused') return 'Paused due to high system load (AEGIS)';
+  if (status.state === 'starting') return 'Ghost Thread starting up…';
+  return 'Ghost Thread not running';
+}
 
 export function StatusBar() {
   const [costToday, setCostToday] = useState<number>(0);
@@ -23,6 +54,7 @@ export function StatusBar() {
   const [attentionText, setAttentionText] = useState(() => getAttentionTooltip());
   const jobs = useJobStore((s) => s.jobs);
   const { state: ctx } = useContextPanel();
+  const ghostStatus = useGhostStore((s) => s.ghostStatus);
 
   // Poll /api/costs/today every 60s
   const fetchCost = useCallback(async () => {
@@ -85,6 +117,11 @@ export function StatusBar() {
     window.dispatchEvent(new CustomEvent('greglite:open-context-panel'));
   };
 
+  const handleGhostClick = () => {
+    // Navigate to Settings > Ghost section (Sprint 20.0)
+    window.dispatchEvent(new CustomEvent('greglite:open-settings', { detail: { section: 'ghost' } }));
+  };
+
   return (
     <div className="flex h-8 w-full shrink-0 items-center justify-between border-t border-[var(--shadow)] bg-[var(--deep-space)] px-4 text-[11px]">
       <div className="flex items-center gap-4">
@@ -138,6 +175,21 @@ export function StatusBar() {
           <span className="text-[var(--mist)]">MEMORY:</span>
           <span className={`font-mono font-medium ${kernlColor}`}>
             {kernlDot} {ctx.kernlStatus === 'indexed' ? 'Ready' : ctx.kernlStatus === 'indexing' ? 'Syncing' : 'Offline'}
+          </span>
+        </button>
+
+        {/* Separator */}
+        <span className="text-[var(--shadow)]">│</span>
+
+        {/* Ghost Thread (Sprint 20.0) */}
+        <button
+          onClick={handleGhostClick}
+          className="flex items-center gap-1.5 text-[var(--frost)] transition-colors hover:text-[var(--ice-white)]"
+          title={ghostTooltip(ghostStatus)}
+        >
+          <span className="text-[var(--mist)]">GHOST:</span>
+          <span className={`font-mono font-medium ${ghostColor(ghostStatus)}`}>
+            {ghostLabel(ghostStatus)}
           </span>
         </button>
 

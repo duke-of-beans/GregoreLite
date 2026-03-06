@@ -1,13 +1,13 @@
 # GREGLITE — STATUS
-**Last Updated:** March 6, 2026 — Sprint 19.0 COMPLETE. Sacred Laws enforcement (reversibility journal, focus protection, attention budget, expanded gate).
+**Last Updated:** March 6, 2026 — Sprint 20.0 COMPLETE. Ghost Thread activation: startGhost() wired to bootstrap, dual-path shutdown (sendBeacon + Rust Destroyed event), watcher→ingest bridge, StatusBar ghost status, Settings > Ghost rework.
 **Version:** v1.0.0 (Phase 8 Ship Prep complete)
 **Test Count:** 1344/1344 all green
 **EoS Health:** 100/100
 **TSC:** 0 errors
-**Next:** Sprint 19.0 shipped. Action journal captures pre/post file state for undo. Focus tracker + interrupt gate block non-critical noise during deep work. Attention budget limits 100 CT/day. Decision gate expanded to 11 triggers (Law 1/3/5). Sprint 20.0 TBD.
+**Next:** Sprint 20.0 shipped. Ghost Thread now live — filesystem watching, email polling, and interrupt scorer all active. Graceful degradation in dev mode (no Tauri watcher; email + scorer still run). Ghost: Active/Partial/Paused/Off visible in StatusBar. Sprint 21.0: Framer Motion spring animations (see SPRINT_21_0_BRIEF.md).
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md — ALL PHASES (A–F) SHIPPED.
-**Recent commits:** 7c08d9f (11.3), dc188fd (11.4+11.5), 4b2382d (11.7), [pending] (11.6)
+**Recent commits:** 5d7b5c9 (Sprint 19.0), 1c3228c (Sprint 18.0 Phase 2), 08f8df3 (Sprint 18.0 Phase 1), d515fc8 (Sprint 17.0 docs), fc8ab55 (Sprint 17.0)
 
 ### ⚠️ GROUND TRUTH AUDIT (March 4, 2026)
 1. ~~Transit Map "data foundation" listed in Sprint 10.6 was NOT shipped.~~ RESOLVED: Sprint 11.2 shipped data foundation (conversation_events table, 26 event types, capture hooks). commit 37d60af.
@@ -17,6 +17,17 @@
 5. ~~Decision gate trigger-detector.ts has 3 dead stub functions replaced by Haiku inference — cleanup needed.~~ — RESOLVED: Sprint 11.0 — detectHighTradeoffCount/detectMultiProjectTouch/detectLargeEstimate removed.
 
 ---
+
+- [x] **SPRINT 20.0** — Ghost Thread Activation — **COMPLETE**
+  - **Deliverable:** 7 files modified + 4 new files. tsc 0 errors. cargo check 0 errors. 1344/1344 tests (unchanged). Ghost Thread live.
+  - **Bootstrap wiring:** `lib/bootstrap/index.ts` Step 6: `startGhost()` called non-blocking after AEGIS init. Errors degrade gracefully — app continues if Ghost fails to start.
+  - **Dual-path shutdown:** `app/page.tsx` `beforeunload` → `navigator.sendBeacon('/api/ghost/stop')` (works in dev + Tauri WebView). `src-tauri/src/main.rs` `.on_window_event(Destroyed)` → acquires `GhostState` mutex and calls `w.stop()` directly (belt-and-suspenders for OS kill).
+  - **New API routes:** `POST /api/ghost/start` (idempotent startGhost, used by Settings toggle), `POST /api/ghost/stop` (stopGhost with 5s hard timeout), `POST /api/ghost/ingest-file` (queues file path for ingest after privacy checks).
+  - **Watcher → ingest bridge:** `GhostFileWatcher.tsx` renders null; subscribes to Tauri `ghost:file-changed` events via `onFileChange()`, POSTs each path to `/api/ghost/ingest-file`. Mounted in `ContextPanel.tsx`. Dev mode: Tauri `listen()` fails silently, no events fire, no API calls made.
+  - **Privacy engine verified:** `processFile()` in ingest pipeline runs all 4 layers (path exclusions, PII scanner, sensitive dirs, user glob rules) before any read or embed. Exclusions logged to `ghost_exclusion_log`.
+  - **StatusBar:** `GHOST: Active/Partial/Paused/Starting/Off` chip with color (green-400/amber-400/mist) and tooltip. Click → dispatches `greglite:open-settings { section: 'ghost' }`.
+  - **Settings > Ghost:** Complete rework of stub. Status dot + toggle button (Start/Stop Ghost), degraded callout (lists failed components), Watched Folders list from `/api/ghost/watch-paths`, Gmail/Outlook connector status, Privacy Exclusions link.
+  - **AEGIS ↔ Ghost:** Verified — pause/resume already wired via Tauri IPC from Sprint 16.0. No changes needed.
 
 - [x] **SPRINT 19.0** — Sacred Laws Enforcement — **COMPLETE**
   - **Deliverable:** 15+ files changed. tsc 0 errors. 1344/1344 tests green (99 new). Laws 1, 3, 5, 10, 12 enforced.
