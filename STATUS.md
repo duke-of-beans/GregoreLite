@@ -1,13 +1,13 @@
 # GREGLITE — STATUS
-**Last Updated:** March 6, 2026 — Sprint 25.0 COMPLETE. Add Existing Project + Intelligent Onboarding: directory scanner (file distribution, build system detection, git integration), type inference (high/medium/low confidence), conversational Q&A flow (OnboardingChat), migration with parallel copy + archive rename, in-place DNA writing, archive deletion guard (verified_by_user enforcement + typed name confirmation), 5 API routes, AddProjectFlow + ArchiveManager components, PortfolioDashboard wired with "Add Project" button. 34 new sprint25 tests. tsc clean.
+**Last Updated:** March 6, 2026 — Sprint 27.0 COMPLETE. Ambient Memory ("Hey Remember This?"): recall data model + 5-strategy detector + scorer with frequency calibration + scheduler wired into Ghost lifecycle (2 .unref() timers) + 4 API routes (active/action/run/history/settings) + RecallCard (amber, hover actions) + ContextPanel integration (60s poll) + RecallSection settings + Inspector Memory tab. 24 new sprint27 tests. tsc clean.
 **Version:** v1.1.0
-**Test Count:** 1411/1411 all green
+**Test Count:** 1464/1464 all green
 **EoS Health:** 100/100
 **TSC:** 0 errors
-**Next:** Sprint 26.0 (Create New Project from Scratch + Attention Intelligence). Queue: 27.0 (Ambient Memory: "Hey Remember This?"), 28.0 (Ceremonial Onboarding Synthesis), 29.0 (Quick Capture Pad). Briefs: SPRINT_25_26_BRIEF.md, SPRINT_27_28_BRIEF.md, SPRINT_29_0_BRIEF.md.
+**Next:** Sprint 28.0 (Ceremonial Onboarding Synthesis). Queue: 29.0 (Quick Capture Pad). Briefs: SPRINT_27_28_BRIEF.md, SPRINT_29_0_BRIEF.md.
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md — ALL PHASES (A–F) SHIPPED.
-**Recent commits:** 4b00463 (Sprint 24.0), bb5efb4 (Sprint 23.0 docs), fea24b5 (Sprint 23.0 Phase C), 603cb8f (Sprint 23.0 Phase A+B), c6e9fd3 (Sprint 22.0)
+**Recent commits:** 4b32867 (Sprint 27.0 C2 UI), b376074 (Sprint 27.0 C1 backend), 9640a64 (Sprint 26.0), 4b00463 (Sprint 24.0), bb5efb4 (Sprint 23.0 docs)
 
 ### ⚠️ GROUND TRUTH AUDIT (March 4, 2026)
 1. ~~Transit Map "data foundation" listed in Sprint 10.6 was NOT shipped.~~ RESOLVED: Sprint 11.2 shipped data foundation (conversation_events table, 26 event types, capture hooks). commit 37d60af.
@@ -17,6 +17,28 @@
 5. ~~Decision gate trigger-detector.ts has 3 dead stub functions replaced by Haiku inference — cleanup needed.~~ — RESOLVED: Sprint 11.0 — detectHighTradeoffCount/detectMultiProjectTouch/detectLargeEstimate removed.
 
 ---
+
+- [x] **SPRINT 27.0** — Ambient Memory ("Hey Remember This?") — **COMPLETE**
+  - **Deliverable:** 11 files created + 4 files modified. tsc 0 errors. 1464/1464 tests green (+24 new sprint27 tests). Two commits: b376074 (backend), 4b32867 (UI).
+  - **Recall pipeline:** `lib/recall/types.ts` — RecallEvent, RecallType, RecallUserAction, RecallSchedulerSettings, DEFAULT_RECALL_SETTINGS. `lib/recall/detector.ts` — 5 heuristic strategies (file_revisit, conversation_callback, project_milestone, pattern_insight, personal_moment/work_anniversary), deduplication by source_id+type within 7 days. `lib/recall/scorer.ts` — scoreRecallEvent() (recency penalty, diversity bonus, per-type dismissal/appreciation weights), getRecallCalibration(), applyCalibration(), loadUserHistory(), storeRecallEvents(), surfaceNextEvent() with daily cap. `lib/recall/scheduler.ts` — startRecallScheduler/stop/pause/resume, detection timer every 2h + surface timer every 30min, both .unref(), auto-calibration on high dismissal rate.
+  - **API routes:** `GET /api/recall/active` (4h window, unacted only), `POST /api/recall/action` (appreciated/dismissed/snoozed — snoozed clears surfaced_at to re-queue), `POST /api/recall/run` (manual detection pass), `GET /api/recall/history` (last 50 + aggregate stats), `GET+POST /api/recall/settings` (scheduler settings persistence).
+  - **Ghost integration:** `lib/ghost/lifecycle.ts` — recall scheduler wired into startGhost/stopGhost/pauseGhost/resumeGhost.
+  - **UI:** `components/recall/RecallCard.tsx` — warm amber card (rgba(255,191,36,0.05) bg), Framer Motion fadeIn+cardLift, type icons, relative time, hover-reveal actions (Thanks/Not now/Remind me later). `components/context/ContextPanel.tsx` — RECALL section between DecisionList and GhostFileWatcher, polls /api/recall/active every 60s, invisible when no event. `components/settings/RecallSection.tsx` — master toggle, max/day slider, detection frequency dropdown, per-type toggles, auto-persist to /api/recall/settings. `components/inspector/MemoryTab.tsx` — detection stats, action breakdown, last 10 events, Run Now button. `components/inspector/InspectorDrawer.tsx` — 'recall' (💭) tab added.
+  - **Tests:** `lib/recall/__tests__/sprint27.test.ts` — 24 tests: scorer base/recency/diversity/per-type, calibration (5 cases), applyCalibration (5 cases), DEFAULT_RECALL_SETTINGS shape, RECALL copy templates shape + Greg voice assertions.
+
+- [x] **SPRINT 26.0** — Create New Project from Scratch + Attention Intelligence — **COMPLETE**
+  - **Deliverable:** 16 files created + 3 files modified. tsc 0 errors. 1440/1440 tests green (+29 new sprint26 tests). Two commits: backend + UI.
+  - **Backend:** `lib/portfolio/scaffold.ts` — scaffoldProject(), getScaffoldTemplate(), inferTypeFromDescription() with runtime guard. `lib/portfolio/analyzer.ts` — analyzeAttention() with staleness/blocker/failing-test/mute-window strategies. `lib/portfolio/onboarding.ts` — getNewProjectQuestions() per type. `lib/kernl/database.ts` — attention_muted_until column + migration.
+  - **API routes:** `POST /api/portfolio/scaffold`, `GET /api/portfolio/attention`, `POST /api/portfolio/infer`, `POST /api/portfolio/scaffold/preview`, `POST /api/portfolio/mute`.
+  - **UI:** `components/portfolio/NewProjectFlow.tsx` — 6-step wizard (describe/questions/preview/path/scaffolding/complete). `components/portfolio/AttentionQueue.tsx` — collapsed attention list with mute/dismiss. PortfolioDashboard + ProjectCard wired with attention pulse, amber/red/blue glow + pulsing HealthDot.
+  - **Voice:** SCAFFOLD + ATTENTION copy exports added to copy-templates.ts. RECALL copy export + recall_events DB migration added as Sprint 27 prep.
+  - **Tests:** `lib/portfolio/__tests__/sprint26.test.ts` — 29 tests covering scaffold, analyzer, onboarding, and copy shapes.
+
+- [x] **SPRINT 25.0** — Add Existing Project + Intelligent Onboarding — **COMPLETE**
+  - **Deliverable:** 14 files created + 4 files modified. tsc 0 errors. 1411/1411 tests green (+34 new sprint25 tests). Commit: c9f5c94.
+  - **Backend:** Directory scanner (file distribution, build system detection, git integration), type inference (high/medium/low confidence), conversational Q&A flow. `lib/portfolio/onboarding.ts` + `lib/portfolio/infer.ts` + 5 API routes.
+  - **UI:** AddProjectFlow (OnboardingChat, directory picker, migration progress), ArchiveManager (parallel copy + archive rename, verified_by_user enforcement + typed name confirmation). PortfolioDashboard wired with "Add Project" button.
+  - **Tests:** 34 tests covering scanner heuristics, inference confidence, onboarding Q&A flow.
 
 - [x] **SPRINT 24.0** — Portfolio Dashboard: Scanner + Read-Only UI — **COMPLETE**
   - **Deliverable:** 12 files created + 5 files modified. tsc 0 errors. 1377/1377 tests green (+33 new scanner unit tests). `yaml` 2.8.2 added as dependency.
