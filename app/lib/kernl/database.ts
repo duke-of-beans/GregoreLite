@@ -331,6 +331,68 @@ function runMigrations(db: Database.Database): void {
     // Tables may already exist
   }
 
+  // Sprint 28.0 — Ceremonial Onboarding: indexing sources + master synthesis + nudges + telemetry
+  try {
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS indexing_sources (
+        id               TEXT    PRIMARY KEY,
+        type             TEXT    NOT NULL,
+        label            TEXT    NOT NULL,
+        status           TEXT    NOT NULL DEFAULT 'pending',
+        path_or_config   TEXT,
+        indexed_count    INTEGER NOT NULL DEFAULT 0,
+        total_count      INTEGER,
+        started_at       INTEGER,
+        completed_at     INTEGER,
+        synthesis_text   TEXT,
+        combination_text TEXT,
+        created_at       INTEGER NOT NULL DEFAULT (unixepoch('now','subsec') * 1000)
+      );
+      CREATE INDEX IF NOT EXISTS idx_indexing_sources_status
+        ON indexing_sources(status);
+      CREATE INDEX IF NOT EXISTS idx_indexing_sources_type
+        ON indexing_sources(type);
+
+      CREATE TABLE IF NOT EXISTS master_synthesis (
+        id                  TEXT    PRIMARY KEY,
+        overview            TEXT    NOT NULL DEFAULT '',
+        patterns            TEXT    NOT NULL DEFAULT '[]',
+        insights            TEXT    NOT NULL DEFAULT '[]',
+        blind_spots         TEXT    NOT NULL DEFAULT '[]',
+        capability_summary  TEXT    NOT NULL DEFAULT '',
+        sources_used        TEXT    NOT NULL DEFAULT '[]',
+        status              TEXT    NOT NULL DEFAULT 'pending',
+        generated_at        INTEGER NOT NULL DEFAULT (unixepoch('now','subsec') * 1000)
+      );
+
+      CREATE TABLE IF NOT EXISTS synthesis_nudges (
+        id                    TEXT    PRIMARY KEY,
+        source_type           TEXT    NOT NULL,
+        source_label          TEXT    NOT NULL,
+        capability_teaser     TEXT    NOT NULL,
+        sent_at               INTEGER NOT NULL DEFAULT (unixepoch('now','subsec') * 1000),
+        dismissed_count       INTEGER NOT NULL DEFAULT 0,
+        last_dismissed_at     INTEGER,
+        permanently_silenced  INTEGER NOT NULL DEFAULT 0
+      );
+      CREATE INDEX IF NOT EXISTS idx_synthesis_nudges_type
+        ON synthesis_nudges(source_type, permanently_silenced);
+
+      CREATE TABLE IF NOT EXISTS synthesis_telemetry (
+        id                      TEXT    PRIMARY KEY,
+        sources_added_order     TEXT    NOT NULL DEFAULT '[]',
+        sources_skipped         TEXT    NOT NULL DEFAULT '[]',
+        per_source_read_time_ms TEXT    NOT NULL DEFAULT '{}',
+        completed_master        INTEGER NOT NULL DEFAULT 0,
+        exited_early            INTEGER NOT NULL DEFAULT 0,
+        nudge_conversions       TEXT    NOT NULL DEFAULT '[]',
+        created_at              INTEGER NOT NULL DEFAULT (unixepoch('now','subsec') * 1000)
+      );
+    `);
+  } catch {
+    // Tables may already exist
+  }
+
   // Sprint 27 — Recall events: ambient memory surfacing
   try {
     db.exec(`
