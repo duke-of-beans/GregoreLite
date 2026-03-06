@@ -1,35 +1,34 @@
 /**
  * InspectorDrawer — Sprint S9-14
  *
- * Right slide-in drawer with 5 tabs: Thread, KERNL, Quality, Jobs, Costs.
+ * Right slide-in drawer with 6 tabs: Thread, Memory, Quality, Jobs, Costs, Learning.
  * Opens via Cmd+I or command palette.
  */
 
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { ThreadTab } from './ThreadTab';
 import { KernlTab } from './KernlTab';
 import { QualityTab } from './QualityTab';
 import { JobsTab } from './JobsTab';
 import { CostBreakdown } from '@/components/agent-sdk/CostBreakdown';
 import { InsightReviewPanel } from '@/components/transit/InsightReviewPanel';
 
-type InspectorTab = 'thread' | 'kernl' | 'quality' | 'jobs' | 'costs' | 'learning';
+type InspectorTab = 'kernl' | 'quality' | 'costs' | 'jobs' | 'learning';
 
 interface TabDef {
   id: InspectorTab;
   label: string;
   icon: string;
+  tooltip: string;
 }
 
 const TABS: TabDef[] = [
-  { id: 'thread', label: 'Thread', icon: '💬' },
-  { id: 'kernl', label: 'KERNL', icon: '🧠' },
-  { id: 'quality', label: 'Quality', icon: '📊' },
-  { id: 'jobs', label: 'Jobs', icon: '⚡' },
-  { id: 'costs', label: 'Costs', icon: '💰' },
-  { id: 'learning', label: 'Learning', icon: '🔮' },
+  { id: 'kernl',   label: 'Memory',   icon: '🧠', tooltip: 'Cross-session memory — powered by KERNL' },
+  { id: 'quality', label: 'Quality',  icon: '📊', tooltip: 'Code quality analysis — powered by Eye of Sauron' },
+  { id: 'costs',   label: 'Cost',     icon: '💰', tooltip: 'Token usage and spend breakdown' },
+  { id: 'jobs',    label: 'Jobs',     icon: '⚡', tooltip: 'Background tasks and workers' },
+  { id: 'learning',label: 'Learning', icon: '🔮', tooltip: 'Insights and patterns from your sessions' },
 ];
 
 interface InspectorDrawerProps {
@@ -38,8 +37,7 @@ interface InspectorDrawerProps {
 }
 
 export function InspectorDrawer({ open, onClose }: InspectorDrawerProps) {
-  const [activeTab, setActiveTab] = useState<InspectorTab>('thread');
-  const [showCostModal, setShowCostModal] = useState(false);
+  const [activeTab, setActiveTab] = useState<InspectorTab>('kernl');
 
   // Escape to close
   useEffect(() => {
@@ -54,13 +52,7 @@ export function InspectorDrawer({ open, onClose }: InspectorDrawerProps) {
     return () => window.removeEventListener('keydown', handler);
   }, [open, onClose]);
 
-  // When costs tab selected, show embedded cost breakdown
   const handleTabClick = useCallback((tabId: InspectorTab) => {
-    if (tabId === 'costs') {
-      setShowCostModal(true);
-    } else {
-      setShowCostModal(false);
-    }
     setActiveTab(tabId);
   }, []);
 
@@ -86,8 +78,10 @@ export function InspectorDrawer({ open, onClose }: InspectorDrawerProps) {
           right: 0,
           bottom: 0,
           width: 440,
-          background: 'var(--deep-space)',
-          borderLeft: '1px solid var(--shadow)',
+          background: 'rgba(10, 14, 20, 0.95)',
+          backdropFilter: 'blur(12px)',
+          borderLeft: '1px solid rgba(0, 212, 232, 0.15)',
+          boxShadow: '-4px 0 32px rgba(0, 0, 0, 0.5)',
           zIndex: 200,
           display: 'flex',
           flexDirection: 'column',
@@ -132,6 +126,7 @@ export function InspectorDrawer({ open, onClose }: InspectorDrawerProps) {
             <button
               key={tab.id}
               onClick={() => handleTabClick(tab.id)}
+              title={tab.tooltip}
               style={{
                 flex: 1,
                 padding: '8px 4px',
@@ -160,13 +155,10 @@ export function InspectorDrawer({ open, onClose }: InspectorDrawerProps) {
           overflowY: 'auto',
           padding: 16,
         }}>
-          {activeTab === 'thread' && <ThreadTab />}
           {activeTab === 'kernl' && <KernlTab />}
           {activeTab === 'quality' && <QualityTab />}
+          {activeTab === 'costs' && <CostBreakdown onClose={onClose} />}
           {activeTab === 'jobs' && <JobsTab />}
-          {activeTab === 'costs' && showCostModal && (
-            <CostBreakdown onClose={() => setShowCostModal(false)} />
-          )}
           {activeTab === 'learning' && <InsightReviewPanel />}
         </div>
       </div>

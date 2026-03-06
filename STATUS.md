@@ -1,10 +1,10 @@
 # GREGLITE — STATUS
-**Last Updated:** March 5, 2026 — Sprint 15.1 COMPLETE. Gregore audit research sprint.
+**Last Updated:** March 6, 2026 — Sprint 17.0 COMPLETE. Receipt footer, ghost pulse, orchestration theater, send button states, glassmorphic inspector.
 **Version:** v1.0.0 (Phase 8 Ship Prep complete)
 **Test Count:** 1211/1211 all green
 **EoS Health:** 100/100
 **TSC:** 0 errors
-**Next:** Sprint 15.1 shipped. See GREGORE_AUDIT.md for port recommendations. Sprint 16.0 (Receipt Footer + Voice System) is next.
+**Next:** Sprint 17.0 shipped. Receipt footer visible under every assistant message. Sprint 18.0 (Inspector deep-dive + Memory Shimmer) is next.
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md — ALL PHASES (A–F) SHIPPED.
 **Recent commits:** 7c08d9f (11.3), dc188fd (11.4+11.5), 4b2382d (11.7), [pending] (11.6)
@@ -17,6 +17,16 @@
 5. ~~Decision gate trigger-detector.ts has 3 dead stub functions replaced by Haiku inference — cleanup needed.~~ — RESOLVED: Sprint 11.0 — detectHighTradeoffCount/detectMultiProjectTouch/detectLargeEstimate removed.
 
 ---
+
+- [x] **SPRINT 17.0** — Gregore UX Port: Receipt Footer + Ghost Pulse + Orchestration Theater — **COMPLETE**
+  - **Deliverable:** 8 files changed, 519 insertions. tsc 0 errors. All tests green. Commit fc8ab55.
+  - lib/voice/copy-templates.ts: VOICE template system — all UI copy centralized, no hardcoded strings in components. formatReceiptCost/Latency/Model helpers.
+  - globals.css: ghost-analyzing class (wires existing ghost-pulse keyframe to input), receipt-expand animation (150ms ease-out), message-enter fade-in (200ms), design tokens (bg-tertiary, bg-elevated, status-*, cyan-ghost, semantic spacing, dense typography).
+  - ReceiptFooter.tsx: collapsed `✓ $0.002 · 1.2s · sonnet` under every assistant message. Modes: hidden/minimal/compact/full. Separate from Transit Map MessageMetadata — both coexist.
+  - ui-store.ts: receiptDetail preference, orchestrationTheaterComplete flag, theaterMessageCount counter — all persisted to localStorage.
+  - Message.tsx + MessageList.tsx: receipt footer wired, orchestration theater (first 5 messages force-expand, preference prompt on message 5), message-enter animation on every message.
+  - ChatInterface.tsx: ghost-analyzing on InputField wrapper during checking state, gate trigger → send button warning state via useEffect, theater counter incremented on SSE done.
+  - InspectorDrawer.tsx: glassmorphic background (rgba 0.95 + blur(12px) + cyan border), tabs reorganized to Memory/Quality/Cost/Jobs/Learning (Thread tab removed, Cost rendered inline not as modal).
 
 - [x] **SPRINT 15.1** — Gregore Audit (Research) — **COMPLETE**
   - **Deliverable:** GREGORE_AUDIT.md (286 lines, 7 sections)
