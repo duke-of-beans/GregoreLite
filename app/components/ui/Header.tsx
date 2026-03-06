@@ -39,9 +39,21 @@ export function Header() {
         </span>
       </button>
 
-      {/* Right section: gate badge + notifications + settings + command palette */}
+      {/* Right section: gate badge + new thread + notifications + settings + command palette */}
       <div className="flex items-center gap-3">
         {gateTrigger && <TriggerBadge />}
+
+        {/* New Conversation — Sprint 22.0 */}
+        <button
+          onClick={() => window.dispatchEvent(new CustomEvent('greglite:new-thread'))}
+          className="flex items-center justify-center rounded-lg border border-[var(--shadow)] bg-[var(--elevated)] p-2 text-[var(--frost)] transition-colors hover:border-[var(--cyan)] hover:bg-[var(--surface)] hover:text-[var(--ice-white)]"
+          aria-label="New conversation"
+          title="New conversation (Cmd+N)"
+        >
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+        </button>
 
         <NotificationBell />
 

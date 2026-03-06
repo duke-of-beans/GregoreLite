@@ -30,11 +30,11 @@ let embedder: PipelineFn | null = null;
 export async function getEmbedder(): Promise<PipelineFn> {
   if (!embedder) {
     // Dynamic import — @xenova/transformers is ESM-only; defer until needed.
-    // NOTE: @xenova/transformers removed from deps in Sprint 14.0 (Ghost embeddings
-    // not yet active). Re-add the package when local embeddings are enabled.
-    // The variable indirection prevents webpack from resolving the module at build time.
+    // Sprint 22.0: package re-added (pnpm add @xenova/transformers).
+    // Variable indirection prevents both webpack and Turbopack from resolving
+    // the module at build time. Magic comments added for belt-and-suspenders.
     const moduleName = '@xenova/transformers';
-    const mod = await import(/* webpackIgnore: true */ moduleName);
+    const mod = await import(/* webpackIgnore: true */ /* turbopackIgnore: true */ moduleName);
     const pipelineFactory = (mod as unknown as { pipeline: (task: string, model: string, opts: { quantized: boolean }) => Promise<PipelineFn> }).pipeline;
     embedder = await pipelineFactory('feature-extraction', MODEL_ID, { quantized: true });
   }

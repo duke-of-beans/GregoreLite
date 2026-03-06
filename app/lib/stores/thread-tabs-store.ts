@@ -15,8 +15,6 @@ import type { Artifact } from '@/lib/artifacts/types';
 import type { GhostContextActive } from './ghost-store';
 import {
   saveTabLayout,
-  loadTabLayout,
-  restoreTabMessages,
   type PersistedTabLayout,
 } from '@/lib/kernl/thread-tabs';
 
@@ -97,53 +95,22 @@ export const useThreadTabsStore = create<ThreadTabsStore>((set, get) => ({
   initializing: true,
 
   initialize: async () => {
-    const layout = await loadTabLayout();
-
-    if (layout && layout.tabs.length > 0) {
-      // Restore from KERNL
-      const tabs: ThreadTab[] = layout.tabs.map((pt) => ({
-        id: pt.id,
-        kernlThreadId: pt.kernlThreadId,
-        title: pt.title,
-        messages: [],
-        conversationId: pt.conversationId,
-        ghostContextActive: null,
-        artifact: null,
-        restoring: true,
-      }));
-
-      set({ tabs, activeTabId: layout.activeTabId, initializing: false });
-
-      // Restore messages for each tab in background
-      for (const tab of tabs) {
-        restoreTabMessages(tab.kernlThreadId).then((msgs) => {
-          const restored: MessageProps[] = msgs.map((m) => ({
-            role: m.role,
-            content: m.content,
-            timestamp: new Date(m.timestamp),
-          }));
-          set((state) => ({
-            tabs: state.tabs.map((t) =>
-              t.id === tab.id ? { ...t, messages: restored, restoring: false } : t
-            ),
-          }));
-        });
-      }
-    } else {
-      // First boot — create default Strategic tab
-      const tab: ThreadTab = {
-        id: generateTabId(),
-        kernlThreadId: generateThreadId(),
-        title: 'Strategic',
-        messages: [],
-        conversationId: null,
-        ghostContextActive: null,
-        artifact: null,
-        restoring: false,
-      };
-      set({ tabs: [tab], activeTabId: tab.id, initializing: false });
-      get().persistLayout();
-    }
+    // Sprint 22.0 — Always open on a fresh conversation on cold boot.
+    // Never auto-restore the last active thread — app should feel like a blank slate.
+    // Existing conversations remain accessible via Chat History (Cmd+[) or the
+    // ContextPanel "See All" link — both read from /api/conversations directly.
+    const tab: ThreadTab = {
+      id: generateTabId(),
+      kernlThreadId: generateThreadId(),
+      title: 'Strategic',
+      messages: [],
+      conversationId: null,
+      ghostContextActive: null,
+      artifact: null,
+      restoring: false,
+    };
+    set({ tabs: [tab], activeTabId: tab.id, initializing: false });
+    get().persistLayout();
   },
 
   createTab: async (title?: string) => {

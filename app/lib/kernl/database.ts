@@ -132,6 +132,7 @@ function runMigrations(db: Database.Database): void {
   }
 
   // Sprint 10.6 — Transit Map: conversation_events table
+  // Sprint 22.0 — added created_at column (mirrors timestamp; timestamp kept for compat)
   try {
     db.exec(`
       CREATE TABLE IF NOT EXISTS conversation_events (
@@ -141,6 +142,7 @@ function runMigrations(db: Database.Database): void {
         event_type      TEXT NOT NULL,
         category        TEXT NOT NULL,
         timestamp       TEXT NOT NULL DEFAULT (datetime('now')),
+        created_at      TEXT NOT NULL DEFAULT (datetime('now')),
         payload         TEXT NOT NULL DEFAULT '{}',
         schema_version  INTEGER NOT NULL DEFAULT 1,
         tags            TEXT DEFAULT '[]',
@@ -240,6 +242,39 @@ function runMigrations(db: Database.Database): void {
         ON action_journal (session_id, created_at DESC);
       CREATE INDEX IF NOT EXISTS idx_action_journal_undone
         ON action_journal (undone, reversible);
+    `);
+  } catch {
+    // Table may already exist
+  }
+
+  // Sprint 22.0 — Schema gap fixes: conversation_events.created_at, eos_reports.scanned_at
+  // These handle existing DBs that were created before these columns were added.
+  const sprint22Migrations = [
+    // conversation_events: add created_at (mirrors timestamp for query compatibility)
+    `ALTER TABLE conversation_events ADD COLUMN created_at TEXT DEFAULT (datetime('now'))`,
+    // eos_reports: add scanned_at (alias for created_at used by scanner pipeline)
+    `ALTER TABLE eos_reports ADD COLUMN scanned_at TEXT DEFAULT NULL`,
+  ];
+  for (const sql of sprint22Migrations) {
+    try {
+      db.exec(sql);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (!msg.includes('duplicate column name') && !msg.includes('already has column')) {
+        throw err;
+      }
+    }
+  }
+
+  // Sprint 22.0 — kernl_settings: app-level key/value store for persisted config
+  // Separate from 'settings' (threshold config) — holds tab layout, UI state etc.
+  try {
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS kernl_settings (
+        key        TEXT PRIMARY KEY,
+        value      TEXT NOT NULL,
+        updated_at INTEGER NOT NULL DEFAULT (unixepoch('now', 'subsec') * 1000)
+      );
     `);
   } catch {
     // Table may already exist

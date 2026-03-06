@@ -216,7 +216,8 @@ CREATE TABLE IF NOT EXISTS eos_reports (
   duration_ms   INTEGER NOT NULL DEFAULT 0,
   suppressed    TEXT    NOT NULL DEFAULT '[]', -- JSON: string[] (suppressed rule IDs)
   scan_mode     TEXT    NOT NULL DEFAULT 'quick' CHECK(scan_mode IN ('quick','deep')),
-  created_at    TEXT    NOT NULL DEFAULT (datetime('now'))
+  created_at    TEXT    NOT NULL DEFAULT (datetime('now')),
+  scanned_at    TEXT    DEFAULT NULL         -- ISO timestamp set by scanner pipeline
 );
 
 CREATE INDEX IF NOT EXISTS idx_eos_reports_project
@@ -508,6 +509,15 @@ CREATE TABLE IF NOT EXISTS manifest_templates (
 
 CREATE INDEX IF NOT EXISTS idx_manifest_templates_task
   ON manifest_templates (task_type);
+
+-- ─── KERNL SETTINGS — Sprint 22.0 ───────────────────────────────────────────
+-- App-level persistent key/value store. Separate from 'settings' (threshold config).
+-- Holds tab layout, UI preferences, and other cross-session state.
+CREATE TABLE IF NOT EXISTS kernl_settings (
+  key        TEXT PRIMARY KEY,
+  value      TEXT NOT NULL,
+  updated_at INTEGER NOT NULL DEFAULT (unixepoch('now', 'subsec') * 1000)
+);
 
 -- ─── PHASE 9: GHOST PREFERENCES ──────────────────────────────────────────────
 -- Positive reinforcement preferences for Ghost scorer. Each row boosts the

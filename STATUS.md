@@ -4,7 +4,7 @@
 **Test Count:** 1344/1344 all green
 **EoS Health:** 100/100
 **TSC:** 0 errors
-**Next:** Sprint 21.0 shipped. All CSS transition hacks replaced with Framer Motion spring physics. No known regressions. Next sprint TBD.
+**Next:** Sprint 22.0 — First Launch Polish + Missing Dependency. 8 tasks: always open new conversation, visible New Conversation button, fix Chat History drawer transparency, clickable scrollbar landmark ticks, hide ATTN from StatusBar (move to Inspector), install @xenova/transformers, fix SQLite schema gaps, TypeScript gate. Brief: SPRINT_22_0_BRIEF.md.
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md — ALL PHASES (A–F) SHIPPED.
 **Recent commits:** d01c919 (Sprint 20.0), 5d7b5c9 (Sprint 19.0), 1c3228c (Sprint 18.0 Phase 2), 08f8df3 (Sprint 18.0 Phase 1), d515fc8 (Sprint 17.0 docs)

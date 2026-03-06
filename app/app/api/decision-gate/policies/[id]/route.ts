@@ -7,9 +7,9 @@ import { deletePolicy } from '@/lib/decision-gate/override-policies';
 
 export async function DELETE(
   _request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ): Promise<Response> {
-  const { id } = params;
+  const { id } = await params;
 
   if (!id) {
     return new Response(

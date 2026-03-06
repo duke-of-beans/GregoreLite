@@ -132,7 +132,7 @@ export function ChatHistoryPanel({ open, onClose, onLoadThread }: ChatHistoryPan
             position: 'fixed',
             inset: 0,
             zIndex: 199,
-            background: 'rgba(0,0,0,0.3)',
+            background: 'rgba(0,0,0,0.5)',
           }}
           onClick={onClose}
         />
@@ -147,7 +147,7 @@ export function ChatHistoryPanel({ open, onClose, onLoadThread }: ChatHistoryPan
           bottom: 0,
           width: '360px',
           zIndex: 200,
-          background: 'var(--bg)',
+          background: 'var(--deep-space, #0a0e17)',
           borderRight: '1px solid var(--border)',
           boxShadow: '4px 0 16px rgba(0,0,0,0.3)',
           transform: open ? 'translateX(0)' : 'translateX(-100%)',

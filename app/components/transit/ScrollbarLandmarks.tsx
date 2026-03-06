@@ -29,6 +29,12 @@ export interface ScrollbarLandmarksProps {
    * When provided, the internal fetch is skipped entirely.
    */
   events?: EnrichedEvent[] | undefined;
+  /**
+   * Sprint 22.0 — Called when user clicks a landmark tick.
+   * Receives the message_index of the clicked event.
+   * Optional: the component also scrolls scrollContainerRef directly.
+   */
+  onScrollToMessage?: (messageIndex: number) => void;
 }
 
 // ── Filter evaluator ──────────────────────────────────────────────────────────
@@ -54,6 +60,7 @@ export function ScrollbarLandmarks({
   messageCount,
   scrollContainerRef,
   events: propEvents,
+  onScrollToMessage,
 }: ScrollbarLandmarksProps) {
   const [fetchedEvents, setFetchedEvents] = useState<EnrichedEvent[]>([]);
 
@@ -136,11 +143,14 @@ export function ScrollbarLandmarks({
 
         const tooltip = `${e.config?.name ?? e.event_type} — ${new Date(e.created_at).toLocaleTimeString()}`;
 
+        // Tick is clickable when message_index is available
+        const isClickable = typeof e.message_index === 'number';
+
         return (
           <div
             key={e.id}
             // pointer-events: auto on the landmark itself — enables tooltip hover
-            // without affecting the scrollbar drag behavior (the container is none)
+            // and click-to-scroll without affecting the scrollbar drag behavior
             className="landmark-tick"
             style={{
               position: 'absolute',
@@ -153,9 +163,24 @@ export function ScrollbarLandmarks({
               '--landmark-delay': `${idx * 20}ms`,
               borderRadius: '1px',
               pointerEvents: 'auto',
-              cursor: 'default',
+              cursor: isClickable ? 'pointer' : 'default',
             } as React.CSSProperties}
             title={tooltip}
+            onClick={isClickable ? () => {
+              const messageIndex = e.message_index as number;
+              // Notify parent (optional enhancement)
+              onScrollToMessage?.(messageIndex);
+              // Scroll directly via scrollContainerRef — works without MessageList wiring
+              const container = scrollContainerRef.current;
+              if (container) {
+                const scrollable = container.scrollHeight - container.clientHeight;
+                if (scrollable > 0) {
+                  container.scrollTo({ top: clamped * scrollable, behavior: 'smooth' });
+                }
+              }
+            } : undefined}
+            role={isClickable ? 'button' : undefined}
+            aria-label={isClickable ? `Jump to: ${tooltip}` : undefined}
           />
         );
       })}
