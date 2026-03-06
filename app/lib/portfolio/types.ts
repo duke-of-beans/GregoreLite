@@ -119,3 +119,79 @@ export interface PortfolioScanData {
   warnings: string[];
   scannedAt: string;
 }
+
+// ── Sprint 25.0 — Directory Scanner + Migration Types ────────────────────────
+
+/** Raw scan of an UNREGISTERED directory (before onboarding) */
+export interface DirectoryScanResult {
+  /** Absolute path scanned */
+  path: string;
+  /** Build system files found (e.g. "package.json", "Cargo.toml") */
+  buildSystem: string[];
+  /** Version control info */
+  versionControl: {
+    hasGit: boolean;
+    lastCommitDate: string | null;
+    lastCommitMessage: string | null;
+    branch: string | null;
+  };
+  /** Documentation files found (README.md, CHANGELOG.md, TODO, STATUS, etc.) */
+  documentation: string[];
+  /** Interesting directories present (src, lib, docs, tests, data, etc.) */
+  structure: string[];
+  /** Extension → file count map */
+  fileDistribution: Record<string, number>;
+  /** PROJECT_DNA.yaml already present? */
+  existingDna: boolean;
+  /** Total file count (skipped dirs excluded) */
+  totalFiles: number;
+  /** Total size in bytes (skipped dirs excluded) */
+  totalSizeBytes: number;
+}
+
+/** Type inference result from a DirectoryScanResult */
+export interface InferResult {
+  type: ProjectType;
+  confidence: 'high' | 'medium' | 'low';
+  reason: string;
+}
+
+/** A single question in the onboarding Q&A flow */
+export interface OnboardingQuestion {
+  id: string;
+  question: string;
+  context?: string;
+  options?: string[];
+}
+
+/** Structured PROJECT_DNA content (used during DNA generation) */
+export interface ProjectDnaYaml {
+  type: ProjectType;
+  type_label?: string;
+  identity: {
+    name: string;
+    purpose: string;
+  };
+  current_state: {
+    phase: string;
+    status: string;
+  };
+  metrics: Record<string, string | number | null>;
+  documents: string[];
+}
+
+/** Result of a migrateProject() operation */
+export interface MigrationResult {
+  success: boolean;
+  archivePath?: string;
+  newPath?: string;
+  error?: string;
+}
+
+/** Warning found during pre-migration dependency scan */
+export interface DependencyWarning {
+  type: 'absolute-path' | 'symlink' | 'large-directory';
+  path: string;
+  detail: string;
+  count?: number;
+}

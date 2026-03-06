@@ -20,7 +20,7 @@ identity:
 
 current_state:
   version: "1.1.0"
-  phase: "v1.1.0 production readiness. All phases shipped through Sprint 24.0. Portfolio Dashboard: scanner + read-only UI complete."
+  phase: "v1.1.0 production readiness. All phases shipped through Sprint 25.0. Portfolio: scanner + read-only UI + Add Existing Project onboarding complete."
   status: |
     Phases 1-9 shipped. Sprint 10.x-14.x polish and production readiness.
     Sprint 15.x-17.x Gregore UX port. Sprint 18.0 Memory Shimmer + Adaptive Override.
@@ -30,9 +30,13 @@ current_state:
     Sprint 24.0 Portfolio Dashboard: 3 SQLite tables, scanner, 3 API routes,
     PortfolioDashboard + ProjectCard + ProjectDetail, Projects tab (leftmost),
     WORKSPACES.yaml auto-seed, 33 new scanner unit tests.
-    EoS 100/100. 1377 tests. tsc clean.
+    Sprint 25.0 Add Existing Project + Intelligent Onboarding: directory scanner,
+    type inference, OnboardingChat Q&A, migration (parallel copy + archive rename),
+    in-place DNA writing, archive deletion guard, 5 API routes, AddProjectFlow +
+    ArchiveManager components, PortfolioDashboard wired. 34 new tests.
+    EoS 100/100. 1411 tests. tsc clean.
   git_tag: "v1.1.0"
-  latest_commits: "4b00463 (24.0 Portfolio Dashboard), bb5efb4 (23.0 docs), fea24b5 (23.0 Phase C), 603cb8f (23.0 Phase A+B)"
+  latest_commits: "88855e3 (25.0 Add Existing Project), 2fac77f (24.0 Portfolio Dashboard), bb5efb4 (23.0 docs), fea24b5 (23.0 Phase C)"
 
 ground_truth_audit:
   date: "2026-03-04"

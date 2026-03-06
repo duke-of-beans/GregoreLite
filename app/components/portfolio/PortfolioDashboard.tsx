@@ -14,10 +14,11 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { RefreshCw, FolderKanban } from 'lucide-react';
+import { RefreshCw, FolderKanban, Plus } from 'lucide-react';
 import { PORTFOLIO } from '@/lib/voice/copy-templates';
 import { ProjectCard } from './ProjectCard';
 import { ProjectDetail } from './ProjectDetail';
+import { AddProjectFlow } from './AddProjectFlow';
 import type { ProjectCard as ProjectCardData } from '@/lib/portfolio/types';
 
 const POLL_INTERVAL_MS = 30_000;
@@ -83,90 +84,7 @@ function skeletonBar(width: number | string, height: number): React.CSSPropertie
   };
 }
 
-// ── Add Project input ─────────────────────────────────────────────────────────
-
-interface AddProjectRowProps {
-  onRegistered: () => void;
-}
-
-function AddProjectRow({ onRegistered }: AddProjectRowProps) {
-  const [value, setValue] = useState('');
-  const [registering, setRegistering] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
-
-  const handleRegister = async () => {
-    const trimmed = value.trim();
-    if (!trimmed) return;
-    setRegistering(true);
-    setMessage(null);
-    try {
-      const res = await fetch('/api/portfolio', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ path: trimmed }),
-      });
-      const body = await res.json() as { success: boolean; data?: { id: string; card: ProjectCardData | null }; error?: string };
-      if (body.success) {
-        const name = body.data?.card?.name ?? trimmed.split(/[\\/]/).pop() ?? 'Project';
-        setMessage(PORTFOLIO.addProject.successMessage(name));
-        setValue('');
-        onRegistered();
-      } else {
-        setMessage(PORTFOLIO.addProject.errorMessage(body.error ?? 'Unknown error'));
-      }
-    } catch (err) {
-      setMessage(PORTFOLIO.addProject.errorMessage(err instanceof Error ? err.message : 'Network error'));
-    } finally {
-      setRegistering(false);
-    }
-  };
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-      <div style={{ display: 'flex', gap: 8 }}>
-        <input
-          type="text"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          onKeyDown={(e) => { if (e.key === 'Enter') void handleRegister(); }}
-          placeholder={PORTFOLIO.addProject.placeholder}
-          disabled={registering}
-          style={{
-            flex: 1,
-            background: 'var(--surface)',
-            border: '1px solid var(--shadow)',
-            borderRadius: 6,
-            padding: '7px 12px',
-            fontSize: 12,
-            color: 'var(--frost)',
-            outline: 'none',
-          }}
-        />
-        <button
-          onClick={() => { void handleRegister(); }}
-          disabled={registering || !value.trim()}
-          style={{
-            background: 'rgba(0, 212, 232, 0.08)',
-            border: '1px solid var(--cyan)',
-            borderRadius: 6,
-            padding: '7px 14px',
-            fontSize: 12,
-            fontWeight: 600,
-            color: 'var(--cyan)',
-            cursor: registering || !value.trim() ? 'not-allowed' : 'pointer',
-            opacity: registering || !value.trim() ? 0.5 : 1,
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {registering ? PORTFOLIO.addProject.registering : PORTFOLIO.addProject.registerButton}
-        </button>
-      </div>
-      {message && (
-        <p style={{ fontSize: 11, color: 'var(--mist)', margin: 0 }}>{message}</p>
-      )}
-    </div>
-  );
-}
+// (AddProjectRow removed in Sprint 25 — replaced by full AddProjectFlow modal)
 
 // ── Main dashboard ────────────────────────────────────────────────────────────
 
@@ -177,6 +95,7 @@ export function PortfolioDashboard() {
   const [refreshing, setRefreshing] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [detailStatusFull, setDetailStatusFull] = useState<string | null>(null);
+  const [showAddFlow, setShowAddFlow] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const fetchProjects = useCallback(async (silent = false) => {
@@ -266,6 +185,27 @@ export function PortfolioDashboard() {
           </span>
         )}
         <button
+          onClick={() => setShowAddFlow(true)}
+          title="Add existing project"
+          style={{
+            background: 'var(--elevated)',
+            border: '1px solid var(--shadow)',
+            borderRadius: 6,
+            cursor: 'pointer',
+            color: 'var(--cyan)',
+            padding: '4px 10px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 5,
+            fontSize: 12,
+            fontWeight: 500,
+          }}
+          aria-label="Add existing project"
+        >
+          <Plus size={13} />
+          Add Project
+        </button>
+        <button
           onClick={() => { void handleRefresh(); }}
           disabled={refreshing}
           title={PORTFOLIO.refreshButton}
@@ -292,11 +232,6 @@ export function PortfolioDashboard() {
 
       {/* Scrollable body */}
       <div style={{ flex: 1, overflow: 'auto', padding: '20px' }}>
-
-        {/* Add project row */}
-        <div style={{ marginBottom: 20, maxWidth: 600 }}>
-          <AddProjectRow onRegistered={() => { void fetchProjects(true); }} />
-        </div>
 
         {/* Loading */}
         {loading && (
@@ -358,6 +293,17 @@ export function PortfolioDashboard() {
         onClose={handleClose}
         onRefresh={selectedProject ? () => { void handleRefresh(); } : undefined}
       />
+
+      {/* Add existing project flow */}
+      {showAddFlow && (
+        <AddProjectFlow
+          onComplete={() => {
+            setShowAddFlow(false);
+            void fetchProjects(true);
+          }}
+          onCancel={() => setShowAddFlow(false)}
+        />
+      )}
     </div>
   );
 }

@@ -6,7 +6,7 @@
  * Uses vi.mock for fs to avoid touching disk.
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 
 // ── Mock fs before any imports that use it ────────────────────────────────────
 

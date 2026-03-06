@@ -257,6 +257,129 @@ export function formatReceiptLatency(latencyMs: number | undefined): string {
   return `${(latencyMs / 1000).toFixed(1)}s`;
 }
 
+// ── Onboarding — Sprint 25.0 ──────────────────────────────────────────────────
+// All conversational strings for the Add Existing Project flow.
+// Voice: deadpan professional, data-forward, no exclamation marks, no "I'm sorry."
+
+export const ONBOARDING = {
+  // Scan summary
+  scan: {
+    summary: (folderName: string, totalFiles: number, dominantType: string, buildSystem: string) =>
+      `I scanned ${folderName}. ${totalFiles.toLocaleString()} files. ${dominantType}.${buildSystem ? ` Build system: ${buildSystem}.` : ' No build system detected.'}`,
+    scanning: (folderName: string) => `Scanning ${folderName}…`,
+    scanComplete: 'Scan complete.',
+    existingDna: 'This project already has a PROJECT_DNA.yaml. I can update it or leave it alone.',
+    empty: 'The directory appears to be empty or inaccessible.',
+  },
+
+  // Core questions for unknown/custom types
+  coreQuestions: {
+    purpose:       'What is this project actually for?',
+    inputs:        'What are the inputs you work with?',
+    doneLooks:     'What does done look like for this?',
+    constraints:   'What are the constraints or deadlines?',
+    successSignal: 'How do you know if it\'s going well or badly?',
+  },
+
+  // High-confidence confirmation questions
+  confirmQuestions: {
+    codeConfirm:     (lang: string, fileCount: number, hasSuite: boolean) =>
+      `I found a ${lang} project with ${fileCount} source files${hasSuite ? ' and a test suite' : ''}. Sound right?`,
+    extraMetrics:    'Any specific metrics you want to track beyond the defaults?',
+    nameConfirm:     (folderName: string) => `I\'ll use "${folderName}" as the project name. Change it?`,
+  },
+
+  // Medium-confidence clarifying questions
+  researchQuestions: {
+    question:    'What\'s the central research question?',
+    methodology: 'What methodology or framework are you using?',
+    outputs:     'What are the expected outputs — papers, reports, datasets?',
+    timeline:    'Is there a deadline or submission target?',
+  },
+  businessQuestions: {
+    deliverable: 'What\'s the primary deliverable?',
+    client:      'Who\'s the client or audience?',
+    milestones:  'What are the key milestones?',
+    successKpi:  'What does success look like — revenue, deliverables shipped, something else?',
+  },
+  creativeQuestions: {
+    medium:      'What medium — writing, visual, audio, video, mixed?',
+    audience:    'Who\'s this for?',
+    scope:       'What\'s the scope — one piece, a series, an ongoing practice?',
+    completionSignal: 'How do you know when a piece is done?',
+  },
+
+  // Acknowledgments between questions
+  ack: {
+    got_it:   'Got it.',
+    noted:    'Noted.',
+    ok:       'OK.',
+    makes_sense: 'Makes sense.',
+    good:     'Good.',
+  },
+
+  // DNA preview
+  dnaPreview: {
+    intro:     'Here\'s what I\'d set up for this project:',
+    approveBtn:   'Looks good',
+    editBtn:      'Edit',
+    startOver:    'Start over',
+  },
+
+  // Migration decision
+  migration: {
+    decisionPrompt: 'Do you want to manage this project in place, or create a clean copy with the standard structure?',
+    inPlaceLabel:   'Manage in place',
+    inPlaceDetail:  'I\'ll add PROJECT_DNA.yaml, STATUS.md, and a backlog file to the existing directory. No files will be moved.',
+    copyLabel:      'Create a clean copy',
+    copyDetail:     'I\'ll copy the project to a new location, add structure files, and archive the original with a timestamp suffix.',
+    warningsIntro:  (count: number) => `Found ${count} issue${count > 1 ? 's' : ''} to review before copying:`,
+    warningAbsPath: (count: number) => `${count} absolute path reference${count > 1 ? 's' : ''} in config files — may need updating after migration.`,
+    warningSymlink: 'Symlinks detected — may break if targets are outside the directory.',
+    warningLargeDir: (sizeGb: string) => `Directory is ${sizeGb} GB — copy will take a while.`,
+    acknowledgeBtn: 'I understand, proceed',
+    cancelBtn:      'Cancel',
+  },
+
+  // Archive safe deletion (ArchiveManager)
+  archive: {
+    status:           'Archived — awaiting verification',
+    statusVerified:   'Archived — verified',
+    markVerifiedBtn:  'Mark as verified',
+    markVerifiedHelp: 'Confirm that the migrated copy works correctly before enabling deletion.',
+    deleteBtn:        'Delete archive',
+    deleteBtnDisabled:'Verify migration first',
+    modalTitle:       (projectName: string) => `Delete archived version of ${projectName}`,
+    modalBody:        (projectName: string, archivePath: string) =>
+      `This will permanently delete the archived version of ${projectName} at ${archivePath}. This cannot be undone.`,
+    modalResponsibility: 'It is your responsibility to verify the migration was successful before deleting.',
+    typeToConfirm:    (projectName: string) => `Type "${projectName}" to confirm deletion`,
+    typeToConfirmPlaceholder: (projectName: string) => `Type ${projectName}`,
+    deleteConfirmBtn: 'Delete permanently',
+    deleteConfirmBtnDisabled: 'Type the project name to enable',
+    deleteSuccess:    'Archive deleted.',
+    deleteError:      (detail: string) => `Deletion failed: ${detail}`,
+  },
+
+  // Completion
+  completion: {
+    success:      (projectName: string) => `${projectName} registered. You\'re all set.`,
+    viewProject:  'View project',
+    inPlaceDone:  (projectName: string) => `${projectName} is now managed in place. DNA and status files added.`,
+    copyDone:     (projectName: string, newPath: string) => `${projectName} copied to ${newPath}. Original archived.`,
+    error:        (detail: string) => `Registration failed: ${detail}`,
+  },
+
+  // Step labels
+  steps: {
+    path:      'Project path',
+    scanning:  'Scanning',
+    questions: 'Setup',
+    migration: 'Migration',
+    done:      'Done',
+  },
+} as const;
+
 /** Shorten model name for receipt footer display */
 export function formatReceiptModel(model: string | undefined): string {
   if (!model) return '—';

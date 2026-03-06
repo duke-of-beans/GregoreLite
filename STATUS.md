@@ -1,10 +1,10 @@
 # GREGLITE — STATUS
-**Last Updated:** March 6, 2026 — Sprint 24.0 COMPLETE. Portfolio Dashboard: 3 SQLite tables, project scanner (reads DNA/STATUS.md from all registered workspaces, 30s background refresh, git last-commit via child_process), 3 API routes, PortfolioDashboard + ProjectCard + ProjectDetail components, Projects tab wired as leftmost tab, WORKSPACES.yaml auto-seed, voice copy, 33 new scanner unit tests.
+**Last Updated:** March 6, 2026 — Sprint 25.0 COMPLETE. Add Existing Project + Intelligent Onboarding: directory scanner (file distribution, build system detection, git integration), type inference (high/medium/low confidence), conversational Q&A flow (OnboardingChat), migration with parallel copy + archive rename, in-place DNA writing, archive deletion guard (verified_by_user enforcement + typed name confirmation), 5 API routes, AddProjectFlow + ArchiveManager components, PortfolioDashboard wired with "Add Project" button. 34 new sprint25 tests. tsc clean.
 **Version:** v1.1.0
-**Test Count:** 1377/1377 all green
+**Test Count:** 1411/1411 all green
 **EoS Health:** 100/100
 **TSC:** 0 errors
-**Next:** Sprint 25.0 — Portfolio: Add Existing Project (onboarding flow, type selection, custom metrics config).
+**Next:** Sprint 26.0 (Create New Project from Scratch + Attention Intelligence). Queue: 27.0 (Ambient Memory: "Hey Remember This?"), 28.0 (Ceremonial Onboarding Synthesis), 29.0 (Quick Capture Pad). Briefs: SPRINT_25_26_BRIEF.md, SPRINT_27_28_BRIEF.md, SPRINT_29_0_BRIEF.md.
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md — ALL PHASES (A–F) SHIPPED.
 **Recent commits:** 4b00463 (Sprint 24.0), bb5efb4 (Sprint 23.0 docs), fea24b5 (Sprint 23.0 Phase C), 603cb8f (Sprint 23.0 Phase A+B), c6e9fd3 (Sprint 22.0)
