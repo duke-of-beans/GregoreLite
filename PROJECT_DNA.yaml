@@ -1,5 +1,5 @@
 # GREGLITE PROJECT DNA
-# Version: v1.1.0 | Sprint 27.0 Ambient Memory | March 6, 2026
+# Version: v1.1.0 | Sprint 32.0 Headless Browser Mode | March 7, 2026
 # Feature Backlog: D:\Projects\GregLite\FEATURE_BACKLOG.md
 # Sprint Roadmap: D:\Projects\GregLite\SPRINT_ROADMAP.md
 
@@ -20,7 +20,7 @@ identity:
 
 current_state:
   version: "1.1.0"
-  phase: "v1.1.0 production readiness. Sprints 24–27 shipped. Portfolio full lifecycle + Ambient Memory complete."
+  phase: "v1.1.0 production readiness. Sprints 24-32 shipped. Portfolio + Ambient Memory + Quick Capture + Start at Boot + Headless Browser Mode complete."
   status: |
     Phases 1-9 shipped. Sprint 10.x-14.x polish and production readiness.
     Sprint 15.x-17.x Gregore UX port. Sprint 18.0 Memory Shimmer + Adaptive Override.
@@ -40,9 +40,20 @@ current_state:
     Sprint 27.0 Ambient Memory: recall pipeline (5 strategies), scorer + calibration,
     Ghost-wired scheduler (2 .unref() timers), 5 API routes, RecallCard (amber hover),
     ContextPanel poll, RecallSection settings, Inspector Memory tab. 24 new tests.
-    EoS 100/100. 1464 tests. tsc clean.
+    Sprint 28.0 Ceremonial Synthesis: temporal rituals (daily/weekly/monthly), synthesis
+    engine, RitualEngine scheduler, SynthesisViewer, 5 API routes. New tests.
+    Sprint 29.0 Quick Capture Pad: global hotkey (Ctrl+Shift+Space), floating capture
+    pad, smart parser (type/priority/project routing), cosine-similarity dedup (0.85),
+    promote-to-backlog pipeline, CaptureInbox review panel. 1624 tests across 83 files.
+    Sprint 30.0 UX Reality Check: 13 UX polish tasks shipped.
+    Sprint 31.0 Start at Boot: winreg (Windows) + LaunchAgents plist (macOS), Rust
+    startup.rs, TypeScript IPC bridge, StartupSection settings UI, NSIS hooks. 1634 tests.
+    Sprint 32.0 Headless Browser Mode: puppeteer-core engine, WebSessionGovernor (rate
+    limiting + burst detection), selectors config, fallback router (api/web_session/auto),
+    chat route integration, WebSessionSection settings UI, ReceiptFooter routedVia.
+    EoS 100/100. 1667 tests across 87 files. tsc clean.
   git_tag: "v1.1.0"
-  latest_commits: "4b32867 (27.0 UI), b376074 (27.0 backend), 9640a64 (26.0), c9f5c94 (25.0), 2fac77f (24.0)"
+  latest_commits: "f820ebd (32.0 fallback), 494efed (32.0 commit 2), a38bf15 (32.0 commit 1), 0bff472 (29.0), ab45ae6 (28.0)"
 
 ground_truth_audit:
   date: "2026-03-04"
