@@ -218,3 +218,20 @@ Source: GREGORE_AUDIT.md §6
 | THEN | 18.0 | Memory Shimmer (real-time context reveals) | 17.0 | 6-8 tasks |
 | THEN | 19.0 | Decision Gate Enhancement (3-choice + Send Button states) | 17.0 | 8-10 tasks |
 | THEN | 20.0 | Inspector Reorg + Design Token Cleanup + Animation Polish | Any | 8-10 tasks |
+
+---
+
+## VISION / LONG-TERM FEATURES
+
+### Ambient Memory & Thoughtful Recall ❌
+Greg as a "local disk traveler" — frequent sweeps of all managed storage (local disk, cloud, mobile if connected) to surface meaningful personal moments and context. Like a friend remembering a shared memory: media once frequently used but no longer opened triggers "hey, remember this?" moments. Not limited to media — news, work, projects, past conversations, life events. Think Google Photos' friendly reminders but more personalized, more Greg. Must feel friendly and thoughtful, never uncanny valley. Executive-assistant-level awareness: conversation callbacks, "how's this been going?" check-ins, "I know you've been going through that" moments. Deeply customized to the user's actual life and work.
+
+**Depends on:** Portfolio Dashboard (Sprint 24-26), Background Assistant (Ghost) maturity, sufficient indexed content to draw from.
+**Gregore parallel:** EPIC-78
+
+### Ceremonial Onboarding — Life & Work Synthesis ❌
+Ceremonialize the "getting to know you" phase for new users. As Greg indexes each data source (files, email, projects, interests), each addition should feel special and build excitement. Progressive revelations: "Now that we've indexed your career data..." (career-themed animation). "Combining work and personal data unlocks..." (synthesis preview). Short synthesis after each source to show concrete new capabilities. Final master synthesis when all sources complete — a clear outside-looking-in view of the user's life and work they've never seen before. This moment must be earned through data depth.
+
+**Goals:** Make indexing feel like unwrapping capabilities not a loading bar. Urge users who skipped optional sources to go back and add them. Final master synthesis should be genuinely insightful.
+**Depends on:** Background Assistant indexing pipeline, Portfolio Dashboard, sufficient data source connectors.
+**Gregore parallel:** EPIC-80

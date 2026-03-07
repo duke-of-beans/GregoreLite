@@ -621,6 +621,90 @@ export const RECALL = {
   no_active: 'Nothing to surface right now.',
 } as const;
 
+// ── Sprint 28.0: Synthesis ceremony copy ─────────────────────────────────────
+// Voice: Greg at his most thoughtful. Still deadpan professional — no exclamation
+// marks, no "Wow!" — but genuinely insightful and respectful of the magnitude
+// of what the user is sharing. Tone: "I see you clearly now. Here's what I notice."
+// Reference: GREGORE_AUDIT.md §1
+
+export const SYNTHESIS = {
+  // ── Source selection cards ────────────────────────────────────────────────
+  source_local_files_title: 'Local Files',
+  source_local_files_desc:  'Your documents, code, research, and creative work.',
+  source_projects_title:    'Projects',
+  source_projects_desc:     'Registered projects with their status and backlogs.',
+  source_email_title:       'Email',
+  source_email_desc:        'Conversations, attachments, and professional context.',
+  source_calendar_title:    'Calendar',
+  source_calendar_desc:     'Schedule, meetings, and time commitments.',
+  source_conversations_title: 'Conversations',
+  source_conversations_desc:  'Past sessions — decisions, context, patterns.',
+  source_notes_title:       'Notes',
+  source_notes_desc:        'Your knowledge base and working notes.',
+  source_custom_title:      'Custom Source',
+  source_custom_desc:       'Any other data source you want Greg to know about.',
+
+  // ── Indexing progress ─────────────────────────────────────────────────────
+  indexing_scanning:  (count: number) => `${count.toLocaleString()} items scanned\u2026`,
+  indexing_preview:   (finding: string) => `Found: ${finding}`,
+  indexing_complete:  (count: number, type: string) => `${count.toLocaleString()} ${type} indexed.`,
+  indexing_heading:   (label: string) => `Indexing ${label}\u2026`,
+
+  // ── Per-source synthesis ──────────────────────────────────────────────────
+  synthesis_heading:           'What I found',
+  combination_intro:           'Now that I can see both\u2026',
+  capabilities_heading:        'What this unlocks',
+  capability_unlocked:         (capability: string) => capability,
+
+  // ── Skipped source notices ────────────────────────────────────────────────
+  skipped_gentle: (sourceLabel: string, capability: string) =>
+    `${sourceLabel} isn\u2019t connected yet. When you\u2019re ready, I\u2019ll be able to ${capability}.`,
+  add_later:      'Add later',
+
+  // ── Flow navigation ───────────────────────────────────────────────────────
+  add_another_source: 'Add another source',
+  done_for_now:       'Done for now',
+  add_source_button:  'Add source',
+  skip_source:        'Skip for now',
+  back:               'Back',
+
+  // ── Master synthesis ceremony ─────────────────────────────────────────────
+  master_opening:              'I see you now.',
+  master_patterns_header:      'Patterns',
+  master_insights_header:      'Things you might not have noticed',
+  master_blindspots_header:    'What I can\u2019t see yet',
+  master_capabilities_header:  'What I can do for you now',
+  master_dismiss:              'Let\u2019s get to work.',
+  master_generating:           'Synthesising\u2026',
+  master_error:                'Synthesis failed. Check your API key and try again.',
+  master_retry:                'Try again',
+
+  // ── Re-engagement nudges ──────────────────────────────────────────────────
+  nudge_source: (sourceLabel: string, capability: string) =>
+    `Connecting ${sourceLabel} would let me ${capability}. Your call.`,
+  nudge_contextual: (sourceLabel: string, capability: string) =>
+    `If ${sourceLabel} were connected, ${capability}.`,
+  nudge_dismiss: 'Got it',
+
+  // ── Step labels (progress indicator in SourceAdditionFlow) ───────────────
+  step_select:    'Select',
+  step_configure: 'Configure',
+  step_indexing:  'Indexing',
+  step_synthesis: 'Synthesis',
+  step_combine:   'Combined view',
+
+  // ── Category breakdown labels (shown during indexing progress) ───────────
+  category_typescript_projects: (n: number) => `${n} TypeScript project${n !== 1 ? 's' : ''}`,
+  category_research_docs:       (n: number) => `${n} research document${n !== 1 ? 's' : ''}`,
+  category_business_plans:      (n: number) => `${n} business plan${n !== 1 ? 's' : ''}`,
+  category_files:               (n: number) => `${n} file${n !== 1 ? 's' : ''}`,
+
+  // ── Onboarding entry point ────────────────────────────────────────────────
+  onboarding_intro:       'Before we begin, I need to see your world.',
+  onboarding_subtitle:    'Add your data sources one at a time. Each one changes what I can do for you.',
+  onboarding_first_source:'Start with your most important source.',
+} as const;
+
 /** Shorten model name for receipt footer display */
 export function formatReceiptModel(model: string | undefined): string {
   if (!model) return '—';

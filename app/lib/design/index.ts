@@ -1,6 +1,6 @@
 /**
  * Design System — barrel export
- * Sprint 21.0
+ * Sprint 21.0 + Sprint 28.0
  */
 
 export {
@@ -18,3 +18,22 @@ export {
   cardLift,
   useAnimationConfig,
 } from './animations';
+
+// Sprint 28.0 — Synthesis ceremony animations
+export {
+  prefersReducedMotion,
+  TYPEWRITER_SPEED,
+  getTypewriterDelay,
+  getTypewriterSlice,
+  isTypewriterComplete,
+  getCounterValue,
+  COUNTER_DURATION_MS,
+  STAGGER_DELAY_MS,
+  staggerContainer,
+  staggerChild,
+  masterReveal,
+  sectionReveal,
+  capabilityCard,
+  sourceCardSpring,
+  snippetFade,
+} from './synthesis-animations';
