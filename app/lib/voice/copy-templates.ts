@@ -789,3 +789,43 @@ export const CAPTURE = {
     open_inbox_desc: 'Review and promote captured notes',
   },
 } as const;
+
+// ── Sprint 32.0: Web Session (headless browser routing) ───────────────────
+export const WEB_SESSION = {
+
+  // ── Settings panel ────────────────────────────────────────────────────────
+  settings_title:       'Message Routing',
+  settings_description: "Route messages through Claude's web interface instead of the API — zero token cost during development and dogfooding.",
+
+  // ── Mode options ──────────────────────────────────────────────────────────
+  mode_api:       'API Only',
+  mode_api_desc:  'Always use the Anthropic API. Requires a valid API key.',
+  mode_web:       'Web Session',
+  mode_web_desc:  'Route all messages through the web interface. Requires an active web session.',
+  mode_auto:      'Auto',
+  mode_auto_desc: 'Try web session first; fall back to API automatically if unavailable.',
+
+  // ── Session status ────────────────────────────────────────────────────────
+  status_active:        (expiresIn: string) => `Active (expires ~${expiresIn})`,
+  status_expired:       'Expired — reconnect to continue using web routing.',
+  status_disconnected:  'Not connected.',
+
+  // ── Connect / Disconnect ──────────────────────────────────────────────────
+  connect_button:     'Connect to Claude',
+  disconnect_button:  'Disconnect',
+
+  // ── Governor ──────────────────────────────────────────────────────────────
+  governor_title:       'Usage Governor',
+  governor_description: 'Enforced limits prevent rate-limiting by claude.ai. These cannot be disabled.',
+  governor_warning:     'Adjusting limits below defaults may result in your session being throttled or blocked.',
+  governor_stats:       (today: number, max: number) => `${today} / ${max} messages today`,
+
+  // ── Receipt footer ────────────────────────────────────────────────────────
+  receipt_web:              'web',
+  receipt_routed_via_web:   'Routed via: Web Session',
+  receipt_routed_via_api:   'Routed via: API',
+
+  // ── Fallback toast ────────────────────────────────────────────────────────
+  fallback_toast: (reason: string) => `Web session unavailable (${reason}). Falling back to API.`,
+
+} as const;

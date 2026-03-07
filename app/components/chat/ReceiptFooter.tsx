@@ -22,6 +22,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { VOICE, formatReceiptCost, formatReceiptLatency, formatReceiptModel } from '@/lib/voice';
+import { WEB_SESSION } from '@/lib/voice/copy-templates';
 import type { ReceiptDetail } from '@/lib/stores/ui-store';
 
 // ── Props ─────────────────────────────────────────────────────────────────────
@@ -39,6 +40,8 @@ export interface ReceiptFooterProps {
   displayMode?: ReceiptDetail;
   /** Orchestration Theater: force expanded (overrides displayMode during first 5 msgs) */
   forceExpanded?: boolean | undefined;
+  /** Sprint 32.0: which path routed this message — shown in collapsed label + expanded detail */
+  routedVia?: 'api' | 'web_session' | undefined;
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -53,13 +56,17 @@ export function ReceiptFooter({
   cacheHit,
   displayMode = 'compact',
   forceExpanded = false,
+  routedVia,
 }: ReceiptFooterProps) {
   const [manualExpanded, setManualExpanded] = useState(false);
 
   // hidden → render nothing
   if (displayMode === 'hidden') return null;
 
-  const costStr = formatReceiptCost(cost);
+  // Sprint 32.0: web session shows 'web' in place of cost (no API spend)
+  const costStr = routedVia === 'web_session'
+    ? WEB_SESSION.receipt_web
+    : formatReceiptCost(cost);
   const latencyStr = formatReceiptLatency(latencyMs);
   const modelStr = formatReceiptModel(model);
   const collapsedLabel = VOICE.receipt.collapsed(modelStr, costStr, latencyStr);
@@ -167,6 +174,13 @@ export function ReceiptFooter({
               {model && (
                 <div style={{ fontSize: 'var(--text-xs, 11px)', color: 'var(--mist)' }}>
                   Model: {model}
+                </div>
+              )}
+              {routedVia && (
+                <div style={{ fontSize: 'var(--text-xs, 11px)', color: 'var(--mist)', opacity: 0.8 }}>
+                  {routedVia === 'web_session'
+                    ? WEB_SESSION.receipt_routed_via_web
+                    : WEB_SESSION.receipt_routed_via_api}
                 </div>
               )}
             </div>

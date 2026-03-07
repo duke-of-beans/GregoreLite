@@ -41,6 +41,9 @@ import { useSuggestionStore } from '@/lib/stores/suggestion-store';
 import { analyze, getDecisionLock } from '@/lib/decision-gate';
 import type { GateMessage } from '@/lib/decision-gate';
 import { useDecisionGateStore } from '@/lib/stores/decision-gate-store';
+import type { ChatMode } from '@/lib/web-session/types';
+import { routeMessage } from '@/lib/web-session/fallback';
+import { WEB_SESSION } from '@/lib/voice/copy-templates';
 
 const client = new Anthropic();
 
@@ -182,6 +185,110 @@ export const POST = safeHandler(async (request: Request) => {
   }));
 
   const start = Date.now();
+
+  // ── Chat mode resolution (Sprint 32.0) ──────────────────────────────────
+  const chatModeRow = getDatabase()
+    .prepare("SELECT value FROM kernl_settings WHERE key = 'web_session_mode'")
+    .get() as { value: string } | undefined;
+  const chatMode: ChatMode = (chatModeRow?.value as ChatMode) ?? 'api';
+
+  // ── Web session routing branch (Sprint 32.0) ─────────────────────────────
+  // When mode is 'web_session' or 'auto', route through headless browser.
+  // SSE format is identical to the API path; done event adds routedVia field.
+  if (chatMode === 'web_session' || chatMode === 'auto') {
+    const wsEncoder = new TextEncoder();
+    const wsReadableStream = new ReadableStream({
+      async start(controller) {
+        controller.enqueue(wsEncoder.encode(
+          `data: ${JSON.stringify({ type: 'meta', conversationId: threadId })}\n\n`
+        ));
+
+        let routedVia: 'api' | 'web_session' = 'api';
+        let fullContent = '';
+
+        try {
+          for await (const chunk of routeMessage({
+            mode: chatMode,
+            userMessage: body.message,
+            messages: anthropicMessages.map((m) => ({
+              role: m.role as 'user' | 'assistant',
+              content: typeof m.content === 'string' ? m.content : '',
+            })),
+            ...(body.systemPrompt !== undefined ? { systemPrompt: body.systemPrompt } : {}),
+            onFallback: (reason) => {
+              console.info('[chat/route] Web session fallback:', reason);
+              controller.enqueue(wsEncoder.encode(
+                `data: ${JSON.stringify({ type: 'info', message: WEB_SESSION.fallback_toast(reason) })}\n\n`
+              ));
+            },
+          })) {
+            routedVia = chunk.routedVia;
+            fullContent += chunk.chunk;
+            controller.enqueue(wsEncoder.encode(
+              `data: ${JSON.stringify({ type: 'text_delta', text: chunk.chunk })}\n\n`
+            ));
+          }
+
+          const latencyMs = Date.now() - start;
+
+          // Persist assistant response to KERNL
+          const assistantMsg = addMessage({
+            thread_id: threadId,
+            role: 'assistant',
+            content: fullContent,
+            model: routedVia === 'web_session' ? 'claude-web' : 'claude-sonnet-4-5',
+            latency_ms: latencyMs,
+          });
+
+          // Continuity checkpoint
+          checkpoint(threadId, assistantMsg.id);
+
+          // Embeddings (fire-and-forget)
+          embed(fullContent, 'conversation', threadId)
+            .then((records) => persistEmbeddingsFull(records))
+            .catch((err: unknown) =>
+              console.warn('[embeddings] web-session persist failed', { err })
+            );
+
+          // Send done event
+          controller.enqueue(wsEncoder.encode(
+            `data: ${JSON.stringify({
+              type: 'done',
+              messageId: assistantMsg.id,
+              model: routedVia === 'web_session' ? 'claude-web' : 'claude-sonnet-4-5',
+              usage: {
+                inputTokens: 0,
+                outputTokens: 0,
+                totalTokens: 0,
+                cacheCreationTokens: 0,
+                cacheReadTokens: 0,
+              },
+              costUsd: 0,
+              latencyMs,
+              routedVia,
+            })}\n\n`
+          ));
+        } catch (wsErr) {
+          controller.enqueue(wsEncoder.encode(
+            `data: ${JSON.stringify({
+              type: 'error',
+              error: wsErr instanceof Error ? wsErr.message : 'Web session routing failed',
+            })}\n\n`
+          ));
+        }
+
+        controller.close();
+      },
+    });
+
+    return new Response(wsReadableStream, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
+    });
+  }
 
   try {
     // Sprint 12.0: use content blocks for prompt caching when no override is present.
@@ -370,6 +477,7 @@ export const POST = safeHandler(async (request: Request) => {
               },
               costUsd: doneCostUsd,
               latencyMs,
+              routedVia: 'api' as const,
             })}\n\n`
           ));
         } catch (streamErr) {
