@@ -12,7 +12,8 @@ export type CommandCategory =
   | 'Jobs'
   | 'Ghost'
   | 'Settings'
-  | 'Memory';
+  | 'Memory'
+  | 'Capture';
 
 export interface CommandDef {
   id: string;

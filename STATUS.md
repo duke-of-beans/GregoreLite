@@ -1,13 +1,13 @@
 # GREGLITE — STATUS
-**Last Updated:** March 6, 2026 — Sprint 27.0 COMPLETE. Ambient Memory ("Hey Remember This?"): recall data model + 5-strategy detector + scorer with frequency calibration + scheduler wired into Ghost lifecycle (2 .unref() timers) + 4 API routes (active/action/run/history/settings) + RecallCard (amber, hover actions) + ContextPanel integration (60s poll) + RecallSection settings + Inspector Memory tab. 24 new sprint27 tests. tsc clean.
+**Last Updated:** March 6, 2026 — Sprint 29.0 COMPLETE. Quick Capture Pad: global hotkey (Ctrl+Shift+Space) floating capture pad, smart parser (type/priority/project routing), cosine-similarity dedup (threshold 0.85), promote-to-backlog pipeline, CaptureInbox review panel, CaptureSection in Settings, command palette integration. 1624 tests across 83 files.
 **Version:** v1.1.0
-**Test Count:** 1464/1464 all green
+**Test Count:** 1624/1624 all green
 **EoS Health:** 100/100
 **TSC:** 0 errors
-**Next:** Sprint 28.0 (Ceremonial Onboarding Synthesis). Queue: 29.0 (Quick Capture Pad). Briefs: SPRINT_27_28_BRIEF.md, SPRINT_29_0_BRIEF.md.
+**Next:** Sprint 30.0 (TBD). See FEATURE_BACKLOG.md.
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md — ALL PHASES (A–F) SHIPPED.
-**Recent commits:** 4b32867 (Sprint 27.0 C2 UI), b376074 (Sprint 27.0 C1 backend), 9640a64 (Sprint 26.0), 4b00463 (Sprint 24.0), bb5efb4 (Sprint 23.0 docs)
+**Recent commits:** ab45ae6 (Sprint 28.0), c08e9d5 (Sprint 27.0 docs), 4b32867 (Sprint 27.0 UI), b376074 (Sprint 27.0 backend), 9640a64 (Sprint 26.0), c9f5c94 (Sprint 25.0)
 
 ### ⚠️ GROUND TRUTH AUDIT (March 4, 2026)
 1. ~~Transit Map "data foundation" listed in Sprint 10.6 was NOT shipped.~~ RESOLVED: Sprint 11.2 shipped data foundation (conversation_events table, 26 event types, capture hooks). commit 37d60af.

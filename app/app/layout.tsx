@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { ToastStack } from '@/components/ui/ToastStack';
 import { ThemeSync } from '@/components/ui/ThemeSync';
+import { CapturePadController } from '@/components/capture/CapturePadController';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -37,6 +38,7 @@ export default function RootLayout({
         <ThemeSync />
         {children}
         <ToastStack />
+        <CapturePadController />
       </body>
     </html>
   );

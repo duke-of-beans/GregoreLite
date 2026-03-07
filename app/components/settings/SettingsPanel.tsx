@@ -16,6 +16,7 @@ import { AegisSection } from './AegisSection';
 import { ApiSection } from './ApiSection';
 import { OverridePoliciesSection } from './OverridePoliciesSection';
 import { RecallSection } from './RecallSection';
+import { CaptureSection } from './CaptureSection';
 
 interface SettingsPanelProps {
   open: boolean;
@@ -113,6 +114,9 @@ export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
 
           <div style={{ height: 1, background: 'var(--shadow)', margin: '16px 0' }} />
           <RecallSection />
+
+          <div style={{ height: 1, background: 'var(--shadow)', margin: '16px 0' }} />
+          <CaptureSection />
 
           <div style={{ height: 1, background: 'var(--shadow)', margin: '16px 0' }} />
           <AegisSection />

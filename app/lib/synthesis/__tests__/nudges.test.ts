@@ -220,7 +220,7 @@ describe('dismissNudge', () => {
   it('increments dismissed_count in the DB', () => {
     seedNudge('n-1', 'email');
     dismissNudge('n-1');
-    expect(nudgeById['n-1'].dismissed_count).toBe(1);
+    expect(nudgeById['n-1']!.dismissed_count).toBe(1);
   });
 
   it('returns permanentlySilenced: true after reaching MAX_DISMISSALS threshold', () => {
@@ -233,7 +233,7 @@ describe('dismissNudge', () => {
   it('marks the nudge permanently_silenced in the DB on threshold breach', () => {
     seedNudge('n-1', 'projects', { dismissed_count: 999 });
     dismissNudge('n-1');
-    expect(nudgeById['n-1'].permanently_silenced).toBe(1);
+    expect(nudgeById['n-1']!.permanently_silenced).toBe(1);
   });
 
   it('does not throw on unknown nudge id', () => {

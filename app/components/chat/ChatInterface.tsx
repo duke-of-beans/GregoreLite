@@ -57,6 +57,7 @@ import { InspectorDrawer } from '../inspector/InspectorDrawer';
 import { startTrayBridge, stopTrayBridge } from '@/lib/notifications/tray-bridge';
 import { DecisionBrowser } from '../decisions/DecisionBrowser';
 import { ArtifactLibrary } from '../artifacts/ArtifactLibrary';
+import { CaptureInbox } from '@/components/capture/CaptureInbox';
 import { generateTitle } from '@/lib/chat/auto-title';
 import { captureClientEvent } from '@/lib/transit/client';
 import { useDensityStore } from '@/lib/stores/density-store';
@@ -157,6 +158,7 @@ export function ChatInterface() {
 
   // ── S9-17: Artifact Library state ─────────────────────────────────────────
   const [artifactLibraryOpen, setArtifactLibraryOpen] = useState(false);
+  const [captureInboxOpen, setCaptureInboxOpen] = useState(false);
 
   // ── In-thread search state (S9-08) ─────────────────────────────────────────
   const [searchOpen, setSearchOpen] = useState(false);
@@ -391,15 +393,20 @@ export function ChatInterface() {
       const detail = (e as CustomEvent<{ tab: ActiveTab }>).detail;
       if (detail?.tab) setActiveTab(detail.tab);
     };
+    // Sprint 29.0 — open capture inbox from command palette / tray
+    const handleOpenCaptureInboxEvent = () => setCaptureInboxOpen(true);
+
     window.addEventListener('greglite:load-thread', handleLoadThreadEvent);
     window.addEventListener('greglite:open-history', handleOpenHistoryEvent);
     window.addEventListener('greglite:new-thread', handleNewThreadEvent);
     window.addEventListener('greglite:switch-tab', handleSwitchTabEvent);
+    document.addEventListener('greglite:open-capture-inbox', handleOpenCaptureInboxEvent);
     return () => {
       window.removeEventListener('greglite:load-thread', handleLoadThreadEvent);
       window.removeEventListener('greglite:open-history', handleOpenHistoryEvent);
       window.removeEventListener('greglite:new-thread', handleNewThreadEvent);
       window.removeEventListener('greglite:switch-tab', handleSwitchTabEvent);
+      document.removeEventListener('greglite:open-capture-inbox', handleOpenCaptureInboxEvent);
     };
   }, [handleLoadThread, createTab]);
 
@@ -1092,6 +1099,12 @@ export function ChatInterface() {
           console.log('[artifact-library] Selected artifact:', id);
           setArtifactLibraryOpen(false);
         }}
+      />
+
+      {/* Sprint 29.0: Capture Inbox */}
+      <CaptureInbox
+        open={captureInboxOpen}
+        onClose={() => setCaptureInboxOpen(false)}
       />
 
       {/* Sprint 18.0: Memory Card popover */}

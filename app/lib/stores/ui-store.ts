@@ -1,4 +1,4 @@
-/**
+﻿/**
  * UIStore - Interface State Management
  *
  * Manages ephemeral UI state:
@@ -104,6 +104,9 @@ export interface UIState {
 
   // Sprint 18.0: Memory Shimmer — show cyan glow on words matching KERNL memory
   shimmerEnabled: boolean;
+
+  // Sprint 29.0: Quick Capture Pad — global floating hotkey input
+  capturePadOpen: boolean;
 }
 
 // ============================================================================
@@ -174,6 +177,11 @@ export interface UIActions {
   setShimmerEnabled: (enabled: boolean) => void;
   toggleShimmerEnabled: () => void;
 
+  // Sprint 29.0: Quick Capture Pad
+  openCapturePad: () => void;
+  closeCapturePad: () => void;
+  toggleCapturePad: () => void;
+
   // Reset
   resetUI: () => void;
 }
@@ -220,6 +228,9 @@ const initialState: UIState = {
   orchestrationTheaterComplete: false,
   theaterMessageCount: 0,
   shimmerEnabled: true,
+
+  // Sprint 29.0
+  capturePadOpen: false,
 };
 
 // ============================================================================
@@ -533,6 +544,22 @@ const createUISlice: StateCreator<UIStore> = (set, get) => ({
   },
 
   // ========================================================================
+  // SPRINT 29.0: QUICK CAPTURE PAD
+  // ========================================================================
+
+  openCapturePad: () => {
+    set({ capturePadOpen: true });
+  },
+
+  closeCapturePad: () => {
+    set({ capturePadOpen: false });
+  },
+
+  toggleCapturePad: () => {
+    set((state) => ({ capturePadOpen: !state.capturePadOpen }));
+  },
+
+  // ========================================================================
   // RESET
   // ========================================================================
 
@@ -601,6 +628,8 @@ export const selectAreaLoading = (area: string) => (state: UIStore) =>
   state.loading.areas[area] || false;
 
 export const selectFocusedElement = (state: UIStore) => state.focusedElement;
+
+export const selectCapturePadOpen = (state: UIStore) => state.capturePadOpen;
 
 // ============================================================================
 // HOOKS (convenience wrappers)

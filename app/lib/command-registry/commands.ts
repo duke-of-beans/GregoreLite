@@ -271,6 +271,29 @@ export function registerBuiltins(): void {
         useUIStore.getState().openModal('morning-briefing');
       },
     },
+
+    // ── Capture (Sprint 29.0) ────────────────────────────────────────────────
+    {
+      id: 'capture.inbox',
+      label: 'Open Capture Inbox',
+      category: 'Capture',
+      keywords: ['capture', 'inbox', 'notes', 'backlog', 'quick', 'pad', 'ideas'],
+      icon: '📥',
+      action: () => {
+        document.dispatchEvent(new CustomEvent('greglite:open-capture-inbox'));
+      },
+    },
+    {
+      id: 'capture.open',
+      label: 'Quick Capture',
+      category: 'Capture',
+      shortcut: 'Ctrl+Shift+Space',
+      keywords: ['capture', 'quick', 'note', 'idea', 'thought', 'pad'],
+      icon: '✎',
+      action: () => {
+        document.dispatchEvent(new CustomEvent('greglite:open-capture-pad'));
+      },
+    },
   ];
 
   registerCommands(commands);

@@ -1,4 +1,4 @@
-import Database from 'better-sqlite3';
+﻿import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
 
@@ -434,6 +434,30 @@ function runMigrations(db: Database.Database): void {
     `);
   } catch {
     // Decision already exists — silently continue
+  }
+
+  // Sprint 29.0 — Quick Capture Pad: capture_notes table
+  try {
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS capture_notes (
+        id                TEXT    PRIMARY KEY,
+        project_id        TEXT,
+        raw_text          TEXT    NOT NULL,
+        parsed_project    TEXT,
+        parsed_body       TEXT    NOT NULL,
+        classification    TEXT    NOT NULL DEFAULT 'idea',
+        mention_count     INTEGER NOT NULL DEFAULT 1,
+        merged_with       TEXT,
+        status            TEXT    NOT NULL DEFAULT 'inbox',
+        backlog_item_id   TEXT,
+        created_at        INTEGER NOT NULL DEFAULT (unixepoch('now','subsec') * 1000),
+        last_mentioned_at INTEGER NOT NULL DEFAULT (unixepoch('now','subsec') * 1000)
+      );
+      CREATE INDEX IF NOT EXISTS idx_capture_project  ON capture_notes(project_id, status);
+      CREATE INDEX IF NOT EXISTS idx_capture_mentions ON capture_notes(mention_count DESC);
+    `);
+  } catch {
+    // Table may already exist
   }
 }
 

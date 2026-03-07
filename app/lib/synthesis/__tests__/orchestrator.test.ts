@@ -396,9 +396,9 @@ describe('IndexingOrchestrator', () => {
 
     it('recordNudgeConversion does not throw', () => {
       expect(() =>
-        orchestrator.recordNudgeConversion('src-1', 'email' as Parameters<
+        orchestrator.recordNudgeConversion('email' as Parameters<
           typeof orchestrator.recordNudgeConversion
-        >[1]),
+        >[0]),
       ).not.toThrow();
     });
   });

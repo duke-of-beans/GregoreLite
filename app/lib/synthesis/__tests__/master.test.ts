@@ -154,7 +154,7 @@ describe('generateMasterSynthesis', () => {
     ];
     await generateMasterSynthesis(sources);
 
-    const callArgs = mockCreate.mock.calls[0][0] as { system?: string; messages: Array<{ content: string }> };
+    const callArgs = mockCreate.mock.calls[0]![0]! as { system?: string; messages: Array<{ content: string }> };
     const content = (callArgs.system ?? '') + '\n' + callArgs.messages.map(m => m.content).join('\n');
     expect(content).toContain('Documents');
     expect(content).toContain('Google Calendar');
