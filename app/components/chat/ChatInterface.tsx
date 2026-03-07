@@ -16,7 +16,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef, type ReactNode } from 'react';
-import { MessageSquare, Cpu, LayoutGrid, GitBranch, FolderKanban } from 'lucide-react';
+import { MessageSquare, Cpu, LayoutGrid, GitBranch } from 'lucide-react';
 import { PortfolioDashboard } from '@/components/portfolio/PortfolioDashboard';
 import { Header } from '../ui/Header';
 import { MessageList } from './MessageList';
@@ -72,7 +72,8 @@ import type { Station } from '@/lib/transit/types';
 import type { ProcessingEvent } from './ProcessingStatus';
 import type { MessageBlock } from './Message';
 
-type ActiveTab = 'portfolio' | 'strategic' | 'workers' | 'warroom' | 'transit';
+// 'portfolio' removed from tabs — it's now a meta-navigation overlay (Sprint 30.0)
+type ActiveTab = 'strategic' | 'workers' | 'warroom' | 'transit';
 
 interface TabDef {
   id: ActiveTab;
@@ -82,13 +83,9 @@ interface TabDef {
   shortcut?: string;
 }
 
+// Sprint 30.0: 'portfolio' removed — it is the meta-navigation layer above these four.
+// Access via the Projects button in the Header (Cmd+P).
 const TABS: TabDef[] = [
-  {
-    id: 'portfolio',
-    label: 'Projects',
-    icon: <FolderKanban className="h-4 w-4" />,
-    tooltip: 'Portfolio command center — all your projects in one view',
-  },
   {
     id: 'strategic',
     label: 'Strategic',
@@ -125,6 +122,9 @@ export function ChatInterface() {
 
   // ── S9-12: Chat history panel state ─────────────────────────────────────────
   const [historyOpen, setHistoryOpen] = useState(false);
+
+  // ── Sprint 30.0: Portfolio overlay (meta-navigation, Cmd+P) ──────────────
+  const [portfolioOpen, setPortfolioOpen] = useState(false);
 
   // ── S9-13: Settings panel state (lifted to ui-store for Header gear icon — Sprint 10.8)
   const settingsOpen = useUIStore((s) => s.settingsOpen);
@@ -297,6 +297,15 @@ export function ChatInterface() {
         e.preventDefault();
         setActiveTab((prev) => (prev === 'transit' ? 'strategic' : 'transit'));
       }
+      // Cmd+P — toggle Portfolio overlay (Sprint 30.0)
+      if (meta && e.key === 'p') {
+        e.preventDefault();
+        setPortfolioOpen((prev) => !prev);
+      }
+      // Escape — close portfolio overlay if open
+      if (e.key === 'Escape') {
+        setPortfolioOpen(false);
+      }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
@@ -395,18 +404,22 @@ export function ChatInterface() {
     };
     // Sprint 29.0 — open capture inbox from command palette / tray
     const handleOpenCaptureInboxEvent = () => setCaptureInboxOpen(true);
+    // Sprint 30.0 — open portfolio overlay from Header Projects button
+    const handleOpenPortfolioEvent = () => setPortfolioOpen(true);
 
     window.addEventListener('greglite:load-thread', handleLoadThreadEvent);
     window.addEventListener('greglite:open-history', handleOpenHistoryEvent);
     window.addEventListener('greglite:new-thread', handleNewThreadEvent);
     window.addEventListener('greglite:switch-tab', handleSwitchTabEvent);
     document.addEventListener('greglite:open-capture-inbox', handleOpenCaptureInboxEvent);
+    window.addEventListener('greglite:open-portfolio', handleOpenPortfolioEvent);
     return () => {
       window.removeEventListener('greglite:load-thread', handleLoadThreadEvent);
       window.removeEventListener('greglite:open-history', handleOpenHistoryEvent);
       window.removeEventListener('greglite:new-thread', handleNewThreadEvent);
       window.removeEventListener('greglite:switch-tab', handleSwitchTabEvent);
       document.removeEventListener('greglite:open-capture-inbox', handleOpenCaptureInboxEvent);
+      window.removeEventListener('greglite:open-portfolio', handleOpenPortfolioEvent);
     };
   }, [handleLoadThread, createTab]);
 
@@ -817,13 +830,6 @@ export function ChatInterface() {
         {/* ── Tab content (War Room / Workers / Strategic) ── */}
         <div className="flex flex-1 overflow-hidden">
 
-        {/* ── Portfolio tab — standalone dashboard, no input/messages ── */}
-        {activeTab === 'portfolio' && (
-          <div className="flex flex-1 overflow-hidden">
-            <PortfolioDashboard />
-          </div>
-        )}
-
         {/* ── War Room ── */}
         {activeTab === 'warroom' && (
           <div className="flex flex-1 overflow-hidden">
@@ -1106,6 +1112,35 @@ export function ChatInterface() {
         open={captureInboxOpen}
         onClose={() => setCaptureInboxOpen(false)}
       />
+
+      {/* Sprint 30.0: Portfolio overlay — meta-navigation layer, slides in from left */}
+      {/* Always rendered; translate controls visibility to avoid unmount/remount cost */}
+      <div
+        className={[
+          'fixed inset-0 z-50 flex flex-col bg-[var(--deep-space)] transition-transform duration-300 ease-in-out',
+          portfolioOpen ? 'translate-x-0' : '-translate-x-full',
+        ].join(' ')}
+        aria-hidden={!portfolioOpen}
+      >
+        {/* Overlay header bar */}
+        <div className="flex h-14 flex-shrink-0 items-center justify-between border-b border-[var(--shadow)] bg-[var(--elevated)] px-4">
+          <span className="text-sm font-semibold text-[var(--ice-white)]">Projects</span>
+          <button
+            onClick={() => setPortfolioOpen(false)}
+            className="flex items-center justify-center rounded-lg border border-[var(--shadow)] bg-[var(--deep-space)] p-2 text-[var(--frost)] transition-colors hover:border-[var(--cyan)] hover:text-[var(--ice-white)]"
+            title="Close projects (Cmd+P)"
+            aria-label="Close projects overlay"
+          >
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        {/* Portfolio content */}
+        <div className="flex flex-1 overflow-hidden">
+          <PortfolioDashboard />
+        </div>
+      </div>
 
       {/* Sprint 18.0: Memory Card popover */}
       {activeMemoryCard && (

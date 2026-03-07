@@ -790,6 +790,22 @@ export const CAPTURE = {
   },
 } as const;
 
+// ── Sprint 30.0: Navigation + UX copy ────────────────────────────────────────
+// Tooltips and labels for header buttons, status bar, morning briefing.
+// Voice: deadpan professional. No exclamation marks.
+
+export const NAV = {
+  projects_button_label:   'Projects',
+  projects_button_tooltip: 'Projects (Cmd+P)',
+  capture_button_tooltip:  'Quick Capture (Ctrl+Shift+Space)',
+  statusbar_collapse:      'Collapse status bar',
+  statusbar_expand:        'Expand status bar',
+  briefing_dismiss:        'Dismiss briefing',
+  briefing_skip_today:     "Don\u2019t show again today",
+  portfolio_overlay_title: 'Projects',
+  portfolio_overlay_close: 'Close projects (Cmd+P)',
+} as const;
+
 // ── Sprint 32.0: Web Session (headless browser routing) ───────────────────
 export const WEB_SESSION = {
 

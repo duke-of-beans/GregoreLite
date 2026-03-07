@@ -1,15 +1,17 @@
 /**
- * MorningBriefing — Sprint S9-05
+ * MorningBriefing — Sprint 30.0
  *
  * Full-width overlay shown on cold start before first message.
- * Slides down from header. "Start Day" dismisses and marks shown for today.
+ * Slides down from header. X icon dismisses; "Don't show again today" marks shown.
  * Can be re-opened from command palette.
  */
 
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { X } from 'lucide-react';
 import type { BriefingData } from '@/lib/morning-briefing/types';
+import { NAV } from '@/lib/voice/copy-templates';
 import { BriefingSection } from './BriefingSection';
 
 interface MorningBriefingProps {
@@ -74,12 +76,22 @@ export function MorningBriefing({ onDismiss }: MorningBriefingProps) {
             <span className="text-xs text-[var(--mist)]">{briefing.forDate}</span>
           </div>
         </div>
-        <button
-          onClick={handleDismiss}
-          className="rounded-lg bg-[var(--cyan)] px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--cyan)]/80"
-        >
-          Start Day
-        </button>
+        <div className="flex flex-col items-end gap-1.5">
+          <button
+            onClick={onDismiss}
+            className="text-[var(--mist)] transition-colors hover:text-[var(--ice-white)]"
+            aria-label={NAV.briefing_dismiss}
+            title={NAV.briefing_dismiss}
+          >
+            <X className="h-4 w-4" />
+          </button>
+          <button
+            onClick={handleDismiss}
+            className="text-xs text-[var(--mist)] transition-colors hover:text-[var(--cyan)]"
+          >
+            {NAV.briefing_skip_today}
+          </button>
+        </div>
       </div>
 
       {/* Grid of sections */}

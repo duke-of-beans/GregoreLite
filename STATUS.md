@@ -4,7 +4,7 @@
 **Test Count:** 1667/1667 all green
 **EoS Health:** 100/100
 **TSC:** 0 errors
-**Next:** Sprint 33.0 — TBD. Completed: 31.0 (Start at Boot), 32.0 (Headless Browser Mode). Briefs: SPRINT_31_32_BRIEF.md.
+**Next:** Sprint 30.0 in queue (UX Reality Check — 13 tasks). Brief: SPRINT_30_0_BRIEF.md.
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md — ALL PHASES (A–F) SHIPPED.
 **Recent commits:** f820ebd (Sprint 32.0 fallback), 494efed (Sprint 32.0 commit 2), a38bf15 (Sprint 32.0 commit 1), 0bff472 (Sprint 29.0), ab45ae6 (Sprint 28.0)
@@ -1131,3 +1131,55 @@ GregLite can now route chat messages through Claude's web interface instead of t
 | Voice copy | ✅ All 18 strings in WEB_SESSION export |
 | STATUS.md updated | ✅ Done |
 | Commits | ✅ a38bf15 (commit 1), 494efed (commit 2), f820ebd (fallback.ts) |
+
+## Sprint 30.0 — UX Reality Check: Daily Driver Polish ✅ COMPLETE
+
+**Date:** 2026-03-07
+**Last Updated:** 2026-03-07
+
+13-task polish sprint addressing UX friction found during real daily use. Projects promoted from tab to meta-navigation (full-screen overlay). StatusBar collapse persisted. Smart textarea with list continuation. Morning briefing simplified. All user-facing copy routed through copy-templates NAV export.
+
+### Files Changed
+
+| File | Change |
+|---|---|
+| `app/lib/voice/copy-templates.ts` | Added `NAV` export — 9 strings (projects button, capture tooltip, statusbar collapse/expand, briefing dismiss/skip, portfolio overlay) |
+| `app/lib/stores/ui-store.ts` | Added `statusBarCollapsed: boolean` to UIState + `setStatusBarCollapsed`/`toggleStatusBar` actions; persisted in partialize |
+| `app/components/ui/Header.tsx` | Added Projects button (FolderKanban, dispatches `greglite:open-portfolio`, Cmd+P tooltip); added Quick Capture button (PenLine, `toggleCapturePad()`); unified all button styles to `rounded-lg border elevated` |
+| `app/components/chat/ChatInterface.tsx` | Removed `'portfolio'` from ActiveTab type + TABS array; added `portfolioOpen` state; Cmd+P / Escape / `greglite:open-portfolio` event handler; full-screen overlay (fixed inset-0 z-50, translate-x slide animation) |
+| `app/components/context/ContextPanel.tsx` | Removed "CONTEXT" label div and border-b entirely; replaced with minimal chevron-only collapse row (justify-end, no label) |
+| `app/components/chat/InputField.tsx` | Smart list continuation: numbered (`1. `) and bullet (`- ` / `* ` / `•`) auto-indent on Enter; break-out on empty item; triple-backtick → code fence with cursor between; 40vh max height (was 200px); height reset on submit |
+| `app/components/morning-briefing/MorningBriefing.tsx` | Replaced "Start Day" button with muted X icon (onDismiss, no POST); added "Don't show again today" text link (handleDismiss, marks shown via POST); imported X from lucide-react + NAV from copy-templates |
+| `app/components/ui/StatusBar.tsx` | Added collapse/expand chevron toggle (ChevronDown in expanded bar, ChevronUp in collapsed strip); collapsed renders 6px clickable strip with `border-[var(--cyan)]/30`; state read/written via ui-store |
+| `app/src-tauri/tauri.conf.json` | Added `"icon": "icons/icon.png"` to `app.windows[0]` object |
+| `app/app/layout.tsx` | Updated `metadata.icons` — icon + shortcut now `/favicon.ico`, apple remains `/gregore-logo.png` |
+| `app/public/favicon.ico` | New — copied from `src-tauri/icons/icon.png`; enables standard browser favicon resolution |
+| `FEATURE_BACKLOG.md` | Added Sprint 30.0, 31.0, and 32.0 completed sprint entries to history section |
+
+### Architecture Notes
+
+- **Portfolio as meta-navigation**: overlay is always rendered (no mount/unmount cost), hidden via `-translate-x-full`. Three entry points: Header button dispatch, Cmd+P keyboard shortcut, `greglite:open-portfolio` custom event. Escape closes.
+- **StatusBar collapse**: `statusBarCollapsed` in ui-store partialize — survives app reload. Collapsed strip is `h-1.5` (6px) for click target; visual effect is a thin cyan-tinted border line.
+- **Smart textarea list logic**: regex `/^(\s*)(\d+)\.\s(.*)$/` for numbered, `/^(\s*)([-*\u2022])\s(.*)$/` for bullet. Empty content → strip marker and position cursor at lineStart. Non-empty → append `\n${nextMarker}` and position after it. All via `setTimeout` to allow React state to settle.
+- **MorningBriefing intent split**: X button calls `onDismiss()` only (no POST — may resurface on next cold start). "Don't show again today" calls `handleDismiss()` which POSTs to `/api/morning-briefing` marking shown for today.
+- **favicon.ico**: Tauri WebView doesn't show browser favicons, but the file is now present for any future web deployment or standalone dev server use.
+
+### Sprint 30.0 Gate Results
+
+| Gate | Result |
+|---|---|
+| `npx tsc --noEmit` | ✅ 0 new errors (1 pre-existing error in startup/client.test.ts — unrelated) |
+| `pnpm test:run` | ✅ 1667/1667 passing (87 files — no regressions) |
+| Portfolio overlay | ✅ Cmd+P, Header button, greglite:open-portfolio, Escape all wired |
+| Header button styles | ✅ All 6 buttons use identical rounded-lg border elevated pattern |
+| Tab labels | ✅ `hidden lg:inline` already in place — no change needed |
+| ContextPanel header | ✅ "CONTEXT" label removed; chevron-only row |
+| Smart textarea | ✅ Numbered + bullet continuation, break-out, code fence, 40vh max, height reset |
+| Morning briefing | ✅ X icon dismisses; "Don't show again today" marks via POST |
+| StatusBar collapse | ✅ Toggle persisted; collapsed strip renders; expand restores full bar |
+| Tauri window icon | ✅ `"icon": "icons/icon.png"` in app.windows[0] |
+| Web favicon | ✅ /favicon.ico created; layout.tsx metadata updated |
+| FEATURE_BACKLOG.md | ✅ Sprints 30.0/31.0/32.0 added to history |
+| Voice copy | ✅ All 9 NAV strings in copy-templates; no hardcoded user-facing text |
+| STATUS.md updated | ✅ Done |
+| Commit | ✅ Pending |

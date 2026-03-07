@@ -1,17 +1,22 @@
 /**
- * StatusBar — Sprint S9-04
+ * StatusBar — Sprint 30.0
  *
  * Thin 32px bottom chrome strip showing live system data:
  * cost today, active jobs, system profile, memory status.
  * Each item is clickable for drill-down navigation.
+ * Collapse toggle: chevron on right collapses to 2px strip; strip click expands.
+ * Collapsed state persisted via ui-store.
  */
 
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useJobStore } from '@/lib/stores/job-store';
 import { useContextPanel } from '@/lib/context/context-provider';
 import { useGhostStore } from '@/lib/stores/ghost-store';
+import { useUIStore } from '@/lib/stores/ui-store';
+import { NAV } from '@/lib/voice/copy-templates';
 import { CostBreakdown } from '../agent-sdk/CostBreakdown';
 import type { GhostStatus } from '@/lib/ghost/status';
 
@@ -52,6 +57,8 @@ export function StatusBar() {
   const jobs = useJobStore((s) => s.jobs);
   const { state: ctx } = useContextPanel();
   const ghostStatus = useGhostStore((s) => s.ghostStatus);
+  const statusBarCollapsed = useUIStore((s) => s.statusBarCollapsed);
+  const toggleStatusBar = useUIStore((s) => s.toggleStatusBar);
 
   // Poll /api/costs/today every 60s
   const fetchCost = useCallback(async () => {
@@ -113,6 +120,20 @@ export function StatusBar() {
     // Navigate to Settings > Ghost section (Sprint 20.0)
     window.dispatchEvent(new CustomEvent('greglite:open-settings', { detail: { section: 'ghost' } }));
   };
+
+  // Collapsed: render a thin clickable strip only
+  if (statusBarCollapsed) {
+    return (
+      <button
+        onClick={toggleStatusBar}
+        className="flex h-1.5 w-full shrink-0 cursor-n-resize items-center justify-center border-t border-[var(--cyan)]/30 bg-[var(--deep-space)] transition-colors hover:border-[var(--cyan)]/60 hover:bg-[var(--elevated)]"
+        aria-label={NAV.statusbar_expand}
+        title={NAV.statusbar_expand}
+      >
+        <ChevronUp className="h-2.5 w-2.5 text-[var(--mist)] opacity-50" />
+      </button>
+    );
+  }
 
   return (
     <div className="flex h-8 w-full shrink-0 items-center justify-between border-t border-[var(--shadow)] bg-[var(--deep-space)] px-4 text-[11px]">
@@ -187,23 +208,33 @@ export function StatusBar() {
 
       </div>
 
-      {/* Right side — Code Quality score if available */}
-      {ctx.eosSummary && (
-        <div className="status-metric-secondary flex items-center gap-1.5 text-[var(--frost)]" title="Code quality score — powered by Eye of Sauron">
-          <span className="text-[var(--mist)]">QUALITY:</span>
-          <span
-            className={`font-mono font-medium ${
-              ctx.eosSummary.healthScore >= 80
-                ? 'text-green-400'
-                : ctx.eosSummary.healthScore >= 60
-                  ? 'text-amber-400'
-                  : 'text-red-400'
-            }`}
-          >
-            {ctx.eosSummary.healthScore}/100
-          </span>
-        </div>
-      )}
+      {/* Right side — Quality score + collapse toggle */}
+      <div className="flex items-center gap-2">
+        {ctx.eosSummary && (
+          <div className="status-metric-secondary flex items-center gap-1.5 text-[var(--frost)]" title="Code quality score — powered by Eye of Sauron">
+            <span className="text-[var(--mist)]">QUALITY:</span>
+            <span
+              className={`font-mono font-medium ${
+                ctx.eosSummary.healthScore >= 80
+                  ? 'text-green-400'
+                  : ctx.eosSummary.healthScore >= 60
+                    ? 'text-amber-400'
+                    : 'text-red-400'
+              }`}
+            >
+              {ctx.eosSummary.healthScore}/100
+            </span>
+          </div>
+        )}
+        <button
+          onClick={toggleStatusBar}
+          className="text-[var(--mist)] transition-colors hover:text-[var(--ice-white)]"
+          aria-label={NAV.statusbar_collapse}
+          title={NAV.statusbar_collapse}
+        >
+          <ChevronDown className="h-3 w-3" />
+        </button>
+      </div>
 
       {/* Cost Breakdown Modal (S9-10) */}
       {costBreakdownOpen && (

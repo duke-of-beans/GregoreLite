@@ -1,17 +1,23 @@
 /**
- * Header Component — Sprint 10.8 Tasks 7 & 10
+ * Header Component — Sprint 30.0
  *
- * Added: settings gear icon (opens SettingsPanel), tooltip hints on all buttons.
+ * Button order (left→right in right section):
+ *   Projects (Cmd+P) | ? Help | Notifications | Settings | Cmd+K
+ *
+ * All header buttons: rounded-lg, border, elevated bg, frost text, hover cyan.
+ * No mixing of styles — visual rhythm is enforced.
  */
 
 'use client';
 
 import { useState } from 'react';
+import { FolderKanban, PenLine } from 'lucide-react';
 import { useDecisionGateStore } from '@/lib/stores/decision-gate-store';
 import { TriggerBadge } from '@/components/decision-gate';
 import { useUIStore } from '@/lib/stores/ui-store';
 import { NotificationBell } from './NotificationBell';
 import { HelpGuide } from './HelpGuide';
+import { NAV } from '@/lib/voice/copy-templates';
 
 export function Header() {
   const { trigger: gateTrigger } = useDecisionGateStore();
@@ -43,12 +49,22 @@ export function Header() {
         </span>
       </button>
 
-      {/* Right section: gate badge + ? guide + notifications + settings + command palette */}
-      {/* New Conversation moved to ContextPanel left panel — Sprint 23.0 */}
+      {/* Right section — order: Projects | ? | Notifications | Settings | Cmd+K */}
+      {/* All buttons: rounded-lg border elevated-bg frost-text hover-cyan — no exceptions */}
       <div className="flex items-center gap-3">
         {gateTrigger && <TriggerBadge />}
 
-        {/* What's this? guide button — Sprint 23.0 */}
+        {/* Projects button — Sprint 30.0: meta-navigation, opens portfolio overlay */}
+        <button
+          onClick={() => window.dispatchEvent(new CustomEvent('greglite:open-portfolio'))}
+          className="flex items-center justify-center rounded-lg border border-[var(--shadow)] bg-[var(--elevated)] p-2 text-[var(--frost)] transition-colors hover:border-[var(--cyan)] hover:bg-[var(--surface)] hover:text-[var(--ice-white)]"
+          aria-label={NAV.projects_button_label}
+          title={NAV.projects_button_tooltip}
+        >
+          <FolderKanban className="h-4 w-4" />
+        </button>
+
+        {/* What's this? guide button */}
         <button
           onClick={() => setHelpOpen(true)}
           className="flex items-center justify-center rounded-lg border border-[var(--shadow)] bg-[var(--elevated)] p-2 text-[var(--frost)] transition-colors hover:border-[var(--cyan)] hover:bg-[var(--surface)] hover:text-[var(--ice-white)]"
@@ -62,7 +78,7 @@ export function Header() {
 
         <NotificationBell />
 
-        {/* Settings gear — Sprint 10.8 Task 10 */}
+        {/* Settings gear */}
         <button
           onClick={toggleSettings}
           className="flex items-center justify-center rounded-lg border border-[var(--shadow)] bg-[var(--elevated)] p-2 text-[var(--frost)] transition-colors hover:border-[var(--cyan)] hover:bg-[var(--surface)] hover:text-[var(--ice-white)]"
@@ -101,6 +117,16 @@ export function Header() {
             />
           </svg>
           <span className="hidden sm:inline">Cmd+K</span>
+        </button>
+
+        {/* Quick Capture button — Sprint 30.0: discoverability for Ctrl+Shift+Space */}
+        <button
+          onClick={() => useUIStore.getState().toggleCapturePad()}
+          className="flex items-center justify-center rounded-lg border border-[var(--shadow)] bg-[var(--elevated)] p-2 text-[var(--frost)] transition-colors hover:border-[var(--cyan)] hover:bg-[var(--surface)] hover:text-[var(--ice-white)]"
+          aria-label="Open quick capture"
+          title={NAV.capture_button_tooltip}
+        >
+          <PenLine className="h-4 w-4" />
         </button>
       </div>
     </header>

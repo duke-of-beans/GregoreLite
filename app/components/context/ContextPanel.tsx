@@ -171,11 +171,8 @@ function PanelContent() {
       className="flex h-full w-[20%] min-w-[200px] max-w-[280px] flex-shrink-0 flex-col border-r border-[var(--shadow)] bg-[var(--elevated)] overflow-y-auto"
       aria-label="Context panel"
     >
-      {/* Panel header */}
-      <div className="flex items-center justify-between border-b border-[var(--shadow)] px-4 py-2.5">
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-[var(--mist)]">
-          Context
-        </span>
+      {/* Collapse button — top-right, no label, no border (Sprint 30.0) */}
+      <div className="flex items-center justify-end px-2 pt-2 pb-0">
         <button
           onClick={toggleCollapsed}
           className="text-[var(--mist)] hover:text-[var(--ice-white)] transition-colors"

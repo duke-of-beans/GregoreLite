@@ -107,6 +107,9 @@ export interface UIState {
 
   // Sprint 29.0: Quick Capture Pad — global floating hotkey input
   capturePadOpen: boolean;
+
+  // Sprint 30.0: Status bar collapse (persisted)
+  statusBarCollapsed: boolean;
 }
 
 // ============================================================================
@@ -182,6 +185,10 @@ export interface UIActions {
   closeCapturePad: () => void;
   toggleCapturePad: () => void;
 
+  // Sprint 30.0: Status bar collapse
+  setStatusBarCollapsed: (collapsed: boolean) => void;
+  toggleStatusBar: () => void;
+
   // Reset
   resetUI: () => void;
 }
@@ -231,6 +238,9 @@ const initialState: UIState = {
 
   // Sprint 29.0
   capturePadOpen: false,
+
+  // Sprint 30.0
+  statusBarCollapsed: false,
 };
 
 // ============================================================================
@@ -560,6 +570,18 @@ const createUISlice: StateCreator<UIStore> = (set, get) => ({
   },
 
   // ========================================================================
+  // SPRINT 30.0: STATUS BAR COLLAPSE
+  // ========================================================================
+
+  setStatusBarCollapsed: (collapsed: boolean) => {
+    set({ statusBarCollapsed: collapsed });
+  },
+
+  toggleStatusBar: () => {
+    set((state) => ({ statusBarCollapsed: !state.statusBarCollapsed }));
+  },
+
+  // ========================================================================
   // RESET
   // ========================================================================
 
@@ -592,6 +614,7 @@ export const useUIStore = create<UIStore>()(
           query: '',
           recentCommands: state.commandPalette.recentCommands,
         },
+        statusBarCollapsed: state.statusBarCollapsed,
         // Don't persist notifications, modals, loading states, or focus
       }),
     }),

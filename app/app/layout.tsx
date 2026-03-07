@@ -19,8 +19,8 @@ export const metadata: Metadata = {
   title: 'GregLite',
   description: 'Cognitive operating environment',
   icons: {
-    icon: '/gregore-logo.png',
-    shortcut: '/gregore-logo.png',
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
     apple: '/gregore-logo.png',
   },
 };

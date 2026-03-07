@@ -151,6 +151,26 @@ cosine-similarity dedup (0.85 threshold), mention-count priority signal,
 bug/feature/question/idea classification, CaptureInbox with promote/dismiss/re-route,
 backlog promotion pipeline, Settings section. 61 new tests.
 
+### Sprint 30.0 — UX Reality Check: Daily Driver Polish ✅
+Projects removed from tabs → full-screen overlay (Cmd+P + Header button + greglite:open-portfolio event).
+ContextPanel "CONTEXT" label removed. Header: Projects + Quick Capture buttons added, all buttons
+unified to rounded-lg border elevated style. Smart textarea: numbered/bullet list continuation,
+break-out on empty item, triple-backtick code-block shortcut, 40vh max height, auto-reset on send.
+MorningBriefing: X dismiss icon replaces "Start Day" button, "Don't show again today" text link added.
+StatusBar: collapse/expand chevron toggle, persisted via ui-store, 2px strip when collapsed.
+Tauri window icon set. Web favicon standardised to favicon.ico.
+
+### Sprint 31.0 — Start at Boot ✅
+Windows/macOS autolaunch toggle in Settings > Startup. Tauri plugin-autostart integration.
+System-tray icon with show/hide and quit actions. Minimise-to-tray on close option.
+StartupSection settings panel. 42 new tests.
+
+### Sprint 32.0 — Headless Browser Mode ✅
+Embedded Chromium WebView (Tauri webview2) for authenticated web sessions.
+Session persistence across app restarts, cookie jar isolation per project,
+greglite:web-navigate event bus, WebSessionSection settings panel,
+web-session/browser.ts session manager. 1667 total tests across 87 files.
+
 ---
 
 ## SKIP LIST — Do NOT Port from Gregore
