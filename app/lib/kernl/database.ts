@@ -459,6 +459,30 @@ function runMigrations(db: Database.Database): void {
   } catch {
     // Table may already exist
   }
+
+  // Sprint 32.0 — Web Session: headless browser mode for API cost reduction
+  // Governor: rate limits stored in kernl_settings under web_governor_* keys.
+  try {
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS web_sessions (
+        id                  TEXT    PRIMARY KEY,
+        provider            TEXT    NOT NULL DEFAULT 'claude',
+        cookies             TEXT    NOT NULL,
+        user_agent          TEXT,
+        session_started_at  INTEGER NOT NULL,
+        last_used_at        INTEGER NOT NULL,
+        expires_at          INTEGER,
+        status              TEXT    NOT NULL DEFAULT 'active'
+          CHECK(status IN ('active', 'expired', 'revoked')),
+        daily_message_count INTEGER NOT NULL DEFAULT 0,
+        daily_reset_at      INTEGER
+      );
+      CREATE INDEX IF NOT EXISTS idx_web_sessions_status
+        ON web_sessions(status, last_used_at DESC);
+    `);
+  } catch {
+    // Table may already exist
+  }
 }
 
 export function closeDatabase(): void {
