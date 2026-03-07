@@ -7,7 +7,7 @@
 **Next:** Sprint 30.0 (TBD). See FEATURE_BACKLOG.md.
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md — ALL PHASES (A–F) SHIPPED.
-**Recent commits:** ab45ae6 (Sprint 28.0), c08e9d5 (Sprint 27.0 docs), 4b32867 (Sprint 27.0 UI), b376074 (Sprint 27.0 backend), 9640a64 (Sprint 26.0), c9f5c94 (Sprint 25.0)
+**Recent commits:** 0bff472 (Sprint 29.0), ab45ae6 (Sprint 28.0), c08e9d5 (Sprint 27.0 docs), 4b32867 (Sprint 27.0 UI), b376074 (Sprint 27.0 backend)
 
 ### ⚠️ GROUND TRUTH AUDIT (March 4, 2026)
 1. ~~Transit Map "data foundation" listed in Sprint 10.6 was NOT shipped.~~ RESOLVED: Sprint 11.2 shipped data foundation (conversation_events table, 26 event types, capture hooks). commit 37d60af.
