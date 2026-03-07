@@ -23,7 +23,8 @@
       "nsis": {
         "displayLanguageSelector": false,
         "installMode": "currentUser",
-        "startMenuFolder": "Gregore Lite"
+        "startMenuFolder": "Gregore Lite",
+        "installerHooks": "nsis/startup-hooks.nsi"
       }
     }
   },

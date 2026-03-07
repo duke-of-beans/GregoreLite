@@ -4,7 +4,7 @@
 **Test Count:** 1624/1624 all green
 **EoS Health:** 100/100
 **TSC:** 0 errors
-**Next:** Sprint 30.0 (TBD). See FEATURE_BACKLOG.md.
+**Next:** Sprint 30.0 — UX Reality Check (13 tasks). Queue: 31.0 (Start at Boot), 32.0 (Headless Browser Mode with Governor). Briefs: SPRINT_30_0_BRIEF.md, SPRINT_31_32_BRIEF.md.
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md — ALL PHASES (A–F) SHIPPED.
 **Recent commits:** 0bff472 (Sprint 29.0), ab45ae6 (Sprint 28.0), c08e9d5 (Sprint 27.0 docs), 4b32867 (Sprint 27.0 UI), b376074 (Sprint 27.0 backend)
@@ -1032,3 +1032,52 @@ None.
 | DEV_PROTOCOLS.md | Dev protocol reference |
 | PROJECT_DNA.yaml | Project identity and constraints |
 | HANDOFF.md | Original pre-Council context handoff |
+
+## Sprint 31.0 — Start at Boot: OS Startup Registration ✅ COMPLETE
+
+**Date:** 2026-03-07
+**Last Updated:** 2026-03-07
+
+GregLite now registers itself to launch on OS startup. Two surfaces: a Settings toggle ("Launch Behavior") and an NSIS installer hooks file that writes the entry during install.
+
+### Files Changed
+
+| File | Change |
+|---|---|
+| `app/src-tauri/Cargo.toml` | Added `winreg = "0.52"` (Windows-only target dep) |
+| `app/src-tauri/src/startup.rs` | New — Rust startup manager (Windows: HKCU Run reg, macOS: LaunchAgents plist) |
+| `app/src-tauri/src/main.rs` | `mod startup` import + 3 commands registered in invoke_handler |
+| `app/lib/startup/client.ts` | New — TypeScript IPC bridge (isStartupRegistered / registerStartup / unregisterStartup) |
+| `app/lib/voice/copy-templates.ts` | Added `STARTUP` export (7 copy strings) |
+| `app/components/settings/StartupSection.tsx` | New — Settings section with toggle, OS-state read on mount, toast feedback |
+| `app/components/settings/SettingsPanel.tsx` | Wired `StartupSection` between CaptureSection and OverridePoliciesSection |
+| `app/src-tauri/nsis/startup-hooks.nsi` | New — NSIS hooks: `customInstall` writes registry, `customUnInstall` removes it |
+| `app/src-tauri/tauri.conf.json` | Added `"installerHooks": "nsis/startup-hooks.nsi"` to NSIS bundle config |
+| `app/lib/__tests__/unit/startup/client.test.ts` | New — 10 tests for IPC bridge (dev-mode degradation + Tauri runtime paths) |
+
+### Architecture Notes
+
+- **Windows**: `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` — value name "GregLite", value = exe path. No elevation required.
+- **macOS**: `~/Library/LaunchAgents/ai.greglite.desktop.plist` with `RunAtLoad = true`. Bundle path detected by walking up ancestors for `.app` extension.
+- **Toggle reads actual OS state** on mount — never a cached preference. Source of truth is always the registry / plist.
+- **Dev-mode graceful degradation**: all three TypeScript functions return `false`/no-op when `window.__TAURI_INTERNALS__` is absent.
+- **NSIS interactive checkbox**: Tauri v2 `installerHooks` does not support page injection (would require `customTemplate`). Current behavior: installer writes entry by default (equivalent to checkbox pre-checked). User can opt out via Settings → Launch Behavior toggle. Interactive checkbox deferred to `customTemplate` work if required.
+
+### Sprint 31.0 Gate Results
+
+| Gate | Result |
+|---|---|
+| `cargo check` | ✅ 0 errors (2 pre-existing dead_code warnings in aegis/) |
+| `npx tsc --noEmit` | ✅ 0 new errors (1 pre-existing error in web-session/browser.ts unrelated to this sprint) |
+| `pnpm test:run` | ✅ 1634/1634 passing (84 files, +10 new startup client tests) |
+| Rust: Windows registry path | ✅ HKCU, winreg 0.52, Result-wrapped, no panics |
+| Rust: macOS plist path | ✅ LaunchAgents plist, RunAtLoad=true, bundle path detection |
+| Rust: fallback platform | ✅ Returns Err / Ok(false) / Ok(()) cleanly |
+| TypeScript: dev-mode no-op | ✅ isTauri() guard, returns false/void without Tauri runtime |
+| TypeScript: error propagation | ✅ register/unregister throw, isRegistered catches → false |
+| Settings UI: reads OS state | ✅ isStartupRegistered() on mount, not cached preference |
+| Settings UI: toast feedback | ✅ Registered / Removed / error messages via STARTUP copy |
+| Voice copy | ✅ All 7 strings in STARTUP export, no hardcoded strings in component |
+| NSIS hooks registered | ✅ tauri.conf.json installerHooks field verified by cargo check pass |
+| STATUS.md updated | ✅ Done |
+| Commit | ✅ Pending |

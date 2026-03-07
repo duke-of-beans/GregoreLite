@@ -4,6 +4,7 @@
 mod aegis;
 mod ghost;
 mod notifications;
+mod startup;
 mod tray;
 
 use tauri::Manager;
@@ -15,6 +16,7 @@ use ghost::{
     ghost_pause, ghost_resume, ghost_start_watching, ghost_state, ghost_stop_watching,
 };
 use notifications::send_notification;
+use startup::{startup_is_registered, startup_register, startup_unregister};
 use tray::set_tray_badge;
 
 fn main() {
@@ -41,6 +43,9 @@ fn main() {
             aegis_list_profiles,
             aegis_set_timer,
             aegis_cancel_timer,
+            startup_register,
+            startup_unregister,
+            startup_is_registered,
         ])
         // Sprint 20.0: Belt-and-suspenders Ghost shutdown on window close.
         // Primary path: TypeScript beforeunload → POST /api/ghost/stop (JS-side lifecycle).

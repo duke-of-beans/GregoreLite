@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Voice Templates — Sprint 17.0
  *
  * Centralized copy for all system-facing text in GregLite.
@@ -705,6 +705,19 @@ export const SYNTHESIS = {
   onboarding_first_source:'Start with your most important source.',
 } as const;
 
+// ── Sprint 31.0: Startup registration copy ───────────────────────────────────
+
+export const STARTUP = {
+  settings_title: 'Launch Behavior',
+  settings_description:
+    'GregLite starts minimized in the system tray. Your projects and capture pad are always one click away.',
+  toggle_label: 'Launch GregLite when you start your computer',
+  toast_registered: 'Registered. GregLite will launch on next boot.',
+  toast_unregistered: "Removed. GregLite won\u2019t auto-launch.",
+  toast_error: 'Couldn\u2019t update startup settings. Try running as administrator.',
+  installer_checkbox: 'Launch GregLite when Windows starts',
+} as const;
+
 /** Shorten model name for receipt footer display */
 export function formatReceiptModel(model: string | undefined): string {
   if (!model) return '—';
@@ -717,3 +730,62 @@ export function formatReceiptModel(model: string | undefined): string {
     .slice(0, 2)
     .join('-');
 }
+
+// ── Sprint 29.0: Quick Capture Pad copy ──────────────────────────────────────
+// Voice: deadpan professional. Efficient. No exclamation marks. No emoji.
+// Greg captures — he doesn't celebrate.
+
+export const CAPTURE = {
+  // ── Pad ───────────────────────────────────────────────────────────────────
+  pad: {
+    placeholder: "Bug, feature, idea... prefix with project name",
+    project_unrouted: 'Unrouted',
+  },
+
+  // ── Toasts ────────────────────────────────────────────────────────────────
+  toast: {
+    captured:  'Captured.',
+    merged:    (count: number) => `Merged. That's ${count}x now.`,
+    routed:    (project: string) => `\u2192 ${project}`,
+    unrouted:  "Captured. No project matched \u2014 check your inbox.",
+  },
+
+  // ── Inbox ─────────────────────────────────────────────────────────────────
+  inbox: {
+    title:          'Capture Inbox',
+    empty:          'Inbox clear. Nothing pending.',
+    promote:        'Promote to backlog',
+    dismiss:        'Dismiss',
+    reroute:        'Re-route',
+    promote_all:    (project: string) => `Promote all for ${project}`,
+    mention_count:  (count: number) => `${count}x`,
+    high_priority:  'Mentioned 3+ times',
+    unrouted_group: 'Unrouted',
+  },
+
+  // ── Classification badges ─────────────────────────────────────────────────
+  classification: {
+    bug:      'Bug',
+    feature:  'Feature',
+    question: 'Question',
+    idea:     'Idea',
+  } as const,
+
+  // ── Settings ──────────────────────────────────────────────────────────────
+  settings: {
+    title:                  'Quick Capture',
+    description:            'Global hotkey notepad that routes thoughts to the right project backlog.',
+    hotkey_label:           'Capture shortcut',
+    hotkey_value:           'Ctrl+Shift+Space',
+    dedup_label:            'Smart merge (detects duplicate notes)',
+    default_project_label:  'Default project for unrouted notes',
+    default_project_none:   'None \u2014 keep unrouted',
+    inbox_badge_label:      'Show inbox count on Portfolio tab',
+  },
+
+  // ── Command palette entry ─────────────────────────────────────────────────
+  palette: {
+    open_inbox:      'Capture Inbox',
+    open_inbox_desc: 'Review and promote captured notes',
+  },
+} as const;
