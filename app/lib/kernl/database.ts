@@ -263,7 +263,7 @@ function runMigrations(db: Database.Database): void {
       db.exec(sql);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
-      if (!msg.includes('duplicate column name') && !msg.includes('already has column')) {
+      if (!msg.includes('duplicate column name') && !msg.includes('already has column') && !msg.includes('no such table')) {
         throw err;
       }
     }

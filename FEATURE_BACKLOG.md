@@ -1,142 +1,90 @@
 # GREGLITE — FEATURE BACKLOG
-# Updated: March 5, 2026
-# Purpose: Ground-truth gap analysis. What's actually missing vs what's built.
-# Source: Codebase audit (March 4, 2026), Gregore Audit (Sprint 15.1, March 5, 2026)
-# Gregore Audit: D:\Projects\GregLite\GREGORE_AUDIT.md
-# Sprint Roadmap: SPRINT_ROADMAP.md
+# Updated: March 6, 2026
+# Purpose: Ground-truth status of all features. Reconciled after Sprint 19-29 blitz.
+# Source: Codebase audit (March 4), Gregore Audit (Sprint 15.1), Sprint 19-29 shipments
 
 ---
 
 ## STATUS KEY
 - ✅ SHIPPED — In codebase, tested, working
-- 🔧 CSS READY — Animation/style exists in globals.css, needs wiring to components
 - ❌ MISSING — Zero implementation
 - 🔜 NEXT — Ready to build, brief exists
 
 ---
 
-## ACTIVE SPRINTS
+## CURRENT STATE
 
-- 🔜 Sprint 15.2 — Voice, Help & Jargon Audit (brief ready, depends on 15.1 ✅)
-- 🔜 Sprint 16.0 — AEGIS Embed Option A (brief ready, independent)
+No active sprint briefs pending. Sprint 29.0 was the last queued sprint.
+Next work comes from real usage feedback via the Quick Capture Pad.
+Test count: 1624/1624. tsc: 0 errors.
 
 ---
 
-## GREGORE PORT — Patterns & Features (from GREGORE_AUDIT.md)
+## GREGORE PORT — Patterns & Features
 
 ### P0 — Must Have for Daily Driver
 
-#### Receipt Footer (per-message orchestration details) ❌
-Source: GREGORE_AUDIT.md §2 Pattern 1, Gregore UI_UX_FINAL_DIRECTION.md Part 2.3
-Every assistant message gets a collapsed footer: "✓ $0.002 · 234ms · sonnet-4"
-Click to expand: model, tokens in/out, cost, latency, cache hit status
-Data available since Sprint 15.0 (chat costs written to session_costs)
-User preference: full / compact / minimal / hidden (ui-store)
-Animation: `receipt-expand` 150ms ease-out (not yet in globals.css)
-Enforces Sacred Law 6 (Transparency) at the message level
-Sprint estimate: 4-5 tasks
+#### Receipt Footer ✅ SHIPPED (Sprint 17.0)
+Collapsed per-message footer: cost, latency, model. Click to expand full details.
+User preference: full/compact/minimal/hidden. Receipt-expand animation.
 
-#### Orchestration Theater (first 3-5 messages) ❌
-Source: GREGORE_AUDIT.md §2 Pattern 4, Gregore DESIGN_SYSTEM.md §5
-First 5 messages for a NEW USER auto-expand receipt footers to show the system's intelligence
-After message 5: prompt user for receipt preference (full/compact/minimal/hidden)
-Prevents "how is this different from ChatGPT?" confusion
-Depends on: Receipt Footer
-Sprint estimate: 2-3 tasks (small, ships with Receipt Footer)
+#### Orchestration Theater ✅ SHIPPED (Sprint 17.0)
+First 5 messages auto-expand receipts. Preference prompt on message 5.
 
-#### Voice System / Copy Templates ❌
-Source: GREGORE_AUDIT.md §1 (Brand Voice)
-Create `lib/voice/copy-templates.ts` with standardized message copy
-Voice: deadpan professional, data-forward, sardonic, never cutesy
-Covers: error messages, gate warnings, status text, receipt labels, empty states, tooltips
-Sprint 15.2 handles the jargon audit; this is the template SYSTEM underneath
-Sprint estimate: 3-4 tasks
+#### Voice System / Copy Templates ✅ SHIPPED (Sprint 17.0 + 23.0)
+`lib/voice/copy-templates.ts` — centralized copy for all system-facing text.
+Sprint 23.0 did full terminology audit: Ghost->Background Assistant, AEGIS->System Monitor, etc.
 
 ### P1 — Should Have
 
-#### Ghost Pulse (input border animation) 🔧 CSS READY
-Source: GREGORE_AUDIT.md §2 Pattern 2, Gregore DESIGN_SYSTEM.md §3+§4
-`@keyframes ghost-pulse` EXISTS in globals.css — 1s ease-in-out cyan cycle
-`.ghost-analyzing` CSS class EXISTS
-NOT WIRED: ChatInterface.tsx input field never applies the class
-Fix: add `.ghost-analyzing` className to input when decision gate is analyzing
-Sprint estimate: 1 task (CSS wiring only)
+#### Ghost Pulse (input border animation) ✅ SHIPPED (Sprint 17.0)
+`.ghost-analyzing` wired to input when decision gate is analyzing.
 
-#### Memory Shimmer (real-time context reveals on typing) 🔧 CSS READY → ❌ Feature Missing
-Source: GREGORE_AUDIT.md §2 Pattern 3, Gregore DESIGN_SYSTEM.md §3+§4
-`@keyframes shimmer` EXISTS in globals.css — 2s text-shadow cyan glow cycle
-`.memory-match` CSS class EXISTS with hover underline
-NOT WIRED: no component applies the class
-FEATURE MISSING: real-time keystroke → KERNL FTS5 query → highlight matching tokens in input
-Architecture: debounced input handler (300ms) → query KERNL `messages_fts` + `content_chunks` → identify matching terms → apply `.memory-match` spans → click span expands memory card with source conversation
-Existing infrastructure: KERNL FTS5 index, Cross-Context Engine (Phase 3), Ghost scorer (Phase 6E)
-This is Gregore's most distinctive UX moment — "the AI remembering in real-time"
-Sprint estimate: 6-8 tasks (significant integration work)
+#### Memory Shimmer ✅ SHIPPED (Sprint 18.0)
+Real-time keystroke -> KERNL FTS5 query -> highlighted memory matches in input.
+ShimmerOverlay, MemoryCard click-to-expand, useShimmerMatches hook.
 
-#### Adaptive Override System (three-choice decision gate) ❌
-Source: GREGORE_AUDIT.md §2 Pattern 5, Gregore UI_UX_FINAL_DIRECTION.md Part 3
-Current gate is binary: dismiss or address
-Gregore spec: three choices per warning:
-  1. "Just this once" → no pattern learned
-  2. "Always allow [category]" → creates override policy
-  3. "Never warn about this" → creates broad category policy
-Ghost learns from choices — policies stored in SQLite
-Policy management: Settings > Decision Gate > Override Policies
-Sprint estimate: 6-8 tasks
+#### Adaptive Override System ✅ SHIPPED (Sprint 18.0)
+Three-choice decision gate: "Just this once" / "Always allow" / "Never warn."
+Override policies stored in SQLite. Full CRUD UI in Settings.
 
-#### Send Button State System ❌
-Source: GREGORE_AUDIT.md §2 Pattern 6, Gregore DESIGN_SYSTEM.md §3
-5 visual states: normal (cyan) → checking (animated) → approved (green tint) → warning (amber) → veto (red)
-Each state has distinct ARIA labels
-Wire to decision gate state machine
-Currently: static cyan button or disabled
-Sprint estimate: 3-4 tasks
+#### Send Button State System ✅ SHIPPED (Sprint 17.0)
+5 visual states: normal, checking, approved, warning, veto. ARIA labels.
+buttonPress micro-interaction on normal/approved only (Sprint 21.0).
 
-#### Inspector Drawer Reorganization ❌
-Source: GREGORE_AUDIT.md §2 Pattern 7
-Current tabs: Thread / Quality / KERNL / Jobs / EoS / Learning
-Proposed: Memory (KERNL+Ghost) / Quality (EoS+thread) / Cost (breakdown+trends) / Jobs / Learning
-Tab rename + content reorganization, not rebuild
-Sprint estimate: 3-4 tasks
+#### Inspector Drawer Reorganization ✅ SHIPPED (Sprint 17.0 + 22.0 + 27.0)
+Tabs: Memory / Quality / Cost / Jobs / Learning / Recall.
+ATTN budget moved from StatusBar to Quality tab (Sprint 22.0).
+Recall tab added (Sprint 27.0).
 
 ### P2 — Nice to Have
 
-#### Glassmorphic Inspector Drawer ❌
-Source: Gregore DESIGN_SYSTEM.md §3 (Inspector Drawer)
-Current: solid background
-Gregore spec: `rgba(10, 14, 20, 0.95)` with `backdrop-filter: blur(12px)`, cyan border glow
-Sprint estimate: 1-2 tasks (CSS only)
+#### Glassmorphic Inspector Drawer ✅ SHIPPED (Sprint 17.0)
+`rgba(0.95)` + `backdrop-filter: blur(12px)` + cyan border.
 
-#### Message Fade-In Animation ❌
-Source: GREGORE_AUDIT.md §5
-Current: approximate opacity transition via Tailwind
-Gregore spec: precise 200ms ease-out fade-in for new messages
-Sprint estimate: 1 task
+#### Message Fade-In Animation ✅ SHIPPED (Sprint 17.0)
+200ms ease-out fade-in via `message-enter` class.
 
-#### Spring Animations (Framer Motion) ❌
-Source: Gregore DESIGN_SYSTEM.md §4
-Gregore specifies spring physics for drawers, modals, card lifts, button presses
-GregLite uses CSS transitions (works but feels more mechanical)
-framer-motion IS in dependencies — just not used for these interactions
-Sprint estimate: 3-4 tasks
+#### Spring Animations (Framer Motion) ✅ SHIPPED (Sprint 21.0)
+All interactive surfaces: InspectorDrawer, EventDetailPanel, GatePanel, MemoryCard,
+ReceiptFooter, SendButton, GhostCard. Central config in `lib/design/animations.ts`.
+`useAnimationConfig()` hook respects `prefers-reduced-motion`.
 
 ---
 
-## SACRED LAWS GAPS (from GREGORE_AUDIT.md §3)
+## SACRED LAWS STATUS
 
-### Fully Enforced (no action needed)
-- ✅ Law 1: Append-Only Events (SQLite INSERT-only)
+### Fully Enforced
+- ✅ Law 1: Append-Only Events
+- ✅ Law 3: Reversibility — Sprint 19.0 action journal with undo (WAL-mode SQLite)
 - ✅ Law 4: Quality Gates (decision gate + EoS)
+- ✅ Law 5: Protect Deep Work — Sprint 19.0 focus tracker + interrupt gate
+- ✅ Law 6: Transparency — Receipt Footer (Sprint 17.0)
 - ✅ Law 7: Small Context Windows (multi-tab threading)
-- ✅ Law 9: Outcomes Win (Option B Perfection culture)
-- ✅ Law 11: Evidence Required (evidence-based detection)
-
-### Partially Enforced (mechanism exists, awareness doesn't)
-- ⚠️ Law 3: Reversibility — agent tool calls have no undo path
-- ⚠️ Law 5: Protect Deep Work — no user focus state awareness
-- ⚠️ Law 6: Transparency — no per-message receipt (Receipt Footer fixes this)
-- ⚠️ Law 10: Attention is Scarce — good defaults, no active budget management
-- ⚠️ Law 12: Ghost Veto — gate blocks debt language but doesn't check other Sacred Laws
+- ✅ Law 9: Outcomes Win (Option B Perfection)
+- ✅ Law 10: Attention is Scarce — Sprint 19.0 attention budget (100 CT/day)
+- ✅ Law 11: Evidence Required
+- ✅ Law 12: Ghost Veto — expanded to 11 triggers (Sprint 19.0)
 
 ### Not Implemented (low priority for GregLite scope)
 - ❌ Law 2: Earned Autonomy — no progressive trust infrastructure
@@ -144,19 +92,68 @@ Sprint estimate: 3-4 tasks
 
 ---
 
-## DESIGN TOKEN GAPS (from GREGORE_AUDIT.md §4)
+## DESIGN TOKENS
 
-- ❌ Background layer tokens: `--bg-tertiary`, `--bg-elevated` (using hardcoded Tailwind values instead)
-- ❌ Status color tokens: `--success`, `--warning`, `--error`, `--info` as CSS custom properties
-- ❌ Ghost transparency token: `--cyan-ghost` (cyan at 8% opacity)
-- ❌ Semantic spacing tokens: `--message-gap`, `--section-gap`, `--component-padding`
-- ❌ GregLite typography scale for dense components: xs 11px, sm 13px, base 14px
+#### Background + Status + Spacing Tokens ✅ SHIPPED (Sprint 17.0)
+`bg-tertiary`, `bg-elevated`, `status-*`, `cyan-ghost`, semantic spacing, dense typography.
+All added to `globals.css` as CSS custom properties.
+
+---
+
+## PLATFORM FEATURES (Sprints 19-29)
+
+### Sprint 19.0 — Sacred Laws Enforcement ✅
+Reversibility journal, focus protection, attention budget, 11 decision gate triggers.
+
+### Sprint 20.0 — Ghost Thread Activation ✅
+Full lifecycle wired: bootstrap startup, dual-path shutdown (TypeScript + Rust),
+AEGIS pause/resume, filesystem watcher bridge, privacy engine, StatusBar status, Settings panel.
+
+### Sprint 21.0 — Framer Motion Spring Animations ✅
+All CSS transition hacks replaced with physics-based springs. Central animations module.
+
+### Sprint 22.0 — First Launch Polish ✅
+Cold boot fresh conversation, +New Conversation button, Chat History opacity fix,
+clickable scrollbar landmarks, ATTN moved to Inspector, @xenova/transformers installed,
+SQLite schema gaps patched.
+
+### Sprint 23.0 — Voice Audit + Responsiveness ✅
+Full terminology rename (Ghost->Background Assistant, etc.), lucide SVG tab icons,
+HelpGuide modal, Workers 404 fix, scroll-wheel Transit zoom,
+responsive breakpoints at 1024/768/640px across all panels.
+
+### Sprint 24.0 — Portfolio Dashboard ✅
+Project scanner, 30s refresh, SQLite cache, ProjectCard grid, ProjectDetail slide-in,
+Projects tab (leftmost), WORKSPACES.yaml auto-seed. 33 new tests.
+
+### Sprint 25.0 — Add Existing Project + Onboarding ✅
+Directory scanner (13 build markers), type inference, OnboardingChat Q&A,
+parallel-copy migration + archive rename, verified deletion guard. 34 new tests.
+
+### Sprint 26.0 — Create New Project + Attention Intelligence ✅
+Scaffold templates (code/research/business/creative/custom), type-targeted questions,
+"Needs Attention" analyzer with type-aware staleness thresholds, attention queue,
+priority override muting.
+
+### Sprint 27.0 — Ambient Memory Recall ✅
+5-strategy detector (file revisit, conversation callback, project milestone, pattern insight,
+personal moment), scorer with frequency calibration (auto-reduces at 60% dismissal rate),
+RecallCard (amber, hover actions), ContextPanel integration, Settings + Inspector tabs. 24 new tests.
+
+### Sprint 28.0 — Ceremonial Onboarding Synthesis ✅
+Indexing source registry, per-source synthesis (Claude API, typewriter animation),
+combination synthesis (capabilities unlocked), master synthesis ceremony
+("I see you now." full-screen reveal), re-engagement nudges (1/week, 2x dismiss = silence).
+
+### Sprint 29.0 — Quick Capture Pad ✅
+Global hotkey (Ctrl+Shift+Space) floating input, project prefix parser with fuzzy matching,
+cosine-similarity dedup (0.85 threshold), mention-count priority signal,
+bug/feature/question/idea classification, CaptureInbox with promote/dismiss/re-route,
+backlog promotion pipeline, Settings section. 61 new tests.
 
 ---
 
 ## SKIP LIST — Do NOT Port from Gregore
-
-Source: GREGORE_AUDIT.md §6
 
 - ❌ Multi-Model Consensus / Council Synthesis (GregLite is Claude-only)
 - ❌ Triptych Layout / Cognitive Cockpit (killed Jan 2, 2026)
@@ -169,69 +166,14 @@ Source: GREGORE_AUDIT.md §6
 
 ---
 
-## COMPLETED SPRINTS (reverse chronological)
+## FUTURE / UNSCHEDULED
 
-### Sprint 15.1 (commit pending) — Gregore Audit
-- ✅ GREGORE_AUDIT.md — 7-section port recommendation document
+No sprint briefs pending. Future work sourced from:
+- Quick Capture Pad inbox (real usage bugs and ideas)
+- David's testing and daily driving
+- User feedback once shipped externally
 
-### Sprint 15.0 (commit pending) — Bug Fixes & Quick Wins
-- ✅ Cost counter fix (chat route writes to session_costs)
-- ✅ Decision gate false positive ('for now' removed, scan window tightened)
-- ✅ Collapsible thinking/tool call blocks
-- ✅ Tool call visual distinction (monospace, border, pill badge)
-
-### Sprint 14.0 (commit 983c5de) — Production Readiness
-- ✅ 3 pre-existing test failures fixed (1210/1210)
-- ✅ 8 dead dependencies removed
-- ✅ React ErrorBoundary with recovery UI
-- ✅ 6 API routes standardized with safeHandler
-- ✅ DB corruption detection/recovery
-- ✅ Version consistency (1.1.0)
-
-### Sprint 13.0 (commit b825ebb) — Transit Map UX/UI Polish
-- ✅ 16 new CSS variables (dark + light mode)
-- ✅ 13 transit components: color tokens, typography, spacing, interactions, accessibility
-- ✅ Transit-specific CSS classes + animations
-
-### Sprint 11.6 (commit d646a68) — Transit Map Phase E: Z1 Sankey View
-- ✅ Transit Map COMPLETE (all 6 phases shipped)
-
-### Sprint 11.4+11.5 (commit dc188fd) — Z3 Annotations + Z2 Subway View
-### Sprint 11.7 (commit 4b2382d) — Learning Engine
-### Sprint 11.3 (commit 7c08d9f) — Scrollbar Landmarks
-### Sprint 11.2 (commit 37d60af) — Transit Map Data Foundation
-### Sprint 11.0+11.1 (commit 5cb2420) — Cleanup + Agent SDK Stubs
-### Sprint 12.0 (commit 3ae1f0d) — API Cost Optimization
-### Phase 9 (commit ac634bd) — The Full Cockpit (v1.1.0)
-### Phase 8 (git tag v1.0.0) — Ship Prep
-### Phases 1-7 — Foundation through Self-Evolution
-
----
-
-## RECOMMENDED SPRINT SEQUENCE (from GREGORE_AUDIT.md §7, updated)
-
-| Order | Sprint | Scope | Depends On | Estimate |
-|-------|--------|-------|------------|----------|
-| NOW | 15.2 | Voice, Help & Jargon Audit | 15.1 ✅ | 8 tasks |
-| NOW | 16.0 | AEGIS Embed (Option A) | Independent | 7 tasks |
-| NEXT | 17.0 | Receipt Footer + Orchestration Theater + Ghost Pulse wiring | 15.2 | 8-10 tasks |
-| THEN | 18.0 | Memory Shimmer (real-time context reveals) | 17.0 | 6-8 tasks |
-| THEN | 19.0 | Decision Gate Enhancement (3-choice + Send Button states) | 17.0 | 8-10 tasks |
-| THEN | 20.0 | Inspector Reorg + Design Token Cleanup + Animation Polish | Any | 8-10 tasks |
-
----
-
-## VISION / LONG-TERM FEATURES
-
-### Ambient Memory & Thoughtful Recall ❌
-Greg as a "local disk traveler" — frequent sweeps of all managed storage (local disk, cloud, mobile if connected) to surface meaningful personal moments and context. Like a friend remembering a shared memory: media once frequently used but no longer opened triggers "hey, remember this?" moments. Not limited to media — news, work, projects, past conversations, life events. Think Google Photos' friendly reminders but more personalized, more Greg. Must feel friendly and thoughtful, never uncanny valley. Executive-assistant-level awareness: conversation callbacks, "how's this been going?" check-ins, "I know you've been going through that" moments. Deeply customized to the user's actual life and work.
-
-**Depends on:** Portfolio Dashboard (Sprint 24-26), Background Assistant (Ghost) maturity, sufficient indexed content to draw from.
-**Gregore parallel:** EPIC-78
-
-### Ceremonial Onboarding — Life & Work Synthesis ❌
-Ceremonialize the "getting to know you" phase for new users. As Greg indexes each data source (files, email, projects, interests), each addition should feel special and build excitement. Progressive revelations: "Now that we've indexed your career data..." (career-themed animation). "Combining work and personal data unlocks..." (synthesis preview). Short synthesis after each source to show concrete new capabilities. Final master synthesis when all sources complete — a clear outside-looking-in view of the user's life and work they've never seen before. This moment must be earned through data depth.
-
-**Goals:** Make indexing feel like unwrapping capabilities not a loading bar. Urge users who skipped optional sources to go back and add them. Final master synthesis should be genuinely insightful.
-**Depends on:** Background Assistant indexing pipeline, Portfolio Dashboard, sufficient data source connectors.
-**Gregore parallel:** EPIC-80
+**Gregore backlog cross-references:**
+- EPIC-78: Ambient Memory deep personalization (beyond Sprint 27 — the "Google Photos but for everything" vision)
+- EPIC-79: Same-Provider Multi-Instance Council (Gregore-only, not GregLite)
+- EPIC-80: Ceremonial Onboarding extensions (beyond Sprint 28 — deeper synthesis, more source types)
