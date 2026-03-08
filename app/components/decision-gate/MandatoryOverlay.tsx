@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 'use client';
 
 /**
@@ -37,7 +38,7 @@ export function MandatoryOverlay({
     setError(null);
 
     try {
-      const res = await fetch('/api/decision-gate/override', {
+      const res = await apiFetch('/api/decision-gate/override', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ threadId, trigger, rationale: rationale.trim() }),

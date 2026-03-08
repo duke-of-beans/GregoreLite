@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 /**
  * InsightReviewPanel — Transit Map Learning Engine UI
  * Sprint 11.7
@@ -226,7 +227,7 @@ export function InsightReviewPanel() {
   const fetchInsights = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/transit/insights');
+      const res = await apiFetch('/api/transit/insights');
       const data = (await res.json()) as ApiResponse;
       if (data.insights) setInsights(data.insights);
       setError(null);
@@ -242,7 +243,7 @@ export function InsightReviewPanel() {
   const handleAction = useCallback(async (insightId: string, action: ActionType) => {
     setActioning(true);
     try {
-      const res = await fetch('/api/transit/insights', {
+      const res = await apiFetch('/api/transit/insights', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action, insightId }),
@@ -260,7 +261,7 @@ export function InsightReviewPanel() {
   const handleRunPipeline = useCallback(async () => {
     setPipelineRunning(true);
     try {
-      const res = await fetch('/api/transit/insights', {
+      const res = await apiFetch('/api/transit/insights', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'run_pipeline' }),

@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 'use client';
 
 /**
@@ -95,7 +96,7 @@ function PanelContent() {
     let mounted = true;
     async function fetchRecall() {
       try {
-        const res = await fetch('/api/recall/active');
+        const res = await apiFetch('/api/recall/active');
         if (!res.ok || !mounted) return;
         const body = await res.json() as { event: RecallEvent | null };
         if (mounted) setRecallEvent(body.event);
@@ -112,7 +113,7 @@ function PanelContent() {
     eventId: string,
     action: 'appreciated' | 'dismissed' | 'snoozed',
   ): Promise<void> => {
-    await fetch('/api/recall/action', {
+    await apiFetch('/api/recall/action', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ eventId, action }),

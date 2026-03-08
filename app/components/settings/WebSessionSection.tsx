@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 /**
  * WebSessionSection — Sprint 32.0
  *
@@ -44,7 +45,7 @@ export function WebSessionSection() {
   // ── Load current mode + governor limits from /api/settings ────────────────
   const loadSettings = useCallback(async () => {
     try {
-      const res = await fetch('/api/settings');
+      const res = await apiFetch('/api/settings');
       if (res.ok) {
         const body = await res.json() as { data: Record<string, string> };
         const mode = (body.data.web_session_mode as ChatMode) ?? 'api';
@@ -61,7 +62,7 @@ export function WebSessionSection() {
   // ── Load session status from /api/web-session/status ──────────────────────
   const loadStatus = useCallback(async () => {
     try {
-      const res = await fetch('/api/web-session/status');
+      const res = await apiFetch('/api/web-session/status');
       if (res.ok) {
         const body = await res.json() as { data: SessionStatus };
         setSessionStatus(body.data);
@@ -78,7 +79,7 @@ export function WebSessionSection() {
   async function handleModeChange(mode: ChatMode) {
     setChatMode(mode);
     try {
-      await fetch('/api/settings', {
+      await apiFetch('/api/settings', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ web_session_mode: mode }),
@@ -90,7 +91,7 @@ export function WebSessionSection() {
   async function handleConnect() {
     setConnecting(true);
     try {
-      const res = await fetch('/api/web-session/connect', { method: 'POST' });
+      const res = await apiFetch('/api/web-session/connect', { method: 'POST' });
       if (res.ok) await loadStatus();
     } catch { /* silent */ } finally {
       setConnecting(false);
@@ -99,7 +100,7 @@ export function WebSessionSection() {
 
   async function handleDisconnect() {
     try {
-      await fetch('/api/web-session/disconnect', { method: 'POST' });
+      await apiFetch('/api/web-session/disconnect', { method: 'POST' });
       await loadStatus();
     } catch { /* silent */ }
   }
@@ -108,7 +109,7 @@ export function WebSessionSection() {
   async function handleGovSave(key: string, value: string) {
     setSavingGov(true);
     try {
-      await fetch('/api/settings', {
+      await apiFetch('/api/settings', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ [key]: value }),

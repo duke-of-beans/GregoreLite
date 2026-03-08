@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { fadeIn, cardLift } from '@/lib/design/animations';
 import { SCAFFOLD } from '@/lib/voice/copy-templates';
 import type { ProjectType } from '@/lib/portfolio/types';
+import { apiFetch } from '@/lib/api-client';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -323,7 +324,7 @@ export default function NewProjectFlow({
     setError(null);
 
     try {
-      const res = await fetch('/api/portfolio/infer', {
+      const res = await apiFetch('/api/portfolio/infer', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ description: desc }),
@@ -355,7 +356,7 @@ export default function NewProjectFlow({
       if (!inferred) return;
 
       try {
-        const res = await fetch('/api/portfolio/scaffold/preview', {
+        const res = await apiFetch('/api/portfolio/scaffold/preview', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -391,7 +392,7 @@ export default function NewProjectFlow({
         const answersMap = Object.fromEntries(
           answers.map((a) => [a.key, a.answer]),
         );
-        const res = await fetch('/api/portfolio/scaffold', {
+        const res = await apiFetch('/api/portfolio/scaffold', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

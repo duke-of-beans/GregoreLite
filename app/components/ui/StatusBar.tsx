@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 /**
  * StatusBar — Sprint 30.0
  *
@@ -71,7 +72,7 @@ export function StatusBar() {
   // Poll /api/import/sync-status every 5 min (MEM chip)
   const fetchMemSync = useCallback(async () => {
     try {
-      const res = await fetch('/api/import/sync-status');
+      const res = await apiFetch('/api/import/sync-status');
       if (res.ok) setMemSync(await res.json() as MemSyncStatus);
     } catch { /* non-critical */ }
   }, []);
@@ -85,7 +86,7 @@ export function StatusBar() {
   // Poll /api/costs/today every 60s
   const fetchCost = useCallback(async () => {
     try {
-      const res = await fetch('/api/costs/today');
+      const res = await apiFetch('/api/costs/today');
       if (res.ok) {
         const body = await res.json();
         setCostToday(body.data?.totalUsd ?? 0);

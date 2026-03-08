@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { apiFetch } from '@/lib/api-client';
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -19,7 +20,7 @@ export function WatchPaths() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/ghost/watch-paths');
+      const res = await apiFetch('/api/ghost/watch-paths');
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setPaths(data.paths ?? []);
@@ -40,7 +41,7 @@ export function WatchPaths() {
     setAdding(true);
     setAddError(null);
     try {
-      const res = await fetch('/api/ghost/watch-paths', {
+      const res = await apiFetch('/api/ghost/watch-paths', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ path: trimmed }),

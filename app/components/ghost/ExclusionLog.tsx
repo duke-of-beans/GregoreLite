@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 'use client';
 
 /**
@@ -44,7 +45,7 @@ export function ExclusionLog() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/ghost/exclusion-log')
+    apiFetch('/api/ghost/exclusion-log')
       .then((r) => r.json())
       .then((data: { entries: LogEntry[] }) => setEntries(data.entries))
       .catch(console.error)

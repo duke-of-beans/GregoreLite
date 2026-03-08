@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 ﻿/**
  * CapturePad — Sprint 29.0
  *
@@ -129,10 +130,10 @@ export function CapturePad({ onCaptured }: CapturePadProps) {
       // Immediate focus — no delay
       requestAnimationFrame(() => inputRef.current?.focus());
       // Fetch project names for live prefix matching (fire-and-forget)
-      fetch('/api/capture/inbox?_projects=1')
+      apiFetch('/api/capture/inbox?_projects=1')
         .catch(() => null);
       // Fetch registered projects for parser
-      fetch('/api/portfolio/projects?status=active')
+      apiFetch('/api/portfolio/projects?status=active')
         .then((r) => r.json())
         .then((data: { projects?: { name: string }[] }) => {
           if (Array.isArray(data?.projects)) {
@@ -155,7 +156,7 @@ export function CapturePad({ onCaptured }: CapturePadProps) {
     closeCapturePad();
 
     try {
-      const res = await fetch('/api/capture', {
+      const res = await apiFetch('/api/capture', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: trimmed }),

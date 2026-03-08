@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 'use client';
 
 /**
@@ -90,7 +91,7 @@ export function TeachGhostDrawer({ sourceType, onClose }: TeachGhostDrawerProps)
     if (!topicHint.trim()) return;
     setSaving(true);
     try {
-      const res = await fetch('/api/ghost/preferences', {
+      const res = await apiFetch('/api/ghost/preferences', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

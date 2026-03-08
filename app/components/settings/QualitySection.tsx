@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 /**
  * QualitySection — S9-13
  * Code quality thresholds and pattern analysis retry settings.
@@ -28,7 +29,7 @@ export function QualitySection() {
 
   const loadSettings = useCallback(async () => {
     try {
-      const res = await fetch('/api/settings');
+      const res = await apiFetch('/api/settings');
       if (res.ok) {
         const body = await res.json() as { data: Record<string, string> };
         setValues(body.data);
@@ -41,7 +42,7 @@ export function QualitySection() {
   async function handleSave(key: string, value: string) {
     setSaving(true);
     try {
-      await fetch('/api/settings', {
+      await apiFetch('/api/settings', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ [key]: value }),

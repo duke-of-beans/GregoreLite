@@ -20,6 +20,9 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
+    "externalBin": [
+      "binaries/greglite-server"
+    ],
     "windows": {
       "nsis": {
         "displayLanguageSelector": false,

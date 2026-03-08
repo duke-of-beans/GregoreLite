@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 /**
  * ContextLibrary — suppressed suggestions drawer (Sprint 3F)
  *
@@ -40,7 +41,7 @@ export function ContextLibrary({ onClose }: ContextLibraryProps) {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/cross-context/suppressed');
+      const res = await apiFetch('/api/cross-context/suppressed');
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = (await res.json()) as { suppressed: SuppressedItem[] };
       setItems(data.suppressed);

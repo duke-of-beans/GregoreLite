@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 /**
  * JobsTab — S9-14 / Sprint 19.0
  * Selected job detail: full manifest JSON, events, cost breakdown.
@@ -73,7 +74,7 @@ export function JobsTab() {
     setUndoMessage(null);
     void (async () => {
       try {
-        const res = await fetch('/api/agent-sdk/actions', {
+        const res = await apiFetch('/api/agent-sdk/actions', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ entryId, action: 'undo' }),

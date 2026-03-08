@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 /**
  * RecentChats — Sprint 10.6 Task 6, wired to KERNL in Sprint 10.8 Task 4
  * Sprint 10.9 Task 1: Added rename/delete hover actions + tooltips.
@@ -52,7 +53,7 @@ export function RecentChats({ onLoadThread, onSeeAll }: RecentChatsProps) {
 
   const fetchThreads = useCallback(async () => {
     try {
-      const res = await fetch('/api/threads');
+      const res = await apiFetch('/api/threads');
       if (res.ok) {
         const body = (await res.json()) as ApiResponse;
         setThreads(body.data?.threads ?? []);

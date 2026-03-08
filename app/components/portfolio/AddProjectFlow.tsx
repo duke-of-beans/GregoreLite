@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 /**
  * AddProjectFlow — Sprint 25.0
  *
@@ -183,7 +184,7 @@ function StepMigration({ scan, dna, projectName, answers, onComplete }: Migratio
     if (mode !== 'copy') return;
     void (async () => {
       try {
-        const res = await fetch('/api/portfolio/scan-directory', {
+        const res = await apiFetch('/api/portfolio/scan-directory', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ path: scan.path, warningsOnly: true }),
@@ -207,7 +208,7 @@ function StepMigration({ scan, dna, projectName, answers, onComplete }: Migratio
         ? scan.path.replace(/[\\/][^\\/]+$/, '') + '\\' + projectName.replace(/[^a-zA-Z0-9_-]/g, '_') + '_managed'
         : undefined;
 
-      const res = await fetch('/api/portfolio/migrate', {
+      const res = await apiFetch('/api/portfolio/migrate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -326,7 +327,7 @@ export function AddProjectFlow({ onComplete, onCancel }: AddProjectFlowProps) {
     setProjectName(p.split(/[\\/]/).pop() ?? '');
     setStep('scanning');
     try {
-      const res = await fetch('/api/portfolio/scan-directory', {
+      const res = await apiFetch('/api/portfolio/scan-directory', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ path: p }),
@@ -365,7 +366,7 @@ export function AddProjectFlow({ onComplete, onCancel }: AddProjectFlowProps) {
     // Capture telemetry (fire-and-forget)
     if (inferred) {
       const durationSecs = Math.round((Date.now() - flowStartTime) / 1000);
-      void fetch('/api/portfolio/migrate', {
+      void apiFetch('/api/portfolio/migrate', {
         method: 'PUT', // telemetry endpoint
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 /**
  * GhostSection — Sprint 20.0
  * Ghost Thread status + control panel in Settings.
@@ -68,7 +69,7 @@ export function GhostSection() {
   // Fetch watch paths on mount
   const fetchPaths = useCallback(async () => {
     try {
-      const res = await fetch('/api/ghost/watch-paths');
+      const res = await apiFetch('/api/ghost/watch-paths');
       if (res.ok) {
         const body = await res.json();
         setWatchPaths(body.paths ?? []);

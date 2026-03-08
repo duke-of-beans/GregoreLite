@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 'use client';
 
 /**
@@ -27,7 +28,7 @@ export function OnboardingStep4Ready({ onComplete }: Props) {
 
   async function fetchStatus() {
     try {
-      const res = await fetch('/api/onboarding');
+      const res = await apiFetch('/api/onboarding');
       const data = await res.json();
       setStatus({
         apiKeyConfigured: data.data?.apiKeyConfigured ?? false,
@@ -42,7 +43,7 @@ export function OnboardingStep4Ready({ onComplete }: Props) {
   async function handleLaunch() {
     setLaunching(true);
     try {
-      await fetch('/api/onboarding', {
+      await apiFetch('/api/onboarding', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'complete' }),

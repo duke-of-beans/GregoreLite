@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 'use client';
 
 /**
@@ -127,7 +128,7 @@ export function RecallSection() {
 
   // Load settings from server on mount
   useEffect(() => {
-    fetch('/api/recall/settings')
+    apiFetch('/api/recall/settings')
       .then((r) => (r.ok ? (r.json() as Promise<{ settings: RecallSchedulerSettings }>) : null))
       .then((body) => {
         if (body?.settings) setSettings(body.settings);
@@ -138,7 +139,7 @@ export function RecallSection() {
   const persist = useCallback(async (next: RecallSchedulerSettings) => {
     setSaving(true);
     try {
-      await fetch('/api/recall/settings', {
+      await apiFetch('/api/recall/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(next),

@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 /**
  * BudgetSettingsPanel — Sprint 7F
  *
@@ -31,7 +32,7 @@ const DEFAULTS: BudgetValues = {
 
 async function loadBudgetConfig(): Promise<BudgetValues> {
   try {
-    const res = await fetch('/api/agent-sdk/budget');
+    const res = await apiFetch('/api/agent-sdk/budget');
     if (!res.ok) return DEFAULTS;
     const json = await res.json() as { data?: Partial<BudgetValues> };
     return { ...DEFAULTS, ...json.data };
@@ -41,7 +42,7 @@ async function loadBudgetConfig(): Promise<BudgetValues> {
 }
 
 async function saveBudgetConfig(values: BudgetValues): Promise<void> {
-  const res = await fetch('/api/agent-sdk/budget', {
+  const res = await apiFetch('/api/agent-sdk/budget', {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(values),

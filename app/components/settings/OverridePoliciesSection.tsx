@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 'use client';
 
 /**
@@ -49,7 +50,7 @@ export function OverridePoliciesSection() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/decision-gate/policies');
+      const res = await apiFetch('/api/decision-gate/policies');
       const data = await res.json() as { policies?: OverridePolicy[]; error?: string };
       if (!res.ok) { setError(data.error ?? 'Failed to load'); return; }
       setPolicies(data.policies ?? []);
@@ -75,7 +76,7 @@ export function OverridePoliciesSection() {
     setResetting(true);
     setError(null);
     try {
-      await fetch('/api/decision-gate/policies', { method: 'DELETE' });
+      await apiFetch('/api/decision-gate/policies', { method: 'DELETE' });
       setPolicies([]);
     } catch {
       setError('Failed to reset policies');

@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 'use client';
 
 /**
@@ -25,7 +26,7 @@ export function OnboardingStep1ApiKey({ onComplete, onSkip }: Props) {
     setStatus('validating');
     setError('');
     try {
-      const valRes = await fetch('/api/onboarding', {
+      const valRes = await apiFetch('/api/onboarding', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'validate-api-key', apiKey }),
@@ -37,7 +38,7 @@ export function OnboardingStep1ApiKey({ onComplete, onSkip }: Props) {
         return;
       }
       // Key is valid — store in OS keychain
-      await fetch('/api/onboarding', {
+      await apiFetch('/api/onboarding', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'store-api-key', apiKey }),

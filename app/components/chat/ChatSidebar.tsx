@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 /**
  * ChatSidebar — Sprint 10.5 Task 2
  *
@@ -67,7 +68,7 @@ export function ChatSidebar({ onLoadThread }: ChatSidebarProps) {
   const fetchConversations = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/conversations?page=1&pageSize=20');
+      const res = await apiFetch('/api/conversations?page=1&pageSize=20');
       if (res.ok) {
         const body = (await res.json()) as ApiResponse;
         setConversations(body.data?.conversations ?? []);

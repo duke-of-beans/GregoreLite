@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 /**
  * ProjectSwitcher — S9-19
  * Popover listing all active projects. Click to switch active project.
@@ -30,7 +31,7 @@ export function ProjectSwitcher({ currentProjectId, anchorEl, onClose, onSwitch 
   useEffect(() => {
     void (async () => {
       try {
-        const res = await fetch('/api/projects');
+        const res = await apiFetch('/api/projects');
         if (res.ok) {
           const body = await res.json() as { data: ProjectItem[] };
           setProjects(body.data ?? []);
@@ -62,7 +63,7 @@ export function ProjectSwitcher({ currentProjectId, anchorEl, onClose, onSwitch 
 
   const handleSwitch = useCallback(async (projectId: string) => {
     try {
-      await fetch('/api/projects/switch', {
+      await apiFetch('/api/projects/switch', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ projectId }),

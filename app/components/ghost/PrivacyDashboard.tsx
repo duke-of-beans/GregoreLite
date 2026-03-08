@@ -9,6 +9,7 @@ import { IndexedItemsList } from './IndexedItemsList';
 import { PreferencesPanel } from './PreferencesPanel';
 import { PurgeAllDialog } from './PurgeAllDialog';
 import { WatchPaths } from './WatchPaths';
+import { apiFetch } from '@/lib/api-client';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -48,7 +49,7 @@ export function PrivacyDashboard({ onClose }: PrivacyDashboardProps) {
     let cancelled = false;
     async function poll() {
       try {
-        const res = await fetch('/api/ghost/status');
+        const res = await apiFetch('/api/ghost/status');
         if (!cancelled && res.ok) {
           const data = await res.json();
           setGhostStatus(data);

@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 'use client';
 
 /**
@@ -25,7 +26,7 @@ export function PreferencesPanel() {
 
   const fetchPreferences = useCallback(async () => {
     try {
-      const res = await fetch('/api/ghost/preferences');
+      const res = await apiFetch('/api/ghost/preferences');
       if (res.ok) {
         const data = (await res.json()) as { preferences: Preference[] };
         setPreferences(data.preferences);
@@ -54,7 +55,7 @@ export function PreferencesPanel() {
 
   const handleBoostChange = useCallback(async (id: string, boostFactor: number) => {
     try {
-      await fetch('/api/ghost/preferences', {
+      await apiFetch('/api/ghost/preferences', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, boost_factor: boostFactor }),

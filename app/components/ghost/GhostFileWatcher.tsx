@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 'use client';
 
 /**
@@ -31,7 +32,7 @@ export function GhostFileWatcher() {
       if (event.kind === 'deleted') return;
 
       try {
-        await fetch('/api/ghost/ingest-file', {
+        await apiFetch('/api/ghost/ingest-file', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ filePath: event.path }),

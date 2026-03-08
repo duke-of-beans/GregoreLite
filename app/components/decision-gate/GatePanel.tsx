@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 'use client';
 
 /**
@@ -99,7 +100,7 @@ export function GatePanel({ threadId, trigger }: GatePanelProps) {
 
     try {
       // Create the override policy for the selected scope
-      const policyRes = await fetch('/api/decision-gate/policy', {
+      const policyRes = await apiFetch('/api/decision-gate/policy', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -117,7 +118,7 @@ export function GatePanel({ threadId, trigger }: GatePanelProps) {
       }
 
       // Approve the gate
-      const approveRes = await fetch('/api/decision-gate/approve', {
+      const approveRes = await apiFetch('/api/decision-gate/approve', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ threadId, trigger: trigger.trigger }),
@@ -143,7 +144,7 @@ export function GatePanel({ threadId, trigger }: GatePanelProps) {
     setError(null);
 
     try {
-      const res = await fetch('/api/decision-gate/dismiss', { method: 'POST' });
+      const res = await apiFetch('/api/decision-gate/dismiss', { method: 'POST' });
       const data = await res.json() as {
         released: boolean;
         mandatory: boolean;
@@ -168,7 +169,7 @@ export function GatePanel({ threadId, trigger }: GatePanelProps) {
     setProceeding(true);
     setError(null);
     try {
-      const res = await fetch('/api/decision-gate/approve', {
+      const res = await apiFetch('/api/decision-gate/approve', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ threadId, trigger: trigger.trigger }),

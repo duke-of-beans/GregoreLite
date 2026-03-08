@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 'use client';
 
 /**
@@ -40,7 +41,7 @@ export function QuickSpawnTemplates({ onOpenInBuilder }: QuickSpawnTemplatesProp
   const [spawning, setSpawning] = useState<string | null>(null);
 
   useEffect(() => {
-    void fetch('/api/templates')
+    void apiFetch('/api/templates')
       .then((res) => res.json())
       .then((data: { templates: QuickTemplate[] }) => {
         // Top 5 by use_count

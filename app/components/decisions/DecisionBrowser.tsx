@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 /**
  * DecisionBrowser — S9-16
  * Full-page overlay. Three-column layout: filters | list | detail.
@@ -106,7 +107,7 @@ export function DecisionBrowser({ open, onClose, onOpenThread }: Props) {
   const handleExport = useCallback(async () => {
     setExporting(true);
     try {
-      const res = await fetch('/api/decisions/export', {
+      const res = await apiFetch('/api/decisions/export', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

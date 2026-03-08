@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { apiFetch } from '@/lib/api-client';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -50,7 +51,7 @@ export function ExclusionRules() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/ghost/exclusions');
+      const res = await apiFetch('/api/ghost/exclusions');
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setRules(data.rules ?? []);
@@ -70,7 +71,7 @@ export function ExclusionRules() {
     setAdding(true);
     setAddError(null);
     try {
-      const res = await fetch('/api/ghost/exclusions', {
+      const res = await apiFetch('/api/ghost/exclusions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

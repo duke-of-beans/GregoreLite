@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
+import { apiFetch } from '@/lib/api-client';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -35,7 +36,7 @@ export function PurgeAllDialog({ open, onClose, onSuccess }: PurgeAllDialogProps
     setPurging(true);
     setError(null);
     try {
-      const res = await fetch('/api/ghost/purge', { method: 'POST' });
+      const res = await apiFetch('/api/ghost/purge', { method: 'POST' });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         throw new Error(body.error ?? `HTTP ${res.status}`);

@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 /**
  * ManifestBuilder
  *
@@ -83,7 +84,7 @@ export function ManifestBuilder({ threadId, strategicThreadId, onSpawned, initia
     if (!templateName.trim() || !title.trim()) return;
     const criteria = successCriteria.split('\n').map((s) => s.trim()).filter(Boolean);
     try {
-      const res = await fetch('/api/templates', {
+      const res = await apiFetch('/api/templates', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

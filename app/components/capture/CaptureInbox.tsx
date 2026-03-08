@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 ﻿/**
  * CaptureInbox — Sprint 29.0
  *
@@ -192,8 +193,8 @@ export function CaptureInbox({ open, onClose }: CaptureInboxProps) {
     setLoading(true);
     try {
       const [inboxRes, projRes] = await Promise.all([
-        fetch('/api/capture/inbox'),
-        fetch('/api/portfolio/projects?status=active'),
+        apiFetch('/api/capture/inbox'),
+        apiFetch('/api/portfolio/projects?status=active'),
       ]);
       const inboxData = await inboxRes.json();
       const projData = await projRes.json();

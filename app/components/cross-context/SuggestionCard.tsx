@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 'use client';
 
 /**
@@ -104,7 +105,7 @@ export function SuggestionCard({ suggestion, onDismiss }: SuggestionCardProps) {
 
   const handleTellMeMore = () => {
     // Fire-and-forget: inject chunk content as system context into active thread
-    fetch('/api/cross-context/inject', {
+    apiFetch('/api/cross-context/inject', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

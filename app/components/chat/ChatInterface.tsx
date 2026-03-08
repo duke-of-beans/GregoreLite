@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 /**
  * ChatInterface Component — Sprint S9-01 update
  *
@@ -314,7 +315,7 @@ export function ChatInterface() {
   // ── Boot sequence ────────────────────────────────────────────────────────
   useEffect(() => {
     // Fire bootstrap non-blocking
-    void fetch('/api/bootstrap', { method: 'POST' }).then((res) => {
+    void apiFetch('/api/bootstrap', { method: 'POST' }).then((res) => {
       if (!res.ok) console.warn('[boot] Bootstrap returned', res.status);
       else res.json().then((d) => console.log('[boot] Bootstrap complete', d?.data?.coldStartMs + 'ms')).catch(() => null);
     }).catch((err) => console.warn('[boot] Bootstrap fetch failed:', err));
@@ -326,7 +327,7 @@ export function ChatInterface() {
     registerBuiltins();
 
     // Check if morning briefing should show
-    void fetch('/api/morning-briefing')
+    void apiFetch('/api/morning-briefing')
       .then((res) => res.json())
       .then((body) => {
         if (body.data && !body.data.alreadyShown) {
@@ -545,7 +546,7 @@ export function ChatInterface() {
     abortControllerRef.current = controller;
 
     try {
-      const response = await fetch('/api/chat', {
+      const response = await apiFetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

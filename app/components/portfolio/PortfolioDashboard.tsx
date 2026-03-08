@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 /**
  * PortfolioDashboard — Sprint 24.0
  *
@@ -105,7 +106,7 @@ export function PortfolioDashboard() {
   const fetchProjects = useCallback(async (silent = false) => {
     if (!silent) setLoading(true);
     try {
-      const res = await fetch('/api/portfolio');
+      const res = await apiFetch('/api/portfolio');
       const body = await res.json() as ProjectsResponse;
       if (body.success && body.data) {
         setProjects(body.data.projects);
@@ -122,7 +123,7 @@ export function PortfolioDashboard() {
 
   const fetchAttention = useCallback(async () => {
     try {
-      const res = await fetch('/api/portfolio/attention');
+      const res = await apiFetch('/api/portfolio/attention');
       const body = await res.json() as { success: boolean; data?: { items: AttentionItem[] } };
       if (body.success && body.data) {
         setAttentionItems(body.data.items);
@@ -132,7 +133,7 @@ export function PortfolioDashboard() {
 
   const handleMute = useCallback(async (projectId: string, hours: number) => {
     try {
-      await fetch('/api/portfolio/mute', {
+      await apiFetch('/api/portfolio/mute', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ projectId, hours }),
@@ -151,7 +152,7 @@ export function PortfolioDashboard() {
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
-      await fetch('/api/portfolio/scan', { method: 'POST' });
+      await apiFetch('/api/portfolio/scan', { method: 'POST' });
       await fetchProjects(true);
     } catch { /* silent */ } finally {
       setRefreshing(false);

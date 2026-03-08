@@ -1,13 +1,13 @@
 # GREGLITE — STATUS
-**Last Updated:** March 8, 2026 — v1.1.0 RELEASED. GitHub release live at https://github.com/duke-of-beans/GregoreLite/releases/tag/v1.1.0. Installer + updater artifacts published. latest.json at release root. Tauri updater endpoint active.
-**Version:** v1.1.0 ✅ SHIPPED
+**Last Updated:** March 8, 2026 — Sprint 36.0 complete. Node.js/Express sidecar implemented; installed Tauri build now serves all /api/* routes via localhost:3717 instead of returning HTML 404s. esbuild bundles 2.7 MB dist/server.js; pkg packages to greglite-server.exe. Health + threads endpoints smoke-tested green.
+**Version:** v1.1.0 ✅ SHIPPED (Sprint 36.0 post-release patch in progress)
 **Test Count:** 1753/1753 all green
 **EoS Health:** 100/100
 **TSC:** 0 errors
-**Next:** Post-launch — next work from real usage feedback via Quick Capture Pad
+**Next:** Run full sidecar build (build.bat → server.exe → copy to src-tauri/binaries/), then cut patch release or test via `pnpm tauri dev`
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md — ALL PHASES (A–F) SHIPPED.
-**Recent commits:** 0ae1afe (release: v1.1.0), ba24b1e (Sprint 35.0 / EPIC-81 complete), 3fb2e96 (Sprint 34.0), f7f6dd1 (Sprint 30.0), 1226a7c (Sprint 32.0 docs)
+**Recent commits:** Sprint 36.0 (pending), 0ae1afe (release: v1.1.0), ba24b1e (Sprint 35.0 / EPIC-81 complete), 3fb2e96 (Sprint 34.0), f7f6dd1 (Sprint 30.0), 1226a7c (Sprint 32.0 docs)
 
 ### ⚠️ GROUND TRUTH AUDIT (March 4, 2026)
 1. ~~Transit Map "data foundation" listed in Sprint 10.6 was NOT shipped.~~ RESOLVED: Sprint 11.2 shipped data foundation (conversation_events table, 26 event types, capture hooks). commit 37d60af.
@@ -17,6 +17,16 @@
 5. ~~Decision gate trigger-detector.ts has 3 dead stub functions replaced by Haiku inference — cleanup needed.~~ — RESOLVED: Sprint 11.0 — detectHighTradeoffCount/detectMultiProjectTouch/detectLargeEstimate removed.
 
 ---
+
+- [x] **SPRINT 36.0** — Production API Layer (Node.js Sidecar) — **COMPLETE**
+  - **Problem:** Installed Tauri build was a static shell — `tauri-prebuild.bat` stripped all Next.js API routes before static export, causing every `/api/*` fetch to return an HTML 404 page.
+  - **Solution:** Node.js/Express sidecar compiled to a self-contained `.exe` via `pkg`, spawned by Tauri `main.rs` on startup, serving all route handlers on `localhost:3717`. Dev mode (`pnpm dev`) unchanged.
+  - **sidecar/ package:** `express`, `better-sqlite3`, `keytar`, `sqlite-vec` as runtime deps; `esbuild`, `pkg`, `tsx` as devDeps. esbuild bundles `dist/server.js` (2.7 MB) with `greglite-alias-resolver` plugin resolving `@/` → `app/` with `.ts`/`index.ts` probe, shims for `next/server`, `react`, `@xenova/transformers`, `puppeteer-core`. `pkg` packages to `greglite-server-x86_64-pc-windows-msvc.exe`.
+  - **Route coverage:** 27 namespaces — threads, chat (SSE), bootstrap, context, costs, agent-sdk, kernl, transit, decisions, decision-gate, portfolio, projects, ghost, eos, recall, shimmer, cross-context, artifacts, auto-title, morning-briefing, onboarding, restore, settings, aegis, capture, templates, health.
+  - **Adapter layer:** `sidecar/src/adapter.ts` — `toRequest()` (Express→Web API Request), `makeContext()` (Next.js 15+ async params via `Promise.resolve()`), `fromResponse()` (SSE pipe via `ReadableStream` reader + `res.write()`/`res.flushHeaders()`).
+  - **app-side changes:** `app/lib/api-client.ts` — `isTauri()` detects `__TAURI_INTERNALS__`, `apiFetch()` routes to `localhost:3717` in installed build. Codemod replaced `fetch('/api/` with `apiFetch('/api/` across **54 files** (175 scanned). `tauri.conf.json` — `externalBin: ["binaries/greglite-server"]`. `capabilities/default.json` (new) — `shell:allow-execute` for sidecar. `main.rs` — `SidecarChild(Mutex<Option<CommandChild>>)` state, spawn in `setup()`, kill on `Destroyed`. `tauri-prebuild.bat` — removed strip/restore blocks, calls `sidecar\build.bat` instead.
+  - **Smoke test:** `GET /api/health` → `{success:true, data:{status:"healthy", database:"connected"}}`. `GET /api/threads` → `{success:true, data:{threads:[]}}`. Both green.
+  - **TSC:** 0 errors (app-side gate). Two build fixes: `@vercel/pkg` → `pkg` (package renamed), `lines[i] ?? ''` strict-null fix in codemod script, react shim for Zustand v5 `useSyncExternalStore`.
 
 - [x] **SPRINT 27.0** — Ambient Memory ("Hey Remember This?") — **COMPLETE**
   - **Deliverable:** 11 files created + 4 files modified. tsc 0 errors. 1464/1464 tests green (+24 new sprint27 tests). Two commits: b376074 (backend), 4b32867 (UI).

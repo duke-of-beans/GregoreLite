@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 /**
  * BudgetSection — S9-13
  * Session soft/hard caps, daily hard cap — reads/writes budget_config.
@@ -27,7 +28,7 @@ export function BudgetSection() {
 
   const loadSettings = useCallback(async () => {
     try {
-      const res = await fetch('/api/settings');
+      const res = await apiFetch('/api/settings');
       if (res.ok) {
         const body = await res.json() as { data: Record<string, string> };
         setValues(body.data);
@@ -41,7 +42,7 @@ export function BudgetSection() {
     void (async () => {
       try {
         // Sprint 10.9 Task 9: use /api/costs/today (correct route)
-        const res = await fetch('/api/costs/today');
+        const res = await apiFetch('/api/costs/today');
         if (res.ok) {
           const body = await res.json() as { data?: { totalUsd: number } };
           if (body.data) setDailySpend(body.data.totalUsd);
@@ -53,7 +54,7 @@ export function BudgetSection() {
   async function handleSave(key: string, value: string) {
     setSaving(true);
     try {
-      await fetch('/api/settings', {
+      await apiFetch('/api/settings', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ [key]: value }),

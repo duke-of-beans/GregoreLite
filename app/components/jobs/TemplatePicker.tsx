@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 'use client';
 
 /**
@@ -38,7 +39,7 @@ export function TemplatePicker({ onSelect, onDelete }: TemplatePickerProps) {
 
   const fetchTemplates = useCallback(async () => {
     try {
-      const res = await fetch('/api/templates');
+      const res = await apiFetch('/api/templates');
       if (res.ok) {
         const data = (await res.json()) as { templates: TemplateItem[] };
         setTemplates(data.templates);

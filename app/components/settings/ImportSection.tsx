@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 'use client';
 
 /**
@@ -53,7 +54,7 @@ export function ImportSection() {
   // ── Load sources on mount ──────────────────────────────────────────────────
   const loadSources = useCallback(async () => {
     try {
-      const res = await fetch('/api/import/sources');
+      const res = await apiFetch('/api/import/sources');
       if (res.ok) setSources(await res.json() as ImportSourceRow[]);
     } catch { /* silent */ }
   }, []);
@@ -63,7 +64,7 @@ export function ImportSection() {
   // ── Load watchfolder config ────────────────────────────────────────────────
   const loadWatchConfig = useCallback(async () => {
     try {
-      const res = await fetch('/api/import/watchfolder-config');
+      const res = await apiFetch('/api/import/watchfolder-config');
       if (res.ok) setWatchConfig(await res.json() as WatchfolderConfig);
     } catch { /* silent */ }
   }, []);
@@ -74,7 +75,7 @@ export function ImportSection() {
   const setReminderDays = async (days: number) => {
     setSavingReminder(true);
     try {
-      await fetch('/api/import/watchfolder-config', {
+      await apiFetch('/api/import/watchfolder-config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ reminderDays: days }),
@@ -126,7 +127,7 @@ export function ImportSection() {
       const form = new FormData();
       form.append('file', file);
 
-      const res = await fetch('/api/import/upload', { method: 'POST', body: form });
+      const res = await apiFetch('/api/import/upload', { method: 'POST', body: form });
       const body = await res.json() as { sourceId?: string; conversationCount?: number; error?: string };
 
       if (!res.ok || !body.sourceId) {

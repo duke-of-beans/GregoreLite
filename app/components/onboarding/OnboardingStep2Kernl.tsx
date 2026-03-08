@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 'use client';
 
 /**
@@ -23,7 +24,7 @@ export function OnboardingStep2Kernl({ onComplete }: Props) {
   async function checkKernl() {
     setChecking(true);
     try {
-      const res = await fetch('/api/onboarding', {
+      const res = await apiFetch('/api/onboarding', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'check-kernl' }),

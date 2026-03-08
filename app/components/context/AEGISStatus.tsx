@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 'use client';
 
 /**
@@ -41,7 +42,7 @@ export function AEGISStatus() {
   async function handleOverride(profile: WorkloadProfile): Promise<void> {
     setSending(true);
     try {
-      await fetch('/api/aegis/override', {
+      await apiFetch('/api/aegis/override', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ profile }),

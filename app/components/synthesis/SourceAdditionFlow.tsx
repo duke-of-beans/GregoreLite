@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 'use client';
 
 /**
@@ -115,7 +116,7 @@ function IndexingProgress({
   useEffect(() => {
     pollRef.current = setInterval(async () => {
       try {
-        const res = await fetch('/api/synthesis/status');
+        const res = await apiFetch('/api/synthesis/status');
         if (!res.ok) return;
         const data = (await res.json()) as { sources: IndexingSource[] };
         const updated = data.sources.find((s) => s.id === source.id);
@@ -218,7 +219,7 @@ export function SourceAdditionFlow({ completedSources, onSourceAdded, onDone }: 
     async (meta: SourceMeta, path: string | null) => {
       setIsSubmitting(true);
       try {
-        const res = await fetch('/api/synthesis/add-source', {
+        const res = await apiFetch('/api/synthesis/add-source', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ type: meta.type, pathOrConfig: path }),
@@ -247,7 +248,7 @@ export function SourceAdditionFlow({ completedSources, onSourceAdded, onDone }: 
       // Poll for synthesis text (generator runs async, won't be instant)
       const poll = setInterval(async () => {
         try {
-          const res = await fetch('/api/synthesis/status');
+          const res = await apiFetch('/api/synthesis/status');
           if (!res.ok) return;
           const data = (await res.json()) as { sources: IndexingSource[] };
           const src = data.sources.find((s) => s.id === updatedSource.id);

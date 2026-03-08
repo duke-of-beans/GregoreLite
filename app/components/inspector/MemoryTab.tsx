@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 'use client';
 
 /**
@@ -106,7 +107,7 @@ export function MemoryTab() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/recall/history');
+      const res = await apiFetch('/api/recall/history');
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const body = await res.json() as HistoryResponse;
       setData(body);
@@ -122,7 +123,7 @@ export function MemoryTab() {
   }, [fetchHistory]);
 
   useEffect(() => {
-    fetch('/api/import/sources')
+    apiFetch('/api/import/sources')
       .then((r) => r.ok ? r.json() as Promise<ImportSource[]> : Promise.resolve([]))
       .then((sources) => setImportSources(sources))
       .catch(() => { /* non-critical */ });
@@ -133,7 +134,7 @@ export function MemoryTab() {
     setRunning(true);
     setRunResult(null);
     try {
-      const res = await fetch('/api/recall/run', { method: 'POST' });
+      const res = await apiFetch('/api/recall/run', { method: 'POST' });
       const body = await res.json() as RunResult;
       setRunResult(body);
       // Refresh history after run

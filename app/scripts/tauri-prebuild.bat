@@ -1,23 +1,26 @@
 @echo off
 REM Called by Tauri's beforeBuildCommand.
-REM Moves API routes out, runs Next.js static export, restores them.
-REM API routes are dev-only; Tauri app uses Tauri commands for backend.
+REM Sprint 36.0: API routes are now served by the Node.js sidecar in production.
+REM No route stripping needed — sidecar build runs first, then Next.js static export.
 cd /d D:\Projects\GregLite\app
 
 set TAURI_BUILD=1
 
-REM Clean stale .next cache (has type refs to API routes)
+REM Clean stale .next cache (has type refs that may be stale)
 if exist .next (rmdir /s /q .next)
 
-REM Move API routes and middleware out (can't be statically exported)
-if exist app\api (move app\api app\_api_backup >nul)
-if exist app\middleware.ts (move app\middleware.ts app\_middleware_backup.ts >nul)
+REM ── Build the API sidecar (transpile + pkg -> binaries/) ─────────────────────
+echo [prebuild] Building API sidecar...
+call D:\Projects\GregLite\sidecar\build.bat
+if %errorlevel% neq 0 (
+  echo [prebuild] ERROR: sidecar build failed ^(exit %errorlevel%^)
+  exit /b %errorlevel%
+)
+echo [prebuild] Sidecar build OK
 
+REM ── Next.js static export ────────────────────────────────────────────────────
+echo [prebuild] Running Next.js build...
 call pnpm build
 set BUILD_ERR=%errorlevel%
-
-REM Always restore regardless of build result
-if exist app\_api_backup (move app\_api_backup app\api >nul)
-if exist app\_middleware_backup.ts (move app\_middleware_backup.ts app\middleware.ts >nul)
 
 exit /b %BUILD_ERR%

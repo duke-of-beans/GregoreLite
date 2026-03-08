@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 /**
  * ManifestDetail — sidebar panel shown when a node is clicked.
  * Displays manifest metadata, cost, timestamps, and a Restart button
@@ -40,7 +41,7 @@ export function ManifestDetail({ node, onClose }: ManifestDetailProps) {
       if (!res.ok) throw new Error(`Failed to fetch manifest: ${res.status}`);
       const original = await res.json();
 
-      const spawnRes = await fetch('/api/jobs', {
+      const spawnRes = await apiFetch('/api/jobs', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...original, manifest_id: undefined }),

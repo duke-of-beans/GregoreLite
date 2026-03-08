@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 /**
  * OnboardingChat — Sprint 25.0
  *
@@ -193,7 +194,7 @@ export function OnboardingChat({ scan, inferred, questions, onApproved, onReset 
       // Last answer — generate DNA preview
       setMessages((prev) => [...prev, userMsg]);
       try {
-        const res = await fetch('/api/portfolio/onboarding-questions', {
+        const res = await apiFetch('/api/portfolio/onboarding-questions', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ scanResult: scan, answers: newAnswers, inferredType: inferred, projectName }),

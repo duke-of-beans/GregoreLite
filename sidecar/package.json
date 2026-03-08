@@ -1,0 +1,30 @@
+{
+  "name": "greglite-sidecar",
+  "version": "1.1.0",
+  "description": "GregLite production API sidecar — serves all /api/* routes in installed Tauri build",
+  "private": true,
+  "scripts": {
+    "build": "tsx build.ts",
+    "pkg": "pkg dist/server.js --target node18-win-x64 --output server.exe"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.6.0",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "keytar": "^7.9.0",
+    "sqlite-vec": "0.1.7-alpha.10"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20",
+    "pkg": "^5.8.1",
+    "esbuild": "^0.24.2",
+    "tsx": "^4.19.2"
+  },
+  "pkg": {
+    "targets": ["node18-win-x64"],
+    "assets": ["**/*.node", "**/*.sql", "**/*.wasm"]
+  }
+}

@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 /**
  * MorningBriefing — Sprint 30.0
  *
@@ -23,7 +24,7 @@ export function MorningBriefing({ onDismiss }: MorningBriefingProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/morning-briefing')
+    apiFetch('/api/morning-briefing')
       .then((res) => res.json())
       .then((body) => {
         setBriefing(body.data?.briefing ?? null);
@@ -34,7 +35,7 @@ export function MorningBriefing({ onDismiss }: MorningBriefingProps) {
 
   const handleDismiss = useCallback(() => {
     // Mark as shown for today
-    void fetch('/api/morning-briefing', { method: 'POST' });
+    void apiFetch('/api/morning-briefing', { method: 'POST' });
     onDismiss();
   }, [onDismiss]);
 

@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 ﻿/**
  * CaptureSection — Sprint 29.0
  *
@@ -27,7 +28,7 @@ export function CaptureSection() {
 
   useEffect(() => {
     // Load from kernl_settings
-    fetch('/api/settings?keys=capture_smart_merge,capture_default_project,capture_inbox_badge')
+    apiFetch('/api/settings?keys=capture_smart_merge,capture_default_project,capture_inbox_badge')
       .then((r) => r.json())
       .then((data: Record<string, string>) => {
         setSettings({
@@ -38,7 +39,7 @@ export function CaptureSection() {
       })
       .catch(() => null);
 
-    fetch('/api/portfolio/projects?status=active')
+    apiFetch('/api/portfolio/projects?status=active')
       .then((r) => r.json())
       .then((data: { projects?: { id: string; name: string }[] }) => {
         if (Array.isArray(data?.projects)) setProjects(data.projects);
@@ -49,7 +50,7 @@ export function CaptureSection() {
   const save = async (patch: Partial<CaptureSettings>) => {
     const next = { ...settings, ...patch };
     setSettings(next);
-    await fetch('/api/settings', {
+    await apiFetch('/api/settings', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

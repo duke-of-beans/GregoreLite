@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 /**
  * JobQueue — Sprint 7F
  *
@@ -46,7 +47,7 @@ export function JobQueue() {
 
   const fetchJobs = useCallback(async () => {
     try {
-      const res = await fetch('/api/agent-sdk/jobs');
+      const res = await apiFetch('/api/agent-sdk/jobs');
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = await res.json() as { data: AgentJobView[] };
       setJobs(json.data ?? []);
@@ -60,7 +61,7 @@ export function JobQueue() {
 
   const fetchDailyTotal = useCallback(async () => {
     try {
-      const res = await fetch('/api/agent-sdk/budget');
+      const res = await apiFetch('/api/agent-sdk/budget');
       if (!res.ok) return;
       const json = await res.json() as {
         data?: { daily_total_usd?: number; daily_hard_cap_usd?: number };

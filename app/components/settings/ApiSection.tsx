@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 /**
  * ApiSection — S9-13
  * Shows API key status — configured or not.
@@ -14,7 +15,7 @@ export function ApiSection() {
     // Check if API key is configured by testing if we can reach our own API
     void (async () => {
       try {
-        const res = await fetch('/api/agent-sdk/status');
+        const res = await apiFetch('/api/agent-sdk/status');
         if (res.ok) {
           const body = await res.json() as { data?: { apiKeyConfigured?: boolean } };
           setConfigured(body.data?.apiKeyConfigured ?? false);

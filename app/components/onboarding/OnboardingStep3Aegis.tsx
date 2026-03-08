@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 'use client';
 
 /**
@@ -20,7 +21,7 @@ export function OnboardingStep3Aegis({ onComplete }: Props) {
 
   async function checkAegis() {
     try {
-      const res = await fetch('/api/onboarding', {
+      const res = await apiFetch('/api/onboarding', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'check-aegis' }),

@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 'use client';
 
 /**
@@ -34,7 +35,7 @@ export default function Home() {
 
   async function checkFirstRun() {
     try {
-      const res = await fetch('/api/onboarding');
+      const res = await apiFetch('/api/onboarding');
       const data = await res.json();
       setShowOnboarding(!data.data?.firstRunComplete);
     } catch {

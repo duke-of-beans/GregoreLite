@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 'use client';
 
 /**
@@ -41,7 +42,7 @@ export function EoSIssueRow({ issue, projectId, onDismissed }: EoSIssueRowProps)
     if (loading) return;
     setLoading(true);
     try {
-      const res = await fetch('/api/eos/fp', {
+      const res = await apiFetch('/api/eos/fp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

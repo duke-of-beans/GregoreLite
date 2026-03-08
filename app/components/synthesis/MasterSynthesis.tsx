@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/api-client';
 'use client';
 
 /**
@@ -145,7 +146,7 @@ export function MasterSynthesis({ synthesis: propSynthesis, onDismiss, fullScree
   // Load from API if not provided
   useEffect(() => {
     if (propSynthesis !== undefined) return;
-    fetch('/api/synthesis/master')
+    apiFetch('/api/synthesis/master')
       .then((r) => r.json())
       .then((data: { synthesis: MasterSynthesisType | null }) => {
         setSynthesis(data.synthesis);
@@ -184,7 +185,7 @@ export function MasterSynthesis({ synthesis: propSynthesis, onDismiss, fullScree
           <button
             onClick={() => {
               setIsLoading(true);
-              fetch('/api/synthesis/generate-master', { method: 'POST' })
+              apiFetch('/api/synthesis/generate-master', { method: 'POST' })
                 .then((r) => r.json())
                 .then((d: { synthesis: MasterSynthesisType }) => {
                   setSynthesis(d.synthesis);
