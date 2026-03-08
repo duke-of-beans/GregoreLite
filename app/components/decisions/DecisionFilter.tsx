@@ -1,9 +1,9 @@
+'use client';
 /**
  * DecisionFilter — S9-16
  * Left sidebar: project dropdown, category multi-select, impact checkboxes, date range, search.
  */
 
-'use client';
 
 import { useState, useCallback } from 'react';
 

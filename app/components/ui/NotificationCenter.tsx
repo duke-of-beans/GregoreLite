@@ -1,3 +1,4 @@
+'use client';
 /**
  * NotificationCenter — Sprint S9-03
  *
@@ -5,7 +6,6 @@
  * grouped by severity. Includes mark-all-read action.
  */
 
-'use client';
 
 import { useUIStore, type Notification, type NotificationType } from '@/lib/stores/ui-store';
 

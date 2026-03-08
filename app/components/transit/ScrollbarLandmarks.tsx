@@ -1,3 +1,4 @@
+'use client';
 /**
  * ScrollbarLandmarks — Sprint 11.3
  * Transit Map Phase B: Scrollbar overlay showing conversation events as colored ticks.
@@ -10,7 +11,6 @@
  * Spec: TRANSIT_MAP_SPEC.md §3.4, §5
  */
 
-'use client';
 
 import { useState, useEffect } from 'react';
 import type { EnrichedEvent } from '@/lib/transit/types';

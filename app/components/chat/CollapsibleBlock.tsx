@@ -1,3 +1,4 @@
+'use client';
 /**
  * CollapsibleBlock — Sprint 10.6 / Sprint 15.0
  *
@@ -9,7 +10,6 @@
  * - Thinking blocks get subtle purple left border
  */
 
-'use client';
 
 import { useState } from 'react';
 import { useUIStore } from '@/lib/stores/ui-store';

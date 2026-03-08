@@ -1,3 +1,4 @@
+'use client';
 /**
  * EoSSparkLine — Sprint S9-09
  *
@@ -9,7 +10,6 @@
  * Falls back to plain score text when < 2 data points.
  */
 
-'use client';
 
 import { useState, useEffect } from 'react';
 

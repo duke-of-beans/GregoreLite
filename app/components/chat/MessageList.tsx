@@ -1,3 +1,4 @@
+'use client';
 /**
  * MessageList Component — Sprint S9-08 update
  *
@@ -8,7 +9,6 @@
  * Spec: docs/UI_UX_FINAL_DIRECTION.md Part 1.1
  */
 
-'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Message, type MessageProps } from './Message';

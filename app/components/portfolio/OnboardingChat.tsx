@@ -1,3 +1,4 @@
+'use client';
 import { apiFetch } from '@/lib/api-client';
 /**
  * OnboardingChat — Sprint 25.0
@@ -10,7 +11,6 @@ import { apiFetch } from '@/lib/api-client';
  * Voice: deadpan professional, data-forward, no exclamation marks.
  */
 
-'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { ONBOARDING } from '@/lib/voice/copy-templates';

@@ -1,9 +1,9 @@
+'use client';
 /**
  * ArtifactLibraryRow — S9-17
  * Single row in the artifact library: type badge, title, language, date.
  */
 
-'use client';
 
 const typeIcons: Record<string, string> = {
   file: '📄',

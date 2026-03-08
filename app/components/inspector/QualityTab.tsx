@@ -1,10 +1,10 @@
+'use client';
 /**
  * QualityTab — S9-14
  * Full code quality issue list (not just top 5) + quality sparkline.
  * Sprint 22.0: Added Attention Budget section (moved from StatusBar).
  */
 
-'use client';
 
 import { useState, useEffect } from 'react';
 import { useContextPanel } from '@/lib/context/context-provider';

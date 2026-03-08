@@ -1,6 +1,6 @@
 {
   "name": "greglite-sidecar",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "GregLite production API sidecar — serves all /api/* routes in installed Tauri build",
   "private": true,
   "scripts": {

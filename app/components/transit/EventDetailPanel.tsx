@@ -1,3 +1,4 @@
+'use client';
 /**
  * EventDetailPanel — Sprint 11.4 (Z3 Detail Annotations)
  * Sprint 21.0: Replaced CSS slide-in-right with Framer Motion spring physics.
@@ -9,7 +10,6 @@
  * Spec: TRANSIT_MAP_SPEC.md §3.7
  */
 
-'use client';
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';

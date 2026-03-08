@@ -1,5 +1,5 @@
-import { apiFetch } from '@/lib/api-client';
 'use client';
+import { apiFetch } from '@/lib/api-client';
 
 /**
  * ExclusionLog — Sprint 6G

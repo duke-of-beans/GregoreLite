@@ -1,3 +1,4 @@
+'use client';
 /**
  * ReceiptFooter — Sprint 17.0
  *
@@ -17,7 +18,6 @@
  * Source: SPRINT_17_0_BRIEF.md Task 3, GREGORE_AUDIT.md §2 Pattern 1
  */
 
-'use client';
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';

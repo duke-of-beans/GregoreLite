@@ -1,3 +1,4 @@
+'use client';
 /**
  * CommandResult — Sprint S9-02
  *
@@ -5,7 +6,6 @@
  * badge, and keyboard shortcut (if defined). Highlights on selection.
  */
 
-'use client';
 
 import type { CommandDef } from '@/lib/command-registry';
 

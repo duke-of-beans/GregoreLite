@@ -1,3 +1,4 @@
+'use client';
 import { apiFetch } from '@/lib/api-client';
 /**
  * WebSessionSection — Sprint 32.0
@@ -7,7 +8,6 @@ import { apiFetch } from '@/lib/api-client';
  * and advanced governor limit overrides.
  */
 
-'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import { WEB_SESSION } from '@/lib/voice/copy-templates';

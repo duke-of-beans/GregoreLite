@@ -1,3 +1,4 @@
+'use client';
 /**
  * WelcomeModal — Sprint 38.0
  *
@@ -6,7 +7,6 @@
  * Framer Motion fade + scale animation. Semi-transparent backdrop.
  */
 
-'use client';
 
 import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import { useUIStore } from '@/lib/stores/ui-store';

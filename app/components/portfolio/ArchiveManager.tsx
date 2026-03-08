@@ -1,3 +1,4 @@
+'use client';
 /**
  * ArchiveManager — Sprint 25.0
  *
@@ -11,7 +12,6 @@
  * All copy from ONBOARDING.archive in copy-templates.ts.
  */
 
-'use client';
 
 import { useState, useEffect } from 'react';
 import { AlertTriangle, Trash2, CheckCircle, Clock } from 'lucide-react';

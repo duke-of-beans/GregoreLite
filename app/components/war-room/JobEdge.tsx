@@ -1,10 +1,10 @@
+'use client';
 /**
  * JobEdge — SVG path + arrowhead between two dependency nodes.
  * Draws a cubic bezier from the right edge of `from` to the left edge of `to`.
  * Sprint 2E — Dependency Graph UI
  */
 
-'use client';
 
 export interface JobEdgeProps {
   from: { x: number; y: number };

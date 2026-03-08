@@ -1,3 +1,4 @@
+'use client';
 /**
  * CommandPalette — Sprint S9-02
  *
@@ -6,7 +7,6 @@
  * executes. Grouped by category with visual headers.
  */
 
-'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useUIStore } from '@/lib/stores/ui-store';

@@ -1,3 +1,4 @@
+'use client';
 /**
  * SubwayMarkerDot — Sprint 11.5 (Z2 Subway View)
  *
@@ -7,7 +8,6 @@
  * Spec: TRANSIT_MAP_SPEC.md §3.2, §3.6
  */
 
-'use client';
 
 import type { EnrichedEvent } from '@/lib/transit/types';
 

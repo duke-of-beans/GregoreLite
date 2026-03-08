@@ -1,3 +1,4 @@
+'use client';
 /**
  * ProjectCard — Sprint 24.0
  *
@@ -10,7 +11,6 @@
  * Responsive: handled by parent grid (3/2/1 columns).
  */
 
-'use client';
 
 import { motion } from 'framer-motion';
 import { cardLift } from '@/lib/design/animations';

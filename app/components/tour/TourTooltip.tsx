@@ -1,3 +1,4 @@
+'use client';
 /**
  * TourTooltip — Sprint 38.0
  *
@@ -8,7 +9,6 @@
  * - Keyboard: Escape → skip, ArrowRight/Enter → advance.
  */
 
-'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence, type Variants } from 'framer-motion';

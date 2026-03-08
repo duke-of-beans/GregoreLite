@@ -1,10 +1,10 @@
+'use client';
 import { apiFetch } from '@/lib/api-client';
 /**
  * QualitySection — S9-13
  * Code quality thresholds and pattern analysis retry settings.
  */
 
-'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 

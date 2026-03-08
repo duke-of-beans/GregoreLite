@@ -1,9 +1,9 @@
+'use client';
 /**
  * AppearanceSection — Sprint 10.8 Task 8
  * Theme toggle + density selector.
  */
 
-'use client';
 
 import { useUIStore, type ThemeMode } from '@/lib/stores/ui-store';
 import { useDensityStore, type Density } from '@/lib/stores/density-store';

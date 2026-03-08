@@ -1,3 +1,4 @@
+'use client';
 import { apiFetch } from '@/lib/api-client';
 ﻿/**
  * CapturePad — Sprint 29.0
@@ -14,7 +15,6 @@ import { apiFetch } from '@/lib/api-client';
  * Captures in <3 seconds total UX time: open → type → Enter → toast → gone.
  */
 
-'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useUIStore } from '@/lib/stores/ui-store';

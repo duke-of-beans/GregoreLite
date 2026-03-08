@@ -1,3 +1,4 @@
+'use client';
 /**
  * JobNode — SVG foreignObject node representing a single manifest.
  * Status drives background color via GregLite CSS variables.
@@ -5,7 +6,6 @@
  * Sprint 2E — Dependency Graph UI
  */
 
-'use client';
 
 import { useEffect, useRef } from 'react';
 import type { GraphNode, NodeStatus } from '@/lib/war-room/types';

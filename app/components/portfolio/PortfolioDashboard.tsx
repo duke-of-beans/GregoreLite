@@ -1,3 +1,4 @@
+'use client';
 import { apiFetch } from '@/lib/api-client';
 /**
  * PortfolioDashboard — Sprint 24.0
@@ -12,7 +13,6 @@ import { apiFetch } from '@/lib/api-client';
  * Responsive grid: 3 columns at full width, 2 at <1024px, 1 at <768px.
  */
 
-'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { RefreshCw, FolderKanban, Plus } from 'lucide-react';

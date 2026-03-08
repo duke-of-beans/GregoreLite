@@ -1,3 +1,4 @@
+'use client';
 import { apiFetch } from '@/lib/api-client';
 /**
  * BudgetSettingsPanel — Sprint 7F
@@ -14,7 +15,6 @@ import { apiFetch } from '@/lib/api-client';
  * Saves via PATCH /api/agent-sdk/budget — writes to budget_config table.
  */
 
-'use client';
 
 import { useEffect, useState } from 'react';
 

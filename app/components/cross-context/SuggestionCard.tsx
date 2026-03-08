@@ -1,5 +1,5 @@
-import { apiFetch } from '@/lib/api-client';
 'use client';
+import { apiFetch } from '@/lib/api-client';
 
 /**
  * SuggestionCard — proactive suggestion card (Sprint 3G)

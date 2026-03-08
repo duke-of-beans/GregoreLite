@@ -1,10 +1,10 @@
+'use client';
 /**
  * DependencyGraph — SVG canvas rendering the full dependency graph.
  * Uses dagre for layout (layoutGraph), JobNode for nodes, JobEdge for edges.
  * Sprint 2E — Dependency Graph UI
  */
 
-'use client';
 
 import { useMemo } from 'react';
 import {

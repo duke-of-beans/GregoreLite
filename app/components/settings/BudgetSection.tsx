@@ -1,10 +1,10 @@
+'use client';
 import { apiFetch } from '@/lib/api-client';
 /**
  * BudgetSection — S9-13
  * Session soft/hard caps, daily hard cap — reads/writes budget_config.
  */
 
-'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 

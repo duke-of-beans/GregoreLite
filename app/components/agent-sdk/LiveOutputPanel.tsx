@@ -1,3 +1,4 @@
+'use client';
 /**
  * LiveOutputPanel — Sprint 7F
  *
@@ -8,7 +9,6 @@
  * Shows last 500 lines from ring buffer (active) or temp log file (finished).
  */
 
-'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 

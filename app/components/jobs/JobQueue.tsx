@@ -1,3 +1,4 @@
+'use client';
 /**
  * JobQueue
  *
@@ -7,7 +8,6 @@
  * BLUEPRINT §4.3 (Job Queue UI layout)
  */
 
-'use client';
 
 import { useEffect } from 'react';
 import { useJobStore } from '@/lib/stores/job-store';

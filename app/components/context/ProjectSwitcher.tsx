@@ -1,3 +1,4 @@
+'use client';
 import { apiFetch } from '@/lib/api-client';
 /**
  * ProjectSwitcher — S9-19
@@ -5,7 +6,6 @@ import { apiFetch } from '@/lib/api-client';
  * Triggered from ProjectSection on project name click.
  */
 
-'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 

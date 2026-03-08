@@ -1,3 +1,4 @@
+'use client';
 /**
  * ScrollToBottom — Sprint 10.6
  *
@@ -5,7 +6,6 @@
  * Pulses when new content arrives while scrolled up.
  */
 
-'use client';
 
 interface ScrollToBottomProps {
   visible: boolean;

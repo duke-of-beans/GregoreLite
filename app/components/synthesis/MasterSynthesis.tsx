@@ -1,5 +1,5 @@
-import { apiFetch } from '@/lib/api-client';
 'use client';
+import { apiFetch } from '@/lib/api-client';
 
 /**
  * MasterSynthesis — Sprint 28.0 Ceremonial Onboarding

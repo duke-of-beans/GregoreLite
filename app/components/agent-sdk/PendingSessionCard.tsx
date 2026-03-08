@@ -1,3 +1,4 @@
+'use client';
 /**
  * PendingSessionCard — Sprint 7F
  *
@@ -7,7 +8,6 @@
  * via scheduler.cancel()).
  */
 
-'use client';
 
 import { useState } from 'react';
 import type { AgentJobView } from './types';

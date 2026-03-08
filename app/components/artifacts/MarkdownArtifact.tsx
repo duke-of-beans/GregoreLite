@@ -1,3 +1,4 @@
+'use client';
 /**
  * MarkdownArtifact — Sprint 2D
  *
@@ -5,7 +6,6 @@
  * GFM adds: tables, strikethrough, task lists, autolink literals.
  */
 
-'use client';
 
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';

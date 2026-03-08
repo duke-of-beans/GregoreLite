@@ -1,3 +1,4 @@
+'use client';
 /**
  * EventMarkers — Sprint 11.4 (Z3 Detail Annotations)
  *
@@ -9,7 +10,6 @@
  *   triangle=context, hexagon=cognitive
  */
 
-'use client';
 
 import type { EnrichedEvent } from '@/lib/transit/types';
 import type { MarkerShape, MarkerSize } from '@/lib/transit/types';

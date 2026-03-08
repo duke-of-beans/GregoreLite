@@ -1,3 +1,4 @@
+'use client';
 /**
  * ArtifactPanel — Sprint 2D
  *
@@ -8,7 +9,6 @@
  * Layout: 40% width of the viewport when open (set by parent).
  */
 
-'use client';
 
 import type { Artifact } from '@/lib/artifacts/types';
 import { CodeArtifact } from './CodeArtifact';

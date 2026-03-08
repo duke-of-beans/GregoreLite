@@ -1,3 +1,4 @@
+'use client';
 import { apiFetch } from '@/lib/api-client';
 /**
  * ChatSidebar — Sprint 10.5 Task 2
@@ -10,7 +11,6 @@ import { apiFetch } from '@/lib/api-client';
  *   onLoadThread(conversationId) — already wired in ChatInterface.handleLoadThread
  */
 
-'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 

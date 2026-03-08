@@ -1,3 +1,4 @@
+'use client';
 /**
  * ThinkingIndicator — Sprint 10.6
  *
@@ -5,7 +6,6 @@
  * before the first text_delta arrives from the stream.
  */
 
-'use client';
 
 export function ThinkingIndicator() {
   return (

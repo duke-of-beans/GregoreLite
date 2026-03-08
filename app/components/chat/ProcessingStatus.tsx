@@ -1,10 +1,10 @@
+'use client';
 /**
  * ProcessingStatus — Sprint 10.6
  *
  * Shows tool/thinking status lines during streaming.
  */
 
-'use client';
 
 import { useState, useEffect } from 'react';
 

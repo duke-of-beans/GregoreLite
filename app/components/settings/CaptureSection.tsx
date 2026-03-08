@@ -1,3 +1,4 @@
+'use client';
 import { apiFetch } from '@/lib/api-client';
 ﻿/**
  * CaptureSection — Sprint 29.0
@@ -7,7 +8,6 @@ import { apiFetch } from '@/lib/api-client';
  * Follows the same inline-style pattern as RecallSection.tsx.
  */
 
-'use client';
 
 import { useState, useEffect } from 'react';
 import { CAPTURE } from '@/lib/voice/copy-templates';

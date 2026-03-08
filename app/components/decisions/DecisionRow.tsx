@@ -1,9 +1,9 @@
+'use client';
 /**
  * DecisionRow — S9-16
  * Single row in the decision list: impact badge, category, title, date.
  */
 
-'use client';
 
 const impactColors: Record<string, string> = {
   high: 'var(--error)',

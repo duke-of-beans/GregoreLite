@@ -1,3 +1,4 @@
+'use client';
 /**
  * AlreadyBuiltModal — "You Already Built This" interception gate (Sprint 3F)
  *
@@ -11,7 +12,6 @@
  * BLUEPRINT §5.4
  */
 
-'use client';
 
 import { useState } from 'react';
 import type { GateMatch } from '@/lib/cross-context/gate';

@@ -1,9 +1,9 @@
+'use client';
 /**
  * WarRoomEmpty — empty state shown when manifests table is empty.
  * Sprint 2E — Dependency Graph UI
  */
 
-'use client';
 
 export function WarRoomEmpty() {
   return (

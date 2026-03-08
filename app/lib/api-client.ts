@@ -24,14 +24,24 @@
 const SIDECAR_BASE = 'http://localhost:3717';
 
 /**
- * Detect whether we are running inside an installed Tauri app.
- * `__TAURI_INTERNALS__` is injected by Tauri into the WebView window object.
+ * Detect whether we are running inside an installed Tauri app
+ * AND the sidecar is expected to be running (i.e. production build).
+ *
+ * In `pnpm tauri dev`, Tauri injects __TAURI_INTERNALS__ into the WebView
+ * BUT the WebView is pointed at http://localhost:3000 (Next.js dev server)
+ * and the sidecar binary is NOT built/running. API calls must use relative
+ * paths so Next.js handles them natively.
+ *
+ * In the installed Tauri build, the frontend is served from tauri://localhost
+ * or a custom protocol — never http://localhost:3000 — so the sidecar check is safe.
  */
 function isTauri(): boolean {
-  return (
-    typeof window !== 'undefined' &&
-    '__TAURI_INTERNALS__' in window
-  );
+  if (typeof window === 'undefined') return false;
+  if (!('__TAURI_INTERNALS__' in window)) return false;
+  // In pnpm tauri dev, the WebView loads from http://localhost:3000.
+  // Treat that as dev mode: use relative paths, not the sidecar.
+  if (window.location.href.startsWith('http://localhost:')) return false;
+  return true;
 }
 
 /**

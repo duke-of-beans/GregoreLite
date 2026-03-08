@@ -1,3 +1,4 @@
+'use client';
 /**
  * SendButton Component
  * 
@@ -10,7 +11,6 @@
  * Design: docs/DESIGN_SYSTEM.md Part 3 (Send Button Component)
  */
 
-'use client';
 
 import { motion } from 'framer-motion';
 import { buttonPress } from '@/lib/design/animations';

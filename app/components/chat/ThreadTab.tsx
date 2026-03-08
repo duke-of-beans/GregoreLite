@@ -1,3 +1,4 @@
+'use client';
 /**
  * ThreadTab — Individual tab in the thread tab bar.
  *
@@ -8,7 +9,6 @@
  * when Decision Gate active in that tab.
  */
 
-'use client';
 
 import { useState, useRef, useEffect } from 'react';
 

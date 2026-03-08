@@ -1,3 +1,4 @@
+'use client';
 import { apiFetch } from '@/lib/api-client';
 /**
  * ManifestBuilder
@@ -11,7 +12,6 @@ import { apiFetch } from '@/lib/api-client';
  * BLUEPRINT §4.3 + §5.4 (ManifestBuilder + Already-Built Gate)
  */
 
-'use client';
 
 import { useCallback, useEffect, useState } from 'react';
 import { useJobStore } from '@/lib/stores/job-store';

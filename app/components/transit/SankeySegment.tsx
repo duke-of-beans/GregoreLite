@@ -1,3 +1,4 @@
+'use client';
 /**
  * SankeySegment — Sprint 11.6 (Z1 Sankey View)
  *
@@ -8,7 +9,6 @@
  * Spec: TRANSIT_MAP_SPEC.md §3.5
  */
 
-'use client';
 
 import { useState } from 'react';
 import type { SankeyNode } from '@/lib/transit/sankey';

@@ -1,3 +1,4 @@
+'use client';
 import { apiFetch } from '@/lib/api-client';
 /**
  * DecisionBrowser — S9-16
@@ -5,7 +6,6 @@ import { apiFetch } from '@/lib/api-client';
  * Triggered via command palette or Cmd+D.
  */
 
-'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import { DecisionFilter, type DecisionFilters } from './DecisionFilter';

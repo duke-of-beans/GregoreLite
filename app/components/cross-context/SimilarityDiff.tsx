@@ -1,3 +1,4 @@
+'use client';
 /**
  * SimilarityDiff — Monaco diff view (Sprint 3F)
  *
@@ -8,7 +9,6 @@
  * BLUEPRINT §5.4 — Monaco diff SSR pattern
  */
 
-'use client';
 
 import dynamic from 'next/dynamic';
 

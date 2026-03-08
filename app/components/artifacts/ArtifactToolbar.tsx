@@ -1,3 +1,4 @@
+'use client';
 /**
  * ArtifactToolbar — Sprint 2D
  *
@@ -5,7 +6,6 @@
  * Provides: language label | copy button | close / open-in-editor button.
  */
 
-'use client';
 
 import { useState } from 'react';
 import { Copy, Check, X, ExternalLink } from 'lucide-react';

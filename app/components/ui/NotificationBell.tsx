@@ -1,3 +1,4 @@
+'use client';
 /**
  * NotificationBell — Sprint S9-03
  *
@@ -5,7 +6,6 @@
  * Click opens NotificationCenter dropdown.
  */
 
-'use client';
 
 import { useState, useRef } from 'react';
 import { useUIStore } from '@/lib/stores/ui-store';

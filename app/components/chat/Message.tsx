@@ -1,3 +1,4 @@
+'use client';
 /**
  * Message Component — Sprint 2D update
  *
@@ -8,7 +9,6 @@
  * Design: docs/DESIGN_SYSTEM.md Part 3 (Message Rendering)
  */
 
-'use client';
 
 import { useState, useEffect } from 'react';
 import { Copy, Check, ExternalLink } from 'lucide-react';

@@ -1,10 +1,10 @@
+'use client';
 /**
  * BriefingSection — Sprint S9-05
  *
  * Reusable section wrapper for morning briefing cards.
  */
 
-'use client';
 
 interface BriefingSectionProps {
   icon: string;

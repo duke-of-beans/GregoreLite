@@ -1,3 +1,4 @@
+'use client';
 /**
  * SubwayBranch — Sprint 11.5 (Z2 Subway View)
  *
@@ -8,7 +9,6 @@
  * Spec: TRANSIT_MAP_SPEC.md §3.6
  */
 
-'use client';
 
 export interface BranchSegment {
   /** X coordinate of fork point */

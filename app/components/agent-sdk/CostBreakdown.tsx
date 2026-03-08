@@ -1,3 +1,4 @@
+'use client';
 /**
  * CostBreakdown — Sprint S9-10
  *
@@ -7,7 +8,6 @@
  * Total row at bottom.
  */
 
-'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 

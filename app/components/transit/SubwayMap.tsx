@@ -1,3 +1,4 @@
+'use client';
 /**
  * SubwayMap — Sprint 11.5 (Z2 Subway View)
  *
@@ -12,7 +13,6 @@
  * Spec: TRANSIT_MAP_SPEC.md §3.3, §3.6
  */
 
-'use client';
 
 import { useMemo } from 'react';
 import { generateStations } from '@/lib/transit/stations';

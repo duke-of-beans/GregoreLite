@@ -1,3 +1,4 @@
+'use client';
 ﻿/**
  * CaptureToast — Sprint 29.0
  *
@@ -8,7 +9,6 @@
  * Voice: Greg's voice throughout. "Captured." not "Note saved successfully!"
  */
 
-'use client';
 
 import { useState, useEffect } from 'react';
 import { CAPTURE } from '@/lib/voice/copy-templates';

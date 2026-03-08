@@ -1,3 +1,4 @@
+'use client';
 /**
  * ZoomController — Sprint 11.6 (Z1 Sankey View)
  *
@@ -10,7 +11,6 @@
  * Spec: TRANSIT_MAP_SPEC.md §1.1
  */
 
-'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 

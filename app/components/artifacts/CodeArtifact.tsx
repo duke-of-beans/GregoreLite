@@ -1,3 +1,4 @@
+'use client';
 /**
  * CodeArtifact — Sprint 2D
  *
@@ -7,7 +8,6 @@
  * Phase 2: read-only. Phase 3: editable with write-back.
  */
 
-'use client';
 
 import dynamic from 'next/dynamic';
 import type { Artifact } from '@/lib/artifacts/types';

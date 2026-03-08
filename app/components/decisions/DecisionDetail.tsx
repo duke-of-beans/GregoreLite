@@ -1,9 +1,9 @@
+'use client';
 /**
  * DecisionDetail — S9-16
  * Right panel: full rationale, alternatives, thread link.
  */
 
-'use client';
 
 interface DecisionFull {
   id: string;

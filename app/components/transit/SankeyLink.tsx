@@ -1,3 +1,4 @@
+'use client';
 /**
  * SankeyLink — Sprint 11.6 (Z1 Sankey View)
  *
@@ -8,7 +9,6 @@
  * Spec: TRANSIT_MAP_SPEC.md §3.5
  */
 
-'use client';
 
 export interface SankeyLinkProps {
   sourceX: number;

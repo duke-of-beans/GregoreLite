@@ -1,3 +1,4 @@
+'use client';
 /**
  * InspectorDrawer — Sprint S9-14
  * Spring animation — Sprint 21.0
@@ -9,7 +10,6 @@
  * Backdrop: fadeIn. Drawer: drawerSlide (springs in from right, eases out).
  */
 
-'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';

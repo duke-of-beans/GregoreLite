@@ -1,10 +1,10 @@
+'use client';
 import { apiFetch } from '@/lib/api-client';
 /**
  * ApiSection — S9-13
  * Shows API key status — configured or not.
  */
 
-'use client';
 
 import { useState, useEffect } from 'react';
 

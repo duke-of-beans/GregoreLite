@@ -1,0 +1,1 @@
+release: v1.1.1 patch -- UX overhaul, tour fix, settings modal, DB migration fix

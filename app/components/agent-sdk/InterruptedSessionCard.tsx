@@ -1,3 +1,4 @@
+'use client';
 /**
  * InterruptedSessionCard — Sprint 7F
  *
@@ -10,7 +11,6 @@
  * the new session will appear in the job queue on the next poll.
  */
 
-'use client';
 
 import { useState } from 'react';
 import type { AgentJobView } from './types';

@@ -1,3 +1,4 @@
+'use client';
 /**
  * KeyboardShortcuts Component
  * 
@@ -7,7 +8,6 @@
  * Spec: docs/UI_UX_FINAL_DIRECTION.md Part 9 (Keyboard Shortcuts)
  */
 
-'use client';
 
 export interface KeyboardShortcutsProps {
   isOpen: boolean;

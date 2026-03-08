@@ -1,3 +1,4 @@
+'use client';
 /**
  * ToastStack — Sprint S9-03
  *
@@ -10,7 +11,6 @@
  * released automatically when focus drops.
  */
 
-'use client';
 
 import { useState, useEffect, useRef } from 'react';
 import { useUIStore } from '@/lib/stores/ui-store';

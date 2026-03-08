@@ -1,3 +1,4 @@
+'use client';
 /**
  * WarRoom — main War Room view.
  * Polls KERNL for manifests, renders the dependency graph, and shows a
@@ -5,7 +6,6 @@
  * Sprint 2E — Dependency Graph UI
  */
 
-'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import { startWarRoomPolling } from '@/lib/war-room/poller';

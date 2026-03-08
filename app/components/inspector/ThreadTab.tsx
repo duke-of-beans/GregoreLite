@@ -1,9 +1,9 @@
+'use client';
 /**
  * ThreadTab — S9-14
  * Current thread stats: token count, message count, last checkpoint.
  */
 
-'use client';
 
 import { useThreadTabsStore, selectActiveTab } from '@/lib/stores/thread-tabs-store';
 

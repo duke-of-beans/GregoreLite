@@ -1,3 +1,4 @@
+'use client';
 /**
  * StartupSection — Sprint 31.0
  *
@@ -12,7 +13,6 @@
  * Follows the inline-style pattern established by CaptureSection.tsx.
  */
 
-'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import { STARTUP } from '@/lib/voice/copy-templates';

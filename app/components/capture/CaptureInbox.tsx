@@ -1,3 +1,4 @@
+'use client';
 import { apiFetch } from '@/lib/api-client';
 ﻿/**
  * CaptureInbox — Sprint 29.0
@@ -10,7 +11,6 @@ import { apiFetch } from '@/lib/api-client';
  * or the Portfolio tab badge.
  */
 
-'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import type { CaptureInboxItem, CaptureClassification } from '@/lib/capture/types';

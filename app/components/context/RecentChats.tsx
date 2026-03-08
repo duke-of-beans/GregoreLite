@@ -1,3 +1,4 @@
+'use client';
 import { apiFetch } from '@/lib/api-client';
 /**
  * RecentChats — Sprint 10.6 Task 6, wired to KERNL in Sprint 10.8 Task 4
@@ -7,7 +8,6 @@ import { apiFetch } from '@/lib/api-client';
  * sourced from KERNL threads (not ConversationRepository).
  */
 
-'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 

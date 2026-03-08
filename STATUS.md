@@ -1,13 +1,13 @@
 # GREGLITE — STATUS
-**Last Updated:** March 8, 2026 — Sprint 39.0 shipped. UX overhaul: ContextLibrary bg+rename, portfolio_projects DB fix, Settings full-window modal, StatusBar visible collapsed state, Tour expanded to 10 steps, HelpPopover component, onboarding Import step, copy audit (SETTINGS_TABS, HELP_CONTENT, TOUR.steps[8-9]). TSC 0 errors.
-**Version:** v1.1.0 ✅ SHIPPED (post-release patch: Sprints 36/37/38 complete, rebuild pending)
+**Last Updated:** March 8, 2026 — v1.1.1 patch release built
+**Version:** v1.1.1 ✅ SHIPPED
 **Test Count:** 1769/1769 (1 pre-existing flake in war-room.test.ts under parallel load — passes 21/21 in isolation)
 **EoS Health:** 100/100
 **TSC:** 0 errors
-**Next:** Cut v1.1.1 patch release — rebuild installer with sidecar binary + UX/tour changes, publish to GitHub releases
+**Next:** Publish v1.1.1 to GitHub releases (installer built: Gregore Lite_1.1.1_x64-setup.exe, 20.8 MB). No .sig — TAURI_SIGNING_PRIVATE_KEY not set, expected for unsigned build.
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md — ALL PHASES (A–F) SHIPPED.
-**Recent commits:** 33fd321 (Sprint 39.0 UX overhaul), 2d397ab (Sprint 37.0 UX polish), ebbf75e (Sprint 38.0 onboarding tour), Sprint 36.0 (sidecar), 0ae1afe (release: v1.1.0)
+**Recent commits:** d4a962e (Sprint 39.0 docs), 33fd321 (Sprint 39.0 UX overhaul), 2d397ab (Sprint 37.0 UX polish), ebbf75e (Sprint 38.0 onboarding tour), 0ae1afe (release: v1.1.0)
 
 - [x] **SPRINT 39.0** — UX Overhaul: Onboarding, Tour, Navigation & Discoverability — **COMPLETE**
   - **Deliverable:** 13 files changed, 2 new files (HelpPopover.tsx, OnboardingStep5Import.tsx). TSC 0 errors. Commit: 33fd321.
@@ -19,6 +19,8 @@
   - **Task 6 — HelpPopover:** New `app/components/ui/HelpPopover.tsx` — inline `?` button, fixed-position popover, Escape/outside-click dismiss, reads `HELP_CONTENT[helpKey]`. Exported from `ui/index.ts`.
   - **Task 7 — OnboardingFlow:** New `OnboardingStep5Import.tsx` (IMPORT copy + drop-zone shell). Wizard expanded 4→5 steps: Import inserted at index 3, Ready shifted to index 4.
   - **Task 8 — copy-templates.ts:** TOUR.steps 8→10 entries (Transit + Projects); `SETTINGS_TABS.memory_ghost` "Memory & Ghost" → "Memory & Background"; new `HELP_CONTENT` export (quality + 5 settings keys); `IMPORT.done_for_now` added. No user-facing AEGIS/KERNL/Ghost Thread jargon remaining.
+  - **Task 9 — TSC gate:** Two errors caught and fixed — unused `ChevronUp` import in StatusBar.tsx, missing `IMPORT.done_for_now` in copy-templates.ts. Clean exit 0.
+  - **Commits:** `33fd321` feat(ux): Sprint 39.0 — 13 files, 667 insertions/178 deletions, 2 new components | `d4a962e` docs: STATUS.md updated
 
 ### ⚠️ GROUND TRUTH AUDIT (March 4, 2026)
 1. ~~Transit Map "data foundation" listed in Sprint 10.6 was NOT shipped.~~ RESOLVED: Sprint 11.2 shipped data foundation (conversation_events table, 26 event types, capture hooks). commit 37d60af.

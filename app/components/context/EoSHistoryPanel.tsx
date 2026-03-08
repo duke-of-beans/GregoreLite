@@ -1,3 +1,4 @@
+'use client';
 /**
  * EoSHistoryPanel — Sprint S9-09
  *
@@ -6,7 +7,6 @@
  * Click a row to expand and see the full issues_json for that scan.
  */
 
-'use client';
 
 import { useState, useEffect } from 'react';
 

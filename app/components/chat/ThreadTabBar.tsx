@@ -1,3 +1,4 @@
+'use client';
 /**
  * ThreadTabBar — Horizontal tab strip for multi-thread strategic tabs.
  *
@@ -8,7 +9,6 @@
  * Only visible when activeTab === 'strategic'.
  */
 
-'use client';
 
 import {
   useThreadTabsStore,

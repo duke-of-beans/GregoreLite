@@ -1,3 +1,4 @@
+'use client';
 import { apiFetch } from '@/lib/api-client';
 /**
  * MorningBriefing — Sprint 30.0
@@ -7,7 +8,6 @@ import { apiFetch } from '@/lib/api-client';
  * Can be re-opened from command palette.
  */
 
-'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import { X } from 'lucide-react';

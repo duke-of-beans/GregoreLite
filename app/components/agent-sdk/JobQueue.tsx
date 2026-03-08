@@ -1,3 +1,4 @@
+'use client';
 import { apiFetch } from '@/lib/api-client';
 /**
  * JobQueue — Sprint 7F
@@ -14,7 +15,6 @@ import { apiFetch } from '@/lib/api-client';
  * Budget settings accessible via the DailyBurnBadge header click.
  */
 
-'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { JobCard } from './JobCard';

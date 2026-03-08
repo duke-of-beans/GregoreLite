@@ -1,3 +1,4 @@
+'use client';
 /**
  * CustomScrollbar — Sprint 10.6
  *
@@ -5,7 +6,6 @@
  * conversation landmarks: code blocks, user messages, interruptions.
  */
 
-'use client';
 
 import { useMemo } from 'react';
 import type { MessageProps } from './Message';

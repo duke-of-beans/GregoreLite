@@ -1,3 +1,4 @@
+'use client';
 /**
  * ThreadSearch Component — Sprint S9-08
  *
@@ -12,7 +13,6 @@
  * - Escape closes and clears highlights
  */
 
-'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type { MessageProps } from './Message';

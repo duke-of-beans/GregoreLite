@@ -1,3 +1,4 @@
+'use client';
 import { apiFetch } from '@/lib/api-client';
 /**
  * AddProjectFlow — Sprint 25.0
@@ -14,7 +15,6 @@ import { apiFetch } from '@/lib/api-client';
  * All copy from ONBOARDING in copy-templates.ts.
  */
 
-'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import { X, ChevronLeft, FolderOpen, Loader } from 'lucide-react';

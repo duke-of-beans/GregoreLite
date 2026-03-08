@@ -1,3 +1,4 @@
+'use client';
 /**
  * SandpackArtifact — Sprint 2D
  *
@@ -5,7 +6,6 @@
  * Uses Next.js dynamic import with ssr: false — Sandpack requires the browser.
  */
 
-'use client';
 
 import dynamic from 'next/dynamic';
 import type { Artifact } from '@/lib/artifacts/types';

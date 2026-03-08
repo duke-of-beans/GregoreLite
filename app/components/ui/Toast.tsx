@@ -1,3 +1,4 @@
+'use client';
 /**
  * Toast — Sprint S9-03
  *
@@ -5,7 +6,6 @@
  * optional message, and dismiss button. Slide-in animation from right.
  */
 
-'use client';
 
 import { useEffect, useRef } from 'react';
 import type { Notification, NotificationType } from '@/lib/stores/ui-store';

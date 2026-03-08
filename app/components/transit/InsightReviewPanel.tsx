@@ -1,3 +1,4 @@
+'use client';
 import { apiFetch } from '@/lib/api-client';
 /**
  * InsightReviewPanel — Transit Map Learning Engine UI
@@ -8,7 +9,6 @@ import { apiFetch } from '@/lib/api-client';
  * Confidence bars color-coded: red <50, amber 50–70, green 70+.
  */
 
-'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import type { LearningInsight } from '@/lib/transit/learning/types';

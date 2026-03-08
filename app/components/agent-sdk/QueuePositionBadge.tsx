@@ -1,3 +1,4 @@
+'use client';
 /**
  * QueuePositionBadge — Sprint 7E
  *
@@ -10,7 +11,6 @@
  *   throttled    - true when the queue position is due to rate limiting
  */
 
-'use client';
 
 interface QueuePositionBadgeProps {
   position: number | null;

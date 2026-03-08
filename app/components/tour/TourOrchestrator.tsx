@@ -1,3 +1,4 @@
+'use client';
 /**
  * TourOrchestrator — Sprint 38.0
  *
@@ -11,7 +12,6 @@
  * Does NOT block the app. Missing target elements are skipped silently by TourTooltip.
  */
 
-'use client';
 
 import { useEffect, useState } from 'react';
 import { AnimatePresence } from 'framer-motion';

@@ -1,10 +1,10 @@
+'use client';
 /**
  * ArtifactLibrary — S9-17
  * Right-side drawer for browsing all artifacts across sessions.
  * Filters: project, type, language, date. Search by title.
  */
 
-'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import { ArtifactLibraryRow } from './ArtifactLibraryRow';

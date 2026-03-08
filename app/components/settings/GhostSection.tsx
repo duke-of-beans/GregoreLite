@@ -1,3 +1,4 @@
+'use client';
 import { apiFetch } from '@/lib/api-client';
 /**
  * GhostSection — Sprint 20.0
@@ -11,7 +12,6 @@ import { apiFetch } from '@/lib/api-client';
  *  • Privacy Exclusions link → Privacy Dashboard modal
  */
 
-'use client';
 
 import { useEffect, useState, useCallback } from 'react';
 import { useGhostStore } from '@/lib/stores/ghost-store';

@@ -1,3 +1,4 @@
+'use client';
 /**
  * ProjectDetail — Sprint 24.0
  *
@@ -7,7 +8,6 @@
  * Escape key + close button to dismiss.
  */
 
-'use client';
 
 import { useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';

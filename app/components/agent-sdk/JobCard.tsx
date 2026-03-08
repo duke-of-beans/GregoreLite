@@ -1,3 +1,4 @@
+'use client';
 /**
  * JobCard — Sprint 7F
  *
@@ -16,7 +17,6 @@
  * Kill button shows inline confirmation: [Kill? Confirm ✕] [× Cancel]
  */
 
-'use client';
 
 import { useEffect, useState, useRef } from 'react';
 import { JobStatusBadge } from './JobStatusBadge';

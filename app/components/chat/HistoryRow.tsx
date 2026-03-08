@@ -1,3 +1,4 @@
+'use client';
 /**
  * HistoryRow — Sprint S9-12
  *
@@ -6,7 +7,6 @@
  * Right-click / long-press: rename, archive, pin.
  */
 
-'use client';
 
 import { useState, useRef, useEffect } from 'react';
 

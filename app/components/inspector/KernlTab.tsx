@@ -1,10 +1,10 @@
+'use client';
 import { apiFetch } from '@/lib/api-client';
 /**
  * KernlTab (Memory) — S9-14
  * Memory database stats: file size, total threads, total chunks, last indexer run.
  */
 
-'use client';
 
 import { useState, useEffect } from 'react';
 

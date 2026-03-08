@@ -1,3 +1,4 @@
+'use client';
 /**
  * TourSection — Sprint 38.0
  *
@@ -6,7 +7,6 @@
  * has time to close before the first tooltip fires.
  */
 
-'use client';
 
 import { useUIStore } from '@/lib/stores/ui-store';
 import { TOUR } from '@/lib/voice/copy-templates';

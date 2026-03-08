@@ -1,3 +1,4 @@
+'use client';
 /**
  * AegisSection (System Monitor) — Sprint 16.0
  * Always-connected system monitor status + profile selector.
@@ -5,7 +6,6 @@
  * Dev mode: shows "Dev Mode" badge; profile selector disabled.
  */
 
-'use client';
 
 import { useState, useEffect } from 'react';
 import { getStatus, switchProfile, isTauriAvailable } from '@/lib/aegis/client';

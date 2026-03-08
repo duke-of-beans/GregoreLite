@@ -1,3 +1,4 @@
+'use client';
 import { apiFetch } from '@/lib/api-client';
 /**
  * JobsTab — S9-14 / Sprint 19.0
@@ -5,7 +6,6 @@ import { apiFetch } from '@/lib/api-client';
  * Sprint 19.0: Action History section with per-entry undo (Law 3).
  */
 
-'use client';
 
 import { useState, useEffect } from 'react';
 import { useJobStore } from '@/lib/stores/job-store';

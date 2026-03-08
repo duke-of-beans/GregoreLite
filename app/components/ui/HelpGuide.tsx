@@ -1,3 +1,4 @@
+'use client';
 /**
  * HelpGuide — Sprint 23.0
  *
@@ -7,7 +8,6 @@
  * No jargon. Passes the Grandma Test.
  */
 
-'use client';
 
 import { useEffect } from 'react';
 import { GUIDE_ITEMS } from '@/lib/voice/copy-templates';

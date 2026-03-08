@@ -1,3 +1,4 @@
+'use client';
 /**
  * SubwayStationNode — Sprint 11.5 (Z2 Subway View)
  *
@@ -7,7 +8,6 @@
  * Spec: TRANSIT_MAP_SPEC.md §3.3, §3.6
  */
 
-'use client';
 
 import { useState, useCallback } from 'react';
 import type { Station } from '@/lib/transit/types';

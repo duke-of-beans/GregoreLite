@@ -1,5 +1,5 @@
-import { apiFetch } from '@/lib/api-client';
 'use client';
+import { apiFetch } from '@/lib/api-client';
 
 /**
  * GatePanel — non-modal Decision Gate panel (Blueprint §8, Sprint 18.0)

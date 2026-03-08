@@ -1,3 +1,4 @@
+'use client';
 /**
  * MessageMetadata — Sprint 11.4 (Z3 Detail Annotations)
  *
@@ -11,7 +12,6 @@
  * Spec: TRANSIT_MAP_SPEC.md §3.7
  */
 
-'use client';
 
 // ── Props ─────────────────────────────────────────────────────────────────────
 

@@ -1,3 +1,4 @@
+'use client';
 import { apiFetch } from '@/lib/api-client';
 /**
  * ManifestDetail — sidebar panel shown when a node is clicked.
@@ -6,7 +7,6 @@ import { apiFetch } from '@/lib/api-client';
  * Sprint 2E — Dependency Graph UI
  */
 
-'use client';
 
 import { useState } from 'react';
 import type { GraphNode, NodeStatus } from '@/lib/war-room/types';

@@ -1,3 +1,4 @@
+'use client';
 ﻿/**
  * CapturePadController — Sprint 29.0
  *
@@ -6,7 +7,6 @@
  * The CapturePad self-registers its keyboard shortcuts on mount.
  */
 
-'use client';
 
 import { useState, useCallback } from 'react';
 import { CapturePad } from './CapturePad';

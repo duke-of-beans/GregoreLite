@@ -1,3 +1,4 @@
+'use client';
 /**
  * ChatHistoryPanel — Sprint S9-12
  *
@@ -6,7 +7,6 @@
  * Search by title at top. Click loads thread into current tab.
  */
 
-'use client';
 
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useConversationStore } from '@/lib/stores/conversation-store';
