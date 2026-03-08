@@ -17,8 +17,9 @@ import { apiFetch } from '@/lib/api-client';
 'use client';
 
 import { useState, useEffect, useCallback, useRef, type ReactNode } from 'react';
-import { MessageSquare, Cpu, LayoutGrid, GitBranch } from 'lucide-react';
+import { MessageSquare, Cpu, LayoutGrid, GitBranch, FolderKanban } from 'lucide-react';
 import { PortfolioDashboard } from '@/components/portfolio/PortfolioDashboard';
+import { NAV } from '@/lib/voice/copy-templates';
 import { Header } from '../ui/Header';
 import { MessageList } from './MessageList';
 import { InputField } from './InputField';
@@ -1127,19 +1128,25 @@ export function ChatInterface() {
         ].join(' ')}
         aria-hidden={!portfolioOpen}
       >
-        {/* Overlay header bar */}
+        {/* Overlay header bar — Sprint 37.0: h1 + larger close + Esc hint */}
         <div className="flex h-14 flex-shrink-0 items-center justify-between border-b border-[var(--shadow)] bg-[var(--elevated)] px-4">
-          <span className="text-sm font-semibold text-[var(--ice-white)]">Projects</span>
-          <button
-            onClick={() => setPortfolioOpen(false)}
-            className="flex items-center justify-center rounded-lg border border-[var(--shadow)] bg-[var(--deep-space)] p-2 text-[var(--frost)] transition-colors hover:border-[var(--cyan)] hover:text-[var(--ice-white)]"
-            title="Close projects (Cmd+P)"
-            aria-label="Close projects overlay"
-          >
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+          <h1 className="flex items-center gap-2 text-base font-semibold text-[var(--ice-white)]">
+            <FolderKanban className="h-5 w-5 text-[var(--cyan)]" />
+            {NAV.projects_overlay_title}
+          </h1>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-[var(--mist)]">{NAV.projects_close_hint}</span>
+            <button
+              onClick={() => setPortfolioOpen(false)}
+              className="flex items-center justify-center rounded-lg border border-[var(--shadow)] bg-[var(--deep-space)] p-2 text-[var(--frost)] transition-colors hover:border-[var(--cyan)] hover:text-[var(--ice-white)]"
+              title="Close projects (Cmd+P)"
+              aria-label="Close projects overlay"
+            >
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
         {/* Portfolio content */}
         <div className="flex flex-1 overflow-hidden">

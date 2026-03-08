@@ -42,6 +42,7 @@ import { restoreRouter } from './routes/restore';
 import { settingsRouter } from './routes/settings';
 import { aegisRouter } from './routes/aegis';
 import { captureRouter } from './routes/capture';
+import { importRouter } from './routes/import';
 import { templatesRouter } from './routes/templates';
 import { healthRouter } from './routes/health';
 
@@ -108,6 +109,7 @@ app.use('/api/restore', restoreRouter);
 app.use('/api/settings', settingsRouter);
 app.use('/api/aegis', aegisRouter);
 app.use('/api/capture', captureRouter);
+app.use('/api/import', importRouter);
 app.use('/api/templates', templatesRouter);
 app.use('/api/health', healthRouter);
 

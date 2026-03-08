@@ -55,8 +55,8 @@ export const InputField = forwardRef<HTMLTextAreaElement, InputFieldProps>(
     };
 
     const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-      // ── Smart list continuation ───────────────────────────────────────────
-      if (e.key === 'Enter' && !e.shiftKey) {
+      // ── Smart list continuation (Enter AND Shift+Enter both trigger) ────────
+      if (e.key === 'Enter') {
         const textarea = internalRef.current;
         if (textarea) {
           const pos = textarea.selectionStart ?? value.length;
@@ -74,7 +74,7 @@ export const InputField = forwardRef<HTMLTextAreaElement, InputFieldProps>(
               onChange(newValue);
               setTimeout(() => textarea.setSelectionRange(lineStart, lineStart), 0);
             } else {
-              // Continue: increment number
+              // Continue: increment number (works for both Enter and Shift+Enter)
               const nextMarker = `${indent}${parseInt(num) + 1}. `;
               const newValue = value.slice(0, pos) + '\n' + nextMarker + value.slice(pos);
               onChange(newValue);
@@ -97,7 +97,7 @@ export const InputField = forwardRef<HTMLTextAreaElement, InputFieldProps>(
               onChange(newValue);
               setTimeout(() => textarea.setSelectionRange(lineStart, lineStart), 0);
             } else {
-              // Continue with same bullet
+              // Continue with same bullet (works for both Enter and Shift+Enter)
               const nextMarker = `${indent}${marker} `;
               const newValue = value.slice(0, pos) + '\n' + nextMarker + value.slice(pos);
               onChange(newValue);
@@ -110,16 +110,19 @@ export const InputField = forwardRef<HTMLTextAreaElement, InputFieldProps>(
           }
         }
 
-        // Normal Enter = submit
-        e.preventDefault();
-        if (value.trim() && !disabled) {
-          onSubmit();
-          // Reset height to minimum after send
-          if (internalRef.current) {
-            internalRef.current.style.height = 'auto';
+        // Plain Enter (no Shift) = submit; Shift+Enter outside a list = natural newline
+        if (!e.shiftKey) {
+          e.preventDefault();
+          if (value.trim() && !disabled) {
+            onSubmit();
+            // Reset height to minimum after send
+            if (internalRef.current) {
+              internalRef.current.style.height = 'auto';
+            }
           }
+          return;
         }
-        return;
+        // Shift+Enter outside a list: browser handles natural newline insertion
       }
 
       // ── Code block shortcut: third backtick → insert closing ``` ─────────
