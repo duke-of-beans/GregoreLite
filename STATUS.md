@@ -1,13 +1,13 @@
 # GREGLITE — STATUS
-**Last Updated:** March 7, 2026 — Sprint 32.0 COMPLETE. Headless Browser Mode: puppeteer-core engine, WebSessionGovernor (rate limiting + burst detection), selectors config, fallback router (api/web_session/auto), chat route integration, WebSessionSection settings UI, ReceiptFooter routedVia display. 1667 tests across 87 files.
+**Last Updated:** March 7, 2026 — Sprint 33.0 COMPLETE (EPIC-81 Sprint 1/3). Conversation Memory Import: DB migration (DROP CHECK on content_chunks, add imported_source_id, new imported_sources + imported_conversations tables), format adapters (claude.ai, ChatGPT, generic JSON), ZIP handler, import pipeline (chunk→embed→vec_index), 4 API routes, ImportSection drag-drop UI, Shimmer provenance badges, MemoryCard platform badge. 1696 tests across 88 files.
 **Version:** v1.1.0
-**Test Count:** 1667/1667 all green
+**Test Count:** 1696/1696 all green
 **EoS Health:** 100/100
 **TSC:** 0 errors
-**Next:** Sprint 30.0 in queue (UX Reality Check — 13 tasks). Brief: SPRINT_30_0_BRIEF.md.
+**Next:** Sprint 34.0 — Watchfolder + auto-ingest + StatusBar MEM chip (EPIC-81 Sprint 2/3)
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md — ALL PHASES (A–F) SHIPPED.
-**Recent commits:** f820ebd (Sprint 32.0 fallback), 494efed (Sprint 32.0 commit 2), a38bf15 (Sprint 32.0 commit 1), 0bff472 (Sprint 29.0), ab45ae6 (Sprint 28.0)
+**Recent commits:** f7f6dd1 (Sprint 30.0), 1226a7c (Sprint 32.0 docs), b96c596 (Sprint 31.0), 288eb6e (db migration fix), a381f68 (Sprint 29.0 docs)
 
 ### ⚠️ GROUND TRUTH AUDIT (March 4, 2026)
 1. ~~Transit Map "data foundation" listed in Sprint 10.6 was NOT shipped.~~ RESOLVED: Sprint 11.2 shipped data foundation (conversation_events table, 26 event types, capture hooks). commit 37d60af.
@@ -1131,6 +1131,26 @@ GregLite can now route chat messages through Claude's web interface instead of t
 | Voice copy | ✅ All 18 strings in WEB_SESSION export |
 | STATUS.md updated | ✅ Done |
 | Commits | ✅ a38bf15 (commit 1), 494efed (commit 2), f820ebd (fallback.ts) |
+
+## Sprint 33.0 — Import Pipeline + Historical Corpus
+**Status:** ✅ COMPLETE | **Date:** 2026-03-07
+
+### Deliverables
+- Import types: `lib/import/types.ts` — ImportFormat, ImportedMessage, ImportedConversation, ImportSource, ImportProgress
+- Adapters: claude-ai, chatgpt, generic-json (Shape A + B), adapter index with detectFormat/runAdapter
+- Zip handler: `lib/import/zip-handler.ts` — isZipBuffer, extractConversationsJson (jszip@3)
+- Pipeline: `lib/import/pipeline.ts` — chunkConversation (600-token / 50-overlap), runImport, progressStore
+- API routes: POST /api/import/upload, GET /api/import/progress/[sourceId], GET+DELETE /api/import/sources, DELETE /api/import/sources/[sourceId]
+- DB migration: content_chunks recreated (CHECK dropped), imported_sources + imported_conversations tables
+- Shimmer: source_platform added to ShimmerMatch, imported_conversations query leg, budget-guard safe
+- UI: ImportSection.tsx (288 lines) drag-drop zone, progress polling, sources list; SettingsPanel integration; MemoryCard platform badges
+- Voice copy: IMPORT strings in copy-templates.ts
+
+### Quality Gate
+- TSC: 0 new errors (pre-existing portfolio errors excluded)
+- Tests: 1696 / 1696 passing (+29 Sprint 33.0 tests)
+- Files: 88 / 88 test files pass
+
 
 ## Sprint 30.0 — UX Reality Check: Daily Driver Polish ✅ COMPLETE
 

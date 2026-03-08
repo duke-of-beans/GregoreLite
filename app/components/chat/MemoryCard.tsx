@@ -32,6 +32,18 @@ const SOURCE_COLORS: Record<ShimmerMatch['source'], string> = {
   ghost:    'var(--green-400)',
 };
 
+const PLATFORM_LABELS: Record<string, string> = {
+  claude_ai: 'Claude',
+  chatgpt:   'ChatGPT',
+  generic:   'Imported',
+};
+
+const PLATFORM_COLORS: Record<string, string> = {
+  claude_ai: 'var(--cyan)',
+  chatgpt:   'var(--green-400)',
+  generic:   'var(--mist)',
+};
+
 export function MemoryCard({ match, position, onClose, onNavigate }: MemoryCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -93,24 +105,46 @@ export function MemoryCard({ match, position, onClose, onNavigate }: MemoryCardP
       }}
     >
 
-      {/* Header row: badge + close */}
+      {/* Header row: badge(s) + close */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-        <span
-          style={{
-            display: 'inline-block',
-            padding: '2px 8px',
-            borderRadius: '12px',
-            fontSize: '11px',
-            fontWeight: 600,
-            letterSpacing: '0.04em',
-            textTransform: 'uppercase',
-            background: `${SOURCE_COLORS[match.source]}22`,
-            color: SOURCE_COLORS[match.source],
-            border: `1px solid ${SOURCE_COLORS[match.source]}44`,
-          }}
-        >
-          {SOURCE_LABELS[match.source]}
-        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span
+            style={{
+              display: 'inline-block',
+              padding: '2px 8px',
+              borderRadius: '12px',
+              fontSize: '11px',
+              fontWeight: 600,
+              letterSpacing: '0.04em',
+              textTransform: 'uppercase',
+              background: `${SOURCE_COLORS[match.source]}22`,
+              color: SOURCE_COLORS[match.source],
+              border: `1px solid ${SOURCE_COLORS[match.source]}44`,
+            }}
+          >
+            {SOURCE_LABELS[match.source]}
+          </span>
+
+          {/* Platform badge — only shown for imported conversation matches */}
+          {match.source_platform && (
+            <span
+              style={{
+                display: 'inline-block',
+                padding: '2px 8px',
+                borderRadius: '12px',
+                fontSize: '11px',
+                fontWeight: 600,
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+                background: `${PLATFORM_COLORS[match.source_platform] ?? 'var(--mist)'}22`,
+                color: PLATFORM_COLORS[match.source_platform] ?? 'var(--mist)',
+                border: `1px solid ${PLATFORM_COLORS[match.source_platform] ?? 'var(--mist)'}44`,
+              }}
+            >
+              {PLATFORM_LABELS[match.source_platform] ?? match.source_platform}
+            </span>
+          )}
+        </div>
         <button
           onClick={onClose}
           style={{

@@ -845,3 +845,36 @@ export const WEB_SESSION = {
   fallback_toast: (reason: string) => `Web session unavailable (${reason}). Falling back to API.`,
 
 } as const;
+
+// ── Sprint 33.0: Conversation Import ─────────────────────────────────────────
+export const IMPORT = {
+
+  // ── Settings section ──────────────────────────────────────────────────────
+  section_title:       'Memory Sources',
+  section_description: 'Import conversation history from other platforms so Shimmer can surface context across all your past work.',
+
+  // ── Drop zone ─────────────────────────────────────────────────────────────
+  dropzone_idle:        'Drop export file here, or click to browse',
+  dropzone_hint:        'Supports claude.ai exports (.zip), ChatGPT exports (.json), and generic JSON',
+  dropzone_dragging:    'Release to import',
+  dropzone_processing:  'Processing…',
+
+  // ── Progress states ───────────────────────────────────────────────────────
+  progress_running:     (processed: number, total: number) => `Importing ${processed} / ${total} conversations…`,
+  progress_complete:    (count: number, chunks: number) => `Done — ${count} conversations, ${chunks} memory chunks indexed`,
+  progress_error:       (msg: string) => `Import failed: ${msg}`,
+  progress_skipped:     (n: number) => `${n} already imported, skipped`,
+
+  // ── Source list ───────────────────────────────────────────────────────────
+  sources_empty:        'No imported sources yet.',
+  source_conversations: (n: number) => `${n} conversation${n !== 1 ? 's' : ''}`,
+  source_chunks:        (n: number) => `${n} chunk${n !== 1 ? 's' : ''} indexed`,
+  source_delete:        'Remove source',
+  source_delete_confirm:'Remove this source and all its memory chunks?',
+
+  // ── Platform labels ───────────────────────────────────────────────────────
+  platform_claude_ai:   'Claude',
+  platform_chatgpt:     'ChatGPT',
+  platform_generic:     'Imported',
+
+} as const;
