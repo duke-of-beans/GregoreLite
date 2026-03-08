@@ -200,41 +200,33 @@ No sprint briefs pending. Future work sourced from:
 
 ---
 
-## EPIC-81: Cross-Platform Conversation Memory Import ❌ MISSING
+## EPIC-81: Cross-Platform Conversation Memory Import ✅ SHIPPED (Sprints 33.0–35.0)
 **Spec:** `docs/CONVERSATION_IMPORT_SPEC.md`
-**Priority:** High — GregLite's memory is currently blind to all prior AI conversation history
+**Cert:** `EPIC81_COMPLETE.md`
+**Commits:** 4ea4b67 (Sprint 33.0) · 3fb2e96 (Sprint 34.0) · TBD (Sprint 35.0)
 
-### The Problem
-GregLite's memory (Shimmer, Ghost, cross-context retrieval) only knows about
-conversations that happened inside GregLite. Every Claude Desktop / claude.ai
-session, every ChatGPT exchange — none of it exists to Greg. This is a major
-blind spot given that the most valuable context often lives in older conversations.
+GregLite's memory was blind to all prior AI conversation history. EPIC-81 closes
+that gap with a full import pipeline, continuous sync daemon, and multi-format
+adapter layer covering claude.ai, ChatGPT, Gemini Takeout, and Markdown exports.
 
-### Discovery Finding (March 2026)
-Claude Desktop is an Electron wrapper around claude.ai. Its local storage is
-Chromium IndexedDB (LevelDB) — not SQLite, not directly readable. Claude Desktop
-and claude.ai share one backend. A single export from claude.ai Settings covers
-the complete conversation history across all surfaces (Desktop, web, mobile).
+### Sprint 33.0 — Import Pipeline + Historical Corpus ✅ SHIPPED (commit 4ea4b67)
+- `imported_sources` + `imported_conversations` tables with deduplication by `external_id`
+- `content_chunks` extended with `imported_source_id` for Shimmer provenance
+- Import pipeline: format detection → chunk (600 tokens, 50 overlap) → embed → sqlite-vec
+- Format adapters: `claude_ai_export` (ZIP/JSON), `chatgpt_export` (BFS tree walk), `generic_json`
+- Import UI: drag-and-drop panel, progress ring, Memory Sources list in Settings
+- Shimmer provenance: `source_platform` field on `ShimmerMatch` — platform badge on matches
+- API: POST /api/import/upload, GET /api/import/sources, GET /api/import/progress/:id
 
-### Sprint X.0 — Import Pipeline + Historical Corpus ❌ MISSING
-- `imported_sources` and `imported_conversations` tables (deduplication + provenance)
-- Extend `content_chunks` with `imported_source_id` for source tracking
-- Import pipeline: format detection → normalize → chunk → embed → index
-- Format adapters: `claude_ai_export` (ZIP/JSON), `chatgpt_export` (JSON), `generic_json`
-- Import UI: drag-and-drop panel, progress indicator, Memory Sources list in Settings
-- Shimmer provenance: platform badge on memory matches (shows source platform + date)
-- One-time historical corpus: user exports from claude.ai, drops in import panel
+### Sprint 34.0 — Watchfolder + Reminder (Ongoing Sync) ✅ SHIPPED (commit 3fb2e96)
+- `AutoIngestDaemon` with chokidar FSWatcher, 500ms debounce, wired into bootstrap
+- `moveToProcessed()` — collision-safe timestamp suffix, prevents re-processing on restart
+- Sync reminder: `shouldShowReminder()` triggers StatusBar MEM chip after 14 days without sync
+- API: GET/POST/DELETE /api/import/watchfolder
+- ImportSection watchfolder config panel (path input, reset, extension list)
 
-### Sprint X.1 — Watchfolder + Reminder (Ongoing Sync) ❌ MISSING
-- Watchfolder: Tauri `fs` watch on `~/GregLite/imports/` for new `.json`/`.zip` files
-- Auto-detect format → run import pipeline → notify user on completion
-- Move processed files to `imports/processed/` (prevents re-processing on restart)
-- Reminder notification: StatusBar indicator after N days without sync (default 14 days)
-- One-click link from reminder → claude.ai export page
-- Sync clock resets automatically when new file is processed
-- Configurable: sync reminder interval, watchfolder path, per-source enable/disable
-
-### Sprint X.2 — Additional Adapters (as needed) ❌ MISSING
-- Additional format adapters based on actual usage (Gemini Takeout, Cursor, etc.)
-- API sync for any platforms that eventually expose conversation history APIs
-- Multi-device export merge (handle overlapping content from different export dates)
+### Sprint 35.0 — Additional Adapters + Inspector ✅ SHIPPED (commit TBD)
+- `gemini.ts` adapter — Gemini Takeout JSON, `author: 'model'` → `'assistant'`, seconds-epoch normalisation
+- `markdown.ts` adapter — role-structured, markdown headers, raw text fallback; SHA-256 dedup
+- Adapter registry hardened: Gemini detection, markdown/text cases wired, `gemini_export` added to `ImportFormat`
+- MemoryTab Import Sources section: per-source rows with conv count, chunk count, last synced

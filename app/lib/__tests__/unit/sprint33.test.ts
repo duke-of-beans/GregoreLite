@@ -235,9 +235,10 @@ describe('runAdapter', () => {
     expect(result[0]!.source_platform).toBe('claude_ai');
   });
 
-  it('returns [] and does not throw for markdown format', () => {
+  it('does not throw for markdown format and returns an array', () => {
+    // Sprint 35.0: markdown adapter is now wired — returns parsed conversations
     expect(() => runAdapter('markdown', '# heading')).not.toThrow();
-    expect(runAdapter('markdown', '# heading')).toEqual([]);
+    expect(Array.isArray(runAdapter('markdown', '# heading'))).toBe(true);
   });
 });
 

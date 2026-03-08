@@ -13,6 +13,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import type { RecallEvent } from '@/lib/recall/types';
+import type { ImportSource } from '@/lib/import/types';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -99,6 +100,7 @@ export function MemoryTab() {
   const [running, setRunning] = useState(false);
   const [runResult, setRunResult] = useState<RunResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [importSources, setImportSources] = useState<ImportSource[]>([]);
 
   const fetchHistory = useCallback(async () => {
     setLoading(true);
@@ -118,6 +120,13 @@ export function MemoryTab() {
   useEffect(() => {
     void fetchHistory();
   }, [fetchHistory]);
+
+  useEffect(() => {
+    fetch('/api/import/sources')
+      .then((r) => r.ok ? r.json() as Promise<ImportSource[]> : Promise.resolve([]))
+      .then((sources) => setImportSources(sources))
+      .catch(() => { /* non-critical */ });
+  }, []);
 
   const handleRun = useCallback(async () => {
     if (running) return;
@@ -342,6 +351,57 @@ export function MemoryTab() {
                 )}
                 {ev.surfaced_at && !ev.user_action && (
                   <span style={{ color: 'rgba(255,191,36,0.6)' }}>● surfaced</span>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ── Import Sources (EPIC-81) ─────────────────────────────────── */}
+      <div style={{ ...SECTION_HEADER, marginTop: 20 }}>Import Sources</div>
+      {importSources.length === 0 ? (
+        <div style={{ fontSize: 12, color: 'var(--mist)', fontStyle: 'italic' }}>
+          No imported sources yet.{' '}
+          <span style={{ color: 'var(--frost)', cursor: 'pointer' }}>
+            Drop files in Settings → Import to get started.
+          </span>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+          {importSources.map((src) => (
+            <div
+              key={src.id}
+              style={{
+                padding: '6px 10px',
+                background: 'var(--surface)',
+                borderRadius: 6,
+                border: '1px solid var(--shadow)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <div>
+                <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--frost)' }}>
+                  {src.display_name}
+                </span>
+                <span
+                  style={{
+                    marginLeft: 8,
+                    fontSize: 10,
+                    color: 'var(--mist)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
+                >
+                  {src.source_type}
+                </span>
+              </div>
+              <div style={{ textAlign: 'right', fontSize: 10, color: 'var(--mist)' }}>
+                <div>{src.conversation_count} conv · {src.chunk_count} chunks</div>
+                {src.last_synced_at && (
+                  <div>{relTime(src.last_synced_at)}</div>
                 )}
               </div>
             </div>

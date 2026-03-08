@@ -1,6 +1,6 @@
 /**
  * Adapter Registry — format detection + dispatch
- * Sprint 33.0 / EPIC-81
+ * Sprint 33.0 / EPIC-81 (hardened Sprint 35.0)
  *
  * detectFormat()  — sniffs filename + content shape → ImportFormat
  * runAdapter()    — dispatches to the correct parser; never throws; returns [] on error
@@ -9,7 +9,9 @@
 import type { ImportFormat, ImportedConversation } from '../types';
 import { parseClaudeAiExport } from './claude-ai';
 import { parseChatGptExport } from './chatgpt';
+import { parseGeminiExport } from './gemini';
 import { parseGenericJson } from './generic-json';
+import { parseMarkdownExport } from './markdown';
 
 /**
  * Detect the import format from filename and parsed content.
@@ -45,6 +47,12 @@ export function detectFormat(filename: string, content: unknown): ImportFormat {
     return 'chatgpt_export';
   }
 
+  // Gemini Takeout: first item has a 'conversations' array (not 'chat_messages' / 'mapping')
+  if (Array.isArray(obj['conversations'])) {
+    console.debug('[import] detectFormat → gemini_export');
+    return 'gemini_export';
+  }
+
   console.debug('[import] detectFormat → generic_json');
   return 'generic_json';
 }
@@ -61,12 +69,13 @@ export function runAdapter(format: ImportFormat, content: unknown): ImportedConv
         return parseClaudeAiExport(content);
       case 'chatgpt_export':
         return parseChatGptExport(content);
+      case 'gemini_export':
+        return parseGeminiExport(content);
       case 'generic_json':
         return parseGenericJson(content);
       case 'markdown':
       case 'text':
-        // Handled by markdown adapter (Sprint 35.0); return [] for now
-        return [];
+        return parseMarkdownExport(content);
       default: {
         const _exhaustive: never = format;
         void _exhaustive;

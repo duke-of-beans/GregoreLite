@@ -6,6 +6,7 @@
 export type ImportFormat =
   | 'claude_ai_export'
   | 'chatgpt_export'
+  | 'gemini_export'
   | 'generic_json'
   | 'markdown'
   | 'text';

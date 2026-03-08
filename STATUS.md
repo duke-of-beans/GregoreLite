@@ -1,13 +1,13 @@
 # GREGLITE — STATUS
-**Last Updated:** March 7, 2026 — Sprint 34.0 COMPLETE (EPIC-81 Sprint 2/3). Watchfolder + auto-ingest daemon: chokidar FSWatcher, AutoIngestDaemon with 500ms debounce, daemon wired into bootstrap, watchfolder config API (GET/POST/DELETE /api/import/watchfolder), StatusBar MEM import chip, ImportSection watchfolder config panel, voice copy strings. 1717 tests across 89 files.
+**Last Updated:** March 7, 2026 — Sprint 35.0 COMPLETE (EPIC-81 Sprint 3/3 — EPIC COMPLETE). Gemini + Markdown adapters, adapter registry hardened, ImportFormat extended, MemoryTab Import Sources section, 27 new tests. EPIC-81 fully shipped: all 3 sprints, all format adapters, watchfolder daemon, sync reminder, cert doc. 1753 tests across 90 files.
 **Version:** v1.1.0
-**Test Count:** 1717/1717 all green
+**Test Count:** 1753/1753 all green
 **EoS Health:** 100/100
 **TSC:** 0 errors
-**Next:** Sprint 35.0 — Markdown adapter, Gemini adapter, Inspector Import Summary, EPIC-81 cert docs (EPIC-81 Sprint 3/3)
+**Next:** Post-EPIC-81 — next work from real usage feedback via Quick Capture Pad
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md — ALL PHASES (A–F) SHIPPED.
-**Recent commits:** 3fb2e96 (Sprint 34.0), f7f6dd1 (Sprint 30.0), 1226a7c (Sprint 32.0 docs), b96c596 (Sprint 31.0), 288eb6e (db migration fix)
+**Recent commits:** TBD (Sprint 35.0 / EPIC-81 complete), 3fb2e96 (Sprint 34.0), f7f6dd1 (Sprint 30.0), 1226a7c (Sprint 32.0 docs), b96c596 (Sprint 31.0)
 
 ### ⚠️ GROUND TRUTH AUDIT (March 4, 2026)
 1. ~~Transit Map "data foundation" listed in Sprint 10.6 was NOT shipped.~~ RESOLVED: Sprint 11.2 shipped data foundation (conversation_events table, 26 event types, capture hooks). commit 37d60af.
@@ -1131,6 +1131,27 @@ GregLite can now route chat messages through Claude's web interface instead of t
 | Voice copy | ✅ All 18 strings in WEB_SESSION export |
 | STATUS.md updated | ✅ Done |
 | Commits | ✅ a38bf15 (commit 1), 494efed (commit 2), f820ebd (fallback.ts) |
+
+## Sprint 35.0 — Gemini + Markdown Adapters + EPIC-81 Cert (EPIC-81 Sprint 3/3)
+
+**Date:** March 7, 2026
+**EPIC-81 Status:** ✅ COMPLETE — all 3 sprints shipped
+
+### Delivered
+- `app/lib/import/adapters/gemini.ts` — Google Gemini Takeout adapter. Maps `author: 'model'` → `'assistant'`, normalises seconds-epoch `createTime`, SHA-256 fallback external_id, `source_platform: 'gemini'`
+- `app/lib/import/adapters/markdown.ts` — `.md`/`.txt` adapter. Three-mode detection: role-structured (You:/Claude:), markdown headers (## You/## Claude), raw text fallback. SHA-256 external_id for deterministic dedup
+- `app/lib/import/adapters/index.ts` — hardened: Gemini detection in `detectFormat()`, markdown/text cases wired to `parseMarkdownExport()`, `gemini_export` case in `runAdapter()`
+- `app/lib/import/types.ts` — `ImportFormat` extended with `'gemini_export'`
+- `app/components/inspector/MemoryTab.tsx` — Import Sources section: `GET /api/import/sources`, per-source row (name, type, conv count, chunk count, last synced), empty state
+- `app/lib/__tests__/unit/sprint35.test.ts` — 27 tests covering both new adapters, updated format detection, updated routing, ImportFormat type completeness
+- `EPIC81_COMPLETE.md` — full 3-sprint cert doc
+
+### Quality Gate
+- TSC: 0 errors
+- Tests: 1753 / 1753 passing (+27 Sprint 35.0 tests, +9 from wired markdown adapter)
+- Commit: TBD
+
+---
 
 ## Sprint 34.0 — Watchfolder + Auto-Ingest Daemon (EPIC-81 Sprint 2/3)
 **Status:** ✅ COMPLETE | **Date:** 2026-03-07
