@@ -1,0 +1,18 @@
+Sprint 23.0 Phase C — Global Responsiveness
+
+globals.css:
+  - @media breakpoints at 1024px/768px/640px
+  - .job-queue-responsive, .status-metric-secondary, .receipt-footer-row, .chat-input-area
+  - pre/code overflow rules for horizontal scroll
+
+Components:
+  - ChatInterface.tsx: tab labels hidden lg:inline (icon-only at <1024px)
+  - Header.tsx: logo text hidden sm:inline (icon-only at <640px)
+  - StatusBar.tsx: SYSTEM/MEMORY/BACKGROUND/QUALITY secondary at <768px (COST+JOBS always on)
+  - ContextPanel.tsx: auto-collapse via matchMedia on narrow viewports
+  - InspectorDrawer.tsx: tab labels hidden lg:inline (icon-only at <1024px)
+  - JobQueue.tsx: job-queue-responsive class (full-width at <1024px)
+
+Docs: STATUS.md updated — Sprint 23.0 COMPLETE
+
+tsc: 0 errors | tests: 1344/1344 passed

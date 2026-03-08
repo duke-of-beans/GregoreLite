@@ -1,0 +1,24 @@
+feat(sprint-27): Ambient Memory — recall backend pipeline
+
+- lib/recall/types.ts: RecallEvent, RecallType, RecallUserAction, RecallUserHistory,
+  RecallCalibration, RecallSchedulerSettings interfaces + DEFAULT_RECALL_SETTINGS
+- lib/recall/detector.ts: runRecallDetection() + 5 strategies (file_revisit,
+  conversation_callback, project_milestone, pattern_insight, personal_moment)
+  — all heuristic, no LLM calls, server-side Node.js only
+- lib/recall/scorer.ts: scoreRecallEvent() with recency penalty, diversity bonus,
+  per-type dismissal/appreciation calibration; applyCalibration() for auto
+  frequency reduction; storeRecallEvents() + surfaceNextEvent() DB helpers
+- lib/recall/scheduler.ts: startRecallScheduler() / stopRecallScheduler() /
+  pauseRecallScheduler() / resumeRecallScheduler() — detection every 2h,
+  surface every 30min, both timers .unref(), max 3 surfaces/day
+- lib/ghost/lifecycle.ts: wired recall scheduler into start/stop/pause/resume
+- app/api/recall/active/route.ts: GET currently-surfaced event (4h window)
+- app/api/recall/action/route.ts: POST appreciated/dismissed/snoozed actions
+- app/api/recall/run/route.ts: POST manual detection trigger (Inspector)
+- app/api/recall/history/route.ts: GET last 50 events + aggregate stats
+- lib/portfolio/__tests__/sprint26.test.ts: fixed beforeEach unused import +
+  fsMod.default type cast (fsDefault helper)
+- lib/recall/__tests__/sprint27.test.ts: 24 tests — scorer, calibration,
+  frequency reduction steps, copy template shape + Greg voice assertions
+
+TypeScript gate: 0 errors. Test suite: 1464/1464 passing (75 files).

@@ -1,0 +1,2 @@
+L26:type GlobalWithWindow = typeof globalThis & { window?: { __TAURI_INTERNALS__?: unknown } };
+L35:(globalThis as GlobalWithWindow).window = { __TAURI_INTERNALS__: {} };

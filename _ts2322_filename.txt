@@ -1,0 +1,5 @@
+FILE=lib/__tests__/unit/startup/client.test.ts
+LINE=35
+COL=3
+CODE=TS2322
+MSG=Type '{ __TAURI_INTERNALS__: {}; }' is not assignable to type 'Window & typeof globalThis & { __TAURI_INTERNALS__?: unkn

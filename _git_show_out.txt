@@ -1,0 +1,25 @@
+commit 4ea4b67eb69f78564ccb53252cb7ae206ebe4858
+Author: David Kirsch <your-email@example.com>
+Date:   Sat Mar 7 16:52:02 2026 -0800
+
+    feat(epic-81/s33): Import Pipeline + Historical Corpus
+    
+    - Add import types: ImportFormat, ImportedMessage, ImportedConversation, ImportSource, ImportProgress
+    - Add adapters: claude-ai, chatgpt, generic-json (Shape A+B), detectFormat/runAdapter
+    - Add zip-handler: isZipBuffer, extractConversationsJson (jszip@3)
+    - Add pipeline: chunkConversation (600-token/50-overlap), runImport, progressStore
+    - Add API routes: POST upload, GET progress/[sourceId], GET+DELETE sources/[sourceId]
+    - DB migration: content_chunks recreated (CHECK dropped), imported_sources + imported_conversations
+    - Shimmer: source_platform on ShimmerMatch, imported_conversations query leg, budget-guard safe
+    - UI: ImportSection.tsx drag-drop+progress+sources list, SettingsPanel integration, MemoryCard platform badges
+    - Tests: 1696/1696 passing (+29 Sprint 33.0 tests), TSC: 0 new errors
+    
+    EPIC-81 Sprint 1/3 complete.
+
+ app/api/import/upload/route.ts            | 65 ++++++++++++++++++++++++++++
+ app/components/settings/SettingsPanel.tsx |  4 ++
+ app/lib/import/adapters/claude-ai.ts      | 67 +++++++++++++++++++++++++++++
+ app/lib/kernl/database.ts                 | 71 +++++++++++++++++++++++++++++++
+ app/lib/kernl/schema.sql                  | 28 ++++++++++++
+ app/lib/memory/shimmer-query.ts           | 43 ++++++++++++++++++-
+ 6 files changed, 277 insertions(+), 1 deletion(-)

@@ -1,0 +1,544 @@
+
+
+=== adapters/index.ts ===
+/**
+ * Adapter Registry — format detection + dispatch
+ * Sprint 33.0 / EPIC-81
+ *
+ * detectFormat()  — sniffs filename + content shape → ImportFormat
+ * runAdapter()    — dispatches to the correct parser; never throws; returns [] on error
+ */
+
+import type { ImportFormat, ImportedConversation } from '../types';
+import { parseClaudeAiExport } from './claude-ai';
+import { parseChatGptExport } from './chatgpt';
+import { parseGenericJson } from './generic-json';
+
+/**
+ * Detect the import format from filename and parsed content.
+ * Order matters: more specific checks before generic fallback.
+ */
+export function detectFormat(filename: string, content: unknown): ImportFormat {
+  const lower = filename.toLowerCase();
+
+  // Extension-based detection for text formats
+  if (lower.endsWith('.md')) return 'markdown';
+  if (lower.endsWith('.txt')) return 'text';
+
+  if (!Array.isArray(content) || content.length === 0) return 'generic_json';
+
+  const first = content[0];
+  if (!first || typeof first !== 'object') return 'generic_json';
+  const obj = first as Record<string, unknown>;
+
+  // claude.ai export: first item has uuid + chat_messages array
+  if (typeof obj['uuid'] === 'string' && Array.isArray(obj['chat_messages'])) {
+    console.debug('[import] detectFormat → claude_ai_export');
+    return 'claude_ai_export';
+  }
+
+  // ChatGPT export: first item has id + mapping (object, not array)
+  if (
+    typeof obj['id'] === 'string' &&
+    obj['mapping'] !== null &&
+    typeof obj['mapping'] === 'object' &&
+    !Array.isArray(obj['mapping'])
+  ) {
+    console.debug('[import] detectFormat → chatgpt_export');
+    return 'chatgpt_export';
+  }
+
+  console.debug('[import] detectFormat → generic_json');
+  return 'generic_json';
+}
+
+/**
+ * Run the appropriate adapter for the given format.
+ * Wraps each adapter in try/catch — returns [] on any error.
+ */
+export function runAdapter(format: ImportFormat, content: unknown): ImportedConversation[] {
+  try {
+    console.debug(`[import] runAdapter format=${format}`);
+    switch (format) {
+      case 'claude_ai_export':
+        return parseClaudeAiExport(content);
+      case 'chatgpt_export':
+        return parseChatGptExport(content);
+      case 'generic_json':
+        return parseGenericJson(content);
+      case 'markdown':
+      case 'text':
+        // Handled by markdown adapter (Sprint 35.0); return [] for now
+        return [];
+      default: {
+        const _exhaustive: never = format;
+        void _exhaustive;
+        return [];
+      }
+    }
+  } catch (err) {
+    console.error(`[import] adapter error for format=${format}:`, err);
+    return [];
+  }
+}
+
+
+=== adapters/claude-ai.ts ===
+/**
+ * Format Adapter — claude.ai Export
+ * Sprint 33.0 / EPIC-81
+ *
+ * Parses the JSON array produced by claude.ai Settings → Export data.
+ * Expected schema:
+ *   [ { uuid, name, created_at, chat_messages: [{ uuid, sender, text, created_at }] } ]
+ *
+ * sender 'human' → role 'user'; all others → role 'assistant'.
+ * Never throws — returns [] on bad input.
+ */
+
+import type { ImportedConversation, ImportedMessage } from '../types';
+
+interface RawClaudeMessage {
+  uuid?: string;
+  sender?: string;
+  text?: string;
+  created_at?: string | number;
+}
+
+interface RawClaudeConversation {
+  uuid?: string;
+  name?: string;
+  created_at?: string | number;
+  chat_messages?: RawClaudeMessage[];
+}
+
+function parseTimestamp(value: string | number | undefined): number {
+  if (typeof value === 'number') return value;
+  if (typeof value === 'string' && value.length > 0) {
+    const ms = Date.parse(value);
+    if (!isNaN(ms)) return ms;
+  }
+  return Date.now();
+}
+
+export function parseClaudeAiExport(data: unknown): ImportedConversation[] {
+  if (!Array.isArray(data)) return [];
+
+  const result: ImportedConversation[] = [];
+
+  for (const item of data) {
+    if (!item || typeof item !== 'object') continue;
+    const conv = item as RawClaudeConversation;
+    if (!conv.uuid || !Array.isArray(conv.chat_messages)) continue;
+
+    const messages: ImportedMessage[] = conv.chat_messages
+      .filter((m): m is RawClaudeMessage => !!m && typeof m === 'object' && !!m.text)
+      .map((m) => ({
+        role: (m.sender === 'human' ? 'user' : 'assistant') as 'user' | 'assistant',
+        content: String(m.text ?? '').trim(),
+        created_at: parseTimestamp(m.created_at),
+      }))
+      .filter((m) => m.content.length > 0);
+
+    result.push({
+      external_id: conv.uuid,
+      source_platform: 'claude_ai',
+      title: conv.name ?? conv.uuid,
+      created_at: parseTimestamp(conv.created_at),
+      messages,
+    });
+  }
+
+  return result;
+}
+
+
+=== adapters/chatgpt.ts ===
+/**
+ * Format Adapter — ChatGPT Export
+ * Sprint 33.0 / EPIC-81
+ *
+ * Parses conversations.json from ChatGPT's data export (Settings → Data Controls → Export).
+ * Expected schema:
+ *   [ { id, title, create_time, mapping: { [nodeId]: { message?, parent?, children? } } } ]
+ *
+ * Walks mapping tree from root to reconstruct message order.
+ * Only includes 'user' and 'assistant' roles; skips 'system' and 'tool'.
+ * Joins content parts (string elements) with newline.
+ * Never throws — returns [] on bad input.
+ */
+
+import type { ImportedConversation, ImportedMessage } from '../types';
+
+interface RawChatGPTMessage {
+  id?: string;
+  author?: { role?: string };
+  content?: { content_type?: string; parts?: unknown[] };
+  create_time?: number | null;
+  children?: string[];
+}
+
+interface RawChatGPTNode {
+  message?: RawChatGPTMessage;
+  parent?: string | null;
+  children?: string[];
+}
+
+interface RawChatGPTConversation {
+  id?: string;
+  title?: string;
+  create_time?: number | null;
+  mapping?: Record<string, RawChatGPTNode>;
+}
+
+/**
+ * Walk the mapping tree from the root node (no parent or parent not in map),
+ * following children arrays to reconstruct chronological message order.
+ */
+function walkMapping(mapping: Record<string, RawChatGPTNode>): RawChatGPTMessage[] {
+  const allIds = new Set(Object.keys(mapping));
+
+  // Find root: node whose parent is absent or not in the mapping
+  let rootId: string | null = null;
+  for (const [id, node] of Object.entries(mapping)) {
+    if (!node.parent || !allIds.has(node.parent)) {
+      rootId = id;
+      break;
+    }
+  }
+  if (!rootId) return [];
+
+  const ordered: RawChatGPTMessage[] = [];
+  const queue: string[] = [rootId];
+
+  while (queue.length > 0) {
+    const id = queue.shift()!;
+    const node = mapping[id];
+    if (!node) continue;
+
+    const msg = node.message;
+    if (msg) {
+      const role = msg.author?.role;
+      if ((role === 'user' || role === 'assistant') && msg.content?.parts) {
+        ordered.push(msg);
+      }
+    }
+
+    // Enqueue children in order (children on node or on message)
+    const children: string[] = node.children ?? msg?.children ?? [];
+    queue.push(...children);
+  }
+
+  return ordered;
+}
+
+export function parseChatGptExport(data: unknown): ImportedConversation[] {
+  if (!Array.isArray(data)) return [];
+
+  const result: ImportedConversation[] = [];
+
+  for (const item of data) {
+    if (!item || typeof item !== 'object') continue;
+    const conv = item as RawChatGPTConversation;
+    if (!conv.id || !conv.mapping || typeof conv.mapping !== 'object') continue;
+
+    const orderedMsgs = walkMapping(conv.mapping);
+
+    const messages: ImportedMessage[] = orderedMsgs
+      .map((m): ImportedMessage => {
+        const parts = m.content?.parts ?? [];
+        const content = parts
+          .filter((p): p is string => typeof p === 'string')
+          .join('\n')
+          .trim();
+        return {
+          role: (m.author?.role === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
+          content,
+          created_at:
+            typeof m.create_time === 'number'
+              ? Math.round(m.create_time * 1000)
+              : Date.now(),
+        };
+      })
+      .filter((m) => m.content.length > 0);
+
+    result.push({
+      external_id: conv.id,
+      source_platform: 'chatgpt',
+      title: conv.title ?? conv.id,
+      created_at:
+        typeof conv.create_time === 'number'
+          ? Math.round(conv.create_time * 1000)
+          : Date.now(),
+      messages,
+    });
+  }
+
+  return result;
+}
+
+
+=== import/types.ts ===
+/**
+ * Import — Shared Types
+ * Sprint 33.0 / EPIC-81: Cross-Platform Conversation Memory Import
+ */
+
+export type ImportFormat =
+  | 'claude_ai_export'
+  | 'chatgpt_export'
+  | 'generic_json'
+  | 'markdown'
+  | 'text';
+
+export interface ImportedMessage {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  created_at: number;
+}
+
+export interface ImportedConversation {
+  /** Original platform conversation ID — used for deduplication */
+  external_id: string;
+  /** Source platform identifier: 'claude_ai' | 'chatgpt' | 'gemini' | 'generic' | etc. */
+  source_platform: string;
+  title: string;
+  created_at: number; // unix ms
+  messages: ImportedMessage[];
+}
+
+export interface ImportSource {
+  id: string;
+  display_name: string;
+  source_type: string;
+  conversation_count: number;
+  chunk_count: number;
+  last_synced_at: number | null;
+  created_at: number;
+}
+
+export interface ImportProgress {
+  total: number;
+  processed: number;
+  skipped: number;
+  chunks_written: number;
+  status: 'running' | 'complete' | 'error';
+  error?: string;
+}
+
+
+=== import/pipeline.ts ===
+/**
+ * Import Pipeline — chunk, embed, index imported conversations
+ * Sprint 33.0 / EPIC-81
+ *
+ * runImport() processes ImportedConversation[] for one source:
+ *   1. Dedup check per conversation (imported_conversations table)
+ *   2. Chunk messages into ~600-token blocks
+ *   3. Embed via embedText() (dynamic import, keeps ONNX lazy)
+ *   4. Write to content_chunks + vec_index (upsertVector)
+ *   5. Insert imported_conversations row
+ *   6. Update imported_sources totals
+ *
+ * Progress is stored in a module-level Map keyed by sourceId.
+ * The GET /api/import/progress/[sourceId] route polls this Map.
+ */
+
+import { nanoid } from 'nanoid';
+import { getDatabase } from '@/lib/kernl/database';
+import { upsertVector } from '@/lib/vector';
+import type { ImportedConversation, ImportProgress } from './types';
+import type Database from 'better-sqlite3';
+
+// ─── Progress store (module-level, polled by API) ─────────────────────────────
+
+const progressStore = new Map<string, ImportProgress>();
+
+export function getProgress(sourceId: string): ImportProgress | null {
+  return progressStore.get(sourceId) ?? null;
+}
+
+// ─── Conversation chunker ─────────────────────────────────────────────────────
+
+const CHARS_PER_TOKEN = 4;
+const MAX_TOKENS = 600;
+const OVERLAP_TOKENS = 50;
+
+function tokensOf(text: string): number {
+  return Math.ceil(text.length / CHARS_PER_TOKEN);
+}
+
+/**
+ * Chunk conversation messages into ~600-token blocks.
+ * Messages joined as "role: content" with double-newline separators.
+ * Oversized single messages are split with sliding window + overlap.
+ */
+export function chunkConversation(messages: ImportedConversation['messages']): string[] {
+  const blocks = messages
+    .filter((m) => m.content.trim().length > 0)
+    .map((m) => `${m.role}: ${m.content}`);
+
+  const chunks: string[] = [];
+  let current = '';
+
+  const maxChars = MAX_TOKENS * CHARS_PER_TOKEN;
+  const overlapChars = OVERLAP_TOKENS * CHARS_PER_TOKEN;
+
+  for (const block of blocks) {
+    const candidate = current ? `${current}\n\n${block}` : block;
+
+    if (tokensOf(candidate) <= MAX_TOKENS) {
+      current = candidate;
+    } else {
+      if (current) chunks.push(current);
+
+      if (tokensOf(block) > MAX_TOKENS) {
+        // Oversized single block — sliding window
+        let start = 0;
+        while (start < block.length) {
+          const end = Math.min(start + maxChars, block.length);
+          const slice = block.slice(start, end).trim();
+          if (slice) chunks.push(slice);
+          if (end >= block.length) break;
+          start = end - overlapChars;
+        }
+        current = '';
+      } else {
+        current = block;
+      }
+    }
+  }
+
+  if (current.trim()) chunks.push(current);
+  return chunks.filter((c) => c.trim().length > 0);
+}
+
+// ─── Main pipeline ────────────────────────────────────────────────────────────
+
+export async function runImport(
+  sourceId: string,
+  conversations: ImportedConversation[],
+  db?: Database.Database,
+): Promise<ImportProgress> {
+  const progress: ImportProgress = {
+    total: conversations.length,
+    processed: 0,
+    skipped: 0,
+    chunks_written: 0,
+    status: 'running',
+  };
+  progressStore.set(sourceId, { ...progress });
+
+  const database = db ?? getDatabase();
+  const now = Date.now();
+
+  const checkDupStmt = database.prepare<[string, string]>(
+    'SELECT id FROM imported_conversations WHERE imported_source_id = ? AND external_id = ? LIMIT 1',
+  );
+
+  const insertConvStmt = database.prepare(
+    `INSERT OR IGNORE INTO imported_conversations
+       (id, imported_source_id, external_id, title, message_count, created_at_source, imported_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+  );
+
+  const insertChunkStmt = database.prepare(
+    `INSERT INTO content_chunks
+       (id, source_type, source_id, chunk_index, content, metadata, model_id,
+        created_at, indexed_at, imported_source_id)
+     VALUES (?, 'imported_conversation', ?, ?, ?, ?, 'Xenova/bge-small-en-v1.5', ?, ?, ?)`,
+  );
+
+  const updateSourceStmt = database.prepare(
+    `UPDATE imported_sources
+     SET conversation_count = conversation_count + ?,
+         chunk_count        = chunk_count + ?,
+         last_synced_at     = ?
+     WHERE id = ?`,
+  );
+
+  // Dynamic import keeps ONNX runtime lazy until first real use
+  const { embedText } = await import('@/lib/embeddings/model');
+
+  let newConvCount = 0;
+  let newChunkCount = 0;
+
+  try {
+    for (const conv of conversations) {
+      // Dedup: skip conversations already in the index for this source
+      const existing = checkDupStmt.get(sourceId, conv.external_id);
+      if (existing) {
+        progress.skipped++;
+        progressStore.set(sourceId, { ...progress });
+        continue;
+      }
+
+      const chunks = chunkConversation(conv.messages);
+      const convId = nanoid();
+
+      // Insert imported_conversations row
+      database.transaction(() => {
+        insertConvStmt.run(
+          convId,
+          sourceId,
+          conv.external_id,
+          conv.title,
+          conv.messages.length,
+          conv.created_at,
+          now,
+        );
+      })();
+
+      // Embed + write each chunk
+      for (let i = 0; i < chunks.length; i++) {
+        const chunkText = chunks[i]!;
+        try {
+          const embedding = await embedText(chunkText);
+          const chunkId = nanoid();
+          const metadata = JSON.stringify({
+            source_platform: conv.source_platform,
+            conversation_id: conv.external_id,
+            conversation_title: conv.title,
+            message_count: conv.messages.length,
+          });
+
+          insertChunkStmt.run(
+            chunkId,
+            conv.external_id,   // source_id = external conversation ID
+            i,                  // chunk_index
+            chunkText,
+            metadata,
+            now,                // created_at
+            now,                // indexed_at
+            sourceId,           // imported_source_id
+          );
+
+          await upsertVector(chunkId, embedding);
+          newChunkCount++;
+          progress.chunks_written++;
+        } catch (embedErr) {
+          console.error(
+            `[import] embed/write error chunk=${i} conv=${conv.external_id}:`,
+            embedErr,
+          );
+        }
+      }
+
+      newConvCount++;
+      progress.processed++;
+      progressStore.set(sourceId, { ...progress });
+    }
+
+    // Update source row totals
+    updateSourceStmt.run(newConvCount, newChunkCount, Date.now(), sourceId);
+
+    progress.status = 'complete';
+    progressStore.set(sourceId, { ...progress });
+  } catch (err) {
+    progress.status = 'error';
+    progress.error = err instanceof Error ? err.message : String(err);
+    progressStore.set(sourceId, { ...progress });
+  }
+
+  return { ...progress };
+}

@@ -256,7 +256,35 @@ Click flows:
 
 The Transit tab header could show a small zoom indicator: "Z1 · Z2 · Z3" with the active level highlighted. Clicking the indicator cycles zoom levels.
 
-TASK 7: Verify and commit
+TASK 7: Rename zoom levels in the UI (Z1/Z2/Z3 → plain language)
+
+File: app/components/transit/ZoomController.tsx
+
+The internal ZoomLevel type ('Z1' | 'Z2' | 'Z3') stays as-is — it's code, not UI.
+What changes: the ZoomIndicator button labels and the tooltip copy.
+
+Current state (ZoomIndicator in ZoomController.tsx):
+- Button labels: "Z1", "Z2", "Z3" (what the user sees)
+- Tooltips (hover-only): "Overview — session flow", "Timeline — message sequence", "Detail — full message view"
+
+Target state:
+- Button labels become the plain-language names. Tooltips become keyboard shortcut hints.
+
+| Internal | New Label | Tooltip |
+|----------|-----------|---------|
+| Z1       | Overview  | Session flow — Cmd+- to zoom out |
+| Z2       | Timeline  | Message sequence — Cmd+0 to reset |
+| Z3       | Detail    | Full message view — Cmd+= to zoom in |
+
+Implementation: In ZoomIndicator, replace `{level}` (the button label text) with a
+mapping: `{ Z1: 'Overview', Z2: 'Timeline', Z3: 'Detail' }[level]`.
+Update the title prop on each button to the new tooltip copy above.
+
+Also update any other places in the codebase where Z1/Z2/Z3 appear as user-visible
+strings (toast messages, aria-labels, any onboarding copy). The ZoomController
+internal state variables stay as 'Z1'/'Z2'/'Z3'.
+
+TASK 8: Verify and commit
 
 1. npx tsc --noEmit — 0 errors
 2. pnpm test:run — all passing

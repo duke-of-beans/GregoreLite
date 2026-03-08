@@ -146,7 +146,7 @@ export function JobQueue() {
         }}
       >
         <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--frost)', letterSpacing: '0.08em' }}>
-          WORKERS
+          JOBS
         </span>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           {loading && (
@@ -216,7 +216,7 @@ export function JobQueue() {
 
         {totalActive === 0 && interruptedJobs.length === 0 && completedJobs.length === 0 && (
           <div style={{ fontSize: '11px', color: 'var(--mist)', textAlign: 'center', marginTop: '32px', fontStyle: 'italic' }}>
-            No worker sessions
+            No jobs running
           </div>
         )}
 

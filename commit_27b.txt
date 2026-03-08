@@ -1,0 +1,30 @@
+feat(recall): Sprint 27.0 Commit 2 — Ambient Memory UI
+
+RecallCard, ContextPanel integration, RecallSection settings,
+Inspector Memory tab (MemoryTab), and recall/settings API route.
+
+Components:
+- components/recall/RecallCard.tsx — warm amber card, hover-reveal
+  actions (Thanks / Not now / Remind me later), Framer Motion
+  fadeIn + cardLift, type icons, relative time, amber accent bar
+- components/settings/RecallSection.tsx — master toggle, max/day
+  slider (0–5), detection frequency dropdown (1/2/4/8h),
+  per-type toggles for all 6 recall types, auto-persist
+- components/inspector/MemoryTab.tsx — detection stats, action
+  breakdown (appreciated/dismissed/snoozed), last 10 events,
+  manual "Run now" trigger via POST /api/recall/run
+- components/inspector/InspectorDrawer.tsx — added 'recall' tab
+  (💭 Recall) to tab union and TABS array; renders MemoryTab
+
+Integration:
+- components/context/ContextPanel.tsx — RECALL section between
+  DecisionList and GhostFileWatcher; polls /api/recall/active
+  every 60s; invisible when no active event
+- components/settings/SettingsPanel.tsx — RecallSection wired in
+  after GhostSection
+
+API:
+- app/api/recall/settings/route.ts — GET + POST for scheduler
+  settings; reads/writes kernl_settings key 'recall_settings'
+
+Gate: tsc --noEmit 0 errors | vitest 1464/1464 passing

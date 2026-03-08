@@ -1,0 +1,6 @@
+docs: Sprint 27.0 STATUS.md + PROJECT_DNA.yaml
+
+STATUS.md: header updated (Sprint 27.0 complete, 1464 tests),
+sprint log entries added for 25.0, 26.0, and 27.0.
+PROJECT_DNA.yaml: version comment, phase, status block, and
+latest_commits updated to reflect Sprints 25-27.

@@ -1,0 +1,8 @@
+﻿EXIT_CODE: 1
+ERROR_COUNT: 5
+ERRORS:
+lib/__tests__/unit/sprint33.test.ts(16,36): error TS6133: 'beforeEach' is declared but its value is never read.
+lib/__tests__/unit/sprint33.test.ts(20,9): error TS6133: 'mockRun' is declared but its value is never read.
+lib/__tests__/unit/sprint33.test.ts(20,18): error TS6133: 'mockGet' is declared but its value is never read.
+lib/__tests__/unit/sprint33.test.ts(20,27): error TS6133: 'mockAll' is declared but its value is never read.
+lib/__tests__/unit/startup/client.test.ts(35,3): error TS2322: Type '{ __TAURI_INTERNALS__: {}; }' is not assignable to type 'Window & typeof globalThis & { __TAURI_INTERNALS__?: unknown; }'.

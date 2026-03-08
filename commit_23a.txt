@@ -1,0 +1,16 @@
+Sprint 23.0 Phase A+B — Voice audit, UX fixes, Workers 404 fix  
+  
+Phase A — Voice & Terminology Audit  
+- Message.tsx: assistant handle GregLite -> Greg  
+- StatusBar.tsx: GHOST -> BACKGROUND label, tooltip rewrites  
+- copy-templates.ts: GUIDE_ITEMS + background/tabs/safety VOICE sections  
+- HelpGuide.tsx: new modal component, opened via ? button in Header  
+  
+Phase B — UX Fixes  
+- job-store.ts: /api/jobs -> /api/agent-sdk/jobs (3 call sites, fixes Workers 404)  
+- ChatInterface.tsx: emoji icons replaced with lucide-react SVGs, TabDef tooltip field  
+- Header.tsx: removed New Conversation button, logo dispatches switch-tab, ? guide button  
+- ContextPanel.tsx: New Conversation button moved here  
+- ZoomController.tsx: scroll-wheel zoom with 150ms debounce, data-transit-messages escape hatch  
+  
+tsc: 0 errors | tests: 1344/1344 passed 

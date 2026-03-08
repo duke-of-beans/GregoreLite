@@ -1,0 +1,23 @@
+feat(sprint-26): Create New Project + Attention Intelligence
+
+Commit 1 — backend pipeline:
+- lib/portfolio/types.ts: AttentionItem, AttentionSeverity, ScaffoldTemplate, ScaffoldResult, ProjectType, OnboardingQuestion interfaces
+- lib/portfolio/scaffold.ts: scaffoldProject(), getScaffoldTemplate(), inferTypeFromDescription() with runtime guard for unknown types
+- lib/portfolio/analyzer.ts: analyzeAttention() with staleness, blocker, failing-test, and mute-window strategies
+- lib/portfolio/onboarding.ts: getNewProjectQuestions() per project type
+- lib/kernl/database.ts: attention_muted_until column + migration
+- app/api/portfolio/scaffold/route.ts: POST scaffold endpoint
+- app/api/portfolio/attention/route.ts: GET attention list with exactOptionalPropertyTypes fixes
+
+Commit 2 — UI + tests:
+- components/portfolio/NewProjectFlow.tsx: 6-step wizard (describe, questions, preview, path, scaffolding, complete)
+- components/portfolio/AttentionQueue.tsx: collapsed attention list with mute/dismiss actions
+- components/portfolio/PortfolioDashboard.tsx: wired AttentionQueue + NewProjectFlow, attentionPulse keyframe
+- components/portfolio/ProjectCard.tsx: attentionSeverity prop with amber/red/blue glow + pulsing HealthDot
+- app/api/portfolio/infer/route.ts: POST infer type + questions from description
+- app/api/portfolio/scaffold/preview/route.ts: POST scaffold file-list preview
+- app/api/portfolio/mute/route.ts: POST mute project by hours
+- lib/voice/copy-templates.ts: extended SCAFFOLD + ATTENTION copy exports
+- lib/portfolio/__tests__/sprint26.test.ts: 29 tests, all passing
+
+TypeScript gate: 0 errors. Test suite: 29/29 passing.

@@ -1,0 +1,36 @@
+feat(startup): Sprint 31.0 — OS startup registration
+
+GregLite now launches automatically when the computer starts.
+
+Rust layer (src-tauri/src/startup.rs):
+- startup_register: Windows writes HKCU\...\Run registry value; macOS
+  creates ~/Library/LaunchAgents/ai.greglite.desktop.plist (RunAtLoad=true)
+- startup_unregister: removes the entry on both platforms
+- startup_is_registered: reads actual OS state, never cached preference
+- All three exposed as Tauri commands; all wrapped in Result, never panics
+- winreg = "0.52" added as Windows-only target dependency
+
+TypeScript IPC bridge (lib/startup/client.ts):
+- isStartupRegistered / registerStartup / unregisterStartup
+- Dev-mode graceful degradation: returns false/no-op when Tauri absent
+- Dynamic import of @tauri-apps/api/core avoids bundler errors in Next.js
+
+Settings UI (components/settings/StartupSection.tsx):
+- "Launch Behavior" section added to SettingsPanel
+- Toggle reads actual OS state on mount; never a stale preference
+- Toast feedback on register/unregister/error via STARTUP voice copy
+- Optimistic update with rollback on IPC failure
+
+NSIS installer (src-tauri/nsis/startup-hooks.nsi):
+- customInstall: writes HKCU Run entry during install (default-on)
+- customUnInstall: always removes entry on uninstall
+- Registered via tauri.conf.json installerHooks field
+
+Voice copy (lib/voice/copy-templates.ts):
+- STARTUP export: 7 strings, all UI text routed through copy-templates
+
+Tests (lib/__tests__/unit/startup/client.test.ts):
+- 10 tests: dev-mode no-ops + Tauri runtime invoke paths
+- globalThis.window manipulation for Node vitest environment
+
+Gates: cargo check 0 errors | tsc 0 new errors | 1634/1634 tests green

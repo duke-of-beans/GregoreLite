@@ -1,1 +1,6 @@
-feat: Sprint 11.0+11.1 — cleanup, route consolidation, Agent SDK stubs implemented
+fix(tauri): remove invalid 'icon' field from app.windows config
+
+Tauri 2.x does not support 'icon' at the window level — it's a bundle
+config only. The field was added in Sprint 30 for favicon support but
+caused "Additional properties are not allowed" validation error on
+cargo tauri dev. Window icon in dev mode comes from bundle.icon paths.

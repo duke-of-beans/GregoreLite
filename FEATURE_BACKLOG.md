@@ -219,13 +219,13 @@ adapter layer covering claude.ai, ChatGPT, Gemini Takeout, and Markdown exports.
 - API: POST /api/import/upload, GET /api/import/sources, GET /api/import/progress/:id
 
 ### Sprint 34.0 — Watchfolder + Reminder (Ongoing Sync) ✅ SHIPPED (commit 3fb2e96)
-- `AutoIngestDaemon` with chokidar FSWatcher, 500ms debounce, wired into bootstrap
+- `AutoIngestDaemon` with chokidar FSWatcher (chosen over Tauri fs.watch — works in both dev and Tauri runtime, no IPC boundary needed), 500ms debounce, wired into bootstrap
 - `moveToProcessed()` — collision-safe timestamp suffix, prevents re-processing on restart
 - Sync reminder: `shouldShowReminder()` triggers StatusBar MEM chip after 14 days without sync
 - API: GET/POST/DELETE /api/import/watchfolder
 - ImportSection watchfolder config panel (path input, reset, extension list)
 
-### Sprint 35.0 — Additional Adapters + Inspector ✅ SHIPPED (commit TBD)
+### Sprint 35.0 — Additional Adapters + Inspector ✅ SHIPPED (commit ba24b1e)
 - `gemini.ts` adapter — Gemini Takeout JSON, `author: 'model'` → `'assistant'`, seconds-epoch normalisation
 - `markdown.ts` adapter — role-structured, markdown headers, raw text fallback; SHA-256 dedup
 - Adapter registry hardened: Gemini detection, markdown/text cases wired, `gemini_export` added to `ImportFormat`

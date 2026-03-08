@@ -1,0 +1,4 @@
+﻿lib/__tests__/unit/sprint33.test.ts:20:9 TS6133: 'mockRun' is declared but its value is never read.
+lib/__tests__/unit/sprint33.test.ts:20:18 TS6133: 'mockGet' is declared but its value is never read.
+lib/__tests__/unit/sprint33.test.ts:20:27 TS6133: 'mockAll' is declared but its value is never read.
+lib/__tests__/unit/startup/client.test.ts:35:3 TS2322: Type '{ __TAURI_INTERNALS__: {}; }' is not assignable to type 'Window & typeof globalThis & { __TAURI_INTERNALS__?: unknown; }'.

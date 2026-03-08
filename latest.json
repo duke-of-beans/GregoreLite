@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "notes": "v1.1.0 — Full Cockpit + EPIC-81 Cross-Platform Memory Import\n\nWhat's new:\n- Full cognitive cockpit: multi-thread tabs, command palette, Transit Map, War Room, morning briefing, settings panel, inspector drawer, decision browser, artifact library, project switcher\n- Cross-platform conversation memory import (EPIC-81): imports claude.ai, ChatGPT, Gemini Takeout, and Markdown conversation exports\n- Watchfolder daemon: drop exports in ~/GregLite/imports/ for automatic background indexing\n- Memory Shimmer now surfaces matches from imported history with platform provenance badges\n- Adaptive Override System: remembers how you handle each decision gate category\n- 1753 tests passing across 90 files. TSC 0 errors. EoS 100/100.",
+  "pub_date": "2026-03-08T00:00:00Z",
+  "platforms": {
+    "windows-x86_64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRRU5EOUd0NW9ranNReDF1WWk0SlRoSUhtNzVkb0Vqdnh1WjZTanpsL3J5eVpUREdOOEdSTVQ4dXgrZFNzRFBSTU95dy9zcXhpNStqbHNkWDJyQmU1ai9lMWREZTdqcVE4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzcyOTYxNjg2CWZpbGU6R3JlZ29yZSBMaXRlXzEuMS4wX3g2NC1zZXR1cC5leGUKLzB0a1Z2bGJMQkE0WmtEcHlSQk9MWlFORHh5NlA3Vmt1VUNMTEY3VGlRNFl4MzJ6S1Z1eWpLdmNDYTdwcDVBNjJaWnhCNXFQSjZteHorUVpEbWRIRFE9PQo=",
+      "url": "https://github.com/duke-of-beans/GregoreLite/releases/download/v1.1.0/Gregore.Lite_1.1.0_x64-setup.exe"
+    }
+  }
+}

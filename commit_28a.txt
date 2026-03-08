@@ -1,0 +1,11 @@
+[master bbc0b47] ﻿feat(sprint-28): backend pipeline — indexing sources, synthesis generators, API
+ 10 files changed, 1377 insertions(+)
+ create mode 100644 app/api/synthesis/add-source/route.ts
+ create mode 100644 app/api/synthesis/generate-master/route.ts
+ create mode 100644 app/api/synthesis/master/route.ts
+ create mode 100644 app/api/synthesis/status/route.ts
+ create mode 100644 app/lib/synthesis/generator.ts
+ create mode 100644 app/lib/synthesis/master.ts
+ create mode 100644 app/lib/synthesis/nudges.ts
+ create mode 100644 app/lib/synthesis/orchestrator.ts
+ create mode 100644 app/lib/synthesis/types.ts

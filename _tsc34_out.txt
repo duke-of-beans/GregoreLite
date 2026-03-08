@@ -1,0 +1,15 @@
+components/settings/ImportSection.tsx(32,10): error TS6133: 'platformLabel' is declared but its value is never read.
+components/settings/ImportSection.tsx(32,24): error TS6133: 'sourceType' is declared but its value is never read.
+components/settings/ImportSection.tsx(96,14): error TS2307: Cannot find module '@tauri-apps/plugin-shell' or its corresponding type declarations.
+lib/__tests__/unit/sprint33.test.ts(16,36): error TS6133: 'beforeEach' is declared but its value is never read.
+lib/__tests__/unit/sprint33.test.ts(20,9): error TS6133: 'mockRun' is declared but its value is never read.
+lib/__tests__/unit/sprint33.test.ts(20,18): error TS6133: 'mockGet' is declared but its value is never read.
+lib/__tests__/unit/sprint33.test.ts(20,27): error TS6133: 'mockAll' is declared but its value is never read.
+lib/__tests__/unit/sprint33.test.ts(352,18): error TS2339: Property 'source_platform' does not exist on type '{ term: string; startIndex: number; endIndex: number; source: "memory"; sourceId: string; preview: string; }'.
+lib/__tests__/unit/startup/client.test.ts(35,3): error TS2322: Type '{ __TAURI_INTERNALS__: {}; }' is not assignable to type 'Window & typeof globalThis & { __TAURI_INTERNALS__?: unknown; }'.
+  Type '{ __TAURI_INTERNALS__: {}; }' is missing the following properties from type 'Window': clientInformation, closed, cookieStore, customElements, and 212 more.
+lib/import/watchfolder.ts(45,6): error TS6133: 'eventType' is declared but its value is never read.
+lib/memory/shimmer-query.ts(218,24): error TS2379: Argument of type '{ term: string; startIndex: number; endIndex: number; source: "memory"; sourceId: string; preview: string; source_platform: string | undefined; }' is not assignable to parameter of type 'ShimmerMatch' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'source_platform' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.

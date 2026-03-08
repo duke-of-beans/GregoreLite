@@ -1,0 +1,35 @@
+Sprint 32.0 Commit 1/2: Web Session backend + governor + selectors
+
+Tasks 1–4 + 9:
+
+lib/web-session/types.ts — WebSession interface, WebSessionStatus,
+  ChatMode, GovernorLimits, DEFAULT_GOVERNOR_LIMITS, GovernorCheck,
+  GovernorStats, RouteChunk
+
+lib/web-session/selectors.ts — CLAUDE_SELECTORS config (all claude.ai DOM
+  selectors in one file, SELECTORS_VERSION 1.0.0, last-verified 2026-03-07)
+
+lib/web-session/governor.ts — WebSessionGovernor class:
+  - canSendMessage(): enforces 4/min, 40/hr, 200/day, 8s min delay
+  - Burst detection: 3+ msgs in 30s → 12s artificial delay
+  - Cooldown escalation: >180/day → 15s min delay + warning
+  - recordMessageSent(), getUsageStats() for Settings display
+  - Limits persisted to kernl_settings, daily count to web_sessions
+  - getGovernor() singleton, _resetGovernorForTest() for tests
+
+lib/web-session/browser.ts — WebBrowserEngine class (puppeteer-core):
+  - initialize(): launch headless Chromium, inject stored cookies
+  - authenticate(): visible browser window for manual login (never
+    stores credentials, only session cookies)
+  - isSessionValid(): checks cookie validity against claude.ai
+  - sendMessage(): async generator, streams DOM response as chunks
+  - Chrome/Edge auto-detection (Windows + macOS + Linux paths)
+  - shutdown(), getBrowserEngine() singleton
+
+lib/kernl/database.ts — Sprint 32.0 migration: web_sessions table
+  (id, provider, cookies, user_agent, session_started_at, last_used_at,
+  expires_at, status, daily_message_count, daily_reset_at)
+
+package.json / pnpm-lock.yaml — puppeteer-core ^24.38.0
+
+tsc: 0 new errors (1 pre-existing client.test.ts stub unrelated to Sprint 32)

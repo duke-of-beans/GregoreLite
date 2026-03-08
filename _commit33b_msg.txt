@@ -1,0 +1,11 @@
+feat(epic-81/s33): remaining Sprint 33.0 files
+
+- API routes: GET/DELETE sources, GET progress/[sourceId], DELETE sources/[sourceId]
+- Adapters: chatgpt, generic-json, adapter index with detectFormat and runAdapter
+- Pipeline: pipeline.ts, types.ts, zip-handler.ts
+- UI: ImportSection.tsx drag-drop+progress+sources list, MemoryCard platform badges
+- Voice: IMPORT copy strings in copy-templates.ts
+- Tests: sprint33.test.ts (29 tests, 1696/1696 total)
+- Docs: STATUS.md Sprint 33.0 gate section
+
+EPIC-81 Sprint 1/3 complete (commit 2/2).

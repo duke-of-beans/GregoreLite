@@ -1,0 +1,2 @@
+0000:type GlobalWithWindow = typeof globalThis & { window?: { __T
+0060:AURI_INTERNALS__?: unknown } };

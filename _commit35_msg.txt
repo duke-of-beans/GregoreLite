@@ -1,0 +1,39 @@
+epic-81: cross-platform conversation memory import complete (sprints 33-35)
+
+Sprint 35.0 — Gemini + Markdown adapters, adapter hardening, Inspector Import Sources
+
+Adapters:
+- adapters/gemini.ts: Gemini Takeout JSON (author 'model'→'assistant', seconds-epoch
+  createTime normalisation, SHA-256 fallback external_id, source_platform: 'gemini')
+- adapters/markdown.ts: .md/.txt files — three-mode detection (role-structured,
+  markdown headers, raw text fallback), SHA-256 dedup, source_platform: 'markdown_import'
+- adapters/index.ts: hardened — Gemini detection in detectFormat(), markdown/text cases
+  wired to parseMarkdownExport(), gemini_export case in runAdapter()
+- import/types.ts: ImportFormat union extended with 'gemini_export'
+
+UI:
+- MemoryTab.tsx: Import Sources section — GET /api/import/sources, per-source rows
+  (display_name, source_type, conversation_count, chunk_count, last_synced_at),
+  empty state with settings link
+
+Tests:
+- sprint35.test.ts: 27 tests — both new adapters, updated format detection/routing,
+  ImportFormat type completeness
+- sprint33.test.ts: updated stale 'returns []' assertion for now-wired markdown adapter
+
+Cert docs:
+- EPIC81_COMPLETE.md: full 3-sprint cert (33.0 pipeline, 34.0 watchfolder, 35.0 adapters)
+- STATUS.md: Sprint 35.0 section, test count 1753, EPIC-81 complete
+- FEATURE_BACKLOG.md: EPIC-81 marked SHIPPED with all 3 sprint commit hashes
+
+Quality gate: tsc 0 errors · 1753/1753 tests passing (90 files)
+
+EPIC-81 summary — what ships across all 3 sprints:
+  Sprint 33.0 (4ea4b67): import pipeline, claude-ai/chatgpt/generic-json adapters,
+    imported_sources/imported_conversations tables, content_chunks provenance,
+    drag-drop import UI, Shimmer source_platform badge
+  Sprint 34.0 (3fb2e96): AutoIngestDaemon (chokidar, 500ms debounce), watchfolder
+    config API, sync reminder (14-day StatusBar chip), moveToProcessed with
+    collision-safe suffix
+  Sprint 35.0 (this): Gemini + Markdown adapters, adapter registry hardened,
+    MemoryTab Import Sources section, EPIC-81 cert

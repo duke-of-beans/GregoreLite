@@ -1,0 +1,5 @@
+3f43a65 feat(epic-81/s33): remaining Sprint 33.0 files
+4ea4b67 feat(epic-81/s33): Import Pipeline + Historical Corpus
+b776ec9 fix(tauri): remove invalid 'icon' field from app.windows config
+f7f6dd1 Sprint 30.0 — UX Reality Check: Daily Driver Polish
+1226a7c docs: Sprint 32.0 COMPLETE — Headless Browser Mode

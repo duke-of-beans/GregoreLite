@@ -1,0 +1,30 @@
+Sprint 34.0: Watchfolder + auto-ingest daemon (EPIC-81 Sprint 2/3)
+
+New files:
+- lib/import/watchfolder.ts — WatchfolderConfig, chokidar FSWatcher,
+  startWatcher/stopWatcher/getWatcherStatus, 500ms debounce
+- lib/import/auto-ingest.ts — AutoIngestDaemon, format-filter, pipeline
+  integration, start/stop/status lifecycle
+- lib/import/index.ts — import barrel
+- lib/import/sync-reminder.ts — sync reminder utility
+- lib/import/watchfolder-config.ts — watchfolder config persistence
+- lib/__tests__/unit/sprint34.test.ts — 21 tests (all passing)
+- api/import/sync-status/ — GET /api/import/sync-status route
+- api/import/watchfolder-config/ — GET/POST/DELETE /api/import/watchfolder
+
+Modified files:
+- lib/bootstrap/index.ts — daemon wired into app start + graceful shutdown
+- components/ui/StatusBar.tsx — MEM import chip (live progress indicator)
+- components/settings/ImportSection.tsx — watchfolder config panel
+- lib/voice/copy-templates.ts — IMPORT.watchfolder_* strings
+
+TSC fixes (pre-existing errors surfaced during Sprint 34.0 gate):
+- lib/import/watchfolder.ts — rename eventType → _eventType (TS6133)
+- components/settings/ImportSection.tsx — remove unused platformLabel (TS6133),
+  remove @tauri-apps/plugin-shell import (TS2307)
+- lib/memory/shimmer-query.ts — conditional spread for source_platform (TS2322)
+- lib/__tests__/unit/sprint33.test.ts — type-annotate match object (TS2339),
+  remove mockRun/mockGet/mockAll from vi.hoisted destructure (TS6133)
+- lib/__tests__/unit/startup/client.test.ts — cast window stub as unknown (TS2322)
+
+Quality gate: TSC 0 errors | 1717/1717 tests (89 files) | +21 Sprint 34.0 tests

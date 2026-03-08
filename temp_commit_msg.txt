@@ -1,0 +1,26 @@
+﻿feat(sprint-28): backend pipeline — indexing sources, synthesis generators, API
+
+Tasks 1-4 + 7 of Sprint 28.0 Ceremonial Onboarding.
+
+Schema (database.ts):
+  - indexing_sources: per-source status, progress counters, synthesis + combination text
+  - master_synthesis: structured overview/patterns/insights/blindspots/capabilities
+  - synthesis_nudges: re-engagement nudges with weekly cap + permanent-silence logic
+  - synthesis_telemetry: behavioural-only data (no content, no paths)
+
+New modules:
+  - lib/synthesis/types.ts         — IndexingSource, MasterSynthesis, SynthesisResult, all domain types
+  - lib/synthesis/generator.ts     — generateSourceSynthesis() via Haiku; parseSynthesisResponse()
+  - lib/synthesis/master.ts        — generateMasterSynthesis() via Sonnet; loadMasterSynthesis()
+  - lib/synthesis/orchestrator.ts  — IndexingOrchestrator class + getOrchestrator() singleton
+  - lib/synthesis/nudges.ts        — getEligibleNudge(), dismissNudge(), buildContextualNudge()
+
+API routes:
+  - GET  /api/synthesis/status          — all sources + progress snapshot
+  - POST /api/synthesis/add-source      — register + start indexing a source
+  - GET  /api/synthesis/master          — load completed master synthesis (null if not ready)
+  - POST /api/synthesis/generate-master — manually trigger master synthesis
+
+Quality: tsc --noEmit exit 0. No errors.
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>

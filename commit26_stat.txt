@@ -1,0 +1,45 @@
+commit 9640a6446da893237fb122e3745980c410b0ccbd
+Author: David Kirsch <your-email@example.com>
+Date:   Fri Mar 6 14:10:14 2026 -0800
+
+    feat(sprint-26): Create New Project + Attention Intelligence
+    
+    Commit 1 — backend pipeline:
+    - lib/portfolio/types.ts: AttentionItem, AttentionSeverity, ScaffoldTemplate, ScaffoldResult, ProjectType, OnboardingQuestion interfaces
+    - lib/portfolio/scaffold.ts: scaffoldProject(), getScaffoldTemplate(), inferTypeFromDescription() with runtime guard for unknown types
+    - lib/portfolio/analyzer.ts: analyzeAttention() with staleness, blocker, failing-test, and mute-window strategies
+    - lib/portfolio/onboarding.ts: getNewProjectQuestions() per project type
+    - lib/kernl/database.ts: attention_muted_until column + migration
+    - app/api/portfolio/scaffold/route.ts: POST scaffold endpoint
+    - app/api/portfolio/attention/route.ts: GET attention list with exactOptionalPropertyTypes fixes
+    
+    Commit 2 — UI + tests:
+    - components/portfolio/NewProjectFlow.tsx: 6-step wizard (describe, questions, preview, path, scaffolding, complete)
+    - components/portfolio/AttentionQueue.tsx: collapsed attention list with mute/dismiss actions
+    - components/portfolio/PortfolioDashboard.tsx: wired AttentionQueue + NewProjectFlow, attentionPulse keyframe
+    - components/portfolio/ProjectCard.tsx: attentionSeverity prop with amber/red/blue glow + pulsing HealthDot
+    - app/api/portfolio/infer/route.ts: POST infer type + questions from description
+    - app/api/portfolio/scaffold/preview/route.ts: POST scaffold file-list preview
+    - app/api/portfolio/mute/route.ts: POST mute project by hours
+    - lib/voice/copy-templates.ts: extended SCAFFOLD + ATTENTION copy exports
+    - lib/portfolio/__tests__/sprint26.test.ts: 29 tests, all passing
+    
+    TypeScript gate: 0 errors. Test suite: 29/29 passing.
+
+ app/api/portfolio/attention/route.ts            |  63 +++
+ app/api/portfolio/infer/route.ts                |  43 ++
+ app/api/portfolio/mute/route.ts                 |  63 +++
+ app/api/portfolio/scaffold/preview/route.ts     |  48 ++
+ app/api/portfolio/scaffold/route.ts             |  82 ++++
+ app/components/portfolio/AttentionQueue.tsx     | 286 ++++++++++++
+ app/components/portfolio/NewProjectFlow.tsx     | 541 ++++++++++++++++++++++
+ app/components/portfolio/PortfolioDashboard.tsx | 132 +++++-
+ app/components/portfolio/ProjectCard.tsx        |  84 +++-
+ app/lib/kernl/database.ts                       |  27 ++
+ app/lib/portfolio/__tests__/sprint26.test.ts    | 332 +++++++++++++
+ app/lib/portfolio/analyzer.ts                   | 228 +++++++++
+ app/lib/portfolio/onboarding.ts                 | 151 +++++-
+ app/lib/portfolio/scaffold.ts                   | 588 ++++++++++++++++++++++++
+ app/lib/portfolio/types.ts                      |  57 ++-
+ app/lib/voice/copy-templates.ts                 | 241 ++++++++++
+ 16 files changed, 2945 insertions(+), 21 deletions(-)

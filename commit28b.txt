@@ -1,0 +1,24 @@
+feat(sprint-28): UI components, animations, voice copy, and test suite
+
+Sprint 28.0 Ceremonial Onboarding — Commit #2
+
+Components:
+- SourceAdditionFlow.tsx: full onboarding wizard with source cards,
+  skip affordances, progress tracking, and nudge integration
+- MasterSynthesis.tsx: master synthesis display with typewriter
+  reveal, counter animations, capability cards, and source cards
+
+Animations:
+- synthesis-animations.ts: Framer Motion variant library with
+  typewriter (30/50ms), stagger containers, spring cards,
+  section reveals, and reduced-motion compliance
+
+Voice:
+- copy-templates.ts: onboarding and synthesis copy in Greg's voice
+  (no exclamation marks, no hype, measured confidence)
+
+Tests (1563 passing, 0 failures):
+- synthesis-animations.test.ts: 35 tests — variant shapes, typewriter
+  helpers, counter easing, prefersReducedMotion SSR
+- generator.test.ts, master.test.ts, nudges.test.ts,
+  orchestrator.test.ts: full coverage of Sprint 28 backend pipeline
