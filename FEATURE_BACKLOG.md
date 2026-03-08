@@ -173,6 +173,107 @@ web-session/browser.ts session manager. 1667 total tests across 87 files.
 
 ---
 
+## POST-LAUNCH v1.1.0 — Bug Report & Sprint Matrix (March 8, 2026)
+
+Issues discovered during first installed-build testing session.
+
+---
+
+### 🔴 SPRINT 36.0 — Production API Layer (Node.js Sidecar) — CRITICAL BLOCKER
+**Priority:** P0 — App non-functional in production without this
+**Root cause:** `tauri-prebuild.bat` strips all Next.js API routes before the static build.
+Every `/api/*` call returns HTML 404 (Next.js error page) — "Unexpected token '<', <!DOCTYPE..." errors.
+Affects: Workers tab, War Room, Projects, chat, costs, Ghost, KERNL — everything.
+
+**The proper fix:** Node.js sidecar pattern (the Tauri-blessed solution for exactly this problem).
+
+**Architecture:**
+- Create `sidecar/` directory at project root — a standalone Node.js/Express server
+- Sidecar imports and re-exports all existing `app/lib/` logic (no code duplication)
+- All existing `app/app/api/` route handlers move to Express routes (thin wrappers only)
+- `pkg` compiles the sidecar to a self-contained `.exe` — no Node.js required on end user machine
+- Tauri spawns sidecar on startup via `main.rs`, kills it on shutdown
+- Frontend detects Tauri (`window.__TAURI_INTERNALS__`) and prefixes all fetch calls with `http://localhost:3717`
+- Dev mode: Next.js dev server handles API routes normally (zero change to dev workflow)
+- `tauri-prebuild.bat` no longer needs to strip API routes — static export can coexist with sidecar
+
+**Scope:**
+1. `sidecar/server.ts` — Express server on port 3717, all routes mounted
+2. `sidecar/routes/` — thin Express wrappers for each API namespace (~25 files)
+3. `sidecar/package.json` — standalone package, `pkg` config
+4. `sidecar/build.bat` — compiles + renames to `src-tauri/binaries/greglite-server-x86_64-pc-windows-msvc.exe`
+5. `app/lib/api-client.ts` — `apiUrl(path)` helper: returns `/api${path}` in dev, `http://localhost:3717/api${path}` in Tauri
+6. All `fetch('/api/...')` calls in frontend → `fetch(apiUrl('/...'))`  (~50 call sites, codemod-able)
+7. `app/src-tauri/src/main.rs` — sidecar spawn on app start, kill on window destroy
+8. `app/src-tauri/tauri.conf.json` — `externalBin` + `capabilities/default.json` sidecar permission
+9. `tauri-prebuild.bat` — remove API route strip (no longer needed)
+10. Build pipeline: sidecar build runs before Tauri build
+
+**Key decisions:**
+- Port: 3717 (unique, unlikely conflict — "GregLite")
+- Sidecar shares all `app/lib/` modules — SQLite, KERNL, Ghost, Agent SDK all work identically
+- SSE streaming (`/api/chat`) works in Express via `res.write()` — no architectural change needed
+- `better-sqlite3`, `keytar`, `sqlite-vec` all work in the sidecar (native Node.js context)
+- No code is duplicated — sidecar routes are 3-5 line wrappers calling existing handler functions
+
+**Test strategy:** All existing tests remain unchanged. Add sidecar integration smoke tests.
+
+---
+
+### 🟡 SPRINT 37.0 — UX Polish Sprint (Post-Sidecar)
+**Priority:** P1 — Quality of life, all cosmetic/functional issues found in v1.1.0 testing
+
+**Items:**
+
+#### 37-A: Favicon + Window Icon Fix
+Window titlebar, taskbar, and Start Menu still show placeholder icon.
+Fix: Ensure `app/src-tauri/icons/icon.ico` is the correct Gregore Lite icon,
+and `tauri.conf.json` `app.windows[0]` has `"icon": "icons/icon.ico"` (not .png).
+
+#### 37-B: Shift+Enter List Continuation (Smart Textarea)
+Sprint 30.0 shipped list continuation but only on Enter, not Shift+Enter.
+The input textarea uses Shift+Enter for newline — the list continuation logic fires on Enter only.
+Fix: Detect `e.shiftKey` in the keydown handler and apply list continuation on Shift+Enter as well.
+Also fix: Numbered list should auto-increment the number (1. → 2. → 3.), not repeat "1.".
+
+#### 37-C: Settings Panel Tab Groups
+Settings panel is a flat scrollable list. Should be broken into tab groups:
+Appearance / Memory / Budget / Quality / Ghost / Advanced (or similar grouping).
+Tab navigation at top of settings panel, content filtered per tab.
+
+#### 37-D: UI Label Clarity — Icons + Text
+Current state: icon-only buttons in several places (Quick Capture, header icons).
+Quick Capture pad icon is ambiguous — mistaken for New Chat.
+Decision: Add text labels to all header action buttons, or replace icon-only with icon+label.
+Also: Quick Capture pad needs a visible title/header when opened so user knows what it is.
+
+#### 37-E: Projects — Tab vs Header Button Decision
+Currently a header button opening a full-screen overlay (Sprint 30.0).
+Question: Should it be a tab alongside Chat/Workers/War Room?
+Recommendation: Keep as header button (meta-navigation, not session-scoped).
+Fix needed: Make the Projects overlay header clearly say "Projects" with a close button that's obvious.
+
+#### 37-F: Import Section in Settings (Sprint 33-35 work)
+Verify import/watchfolder section is visible and functional in production build post-sidecar fix.
+
+---
+
+### 🔵 SPRINT 38.0 — Onboarding Tour + First-Run Experience
+**Priority:** P2 — Important for external users, not blocking internal use
+**No brief yet.** Scope when Sprint 37 ships.
+
+Tour tips needed on:
+- Chat tab (what the input does, memory shimmer explanation)
+- Workers tab (what Agent SDK jobs are)
+- War Room (what the dependency graph shows)
+- Inspector drawer (what each tab contains)
+- Context panel (Ghost / KERNL / Project sections)
+- Settings key toggles (Memory Highlights, Ghost on/off)
+
+Approach: step-by-step tooltip overlay on first launch, skippable, re-triggerable from Settings > Help.
+
+---
+
 ## SKIP LIST — Do NOT Port from Gregore
 
 - ❌ Multi-Model Consensus / Council Synthesis (GregLite is Claude-only)
