@@ -1,13 +1,13 @@
 # GREGLITE — STATUS
-**Last Updated:** March 8, 2026 — Sprint 36.0 complete. Node.js/Express sidecar implemented; installed Tauri build now serves all /api/* routes via localhost:3717 instead of returning HTML 404s. esbuild bundles 2.7 MB dist/server.js; pkg packages to greglite-server.exe. Health + threads endpoints smoke-tested green.
-**Version:** v1.1.0 ✅ SHIPPED (Sprint 36.0 post-release patch in progress)
-**Test Count:** 1753/1753 all green
+**Last Updated:** March 8, 2026 — Sprints 37.0 + 38.0 shipped (parallel). UX polish: favicon, settings tabs, textarea list continuation, header labels, Projects overlay clarity. Onboarding tour: 8-step tooltip walk, WelcomeModal first-launch gate, TourOrchestrator, data-tour attributes, Settings restart button. 1769 tests across 91 files.
+**Version:** v1.1.0 ✅ SHIPPED (post-release patch: Sprints 36/37/38 complete, rebuild pending)
+**Test Count:** 1769/1769 (1 pre-existing flake in war-room.test.ts under parallel load — passes 21/21 in isolation)
 **EoS Health:** 100/100
 **TSC:** 0 errors
-**Next:** Run full sidecar build (build.bat → server.exe → copy to src-tauri/binaries/), then cut patch release or test via `pnpm tauri dev`
+**Next:** Cut v1.1.1 patch release — rebuild installer with sidecar binary + UX/tour changes, publish to GitHub releases
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md — ALL PHASES (A–F) SHIPPED.
-**Recent commits:** Sprint 36.0 (pending), 0ae1afe (release: v1.1.0), ba24b1e (Sprint 35.0 / EPIC-81 complete), 3fb2e96 (Sprint 34.0), f7f6dd1 (Sprint 30.0), 1226a7c (Sprint 32.0 docs)
+**Recent commits:** 2d397ab (Sprint 37.0 UX polish), ebbf75e (Sprint 38.0 onboarding tour), Sprint 36.0 (sidecar), 0ae1afe (release: v1.1.0)
 
 ### ⚠️ GROUND TRUTH AUDIT (March 4, 2026)
 1. ~~Transit Map "data foundation" listed in Sprint 10.6 was NOT shipped.~~ RESOLVED: Sprint 11.2 shipped data foundation (conversation_events table, 26 event types, capture hooks). commit 37d60af.
