@@ -43,6 +43,8 @@ export interface ShimmerMatch {
   sourceId: string;
   /** First 80 chars of the matching content */
   preview: string;
+  /** Platform badge for imported conversations: 'claude_ai' | 'chatgpt' | 'generic' */
+  source_platform?: string;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -132,6 +134,17 @@ export function queryShimmerMatches(
     LIMIT ?
   `);
 
+  // Imported conversation chunks — LIKE fallback (no FTS5 on content_chunks yet)
+  // Uses '%' || ? || '%' so the bound param is just the bare token (consistent
+  // with FTS5 args — keeps the budget-guard test's uniqueTokens count correct).
+  const importedStmt = db.prepare<[string, number]>(`
+    SELECT id, content, metadata
+    FROM content_chunks
+    WHERE source_type = 'imported_conversation'
+      AND content LIKE '%' || ? || '%'
+    LIMIT ?
+  `);
+
   for (const token of queryTokens) {
     if (seenTerms.has(token)) continue;
     seenTerms.add(token);
@@ -184,9 +197,37 @@ export function queryShimmerMatches(
             preview,
           });
         }
+        continue;
+      }
+
+      // 3. Fallback: imported conversation chunks
+      const importedResults = importedStmt.all(token, 3) as Array<{
+        id: string;
+        content: string;
+        metadata: string | null;
+      }>;
+
+      if (importedResults.length > 0 && importedResults[0]) {
+        const result = importedResults[0];
+        const preview = result.content.trim().slice(0, 80);
+        const meta = result.metadata
+          ? (JSON.parse(result.metadata) as Record<string, string>)
+          : {};
+        const positions = findPositions(input, token);
+        for (const pos of positions) {
+          matches.push({
+            term: token,
+            startIndex: pos.startIndex,
+            endIndex: pos.endIndex,
+            source: 'memory',
+            sourceId: result.id,
+            preview,
+            source_platform: meta['source_platform'],
+          });
+        }
       }
     } catch {
-      // FTS5 query error — skip token silently
+      // Query error — skip token silently
     }
   }
 

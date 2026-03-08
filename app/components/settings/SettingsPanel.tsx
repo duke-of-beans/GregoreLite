@@ -19,6 +19,7 @@ import { RecallSection } from './RecallSection';
 import { CaptureSection } from './CaptureSection';
 import { StartupSection } from './StartupSection';
 import { WebSessionSection } from './WebSessionSection';
+import { ImportSection } from './ImportSection';
 
 interface SettingsPanelProps {
   open: boolean;
@@ -131,6 +132,9 @@ export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
 
           <div style={{ height: 1, background: 'var(--shadow)', margin: '16px 0' }} />
           <WebSessionSection />
+
+          <div style={{ height: 1, background: 'var(--shadow)', margin: '16px 0' }} />
+          <ImportSection />
 
           <div style={{ height: 1, background: 'var(--shadow)', margin: '16px 0' }} />
           <OverridePoliciesSection />

@@ -483,6 +483,77 @@ function runMigrations(db: Database.Database): void {
   } catch {
     // Table may already exist
   }
+
+  // Sprint 33.0 / EPIC-81 — Remove CHECK constraint from content_chunks + add imported_source_id
+  // SQLite cannot DROP CONSTRAINT — must recreate table. Guard: check if column already exists.
+  try {
+    db.prepare('SELECT imported_source_id FROM content_chunks LIMIT 0').run();
+    // Column exists — migration already applied, skip
+  } catch {
+    // Column missing — recreate table without CHECK constraint, adding imported_source_id
+    db.transaction(() => {
+      db.exec(`
+        CREATE TABLE content_chunks_v2 (
+          id                 TEXT PRIMARY KEY,
+          source_type        TEXT NOT NULL,
+          source_id          TEXT NOT NULL,
+          chunk_index        INTEGER NOT NULL,
+          content            TEXT NOT NULL,
+          metadata           TEXT,
+          model_id           TEXT NOT NULL,
+          created_at         INTEGER NOT NULL,
+          indexed_at         INTEGER NOT NULL,
+          source_path        TEXT,
+          source_account     TEXT,
+          imported_source_id TEXT REFERENCES imported_sources(id)
+        );
+        INSERT INTO content_chunks_v2
+          SELECT id, source_type, source_id, chunk_index, content, metadata,
+                 model_id, created_at, indexed_at, source_path, source_account, NULL
+          FROM content_chunks;
+        DROP TABLE content_chunks;
+        ALTER TABLE content_chunks_v2 RENAME TO content_chunks;
+      `);
+    })();
+    // Recreate indexes after table swap
+    db.exec(`
+      CREATE INDEX IF NOT EXISTS idx_chunks_source ON content_chunks(source_type, source_id);
+      CREATE INDEX IF NOT EXISTS idx_chunks_model  ON content_chunks(model_id);
+      CREATE INDEX IF NOT EXISTS idx_chunks_import ON content_chunks(imported_source_id)
+        WHERE imported_source_id IS NOT NULL;
+    `);
+  }
+
+  // Sprint 33.0 — imported_sources and imported_conversations tables
+  try {
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS imported_sources (
+        id                 TEXT PRIMARY KEY,
+        source_type        TEXT NOT NULL,
+        source_path        TEXT,
+        display_name       TEXT NOT NULL,
+        conversation_count INTEGER DEFAULT 0,
+        chunk_count        INTEGER DEFAULT 0,
+        last_synced_at     INTEGER,
+        created_at         INTEGER NOT NULL,
+        meta               TEXT
+      );
+      CREATE TABLE IF NOT EXISTS imported_conversations (
+        id                  TEXT PRIMARY KEY,
+        imported_source_id  TEXT NOT NULL REFERENCES imported_sources(id),
+        external_id         TEXT NOT NULL,
+        title               TEXT,
+        message_count       INTEGER DEFAULT 0,
+        created_at_source   INTEGER,
+        imported_at         INTEGER NOT NULL,
+        UNIQUE(imported_source_id, external_id)
+      );
+      CREATE INDEX IF NOT EXISTS idx_imported_convs_source
+        ON imported_conversations(imported_source_id);
+    `);
+  } catch {
+    // Tables already exist — silently continue
+  }
 }
 
 export function closeDatabase(): void {

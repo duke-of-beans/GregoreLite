@@ -579,3 +579,31 @@ CREATE INDEX IF NOT EXISTS idx_action_journal_session
   ON action_journal (session_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_action_journal_undone
   ON action_journal (undone, reversible);
+
+-- ─── IMPORT: MEMORY SOURCES ───────────────────────────────────────────────────
+-- Sprint 33.0 / EPIC-81: Cross-Platform Conversation Memory Import
+CREATE TABLE IF NOT EXISTS imported_sources (
+  id                 TEXT PRIMARY KEY,
+  source_type        TEXT NOT NULL,   -- 'claude_ai_export' | 'chatgpt_export' | 'generic_json' | etc.
+  source_path        TEXT,            -- file path on disk (for watchfolder tracking)
+  display_name       TEXT NOT NULL,   -- human-readable label shown in UI
+  conversation_count INTEGER DEFAULT 0,
+  chunk_count        INTEGER DEFAULT 0,
+  last_synced_at     INTEGER,
+  created_at         INTEGER NOT NULL,
+  meta               TEXT             -- JSON: format version, last known conversation ID, etc.
+);
+
+-- ─── IMPORT: CONVERSATION INDEX (deduplication) ───────────────────────────────
+CREATE TABLE IF NOT EXISTS imported_conversations (
+  id                  TEXT PRIMARY KEY,
+  imported_source_id  TEXT NOT NULL REFERENCES imported_sources(id),
+  external_id         TEXT NOT NULL,    -- original platform conversation ID
+  title               TEXT,
+  message_count       INTEGER DEFAULT 0,
+  created_at_source   INTEGER,          -- timestamp from source platform
+  imported_at         INTEGER NOT NULL,
+  UNIQUE(imported_source_id, external_id)  -- deduplication index
+);
+
+CREATE INDEX IF NOT EXISTS idx_imported_convs_source ON imported_conversations(imported_source_id);
