@@ -169,6 +169,7 @@ function PanelContent() {
 
   return (
     <aside
+      data-tour="context-panel"
       className="flex h-full w-[20%] min-w-[200px] max-w-[280px] flex-shrink-0 flex-col border-r border-[var(--shadow)] bg-[var(--elevated)] overflow-y-auto"
       aria-label="Context panel"
     >

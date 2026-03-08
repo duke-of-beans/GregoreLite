@@ -164,7 +164,7 @@ export function StatusBar() {
   }
 
   return (
-    <div className="flex h-8 w-full shrink-0 items-center justify-between border-t border-[var(--shadow)] bg-[var(--deep-space)] px-4 text-[11px]">
+    <div data-tour="status-bar" className="flex h-8 w-full shrink-0 items-center justify-between border-t border-[var(--shadow)] bg-[var(--deep-space)] px-4 text-[11px]">
       <div className="flex items-center gap-4">
         {/* Cost */}
         <button

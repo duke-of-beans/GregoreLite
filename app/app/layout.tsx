@@ -4,6 +4,7 @@ import './globals.css';
 import { ToastStack } from '@/components/ui/ToastStack';
 import { ThemeSync } from '@/components/ui/ThemeSync';
 import { CapturePadController } from '@/components/capture/CapturePadController';
+import { TourOrchestrator } from '@/components/tour/TourOrchestrator';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -41,6 +42,8 @@ export default function RootLayout({
         {children}
         <ToastStack />
         <CapturePadController />
+        {/* Sprint 38.0: Onboarding tour — after all providers */}
+        <TourOrchestrator />
       </body>
     </html>
   );

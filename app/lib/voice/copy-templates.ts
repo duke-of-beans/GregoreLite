@@ -740,6 +740,9 @@ export const CAPTURE = {
   pad: {
     placeholder: "Bug, feature, idea... prefix with project name",
     project_unrouted: 'Unrouted',
+    // Sprint 37.0
+    header:   'Quick Capture',
+    subtitle: "Drop thoughts here \u2014 they'll appear in your inbox.",
   },
 
   // ── Toasts ────────────────────────────────────────────────────────────────
@@ -804,6 +807,10 @@ export const NAV = {
   briefing_skip_today:     "Don\u2019t show again today",
   portfolio_overlay_title: 'Projects',
   portfolio_overlay_close: 'Close projects (Cmd+P)',
+  // Sprint 37.0
+  projects_overlay_title:  'Projects',
+  projects_close_hint:     'Esc to close',
+  capture_button_label:    'Capture',
 } as const;
 
 // ── Sprint 32.0: Web Session (headless browser routing) ───────────────────
@@ -877,7 +884,7 @@ export const IMPORT = {
   platform_chatgpt:     'ChatGPT',
   platform_generic:     'Imported',
 
-  // ── Auto-sync section (Sprint 34.0) ───────────────────────────────────────
+  // ── Auto-sync section (Sprint 34.0) ──────────────────────────────────────
   autosync_heading:        'Auto-Sync',
   autosync_path_label:     'Watch folder',
   autosync_open_folder:    'Open folder',
@@ -894,4 +901,72 @@ export const IMPORT = {
   mem_chip_tooltip_current: (n: number) => `Memory synced ${n} day${n !== 1 ? 's' : ''} ago`,
   mem_chip_tooltip_overdue: (n: number) => `Memory last synced ${n} day${n !== 1 ? 's' : ''} ago — click to sync`,
 
+} as const;
+
+// ── Sprint 37.0: Settings tab groups ─────────────────────────────────────────
+export const SETTINGS_TABS = {
+  appearance:    'Appearance',
+  memory_ghost:  'Memory & Ghost',
+  budget_quality:'Budget & Quality',
+  startup_sync:  'Startup & Sync',
+  advanced:      'Advanced',
+} as const;
+
+// ── Sprint 38.0: Onboarding tour copy ─────────────────────────────────────────
+// Voice: deadpan professional. Concise. No exclamation marks.
+// All UI strings for the tour tooltip and welcome modal live here.
+
+export const TOUR = {
+  // ── Tooltip action buttons ────────────────────────────────────────────────
+  start_button:       'Show me around',
+  skip_button:        'Skip',
+  next_button:        'Next',
+  finish_button:      'Done',
+  step_counter:       (current: number, total: number) => `${current} of ${total}`,
+
+  // ── Settings restart row ──────────────────────────────────────────────────
+  restart_label:       'Restart tour',
+  restart_description: 'Walk through the onboarding tour again.',
+
+  // ── Welcome modal ─────────────────────────────────────────────────────────
+  welcome_title:         'Welcome to GregLite',
+  welcome_subtitle:      'Your cognitive operating system. Powered by Claude.',
+  welcome_cta_primary:   'Show me around',
+  welcome_cta_secondary: "I'll explore myself",
+
+  // ── Step copy (8 steps, order matches TOUR_STEPS index) ──────────────────
+  steps: [
+    {
+      title: 'Start a conversation',
+      body:  'Type anything. GregLite connects to Claude and streams a response.',
+    },
+    {
+      title: 'Memory highlights',
+      body:  'Words matching your saved memory glow cyan. Click one to see the source.',
+    },
+    {
+      title: 'Context panel',
+      body:  'Active project, recent conversations, and background assistant suggestions.',
+    },
+    {
+      title: 'Workers',
+      body:  'Autonomous agent jobs run here in the background while you work.',
+    },
+    {
+      title: 'War Room',
+      body:  'See all active jobs and dependencies as a live graph.',
+    },
+    {
+      title: 'Inspector',
+      body:  'Cmd+I. Memory, quality scores, costs, jobs, and learning insights.',
+    },
+    {
+      title: 'Status bar',
+      body:  'Live cost, job count, system health. Click any chip for details.',
+    },
+    {
+      title: "You're ready",
+      body:  'Settings live here. Restart this tour anytime from Settings \u2192 Advanced.',
+    },
+  ],
 } as const;

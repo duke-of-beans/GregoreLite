@@ -110,6 +110,14 @@ export interface UIState {
 
   // Sprint 30.0: Status bar collapse (persisted)
   statusBarCollapsed: boolean;
+
+  // Sprint 37.0: Settings panel active tab
+  settingsActiveTab: string;
+
+  // Sprint 38.0: Onboarding tour
+  tourCompleted: boolean;  // persisted — never re-fires without explicit reset
+  tourStep: number;        // session-only current step index (0-based)
+  tourActive: boolean;     // session-only whether tour tooltip is visible
 }
 
 // ============================================================================
@@ -189,6 +197,16 @@ export interface UIActions {
   setStatusBarCollapsed: (collapsed: boolean) => void;
   toggleStatusBar: () => void;
 
+  // Sprint 37.0: Settings panel active tab
+  setSettingsActiveTab: (tab: string) => void;
+
+  // Sprint 38.0: Onboarding tour
+  startTour: () => void;
+  advanceTour: () => void;   // step++ or completeTour() if step >= 7
+  skipTour: () => void;      // same as completeTour — marks done, hides tour
+  completeTour: () => void;  // marks tourCompleted, clears tourActive
+  resetTour: () => void;     // clears tourCompleted so tour fires again
+
   // Reset
   resetUI: () => void;
 }
@@ -241,6 +259,14 @@ const initialState: UIState = {
 
   // Sprint 30.0
   statusBarCollapsed: false,
+
+  // Sprint 37.0: Settings active tab
+  settingsActiveTab: 'appearance',
+
+  // Sprint 38.0: Onboarding tour
+  tourCompleted: false,
+  tourStep: 0,
+  tourActive: false,
 };
 
 // ============================================================================
@@ -582,6 +608,45 @@ const createUISlice: StateCreator<UIStore> = (set, get) => ({
   },
 
   // ========================================================================
+  // SPRINT 37.0: SETTINGS ACTIVE TAB
+  // ========================================================================
+
+  setSettingsActiveTab: (tab: string) => {
+    set({ settingsActiveTab: tab });
+  },
+
+  // ========================================================================
+  // SPRINT 38.0: ONBOARDING TOUR
+  // ========================================================================
+
+  startTour: () => {
+    set({ tourActive: true, tourStep: 0 });
+  },
+
+  advanceTour: () => {
+    const { tourStep } = get();
+    const TOTAL_STEPS = 8;
+    if (tourStep >= TOTAL_STEPS - 1) {
+      // Last step — complete tour
+      set({ tourActive: false, tourCompleted: true, tourStep: 0 });
+    } else {
+      set({ tourStep: tourStep + 1 });
+    }
+  },
+
+  skipTour: () => {
+    set({ tourActive: false, tourCompleted: true, tourStep: 0 });
+  },
+
+  completeTour: () => {
+    set({ tourActive: false, tourCompleted: true, tourStep: 0 });
+  },
+
+  resetTour: () => {
+    set({ tourCompleted: false, tourActive: false, tourStep: 0 });
+  },
+
+  // ========================================================================
   // RESET
   // ========================================================================
 
@@ -615,7 +680,11 @@ export const useUIStore = create<UIStore>()(
           recentCommands: state.commandPalette.recentCommands,
         },
         statusBarCollapsed: state.statusBarCollapsed,
-        // Don't persist notifications, modals, loading states, or focus
+        // Sprint 37.0: settings active tab persists
+        settingsActiveTab: state.settingsActiveTab,
+        // Sprint 38.0: tourCompleted persists — never re-fires without explicit reset
+        tourCompleted: state.tourCompleted,
+        // Don't persist notifications, modals, loading states, tourStep, or tourActive
       }),
     }),
     { name: 'UIStore' }
@@ -653,6 +722,11 @@ export const selectAreaLoading = (area: string) => (state: UIStore) =>
 export const selectFocusedElement = (state: UIStore) => state.focusedElement;
 
 export const selectCapturePadOpen = (state: UIStore) => state.capturePadOpen;
+
+// Sprint 38.0: Tour selectors
+export const selectTourCompleted = (state: UIStore) => state.tourCompleted;
+export const selectTourActive = (state: UIStore) => state.tourActive;
+export const selectTourStep = (state: UIStore) => state.tourStep;
 
 // ============================================================================
 // HOOKS (convenience wrappers)

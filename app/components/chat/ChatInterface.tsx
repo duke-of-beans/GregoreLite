@@ -82,6 +82,7 @@ interface TabDef {
   icon: ReactNode;
   tooltip: string;
   shortcut?: string;
+  dataTour?: string; // Sprint 38.0: onboarding tour anchor
 }
 
 // Sprint 30.0: 'portfolio' removed — it is the meta-navigation layer above these four.
@@ -98,6 +99,7 @@ const TABS: TabDef[] = [
     label: 'Workers',
     icon: <Cpu className="h-4 w-4" />,
     tooltip: 'Automated background tasks — code generation, testing, research',
+    dataTour: 'workers-tab',
   },
   {
     id: 'warroom',
@@ -105,6 +107,7 @@ const TABS: TabDef[] = [
     icon: <LayoutGrid className="h-4 w-4" />,
     tooltip: 'Visual status of all running and queued worker tasks',
     shortcut: 'Cmd+W',
+    dataTour: 'war-room-tab',
   },
   {
     id: 'transit',
@@ -807,6 +810,7 @@ export function ChatInterface() {
             <button
               key={tab.id}
               data-tab={tab.id}
+              {...(tab.dataTour ? { 'data-tour': tab.dataTour } : {})}
               onClick={() => setActiveTab(tab.id)}
               className={[
                 'flex items-center gap-1.5 px-3 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px',
@@ -984,7 +988,7 @@ export function ChatInterface() {
               )}
 
               {/* Input bar */}
-              <div className="border-t border-[var(--shadow)] bg-[var(--deep-space)] px-6 py-4 flex-shrink-0">
+              <div className="chat-input-area border-t border-[var(--shadow)] bg-[var(--deep-space)] px-6 py-4 flex-shrink-0">
                 <div className="mx-auto max-w-4xl">
                   {/* Ghost context active indicator */}
                   {ghostContextActive && (

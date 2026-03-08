@@ -59,6 +59,7 @@ export function ShimmerOverlay({ matches, inputText, onMatchClick }: ShimmerOver
 
   return (
     <div
+      data-tour="memory-shimmer"
       aria-hidden="true"
       style={{
         // Positioned to exactly cover the textarea

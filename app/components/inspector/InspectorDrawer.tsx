@@ -87,6 +87,7 @@ export function InspectorDrawer({ open, onClose }: InspectorDrawerProps) {
 
           {/* Drawer — springs in from right */}
           <motion.div
+            data-tour="inspector-drawer"
             key="inspector-drawer"
             variants={drawerSlide}
             initial="hidden"

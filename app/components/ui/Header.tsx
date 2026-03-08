@@ -55,13 +55,15 @@ export function Header() {
         {gateTrigger && <TriggerBadge />}
 
         {/* Projects button — Sprint 30.0: meta-navigation, opens portfolio overlay */}
+        {/* Sprint 37.0: text label added below icon */}
         <button
           onClick={() => window.dispatchEvent(new CustomEvent('greglite:open-portfolio'))}
-          className="flex items-center justify-center rounded-lg border border-[var(--shadow)] bg-[var(--elevated)] p-2 text-[var(--frost)] transition-colors hover:border-[var(--cyan)] hover:bg-[var(--surface)] hover:text-[var(--ice-white)]"
+          className="flex flex-col items-center gap-0.5 rounded-lg border border-[var(--shadow)] bg-[var(--elevated)] px-2 py-1.5 text-[var(--frost)] transition-colors hover:border-[var(--cyan)] hover:bg-[var(--surface)] hover:text-[var(--ice-white)]"
           aria-label={NAV.projects_button_label}
           title={NAV.projects_button_tooltip}
         >
           <FolderKanban className="h-4 w-4" />
+          <span className="text-[10px] leading-none">{NAV.projects_button_label}</span>
         </button>
 
         {/* What's this? guide button */}
@@ -80,6 +82,7 @@ export function Header() {
 
         {/* Settings gear */}
         <button
+          data-tour="settings-gear"
           onClick={toggleSettings}
           className="flex items-center justify-center rounded-lg border border-[var(--shadow)] bg-[var(--elevated)] p-2 text-[var(--frost)] transition-colors hover:border-[var(--cyan)] hover:bg-[var(--surface)] hover:text-[var(--ice-white)]"
           aria-label="Open settings"
@@ -120,13 +123,15 @@ export function Header() {
         </button>
 
         {/* Quick Capture button — Sprint 30.0: discoverability for Ctrl+Shift+Space */}
+        {/* Sprint 37.0: text label added below icon */}
         <button
           onClick={() => useUIStore.getState().toggleCapturePad()}
-          className="flex items-center justify-center rounded-lg border border-[var(--shadow)] bg-[var(--elevated)] p-2 text-[var(--frost)] transition-colors hover:border-[var(--cyan)] hover:bg-[var(--surface)] hover:text-[var(--ice-white)]"
+          className="flex flex-col items-center gap-0.5 rounded-lg border border-[var(--shadow)] bg-[var(--elevated)] px-2 py-1.5 text-[var(--frost)] transition-colors hover:border-[var(--cyan)] hover:bg-[var(--surface)] hover:text-[var(--ice-white)]"
           aria-label="Open quick capture"
           title={NAV.capture_button_tooltip}
         >
           <PenLine className="h-4 w-4" />
+          <span className="text-[10px] leading-none">{NAV.capture_button_label}</span>
         </button>
       </div>
     </header>
