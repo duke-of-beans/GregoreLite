@@ -203,7 +203,7 @@ No sprint briefs pending. Future work sourced from:
 ## EPIC-81: Cross-Platform Conversation Memory Import ✅ SHIPPED (Sprints 33.0–35.0)
 **Spec:** `docs/CONVERSATION_IMPORT_SPEC.md`
 **Cert:** `EPIC81_COMPLETE.md`
-**Commits:** 4ea4b67 (Sprint 33.0) · 3fb2e96 (Sprint 34.0) · TBD (Sprint 35.0)
+**Commits:** 4ea4b67 (Sprint 33.0) · 3fb2e96 (Sprint 34.0) · ba24b1e (Sprint 35.0)
 
 GregLite's memory was blind to all prior AI conversation history. EPIC-81 closes
 that gap with a full import pipeline, continuous sync daemon, and multi-format

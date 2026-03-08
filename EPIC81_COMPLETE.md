@@ -2,7 +2,7 @@
 
 **Date:** March 7, 2026
 **Sprints:** 33.0 · 34.0 · 35.0
-**Commits:** 4ea4b67 (Sprint 33.0) · 3fb2e96 (Sprint 34.0) · TBD (Sprint 35.0)
+**Commits:** 4ea4b67 (Sprint 33.0) · 3fb2e96 (Sprint 34.0) · ba24b1e (Sprint 35.0)
 **Tests:** 1753/1753 passing (90 test files)
 **TSC:** 0 errors
 
@@ -112,7 +112,7 @@ Full coverage of `DEFAULT_WATCHFOLDER`, `getWatchfolderPath`, `SUPPORTED_EXTENSI
 
 ## Sprint 35.0 — Additional Adapters + Inspector + Hardening
 
-**Commit:** TBD
+**Commit:** ba24b1e
 
 ### New adapters
 

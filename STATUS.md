@@ -7,7 +7,7 @@
 **Next:** Post-EPIC-81 — next work from real usage feedback via Quick Capture Pad
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md — ALL PHASES (A–F) SHIPPED.
-**Recent commits:** TBD (Sprint 35.0 / EPIC-81 complete), 3fb2e96 (Sprint 34.0), f7f6dd1 (Sprint 30.0), 1226a7c (Sprint 32.0 docs), b96c596 (Sprint 31.0)
+**Recent commits:** ba24b1e (Sprint 35.0 / EPIC-81 complete), 3fb2e96 (Sprint 34.0), f7f6dd1 (Sprint 30.0), 1226a7c (Sprint 32.0 docs), b96c596 (Sprint 31.0)
 
 ### ⚠️ GROUND TRUTH AUDIT (March 4, 2026)
 1. ~~Transit Map "data foundation" listed in Sprint 10.6 was NOT shipped.~~ RESOLVED: Sprint 11.2 shipped data foundation (conversation_events table, 26 event types, capture hooks). commit 37d60af.
@@ -1149,7 +1149,7 @@ GregLite can now route chat messages through Claude's web interface instead of t
 ### Quality Gate
 - TSC: 0 errors
 - Tests: 1753 / 1753 passing (+27 Sprint 35.0 tests, +9 from wired markdown adapter)
-- Commit: TBD
+- Commit: ba24b1e
 
 ---
 
