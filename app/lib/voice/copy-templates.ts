@@ -884,6 +884,10 @@ export const IMPORT = {
   platform_chatgpt:     'ChatGPT',
   platform_generic:     'Imported',
 
+  // ── Flow navigation ───────────────────────────────────────────────────────
+  done_for_now:        'Done for now',
+  add_later:           'Set up later',
+
   // ── Auto-sync section (Sprint 34.0) ──────────────────────────────────────
   autosync_heading:        'Auto-Sync',
   autosync_path_label:     'Watch folder',
@@ -906,10 +910,41 @@ export const IMPORT = {
 // ── Sprint 37.0: Settings tab groups ─────────────────────────────────────────
 export const SETTINGS_TABS = {
   appearance:    'Appearance',
-  memory_ghost:  'Memory & Ghost',
+  memory_ghost:  'Memory & Background',
   budget_quality:'Budget & Quality',
   startup_sync:  'Startup & Sync',
   advanced:      'Advanced',
+} as const;
+
+// ── Sprint 39.0: HelpPopover content ─────────────────────────────────────────
+// Keys are passed as the `helpKey` prop to <HelpPopover />.
+// Voice: plain-language, one sentence max per body. Passes the Grandma Test.
+
+export const HELP_CONTENT = {
+  quality: {
+    title: 'Code Quality',
+    body:  'A composite score based on test coverage, TypeScript strictness, and static analysis. Updates on each scan.',
+  },
+  settings_appearance: {
+    title: 'Appearance',
+    body:  'Theme, font size, and display density. Changes apply immediately.',
+  },
+  settings_memory_background: {
+    title: 'Memory & Background',
+    body:  'Controls what GregLite remembers across sessions and how the Background Assistant monitors your filesystem and email.',
+  },
+  settings_budget_quality: {
+    title: 'Budget & Quality',
+    body:  'Monthly API spend cap and quality thresholds. GregLite warns before you approach limits.',
+  },
+  settings_startup_sync: {
+    title: 'Startup & Sync',
+    body:  'Whether GregLite launches at login and how it syncs conversation history.',
+  },
+  settings_advanced: {
+    title: 'Advanced',
+    body:  'Routing overrides, tour reset, and diagnostic tools. Change with care.',
+  },
 } as const;
 
 // ── Sprint 38.0: Onboarding tour copy ─────────────────────────────────────────
@@ -934,7 +969,10 @@ export const TOUR = {
   welcome_cta_primary:   'Show me around',
   welcome_cta_secondary: "I'll explore myself",
 
-  // ── Step copy (8 steps, order matches TOUR_STEPS index) ──────────────────
+  // ── Step copy (10 steps, order matches TOUR_STEPS index) ─────────────────
+  // [0] chat-input  [1] memory-shimmer  [2] context-panel  [3] workers-tab
+  // [4] war-room-tab  [5] transit-tab  [6] inspector-drawer  [7] status-bar
+  // [8] projects-button  [9] settings-gear
   steps: [
     {
       title: 'Start a conversation',
@@ -957,12 +995,20 @@ export const TOUR = {
       body:  'See all active jobs and dependencies as a live graph.',
     },
     {
+      title: 'Transit',
+      body:  'Real-time conversation feed from connected integrations.',
+    },
+    {
       title: 'Inspector',
       body:  'Cmd+I. Memory, quality scores, costs, jobs, and learning insights.',
     },
     {
       title: 'Status bar',
       body:  'Live cost, job count, system health. Click any chip for details.',
+    },
+    {
+      title: 'Projects',
+      body:  'Your registered projects. Track health, activity, and next actions.',
     },
     {
       title: "You're ready",

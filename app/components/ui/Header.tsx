@@ -1,3 +1,4 @@
+'use client';
 /**
  * Header Component — Sprint 30.0
  *
@@ -8,7 +9,6 @@
  * No mixing of styles — visual rhythm is enforced.
  */
 
-'use client';
 
 import { useState } from 'react';
 import { FolderKanban, PenLine } from 'lucide-react';
@@ -57,6 +57,7 @@ export function Header() {
         {/* Projects button — Sprint 30.0: meta-navigation, opens portfolio overlay */}
         {/* Sprint 37.0: text label added below icon */}
         <button
+          data-tour="projects-button"
           onClick={() => window.dispatchEvent(new CustomEvent('greglite:open-portfolio'))}
           className="flex flex-col items-center gap-0.5 rounded-lg border border-[var(--shadow)] bg-[var(--elevated)] px-2 py-1.5 text-[var(--frost)] transition-colors hover:border-[var(--cyan)] hover:bg-[var(--surface)] hover:text-[var(--ice-white)]"
           aria-label={NAV.projects_button_label}

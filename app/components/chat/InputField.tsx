@@ -1,3 +1,4 @@
+'use client';
 /**
  * InputField Component — Sprint 30.0
  *
@@ -13,7 +14,6 @@
  *  - Height resets to minimum on send.
  */
 
-'use client';
 
 import { ChangeEvent, KeyboardEvent, useRef, forwardRef, useImperativeHandle } from 'react';
 
@@ -151,6 +151,7 @@ export const InputField = forwardRef<HTMLTextAreaElement, InputFieldProps>(
       <div className="relative w-full">
         <textarea
           ref={internalRef}
+          data-tour="chat-input"
           value={value}
           onChange={handleChange}
           onKeyDown={handleKeyDown}

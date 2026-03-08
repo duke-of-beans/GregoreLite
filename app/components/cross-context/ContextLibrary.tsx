@@ -1,3 +1,4 @@
+'use client';
 import { apiFetch } from '@/lib/api-client';
 /**
  * ContextLibrary — suppressed suggestions drawer (Sprint 3F)
@@ -13,7 +14,6 @@ import { apiFetch } from '@/lib/api-client';
  * BLUEPRINT §5.4
  */
 
-'use client';
 
 import { useCallback, useEffect, useState } from 'react';
 
@@ -72,7 +72,7 @@ export function ContextLibrary({ onClose }: ContextLibraryProps) {
     bottom: 0,
     width: '380px',
     maxWidth: '90vw',
-    background: 'var(--bg)',
+    background: 'var(--deep-space)',
     borderLeft: '1px solid var(--border)',
     display: 'flex',
     flexDirection: 'column',
@@ -86,6 +86,7 @@ export function ContextLibrary({ onClose }: ContextLibraryProps) {
     justifyContent: 'space-between',
     padding: '14px 16px',
     borderBottom: '1px solid var(--border)',
+    background: 'var(--elevated)',
     flexShrink: 0,
   };
 
@@ -101,10 +102,13 @@ export function ContextLibrary({ onClose }: ContextLibraryProps) {
         <div style={headerStyle}>
           <div>
             <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--frost)', letterSpacing: '0.08em' }}>
-              CONTEXT LIBRARY
+              SUGGESTION ARCHIVE
             </div>
             <div style={{ fontSize: '10px', color: 'var(--mist)', marginTop: '2px' }}>
-              {items.length} suppressed suggestion{items.length !== 1 ? 's' : ''}
+              {items.length} archived suggestion{items.length !== 1 ? 's' : ''}
+            </div>
+            <div style={{ fontSize: '9px', color: 'var(--mist)', marginTop: '3px', opacity: 0.7 }}>
+              Suggestions you&apos;ve dismissed. Restore any item to bring it back.
             </div>
           </div>
           <button
@@ -207,7 +211,7 @@ export function ContextLibrary({ onClose }: ContextLibraryProps) {
                     padding: '2px 8px',
                   }}
                 >
-                  Un-suppress
+                  Restore
                 </button>
               </div>
             </div>

@@ -1,21 +1,24 @@
 'use client';
 
 /**
- * OnboardingFlow — 4-step wizard container
+ * OnboardingFlow — 5-step wizard container
  * Sprint 8D: manages step routing and progress indicator.
+ * Sprint 39.0: added Import step (index 3) between Aegis and Ready.
  */
 
 import { useState, useCallback } from 'react';
-import { OnboardingStep1ApiKey } from './OnboardingStep1ApiKey';
-import { OnboardingStep2Kernl } from './OnboardingStep2Kernl';
-import { OnboardingStep3Aegis } from './OnboardingStep3Aegis';
-import { OnboardingStep4Ready } from './OnboardingStep4Ready';
+import { OnboardingStep1ApiKey }  from './OnboardingStep1ApiKey';
+import { OnboardingStep2Kernl }   from './OnboardingStep2Kernl';
+import { OnboardingStep3Aegis }   from './OnboardingStep3Aegis';
+import { OnboardingStep5Import }  from './OnboardingStep5Import';
+import { OnboardingStep4Ready }   from './OnboardingStep4Ready';
 
 const STEPS = [
   { key: 'api-key', label: 'API Key' },
-  { key: 'kernl', label: 'Memory' },
-  { key: 'aegis', label: 'System Monitor' },
-  { key: 'ready', label: 'Launch' },
+  { key: 'kernl',   label: 'Memory' },
+  { key: 'aegis',   label: 'System Monitor' },
+  { key: 'import',  label: 'Import' },
+  { key: 'ready',   label: 'Launch' },
 ] as const;
 
 interface Props {
@@ -67,7 +70,10 @@ export function OnboardingFlow({ onComplete }: Props) {
           )}
           {currentStep === 1 && <OnboardingStep2Kernl onComplete={advance} />}
           {currentStep === 2 && <OnboardingStep3Aegis onComplete={advance} />}
-          {currentStep === 3 && <OnboardingStep4Ready onComplete={onComplete} />}
+          {currentStep === 3 && (
+            <OnboardingStep5Import onNext={advance} onSkip={advance} />
+          )}
+          {currentStep === 4 && <OnboardingStep4Ready onComplete={onComplete} />}
         </div>
 
         {/* Step label */}

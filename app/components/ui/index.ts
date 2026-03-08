@@ -5,3 +5,4 @@
 
 export { Header } from './Header';
 export { KeyboardShortcuts, type KeyboardShortcutsProps } from './KeyboardShortcuts';
+export { HelpPopover, type HelpKey } from './HelpPopover';

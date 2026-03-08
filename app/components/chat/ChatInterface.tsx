@@ -1,3 +1,4 @@
+'use client';
 import { apiFetch } from '@/lib/api-client';
 /**
  * ChatInterface Component — Sprint S9-01 update
@@ -14,7 +15,6 @@ import { apiFetch } from '@/lib/api-client';
  * found it is written to the active tab's state and synced to KERNL.
  */
 
-'use client';
 
 import { useState, useEffect, useCallback, useRef, type ReactNode } from 'react';
 import { MessageSquare, Cpu, LayoutGrid, GitBranch, FolderKanban } from 'lucide-react';
@@ -116,6 +116,7 @@ const TABS: TabDef[] = [
     icon: <GitBranch className="h-4 w-4" />,
     tooltip: 'Visual timeline of your conversation\'s key moments',
     shortcut: 'Cmd+T',
+    dataTour: 'transit-tab',
   },
 ];
 

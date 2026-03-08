@@ -86,6 +86,34 @@ export function getDatabase(): Database.Database {
  * Ordered by phase so dependencies are always satisfied.
  */
 function runMigrations(db: Database.Database): void {
+  // Sprint 39.0 — Ensure portfolio_projects exists BEFORE the alterStatements loop.
+  // On fresh databases the Sprint 24.0 CREATE TABLE ran AFTER alterStatements, which
+  // caused "ALTER TABLE portfolio_projects ADD COLUMN attention_muted_until" to crash
+  // with "no such table: portfolio_projects" (error not caught by duplicate-column guard).
+  // This block creates the table early; the Sprint 24.0 CREATE TABLE IF NOT EXISTS is a no-op after this.
+  try {
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS portfolio_projects (
+        id              TEXT    PRIMARY KEY,
+        name            TEXT    NOT NULL,
+        description     TEXT,
+        path            TEXT    UNIQUE,
+        status          TEXT    NOT NULL DEFAULT 'active',
+        type            TEXT    NOT NULL DEFAULT 'custom',
+        type_label      TEXT,
+        registered_at   INTEGER NOT NULL DEFAULT (unixepoch()),
+        last_scanned_at INTEGER,
+        scan_data       TEXT,
+        created_at      INTEGER NOT NULL DEFAULT (unixepoch()),
+        updated_at      INTEGER NOT NULL DEFAULT (unixepoch())
+      );
+      CREATE INDEX IF NOT EXISTS idx_portfolio_projects_status ON portfolio_projects(status);
+      CREATE INDEX IF NOT EXISTS idx_portfolio_projects_type   ON portfolio_projects(type);
+    `);
+  } catch {
+    // Table already exists — silently continue
+  }
+
   const alterStatements: string[] = [
     // Phase 5A — EoS health score columns on projects
     'ALTER TABLE projects ADD COLUMN health_score  REAL DEFAULT NULL',

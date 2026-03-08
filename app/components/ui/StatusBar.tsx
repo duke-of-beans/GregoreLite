@@ -1,3 +1,4 @@
+'use client';
 import { apiFetch } from '@/lib/api-client';
 /**
  * StatusBar — Sprint 30.0
@@ -9,10 +10,9 @@ import { apiFetch } from '@/lib/api-client';
  * Collapsed state persisted via ui-store.
  */
 
-'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { useJobStore } from '@/lib/stores/job-store';
 import { useContextPanel } from '@/lib/context/context-provider';
 import { useGhostStore } from '@/lib/stores/ghost-store';
@@ -149,16 +149,39 @@ export function StatusBar() {
     window.dispatchEvent(new CustomEvent('greglite:open-settings', { detail: { section: 'memory' } }));
   };
 
-  // Collapsed: render a thin clickable strip only
+  // Collapsed: render a 20px tall bar with visible "▲  System Status" affordance
   if (statusBarCollapsed) {
     return (
       <button
         onClick={toggleStatusBar}
-        className="flex h-1.5 w-full shrink-0 cursor-n-resize items-center justify-center border-t border-[var(--cyan)]/30 bg-[var(--deep-space)] transition-colors hover:border-[var(--cyan)]/60 hover:bg-[var(--elevated)]"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100%',
+          height: 20,
+          flexShrink: 0,
+          cursor: 'pointer',
+          border: 'none',
+          borderTop: '1px solid rgba(0, 212, 255, 0.4)',
+          background: 'var(--deep-space)',
+          transition: 'background 0.15s ease, border-color 0.15s ease',
+          gap: 6,
+        }}
+        onMouseEnter={(e) => {
+          (e.currentTarget as HTMLButtonElement).style.background = 'var(--elevated)';
+          (e.currentTarget as HTMLButtonElement).style.borderTopColor = 'rgba(0, 212, 255, 0.7)';
+        }}
+        onMouseLeave={(e) => {
+          (e.currentTarget as HTMLButtonElement).style.background = 'var(--deep-space)';
+          (e.currentTarget as HTMLButtonElement).style.borderTopColor = 'rgba(0, 212, 255, 0.4)';
+        }}
         aria-label={NAV.statusbar_expand}
         title={NAV.statusbar_expand}
       >
-        <ChevronUp className="h-2.5 w-2.5 text-[var(--mist)] opacity-50" />
+        <span style={{ fontSize: 10, color: 'var(--mist)', letterSpacing: '0.06em', userSelect: 'none' }}>
+          ▲&nbsp;&nbsp;System Status
+        </span>
       </button>
     );
   }
