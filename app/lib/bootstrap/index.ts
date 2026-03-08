@@ -101,6 +101,16 @@ export async function runBootstrap(): Promise<BootstrapResult> {
       console.warn('[bootstrap] Ghost startup failed (degraded):', err);
     }
 
+    // EPIC-81 Sprint 34.0 — Auto-ingest watchfolder (non-blocking, non-fatal)
+    try {
+      const { startAutoIngest } = await import('../import');
+      startAutoIngest();
+      console.log('[bootstrap] Auto-ingest watchfolder started');
+    } catch (err) {
+      errors.push(`Auto-ingest startup failed: ${err instanceof Error ? err.message : String(err)}`);
+      console.warn('[bootstrap] Auto-ingest failed to start (degraded):', err);
+    }
+
     // Cache the result
     _cachedPackage = pkg;
     _cacheExpiresAt = Date.now() + CACHE_TTL_MS;

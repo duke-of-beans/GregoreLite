@@ -13,11 +13,11 @@
  * @module __tests__/unit/sprint33.test.ts
  */
 
-import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { vi, describe, it, expect } from 'vitest';
 
 // ── Hoisted mocks ─────────────────────────────────────────────────────────────
 
-const { mockRun, mockGet, mockAll, mockPrepare, mockExec, mockTransaction } = vi.hoisted(() => {
+const { mockPrepare, mockExec, mockTransaction } = vi.hoisted(() => {
   const mockRun  = vi.fn().mockReturnValue({ changes: 1 });
   const mockGet  = vi.fn().mockReturnValue(null);
   const mockAll  = vi.fn().mockReturnValue([]);
@@ -341,7 +341,7 @@ describe('ShimmerMatch interface', () => {
   });
 
   it('is valid without source_platform', () => {
-    const match = {
+    const match: { term: string; startIndex: number; endIndex: number; source: 'memory'; sourceId: string; preview: string; source_platform?: string } = {
       term: 'test',
       startIndex: 0,
       endIndex: 4,

@@ -1,10 +1,10 @@
 # GREGLITE — STATUS
-**Last Updated:** March 7, 2026 — Sprint 33.0 COMPLETE (EPIC-81 Sprint 1/3). Conversation Memory Import: DB migration (DROP CHECK on content_chunks, add imported_source_id, new imported_sources + imported_conversations tables), format adapters (claude.ai, ChatGPT, generic JSON), ZIP handler, import pipeline (chunk→embed→vec_index), 4 API routes, ImportSection drag-drop UI, Shimmer provenance badges, MemoryCard platform badge. 1696 tests across 88 files.
+**Last Updated:** March 7, 2026 — Sprint 34.0 COMPLETE (EPIC-81 Sprint 2/3). Watchfolder + auto-ingest daemon: chokidar FSWatcher, AutoIngestDaemon with 500ms debounce, daemon wired into bootstrap, watchfolder config API (GET/POST/DELETE /api/import/watchfolder), StatusBar MEM import chip, ImportSection watchfolder config panel, voice copy strings. 1717 tests across 89 files.
 **Version:** v1.1.0
-**Test Count:** 1696/1696 all green
+**Test Count:** 1717/1717 all green
 **EoS Health:** 100/100
 **TSC:** 0 errors
-**Next:** Sprint 34.0 — Watchfolder + auto-ingest + StatusBar MEM chip (EPIC-81 Sprint 2/3)
+**Next:** Sprint 35.0 — Markdown adapter, Gemini adapter, Inspector Import Summary, EPIC-81 cert docs (EPIC-81 Sprint 3/3)
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md — ALL PHASES (A–F) SHIPPED.
 **Recent commits:** f7f6dd1 (Sprint 30.0), 1226a7c (Sprint 32.0 docs), b96c596 (Sprint 31.0), 288eb6e (db migration fix), a381f68 (Sprint 29.0 docs)
@@ -1131,6 +1131,23 @@ GregLite can now route chat messages through Claude's web interface instead of t
 | Voice copy | ✅ All 18 strings in WEB_SESSION export |
 | STATUS.md updated | ✅ Done |
 | Commits | ✅ a38bf15 (commit 1), 494efed (commit 2), f820ebd (fallback.ts) |
+
+## Sprint 34.0 — Watchfolder + Auto-Ingest Daemon (EPIC-81 Sprint 2/3)
+**Status:** ✅ COMPLETE | **Date:** 2026-03-07
+
+### Deliverables
+- Watchfolder: `lib/import/watchfolder.ts` — WatchfolderConfig type, chokidar FSWatcher, startWatcher/stopWatcher/getWatcherStatus, 500ms event debounce
+- Auto-ingest: `lib/import/auto-ingest.ts` — AutoIngestDaemon, format-filter, pipeline integration, start/stop/status lifecycle
+- Bootstrap: `lib/startup/bootstrap.ts` — daemon wired into app start; graceful shutdown on exit
+- API routes: GET/POST/DELETE `/api/import/watchfolder` (config CRUD), GET `/api/import/daemon/status`
+- StatusBar MEM chip: `components/ui/StatusBar.tsx` — live import progress indicator, WatchfolderStatus badge
+- Settings UI: `components/settings/ImportSection.tsx` — watchfolder config panel, path picker, enable toggle, status badge
+- Voice copy: `lib/voice/copy-templates.ts` — IMPORT.watchfolder_path/enabled/status/open strings
+
+### Quality Gate
+- TSC: 0 errors
+- Tests: 1717 / 1717 passing (+21 Sprint 34.0 tests)
+- Files: 89 / 89 test files pass
 
 ## Sprint 33.0 — Import Pipeline + Historical Corpus
 **Status:** ✅ COMPLETE | **Date:** 2026-03-07

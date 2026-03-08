@@ -197,3 +197,44 @@ No sprint briefs pending. Future work sourced from:
 - EPIC-78: Ambient Memory deep personalization (beyond Sprint 27 — the "Google Photos but for everything" vision)
 - EPIC-79: Same-Provider Multi-Instance Council (Gregore-only, not GregLite)
 - EPIC-80: Ceremonial Onboarding extensions (beyond Sprint 28 — deeper synthesis, more source types)
+
+---
+
+## EPIC-81: Cross-Platform Conversation Memory Import ❌ MISSING
+**Spec:** `docs/CONVERSATION_IMPORT_SPEC.md`
+**Priority:** High — GregLite's memory is currently blind to all prior AI conversation history
+
+### The Problem
+GregLite's memory (Shimmer, Ghost, cross-context retrieval) only knows about
+conversations that happened inside GregLite. Every Claude Desktop / claude.ai
+session, every ChatGPT exchange — none of it exists to Greg. This is a major
+blind spot given that the most valuable context often lives in older conversations.
+
+### Discovery Finding (March 2026)
+Claude Desktop is an Electron wrapper around claude.ai. Its local storage is
+Chromium IndexedDB (LevelDB) — not SQLite, not directly readable. Claude Desktop
+and claude.ai share one backend. A single export from claude.ai Settings covers
+the complete conversation history across all surfaces (Desktop, web, mobile).
+
+### Sprint X.0 — Import Pipeline + Historical Corpus ❌ MISSING
+- `imported_sources` and `imported_conversations` tables (deduplication + provenance)
+- Extend `content_chunks` with `imported_source_id` for source tracking
+- Import pipeline: format detection → normalize → chunk → embed → index
+- Format adapters: `claude_ai_export` (ZIP/JSON), `chatgpt_export` (JSON), `generic_json`
+- Import UI: drag-and-drop panel, progress indicator, Memory Sources list in Settings
+- Shimmer provenance: platform badge on memory matches (shows source platform + date)
+- One-time historical corpus: user exports from claude.ai, drops in import panel
+
+### Sprint X.1 — Watchfolder + Reminder (Ongoing Sync) ❌ MISSING
+- Watchfolder: Tauri `fs` watch on `~/GregLite/imports/` for new `.json`/`.zip` files
+- Auto-detect format → run import pipeline → notify user on completion
+- Move processed files to `imports/processed/` (prevents re-processing on restart)
+- Reminder notification: StatusBar indicator after N days without sync (default 14 days)
+- One-click link from reminder → claude.ai export page
+- Sync clock resets automatically when new file is processed
+- Configurable: sync reminder interval, watchfolder path, per-source enable/disable
+
+### Sprint X.2 — Additional Adapters (as needed) ❌ MISSING
+- Additional format adapters based on actual usage (Gemini Takeout, Cursor, etc.)
+- API sync for any platforms that eventually expose conversation history APIs
+- Multi-device export merge (handle overlapping content from different export dates)

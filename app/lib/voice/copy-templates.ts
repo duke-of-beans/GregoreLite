@@ -877,4 +877,21 @@ export const IMPORT = {
   platform_chatgpt:     'ChatGPT',
   platform_generic:     'Imported',
 
+  // ── Auto-sync section (Sprint 34.0) ───────────────────────────────────────
+  autosync_heading:        'Auto-Sync',
+  autosync_path_label:     'Watch folder',
+  autosync_open_folder:    'Open folder',
+  autosync_how_to:         'Set your browser to auto-download exports to this folder. Then just click Export in claude.ai — GregLite handles the rest.',
+  autosync_link_text:      'Export your claude.ai history →',
+  autosync_reminder_label: 'Remind me every',
+  autosync_reminder_7:     '7 days',
+  autosync_reminder_14:    '14 days',
+  autosync_reminder_30:    '30 days',
+
+  // ── StatusBar MEM chip (Sprint 34.0) ──────────────────────────────────────
+  mem_chip_recent:          (n: number) => `MEM: ${n}d ago`,
+  mem_chip_overdue:         (n: number) => `MEM: ${n}d ago`,
+  mem_chip_tooltip_current: (n: number) => `Memory synced ${n} day${n !== 1 ? 's' : ''} ago`,
+  mem_chip_tooltip_overdue: (n: number) => `Memory last synced ${n} day${n !== 1 ? 's' : ''} ago — click to sync`,
+
 } as const;

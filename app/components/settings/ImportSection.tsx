@@ -14,6 +14,12 @@ import { IMPORT } from '@/lib/voice/copy-templates';
 import type { ImportSourceRow } from '@/api/import/sources/route';
 import type { ImportProgress } from '@/lib/import/types';
 
+interface WatchfolderConfig {
+  path: string;
+  processingPath: string;
+  reminderDays: number;
+}
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface ActiveImport {
@@ -22,10 +28,6 @@ interface ActiveImport {
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function platformLabel(sourceType: string): string {
-  return IMPORT.platform_generic; // display_name carries the filename
-}
 
 function formatDate(ts: number): string {
   return new Date(ts).toLocaleDateString(undefined, {
@@ -36,12 +38,14 @@ function formatDate(ts: number): string {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function ImportSection() {
-  const [isDragging, setIsDragging]     = useState(false);
-  const [isUploading, setIsUploading]   = useState(false);
-  const [uploadError, setUploadError]   = useState<string | null>(null);
-  const [activeImport, setActiveImport] = useState<ActiveImport | null>(null);
-  const [sources, setSources]           = useState<ImportSourceRow[]>([]);
-  const [deletingId, setDeletingId]     = useState<string | null>(null);
+  const [isDragging, setIsDragging]         = useState(false);
+  const [isUploading, setIsUploading]       = useState(false);
+  const [uploadError, setUploadError]       = useState<string | null>(null);
+  const [activeImport, setActiveImport]     = useState<ActiveImport | null>(null);
+  const [sources, setSources]               = useState<ImportSourceRow[]>([]);
+  const [deletingId, setDeletingId]         = useState<string | null>(null);
+  const [watchConfig, setWatchConfig]       = useState<WatchfolderConfig | null>(null);
+  const [savingReminder, setSavingReminder] = useState(false);
 
   const fileInputRef  = useRef<HTMLInputElement>(null);
   const pollTimerRef  = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -55,6 +59,36 @@ export function ImportSection() {
   }, []);
 
   useEffect(() => { void loadSources(); }, [loadSources]);
+
+  // ── Load watchfolder config ────────────────────────────────────────────────
+  const loadWatchConfig = useCallback(async () => {
+    try {
+      const res = await fetch('/api/import/watchfolder-config');
+      if (res.ok) setWatchConfig(await res.json() as WatchfolderConfig);
+    } catch { /* silent */ }
+  }, []);
+
+  useEffect(() => { void loadWatchConfig(); }, [loadWatchConfig]);
+
+  // ── Set reminder interval ──────────────────────────────────────────────────
+  const setReminderDays = async (days: number) => {
+    setSavingReminder(true);
+    try {
+      await fetch('/api/import/watchfolder-config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reminderDays: days }),
+      });
+      setWatchConfig((prev) => prev ? { ...prev, reminderDays: days } : prev);
+    } finally {
+      setSavingReminder(false);
+    }
+  };
+
+  // ── Open watchfolder ───────────────────────────────────────────────────────
+  const openWatchfolder = () => {
+    console.log('[import] Open watchfolder:', watchConfig?.path);
+  };
 
   // ── Progress polling ───────────────────────────────────────────────────────
   const stopPolling = useCallback(() => {
@@ -282,6 +316,82 @@ export function ImportSection() {
           ))}
         </ul>
       )}
+      {/* Auto-Sync subsection */}
+      {watchConfig && (
+        <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+          <h4 style={{ fontSize: 12, fontWeight: 600, color: 'var(--frost)', marginBottom: 8 }}>
+            {IMPORT.autosync_heading}
+          </h4>
+
+          {/* Watchfolder path */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+            <span style={{ fontSize: 11, color: 'var(--mist)', flexShrink: 0 }}>
+              {IMPORT.autosync_path_label}:
+            </span>
+            <span style={{
+              fontSize: 11, color: 'var(--frost)', flex: 1,
+              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+              fontFamily: 'monospace',
+            }}>
+              {watchConfig.path}
+            </span>
+            <button
+              onClick={openWatchfolder}
+              style={{
+                fontSize: 11, color: 'var(--cyan)', background: 'none', border: 'none',
+                cursor: 'pointer', padding: '2px 6px', flexShrink: 0,
+              }}
+            >
+              {IMPORT.autosync_open_folder}
+            </button>
+          </div>
+
+          {/* How-to copy */}
+          <p style={{ fontSize: 11, color: 'var(--mist)', lineHeight: 1.6, marginBottom: 10 }}>
+            {IMPORT.autosync_how_to}
+          </p>
+
+          {/* Reminder interval */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+            <span style={{ fontSize: 11, color: 'var(--mist)' }}>
+              {IMPORT.autosync_reminder_label}:
+            </span>
+            {([7, 14, 30] as const).map((days) => (
+              <button
+                key={days}
+                onClick={() => void setReminderDays(days)}
+                disabled={savingReminder}
+                style={{
+                  fontSize: 11,
+                  padding: '2px 8px',
+                  borderRadius: 4,
+                  border: '1px solid',
+                  cursor: savingReminder ? 'wait' : 'pointer',
+                  background: watchConfig.reminderDays === days ? 'rgba(0,212,232,0.12)' : 'transparent',
+                  borderColor: watchConfig.reminderDays === days ? 'var(--cyan)' : 'rgba(255,255,255,0.15)',
+                  color: watchConfig.reminderDays === days ? 'var(--cyan)' : 'var(--mist)',
+                  transition: 'all 0.15s',
+                }}
+              >
+                {days === 7 ? IMPORT.autosync_reminder_7
+                 : days === 14 ? IMPORT.autosync_reminder_14
+                 : IMPORT.autosync_reminder_30}
+              </button>
+            ))}
+          </div>
+
+          {/* Export link */}
+          <a
+            href="https://claude.ai/settings"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ fontSize: 11, color: 'var(--cyan)', textDecoration: 'none' }}
+          >
+            {IMPORT.autosync_link_text}
+          </a>
+        </div>
+      )}
+
     </section>
   );
 }

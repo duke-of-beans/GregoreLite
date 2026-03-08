@@ -16,11 +16,18 @@ import { useJobStore } from '@/lib/stores/job-store';
 import { useContextPanel } from '@/lib/context/context-provider';
 import { useGhostStore } from '@/lib/stores/ghost-store';
 import { useUIStore } from '@/lib/stores/ui-store';
-import { NAV } from '@/lib/voice/copy-templates';
+import { NAV, IMPORT } from '@/lib/voice/copy-templates';
 import { CostBreakdown } from '../agent-sdk/CostBreakdown';
 import type { GhostStatus } from '@/lib/ghost/status';
 
 const COST_POLL_MS = 60_000;
+const MEM_POLL_MS  = 5 * 60_000; // 5 minutes
+
+interface MemSyncStatus {
+  daysSinceSync: number | null;
+  shouldShowReminder: boolean;
+  reminderUrl: string;
+}
 
 // ── Ghost status helpers (Sprint 20.0) ────────────────────────────────────────
 
@@ -54,11 +61,26 @@ function ghostTooltip(status: GhostStatus | null): string {
 export function StatusBar() {
   const [costToday, setCostToday] = useState<number>(0);
   const [costBreakdownOpen, setCostBreakdownOpen] = useState(false);
+  const [memSync, setMemSync] = useState<MemSyncStatus | null>(null);
   const jobs = useJobStore((s) => s.jobs);
   const { state: ctx } = useContextPanel();
   const ghostStatus = useGhostStore((s) => s.ghostStatus);
   const statusBarCollapsed = useUIStore((s) => s.statusBarCollapsed);
   const toggleStatusBar = useUIStore((s) => s.toggleStatusBar);
+
+  // Poll /api/import/sync-status every 5 min (MEM chip)
+  const fetchMemSync = useCallback(async () => {
+    try {
+      const res = await fetch('/api/import/sync-status');
+      if (res.ok) setMemSync(await res.json() as MemSyncStatus);
+    } catch { /* non-critical */ }
+  }, []);
+
+  useEffect(() => {
+    void fetchMemSync();
+    const handle = setInterval(fetchMemSync, MEM_POLL_MS);
+    return () => clearInterval(handle);
+  }, [fetchMemSync]);
 
   // Poll /api/costs/today every 60s
   const fetchCost = useCallback(async () => {
@@ -119,6 +141,11 @@ export function StatusBar() {
   const handleGhostClick = () => {
     // Navigate to Settings > Ghost section (Sprint 20.0)
     window.dispatchEvent(new CustomEvent('greglite:open-settings', { detail: { section: 'ghost' } }));
+  };
+
+  const handleMemClick = () => {
+    // Open Settings > Memory section (Sprint 34.0)
+    window.dispatchEvent(new CustomEvent('greglite:open-settings', { detail: { section: 'memory' } }));
   };
 
   // Collapsed: render a thin clickable strip only
@@ -205,6 +232,32 @@ export function StatusBar() {
             {ghostLabel(ghostStatus)}
           </span>
         </button>
+
+        {/* MEM chip — hidden until first import (Sprint 34.0) */}
+        {memSync !== null && memSync.daysSinceSync !== null && (
+          <>
+            <span className="text-[var(--shadow)]">│</span>
+            <button
+              onClick={handleMemClick}
+              className="status-metric-secondary flex items-center gap-1.5 text-[var(--frost)] transition-colors hover:text-[var(--ice-white)]"
+              title={
+                memSync.shouldShowReminder
+                  ? IMPORT.mem_chip_tooltip_overdue(memSync.daysSinceSync)
+                  : IMPORT.mem_chip_tooltip_current(memSync.daysSinceSync)
+              }
+            >
+              <span
+                className={`font-mono font-medium ${
+                  memSync.shouldShowReminder ? 'text-amber-400' : 'text-green-400'
+                }`}
+              >
+                {memSync.shouldShowReminder
+                  ? IMPORT.mem_chip_overdue(memSync.daysSinceSync)
+                  : IMPORT.mem_chip_recent(memSync.daysSinceSync)}
+              </span>
+            </button>
+          </>
+        )}
 
       </div>
 

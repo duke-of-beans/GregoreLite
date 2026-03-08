@@ -32,7 +32,7 @@ function removeTauriRuntime() {
 
 /** Simulate Tauri runtime being present with the internals sentinel. */
 function addTauriRuntime() {
-  (globalThis as GlobalWithWindow).window = { __TAURI_INTERNALS__: {} };
+  (globalThis as { window: unknown }).window = { __TAURI_INTERNALS__: {} };
 }
 
 // ── Mock @tauri-apps/api/core ─────────────────────────────────────────────────

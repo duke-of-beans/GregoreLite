@@ -222,7 +222,7 @@ export function queryShimmerMatches(
             source: 'memory',
             sourceId: result.id,
             preview,
-            source_platform: meta['source_platform'],
+            ...(meta['source_platform'] !== undefined ? { source_platform: meta['source_platform'] } : {}),
           });
         }
       }
