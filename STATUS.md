@@ -7,7 +7,7 @@
 **Next:** Sprint 35.0 — Markdown adapter, Gemini adapter, Inspector Import Summary, EPIC-81 cert docs (EPIC-81 Sprint 3/3)
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md — ALL PHASES (A–F) SHIPPED.
-**Recent commits:** f7f6dd1 (Sprint 30.0), 1226a7c (Sprint 32.0 docs), b96c596 (Sprint 31.0), 288eb6e (db migration fix), a381f68 (Sprint 29.0 docs)
+**Recent commits:** 3fb2e96 (Sprint 34.0), f7f6dd1 (Sprint 30.0), 1226a7c (Sprint 32.0 docs), b96c596 (Sprint 31.0), 288eb6e (db migration fix)
 
 ### ⚠️ GROUND TRUTH AUDIT (March 4, 2026)
 1. ~~Transit Map "data foundation" listed in Sprint 10.6 was NOT shipped.~~ RESOLVED: Sprint 11.2 shipped data foundation (conversation_events table, 26 event types, capture hooks). commit 37d60af.
@@ -1148,6 +1148,7 @@ GregLite can now route chat messages through Claude's web interface instead of t
 - TSC: 0 errors
 - Tests: 1717 / 1717 passing (+21 Sprint 34.0 tests)
 - Files: 89 / 89 test files pass
+- Commit: 3fb2e96
 
 ## Sprint 33.0 — Import Pipeline + Historical Corpus
 **Status:** ✅ COMPLETE | **Date:** 2026-03-07
