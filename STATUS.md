@@ -1,13 +1,13 @@
 # GREGLITE — STATUS
-**Last Updated:** March 7, 2026 — Sprint 35.0 COMPLETE (EPIC-81 Sprint 3/3 — EPIC COMPLETE). Gemini + Markdown adapters, adapter registry hardened, ImportFormat extended, MemoryTab Import Sources section, 27 new tests. EPIC-81 fully shipped: all 3 sprints, all format adapters, watchfolder daemon, sync reminder, cert doc. 1753 tests across 90 files.
-**Version:** v1.1.0
+**Last Updated:** March 8, 2026 — v1.1.0 RELEASED. GitHub release live at https://github.com/duke-of-beans/GregoreLite/releases/tag/v1.1.0. Installer + updater artifacts published. latest.json at release root. Tauri updater endpoint active.
+**Version:** v1.1.0 ✅ SHIPPED
 **Test Count:** 1753/1753 all green
 **EoS Health:** 100/100
 **TSC:** 0 errors
-**Next:** Post-EPIC-81 — next work from real usage feedback via Quick Capture Pad
+**Next:** Post-launch — next work from real usage feedback via Quick Capture Pad
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md — ALL PHASES (A–F) SHIPPED.
-**Recent commits:** ba24b1e (Sprint 35.0 / EPIC-81 complete), 3fb2e96 (Sprint 34.0), f7f6dd1 (Sprint 30.0), 1226a7c (Sprint 32.0 docs), b96c596 (Sprint 31.0)
+**Recent commits:** 0ae1afe (release: v1.1.0), ba24b1e (Sprint 35.0 / EPIC-81 complete), 3fb2e96 (Sprint 34.0), f7f6dd1 (Sprint 30.0), 1226a7c (Sprint 32.0 docs)
 
 ### ⚠️ GROUND TRUTH AUDIT (March 4, 2026)
 1. ~~Transit Map "data foundation" listed in Sprint 10.6 was NOT shipped.~~ RESOLVED: Sprint 11.2 shipped data foundation (conversation_events table, 26 event types, capture hooks). commit 37d60af.
