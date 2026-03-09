@@ -32,6 +32,7 @@ function rowToCard(row: PortfolioProject): ProjectCard {
     healthReason: scanData?.healthReason ?? 'Not yet scanned',
     nextAction: scanData?.nextAction ?? null,
     customMetrics: scanData?.customMetrics ?? {},
+    lastScannedAt: row.last_scanned_at ?? null,
   };
 
   // Only set optional numeric fields when they have actual values (exactOptionalPropertyTypes)
@@ -101,14 +102,24 @@ export const POST = safeHandler(async (req: Request) => {
     return errorResponse('path is required', 400);
   }
 
+  // Sprint 41.0 — normalize path: strip trailing slashes
+  const normalizedPath = projectPath.replace(/[\\/]+$/, '');
+
   const db = getDatabase();
 
   // Ensure seeded before registering
   const count = (db.prepare('SELECT COUNT(*) as c FROM portfolio_projects').get() as { c: number }).c;
   if (count === 0) seedFromWorkspaces();
 
+  // Sprint 41.0 — return existing project if same path already registered (case-insensitive)
+  const existing = db.prepare('SELECT id FROM portfolio_projects WHERE lower(path) = lower(?)').get(normalizedPath) as { id: string } | undefined;
+  if (existing) {
+    const card = scanSingleProject(normalizedPath);
+    return successResponse({ id: existing.id, card }, 200);
+  }
+
   // Generate a stable ID from path
-  const id = projectPath
+  const id = normalizedPath
     .replace(/[^a-zA-Z0-9]/g, '-')
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '')
@@ -116,17 +127,17 @@ export const POST = safeHandler(async (req: Request) => {
     .slice(0, 64);
 
   // Derive name: last path segment if not provided
-  const derivedName = name ?? projectPath.split(/[\\/]/).filter(Boolean).pop() ?? 'Unnamed Project';
+  const derivedName = name ?? normalizedPath.split(/[\\/]/).filter(Boolean).pop() ?? 'Unnamed Project';
   const projectType: ProjectType = type ?? 'custom';
   const status: ProjectStatus = 'active';
 
   db.prepare(`
     INSERT OR IGNORE INTO portfolio_projects (id, name, path, type, status, registered_at)
     VALUES (?, ?, ?, ?, ?, ?)
-  `).run(id, derivedName, projectPath, projectType, status, Date.now());
+  `).run(id, derivedName, normalizedPath, projectType, status, Date.now());
 
   // Scan immediately
-  const card = scanSingleProject(projectPath);
+  const card = scanSingleProject(normalizedPath);
 
   return successResponse({ id, card }, 201);
 });

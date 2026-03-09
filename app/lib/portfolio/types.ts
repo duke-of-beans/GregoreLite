@@ -52,6 +52,8 @@ export interface ProjectCard {
   customMetrics: Record<string, string | number>;
   /** Sprint 26: attention muted until this timestamp (ms) — null = not muted */
   attentionMutedUntil?: number | null;
+  /** Sprint 41: when this project was last scanned (ms epoch) — null = never */
+  lastScannedAt?: number | null;
 }
 
 // ── ScanResult — raw data from a single project scan ─────────────────────────
@@ -199,6 +201,30 @@ export interface DependencyWarning {
   detail: string;
   count?: number;
 }
+
+// ── Sprint 41.0 — Exclusion + API body types ─────────────────────────────────
+
+export interface ExclusionRecord {
+  path: string;
+  excluded_at: number;
+  reason: string | null;
+}
+
+export interface PatchProjectBody {
+  name?: string;
+  type?: ProjectType;
+  status?: ProjectStatus;
+}
+
+export interface DeleteProjectBody {
+  /** If true, add path to portfolio_exclusions so scanner won't re-add it */
+  exclude?: boolean;
+  reason?: string;
+}
+
+// ── Sprint 41.0 — lastScannedAt on ProjectCard for staleness indicator ────────
+// (Injected by rowToCard in api/portfolio/route.ts from portfolio_projects.last_scanned_at)
+// Declared as augmentation — added directly to ProjectCard below via interface merge.
 
 // ── Sprint 26.0 — Scaffold + Attention Types ──────────────────────────────────
 

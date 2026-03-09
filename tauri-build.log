@@ -1,0 +1,122 @@
+
+> greglite@1.1.1 tauri D:\Projects\GregLite\app
+> cargo tauri "build"
+
+        Info Looking up installed tauri packages to check mismatched versions...
+     Running beforeBuildCommand `scripts\tauri-prebuild.bat`
+.next\lock - The system cannot find the file specified.
+[prebuild] Building API sidecar...
+[sidecar] Building dist/server.js...
+npm warn Unknown env config "cache-dir". This will stop working in the next major version of npm.
+npm warn Unknown env config "store-dir". This will stop working in the next major version of npm.
+npm warn Unknown env config "verify-deps-before-run". This will stop working in the next major version of npm.
+npm warn Unknown env config "_jsr-registry". This will stop working in the next major version of npm.
+
+  dist\server.js  2.7mb
+
+Done in 310ms
+[build] ✅ dist/server.js written
+npm warn Unknown env config "cache-dir". This will stop working in the next major version of npm.
+npm warn Unknown env config "store-dir". This will stop working in the next major version of npm.
+npm warn Unknown env config "verify-deps-before-run". This will stop working in the next major version of npm.
+npm warn Unknown env config "_jsr-registry". This will stop working in the next major version of npm.
+> pkg@5.8.1
+> Warning Cannot resolve 'mod'
+  D:\Projects\GregLite\sidecar\dist\server.js
+  Dynamic require may fail at run time, because the requested file
+  is unknown at compilation time and not included into executable.
+  Use a string literal as an argument for 'require', or leave it
+  as is and specify the resolved file name in 'scripts' option.
+[sidecar] WARN: could not detect host triple, using 
+[sidecar] Host triple: x86_64-pc-windows-msvc
+        1 file(s) copied.
+[sidecar] ✓ Binary ready: D:\Projects\GregLite\app\src-tauri\binaries\greglite-server-x86_64-pc-windows-msvc.exe
+[prebuild] Sidecar build OK
+[prebuild] Running Next.js build...
+
+> greglite-sidecar@1.1.1 build D:\Projects\GregLite\sidecar
+> tsx build.ts
+
+
+  dist\server.js  2.7mb
+
+Done in 570ms
+[build] ✅ dist/server.js written
+   Compiling crossbeam-utils v0.8.21
+   Compiling rayon-core v1.13.0
+   Compiling winapi v0.3.9
+   Compiling windows-sys v0.48.0
+   Compiling windows-result v0.1.2
+   Compiling num-traits v0.2.19
+   Compiling windows-interface v0.57.0
+   Compiling windows-implement v0.57.0
+   Compiling ntapi v0.4.3
+   Compiling either v1.15.0
+   Compiling gregore v1.1.0 (D:\Projects\GregLite\app\src-tauri)
+   Compiling unsafe-libyaml v0.2.11
+   Compiling winreg v0.52.0
+   Compiling crossbeam-channel v0.5.15
+   Compiling crossbeam-epoch v0.9.18
+   Compiling serde_yaml v0.9.34+deprecated
+   Compiling crossbeam-deque v0.8.6
+   Compiling tao v0.34.5
+   Compiling muda v0.17.1
+   Compiling notify v6.1.1
+   Compiling chrono v0.4.43
+   Compiling rayon v1.11.0
+   Compiling windows-core v0.57.0
+   Compiling notify-debouncer-full v0.3.2
+   Compiling windows v0.57.0
+   Compiling tray-icon v0.21.3
+   Compiling tauri-runtime-wry v2.9.3
+   Compiling tauri v2.9.5
+   Compiling sysinfo v0.32.1
+   Compiling tauri-plugin-updater v2.9.0
+   Compiling tauri-plugin-shell v2.3.4
+   Compiling tauri-plugin-notification v2.3.3
+   Compiling tauri-plugin-fs v2.4.5
+warning: methods `previous_name` and `get` are never used
+   --> src\aegis\profiles.rs:93:12
+    |
+ 25 | impl ProfileEngine {
+    | ------------------ methods in this implementation
+...
+ 93 |     pub fn previous_name(&self) -> Option<&str> {
+    |            ^^^^^^^^^^^^^
+...
+130 |     pub fn get(&self, name: &str) -> Option<&ProfileDefinition> {
+    |            ^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: methods `is_active`, `check_expiry`, and `from_state` are never used
+  --> src\aegis\timer.rs:18:12
+   |
+11 | impl ProfileTimer {
+   | ----------------- methods in this implementation
+...
+18 |     pub fn is_active(&self) -> bool {
+   |            ^^^^^^^^^
+...
+47 |     pub fn check_expiry(&mut self) -> Option<String> {
+   |            ^^^^^^^^^^^^
+...
+75 |     pub fn from_state(&mut self, state: TimerState) {
+   |            ^^^^^^^^^^
+
+warning: `gregore` (bin "gregore") generated 2 warnings
+    Finished `release` profile [optimized] target(s) in 4m 33s
+       Built application at: D:\Projects\GregLite\app\src-tauri\target\release\gregore.exe
+        Info Patching binary "D:\\Projects\\GregLite\\app\\src-tauri\\target\\release\\gregore.exe" for type msi
+        Info Target: x64
+     Running candle for "D:\\Projects\\GregLite\\app\\src-tauri\\target\\release\\wix\\x64\\main.wxs"
+     Running light to produce D:\Projects\GregLite\app\src-tauri\target\release\bundle\msi\Gregore Lite_1.1.1_x64_en-US.msi
+        Info Patching binary "D:\\Projects\\GregLite\\app\\src-tauri\\target\\release\\gregore.exe" for type nsis
+        Info Target: x64
+     Running makensis to produce D:\Projects\GregLite\app\src-tauri\target\release\bundle\nsis\Gregore Lite_1.1.1_x64-setup.exe
+    Finished 2 bundles at:
+        D:\Projects\GregLite\app\src-tauri\target\release\bundle\msi\Gregore Lite_1.1.1_x64_en-US.msi
+        D:\Projects\GregLite\app\src-tauri\target\release\bundle\nsis\Gregore Lite_1.1.1_x64-setup.exe
+
+       Error A public key has been found, but no private key. Make sure to set `TAURI_SIGNING_PRIVATE_KEY` environment variable.
+ ELIFECYCLE  Command failed with exit code 1.

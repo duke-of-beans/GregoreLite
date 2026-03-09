@@ -9,21 +9,42 @@
  */
 
 
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, RefreshCw, Play } from 'lucide-react';
+import { X, RefreshCw, Play, Pencil, Check, Trash2, AlertTriangle, ChevronDown } from 'lucide-react';
 import { drawerSlide } from '@/lib/design/animations';
 import { formatRelativeTime, PORTFOLIO } from '@/lib/voice/copy-templates';
-import type { ProjectCard } from '@/lib/portfolio/types';
+import { apiFetch } from '@/lib/api-client';
+import type { ProjectCard, ProjectType, PatchProjectBody } from '@/lib/portfolio/types';
 
 interface ProjectDetailProps {
   project: ProjectCard | null;
   statusFull?: string | null;
   onClose: () => void;
   onRefresh?: (() => void) | undefined;
+  onRemove?: (id: string, exclude: boolean) => void;
+  onProjectUpdate?: (id: string, patch: PatchProjectBody) => void;
 }
 
-export function ProjectDetail({ project, statusFull, onClose, onRefresh }: ProjectDetailProps) {
+export function ProjectDetail({ project, statusFull, onClose, onRefresh, onRemove, onProjectUpdate }: ProjectDetailProps) {
+  // Edit state
+  const [editOpen, setEditOpen]         = useState(false);
+  const [editName, setEditName]         = useState('');
+  const [editType, setEditType]         = useState<ProjectType>('custom');
+  const [saveState, setSaveState]       = useState<'idle' | 'saving' | 'saved'>('idle');
+  const [removing, setRemoving]         = useState<false | 'confirm'>(false);
+
+  // Reset edit state when project changes
+  useEffect(() => {
+    if (project) {
+      setEditName(project.name);
+      setEditType(project.type);
+      setSaveState('idle');
+      setEditOpen(false);
+      setRemoving(false);
+    }
+  }, [project?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Escape key to close
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -45,6 +66,40 @@ export function ProjectDetail({ project, statusFull, onClose, onRefresh }: Proje
       })
     );
     onClose();
+  };
+
+  const handleSave = async () => {
+    if (!project) return;
+    const patch: PatchProjectBody = {};
+    if (editName.trim() && editName.trim() !== project.name) patch.name = editName.trim();
+    if (editType !== project.type) patch.type = editType;
+    if (Object.keys(patch).length === 0) { setSaveState('saved'); setTimeout(() => setSaveState('idle'), 1500); return; }
+    setSaveState('saving');
+    try {
+      await apiFetch(`/api/portfolio/${encodeURIComponent(project.id)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(patch),
+      });
+      setSaveState('saved');
+      onProjectUpdate?.(project.id, patch);
+      setTimeout(() => setSaveState('idle'), 1800);
+    } catch {
+      setSaveState('idle');
+    }
+  };
+
+  const handleRemove = async (exclude: boolean) => {
+    if (!project) return;
+    try {
+      await apiFetch(`/api/portfolio/${encodeURIComponent(project.id)}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ exclude, reason: 'User removed' }),
+      });
+      onRemove?.(project.id, exclude);
+      onClose();
+    } catch { /* silent — parent will handle */ }
   };
 
   return (
@@ -180,6 +235,133 @@ export function ProjectDetail({ project, statusFull, onClose, onRefresh }: Proje
                 )}
                 <MetaRow label={PORTFOLIO.detail.path} value={project.path} mono />
               </dl>
+
+              {/* ── Edit section ── */}
+              <div style={{ marginTop: 20, borderTop: '1px solid var(--shadow)', paddingTop: 14 }}>
+                <button
+                  onClick={() => setEditOpen((v) => !v)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 6,
+                    background: 'none', border: 'none', cursor: 'pointer',
+                    color: 'var(--mist)', fontSize: 11, fontWeight: 600,
+                    textTransform: 'uppercase', letterSpacing: '0.05em', padding: 0,
+                  }}
+                >
+                  <Pencil size={11} />
+                  Edit
+                  <ChevronDown size={11} style={{ transform: editOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }} />
+                </button>
+
+                {editOpen && (
+                  <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    {/* Name */}
+                    <div>
+                      <label style={{ fontSize: 10, color: 'var(--mist)', display: 'block', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Name</label>
+                      <input
+                        value={editName}
+                        onChange={(e) => setEditName(e.target.value)}
+                        style={{
+                          width: '100%', boxSizing: 'border-box',
+                          background: 'var(--surface)', border: '1px solid var(--shadow)',
+                          borderRadius: 4, padding: '6px 8px',
+                          color: 'var(--ice-white)', fontSize: 12,
+                          outline: 'none', fontFamily: 'inherit',
+                        }}
+                        onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--cyan)'; }}
+                        onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--shadow)'; }}
+                      />
+                    </div>
+
+                    {/* Type */}
+                    <div>
+                      <label style={{ fontSize: 10, color: 'var(--mist)', display: 'block', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Type</label>
+                      <select
+                        value={editType}
+                        onChange={(e) => setEditType(e.target.value as ProjectType)}
+                        style={{
+                          width: '100%',
+                          background: 'var(--surface)', border: '1px solid var(--shadow)',
+                          borderRadius: 4, padding: '6px 8px',
+                          color: 'var(--ice-white)', fontSize: 12,
+                          outline: 'none', cursor: 'pointer', fontFamily: 'inherit',
+                        }}
+                      >
+                        <option value="code">Code</option>
+                        <option value="research">Research</option>
+                        <option value="business">Business</option>
+                        <option value="creative">Creative</option>
+                        <option value="custom">Custom</option>
+                      </select>
+                    </div>
+
+                    {/* Save button */}
+                    <button
+                      onClick={() => { void handleSave(); }}
+                      disabled={saveState === 'saving'}
+                      style={{
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                        padding: '7px 14px', borderRadius: 4,
+                        border: '1px solid var(--cyan)',
+                        background: saveState === 'saved' ? 'rgba(34,197,94,0.12)' : 'rgba(0,212,232,0.08)',
+                        color: saveState === 'saved' ? '#4ade80' : 'var(--cyan)',
+                        fontSize: 12, fontWeight: 600, cursor: saveState === 'saving' ? 'not-allowed' : 'pointer',
+                        transition: 'all 0.2s',
+                      }}
+                    >
+                      {saveState === 'saved' ? <><Check size={12} /> Saved ✓</> : saveState === 'saving' ? 'Saving…' : 'Save'}
+                    </button>
+
+                    {/* Remove button */}
+                    {removing === false ? (
+                      <button
+                        onClick={() => setRemoving('confirm')}
+                        style={{
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                          padding: '6px 14px', borderRadius: 4,
+                          border: '1px solid rgba(239,68,68,0.4)',
+                          background: 'rgba(239,68,68,0.06)',
+                          color: '#ef4444', fontSize: 12, cursor: 'pointer',
+                        }}
+                      >
+                        <Trash2 size={12} />
+                        Remove project
+                      </button>
+                    ) : (
+                      <div style={{
+                        background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.3)',
+                        borderRadius: 6, padding: '10px 12px',
+                        display: 'flex', flexDirection: 'column', gap: 8,
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#ef4444', fontSize: 11, fontWeight: 600 }}>
+                          <AlertTriangle size={11} />
+                          Remove {project?.name}?
+                        </div>
+                        <div style={{ display: 'flex', gap: 6 }}>
+                          <button
+                            onClick={() => { void handleRemove(false); }}
+                            style={{ flex: 1, padding: '5px 8px', borderRadius: 4, border: '1px solid rgba(239,68,68,0.5)', background: 'rgba(239,68,68,0.15)', color: '#ef4444', fontSize: 11, cursor: 'pointer', fontWeight: 600 }}
+                          >
+                            Remove
+                          </button>
+                          <button
+                            onClick={() => { void handleRemove(true); }}
+                            style={{ flex: 1, padding: '5px 8px', borderRadius: 4, border: '1px solid rgba(239,68,68,0.5)', background: 'rgba(239,68,68,0.15)', color: '#ef4444', fontSize: 11, cursor: 'pointer', fontWeight: 600 }}
+                            title="Also prevents scanner from re-adding this path"
+                          >
+                            Remove &amp; Don&apos;t rescan
+                          </button>
+                          <button
+                            onClick={() => setRemoving(false)}
+                            style={{ padding: '5px 8px', borderRadius: 4, border: '1px solid var(--shadow)', background: 'none', color: 'var(--mist)', fontSize: 11, cursor: 'pointer' }}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
 
               {/* STATUS excerpt */}
               {statusFull && (

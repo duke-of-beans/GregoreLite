@@ -12,7 +12,7 @@
  */
 
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import {
   Palette,
@@ -76,6 +76,10 @@ interface SettingsPanelProps {
 export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
   const activeTab = useUIStore((s) => s.settingsActiveTab) as SettingsTab;
   const setActiveTab = useUIStore((s) => s.setSettingsActiveTab);
+  const backdropRef = useRef<HTMLDivElement>(null);
+
+  // Position guard: on small windows, anchor to left instead of centering
+  const isSmallWindow = typeof window !== 'undefined' && window.innerWidth < 600;
 
   // Escape to close
   useEffect(() => {
@@ -97,6 +101,7 @@ export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
           {/* Backdrop */}
           <motion.div
             key="settings-backdrop"
+            ref={backdropRef}
             variants={backdropVariants}
             initial="hidden"
             animate="visible"
@@ -118,18 +123,25 @@ export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
             initial="hidden"
             animate="visible"
             exit="exit"
+            drag
+            dragConstraints={backdropRef}
+            dragMomentum={false}
+            dragElastic={0}
+            whileDrag={{ cursor: 'grabbing' }}
             role="dialog"
             aria-modal="true"
             aria-label="Settings"
             style={{
               position: 'fixed',
               top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
+              left: isSmallWindow ? 20 : '50%',
+              transform: isSmallWindow ? 'translateY(-50%)' : 'translate(-50%, -50%)',
               width: '80vw',
               maxWidth: 1000,
+              minWidth: 560,
               height: '85vh',
               maxHeight: 700,
+              minHeight: 400,
               background: 'var(--deep-space)',
               border: '1px solid var(--shadow)',
               borderRadius: 12,
@@ -140,7 +152,7 @@ export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
               boxShadow: '0 24px 64px rgba(0,0,0,0.7)',
             }}
           >
-            {/* Modal header */}
+            {/* Modal header — drag handle */}
             <div style={{
               display: 'flex',
               alignItems: 'center',
@@ -149,6 +161,8 @@ export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
               borderBottom: '1px solid var(--shadow)',
               background: 'var(--elevated)',
               flexShrink: 0,
+              cursor: 'grab',
+              userSelect: 'none',
             }}>
               <h2 style={{ fontSize: 14, fontWeight: 600, color: 'var(--ice-white)', margin: 0, letterSpacing: '0.02em' }}>
                 Settings

@@ -1,13 +1,35 @@
 # GREGLITE — STATUS
-**Last Updated:** March 8, 2026 — v1.1.1 patch release built
-**Version:** v1.1.1 ✅ SHIPPED
+**Last Updated:** March 8, 2026 — Sprint 41.0 Projects & UX Polish complete. Deduplication, exclusions, project management (PATCH/DELETE), search/sort toolbar, ProjectCard metrics strip + scan-now. TSC 0 errors.
+**Version:** v1.1.1 ✅ SHIPPED — https://github.com/duke-of-beans/GregoreLite/releases/tag/v1.1.1
 **Test Count:** 1769/1769 (1 pre-existing flake in war-room.test.ts under parallel load — passes 21/21 in isolation)
 **EoS Health:** 100/100
 **TSC:** 0 errors
-**Next:** Publish v1.1.1 to GitHub releases (installer built: Gregore Lite_1.1.1_x64-setup.exe, 20.8 MB). No .sig — TAURI_SIGNING_PRIVATE_KEY not set, expected for unsigned build.
+**Next:** Clean slate — no pending housekeeping. Ready for next feature sprint.
 **Feature Backlog:** FEATURE_BACKLOG.md
 **Transit Map Spec:** TRANSIT_MAP_SPEC.md — ALL PHASES (A–F) SHIPPED.
-**Recent commits:** d4a962e (Sprint 39.0 docs), 33fd321 (Sprint 39.0 UX overhaul), 2d397ab (Sprint 37.0 UX polish), ebbf75e (Sprint 38.0 onboarding tour), 0ae1afe (release: v1.1.0)
+**Recent commits:** 04a05c8 (chore: gitignore sidecar binary), ad17613 (release: v1.1.1), d4a962e (Sprint 39.0 docs), 33fd321 (Sprint 39.0 UX overhaul)
+
+- [x] **SPRINT 41.0** — Projects & UX Polish — **COMPLETE**
+  - **Deliverable:** 8 files modified. TSC 0 errors. Portfolio deduplication, exclusions, project management API, search/sort/edit UI, ProjectCard metrics strip.
+  - **Task 1 — TourTooltip (already done Sprint 38):** Progress dots + no click-shield confirmed present.
+  - **Task 2 — Deduplication:** `database.ts` Sprint 41.0 migration — DELETE duplicate portfolio_projects rows (keep MIN(rowid) per lower(path)), CREATE UNIQUE INDEX on path. `portfolio/route.ts` — added lower(path) existence check before INSERT. `scanner.ts` — normalizePath helper + checkExists/checkExcluded prepared stmts in seedFromWorkspaces().
+  - **Task 3 — Exclusions:** New `portfolio_exclusions` table (path PK, excluded_at, reason). DELETE endpoint with `exclude: true` body option inserts to exclusions then removes project. `scanner.ts` scanAllProjects() now LEFT-JOINs exclusions and skips excluded paths.
+  - **Task 4 — Project management:** `[id]/route.ts` — PATCH handler (dynamic SET clause for name/type/status) + DELETE handler (optional exclude+reason). `ProjectDetail.tsx` — collapsible Edit section: name input, type dropdown, Save/Saved state, Remove with two-button confirmation (remove only / remove + exclude). `PortfolioDashboard.tsx` — search bar (150ms debounce) + sort dropdown (lastActivity/name/health/type/attention) + result count; handleRemove + handleProjectUpdate for optimistic state updates.
+  - **Task 5 — ProjectCard enhancements:** MetricChip sub-component (monospace pill). Metrics strip (version, tests pass/fail, TSC errors) shown when scan data exists. "Not yet scanned" notice + "Scan now" link (calls /api/portfolio/scan with projectId). Amber staleness dot when last_scanned_at > 24h. Phase row hidden when not yet scanned.
+  - **Task 6 — SettingsPanel draggable (already done Sprint 39):** Framer Motion drag constraints confirmed present.
+  - **Task 7 — StatusBar expand/collapse (already done Sprint 39):** SYSTEM STATUS + ChevronUp collapsed state confirmed present.
+  - **Task 8 — TSC gate:** 0 errors (46s real compile via explicit Node.js path — incremental cache bypassed).
+  - **types.ts:** Added ExclusionRecord, PatchProjectBody, DeleteProjectBody interfaces; lastScannedAt on ProjectCard.
+  - **scan/route.ts:** Added optional projectId body for single-project rescan.
+
+- [x] **SPRINT 40.0** — v1.1.1 Patch Release Build — **COMPLETE**
+  - **Deliverable:** v1.1.1 installer (20.8 MB NSIS) + GitHub release live. Commit: ad17613, tag: v1.1.1.
+  - **Version bump:** 1.1.0 → 1.1.1 in tauri.conf.json, app/package.json, sidecar/package.json.
+  - **Sidecar:** Rebuilt from source — esbuild 2.7 MB bundle → pkg 53 MB binary → binaries/ (16:32 timestamp). All Sprint 36-39 route changes included.
+  - **TSC gate:** 0 errors (clean exit 0 before build).
+  - **Tauri build:** Rust compile 4m 33s, NSIS installer produced. Signing error expected (no TAURI_SIGNING_PRIVATE_KEY set — installer built unsigned, advisory only).
+  - **GitHub release:** https://github.com/duke-of-beans/GregoreLite/releases/tag/v1.1.1 — installer attached.
+  - **LFS advisory:** Sidecar binary is 51 MB, just over GitHub's recommended 50 MB. Flagged for .gitignore cleanup in next housekeeping sprint — binary is rebuilt on every release and doesn't need to live in the repo.
 
 - [x] **SPRINT 39.0** — UX Overhaul: Onboarding, Tour, Navigation & Discoverability — **COMPLETE**
   - **Deliverable:** 13 files changed, 2 new files (HelpPopover.tsx, OnboardingStep5Import.tsx). TSC 0 errors. Commit: 33fd321.

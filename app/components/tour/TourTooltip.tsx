@@ -177,12 +177,7 @@ export function TourTooltip({ step, stepIndex, totalSteps, onNext, onSkip }: Tou
           height: spotRect.height + pad * 2,
         }}
       />
-      {/* Full page click-shield (non-target areas) */}
-      <div
-        onClick={onSkip}
-        aria-hidden="true"
-        style={{ position: 'fixed', inset: 0, zIndex: 8999 }}
-      />
+
 
       {/* Tooltip card */}
       <AnimatePresence>
@@ -215,6 +210,39 @@ export function TourTooltip({ step, stepIndex, totalSteps, onNext, onSkip }: Tou
           <p style={{ fontSize: 10, color: 'var(--mist)', margin: '0 0 6px', letterSpacing: '0.05em' }}>
             {TOUR.step_counter(stepIndex + 1, totalSteps)}
           </p>
+
+          {/* Progress dots */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5, margin: '0 0 10px' }}>
+            {Array.from({ length: totalSteps }).map((_, i) => {
+              const isCompleted = i < stepIndex;
+              const isCurrent   = i === stepIndex;
+              return (
+                <span
+                  key={i}
+                  aria-hidden="true"
+                  style={{
+                    display: 'inline-block',
+                    width:  isCurrent ? 8 : 6,
+                    height: isCurrent ? 8 : 6,
+                    borderRadius: '50%',
+                    flexShrink: 0,
+                    background: isCompleted
+                      ? 'var(--mist)'
+                      : isCurrent
+                        ? 'var(--cyan)'
+                        : 'transparent',
+                    border: isCompleted
+                      ? 'none'
+                      : isCurrent
+                        ? '1.5px solid var(--cyan)'
+                        : '1.5px solid var(--mist)',
+                    boxShadow: isCurrent ? '0 0 6px var(--cyan)' : 'none',
+                    transition: 'all 0.2s ease',
+                  }}
+                />
+              );
+            })}
+          </div>
 
           {/* Title */}
           <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--ice-white)', margin: '0 0 8px' }}>

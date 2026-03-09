@@ -15,14 +15,16 @@ import { apiFetch } from '@/lib/api-client';
 
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { RefreshCw, FolderKanban, Plus } from 'lucide-react';
+import { RefreshCw, FolderKanban, Plus, Search, X as XIcon, ArrowUpDown } from 'lucide-react';
 import { PORTFOLIO } from '@/lib/voice/copy-templates';
 import { ProjectCard } from './ProjectCard';
 import { ProjectDetail } from './ProjectDetail';
 import { AddProjectFlow } from './AddProjectFlow';
 import AttentionQueue from './AttentionQueue';
 import NewProjectFlow from './NewProjectFlow';
-import type { ProjectCard as ProjectCardData, AttentionItem } from '@/lib/portfolio/types';
+import type { ProjectCard as ProjectCardData, AttentionItem, PatchProjectBody, ProjectHealth } from '@/lib/portfolio/types';
+
+type SortKey = 'lastActivity' | 'name' | 'health' | 'type' | 'attention';
 
 const POLL_INTERVAL_MS = 30_000;
 
@@ -102,6 +104,11 @@ export function PortfolioDashboard() {
   const [showNewFlow, setShowNewFlow] = useState(false);
   const [attentionItems, setAttentionItems] = useState<AttentionItem[]>([]);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // Sprint 41.0 — search + sort
+  const [searchRaw, setSearchRaw]     = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy]           = useState<SortKey>('lastActivity');
+  const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fetchProjects = useCallback(async (silent = false) => {
     if (!silent) setLoading(true);
@@ -201,6 +208,66 @@ export function PortfolioDashboard() {
     el?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }, []);
 
+  // Sprint 41.0 — search debounce (150ms)
+  const handleSearchChange = useCallback((value: string) => {
+    setSearchRaw(value);
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+    searchDebounceRef.current = setTimeout(() => setSearchQuery(value), 150);
+  }, []);
+
+  // Sprint 41.0 — remove project from local state
+  const handleRemove = useCallback((id: string) => {
+    setProjects((prev) => prev.filter((p) => p.id !== id));
+    setAttentionItems((prev) => prev.filter((i) => i.projectId !== id));
+    if (selectedId === id) setSelectedId(null);
+  }, [selectedId]);
+
+  // Sprint 41.0 — apply patch to local project state (optimistic)
+  const handleProjectUpdate = useCallback((id: string, patch: PatchProjectBody) => {
+    setProjects((prev) => prev.map((p) => {
+      if (p.id !== id) return p;
+      const healthOrder: Record<ProjectHealth, number> = { green: 0, amber: 1, red: 2 };
+      void healthOrder; // suppress unused
+      return {
+        ...p,
+        ...(patch.name   !== undefined ? { name: patch.name } : {}),
+        ...(patch.type   !== undefined ? { type: patch.type, typeLabel: patch.type.charAt(0).toUpperCase() + patch.type.slice(1) } : {}),
+        ...(patch.status !== undefined ? { status: patch.status } : {}),
+      };
+    }));
+  }, []);
+
+  // Sprint 41.0 — filter + sort projects
+  const HEALTH_ORDER: Record<ProjectHealth, number> = { red: 0, amber: 1, green: 2 };
+  const ATTENTION_ORDER = new Map(attentionItems.map((i, idx) => [i.projectId, idx]));
+  const visibleProjects = projects
+    .filter((p) => {
+      if (!searchQuery) return true;
+      const q = searchQuery.toLowerCase();
+      return p.name.toLowerCase().includes(q) || p.path.toLowerCase().includes(q) || p.typeLabel.toLowerCase().includes(q);
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case 'name':
+          return a.name.localeCompare(b.name);
+        case 'health':
+          return (HEALTH_ORDER[a.health] ?? 2) - (HEALTH_ORDER[b.health] ?? 2);
+        case 'type':
+          return a.type.localeCompare(b.type);
+        case 'attention': {
+          const aIdx = ATTENTION_ORDER.get(a.id) ?? 9999;
+          const bIdx = ATTENTION_ORDER.get(b.id) ?? 9999;
+          return aIdx - bIdx;
+        }
+        case 'lastActivity':
+        default: {
+          const aMs = a.lastActivity ? new Date(a.lastActivity).getTime() : 0;
+          const bMs = b.lastActivity ? new Date(b.lastActivity).getTime() : 0;
+          return bMs - aMs;
+        }
+      }
+    });
+
   return (
     <div
       style={{
@@ -298,6 +365,74 @@ export function PortfolioDashboard() {
         </button>
       </div>
 
+      {/* Sprint 41.0 — Search + Sort toolbar */}
+      {projects.length > 0 && (
+        <div
+          style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            padding: '8px 20px',
+            borderBottom: '1px solid var(--shadow)',
+            flexShrink: 0,
+            background: 'var(--deep-space)',
+          }}
+        >
+          {/* Search input */}
+          <div style={{ position: 'relative', flex: 1, maxWidth: 280 }}>
+            <Search size={11} style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', color: 'var(--mist)', pointerEvents: 'none' }} />
+            <input
+              value={searchRaw}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              placeholder="Search projects…"
+              style={{
+                width: '100%', boxSizing: 'border-box',
+                background: 'var(--surface)', border: '1px solid var(--shadow)',
+                borderRadius: 5, padding: '5px 28px 5px 26px',
+                color: 'var(--frost)', fontSize: 11, outline: 'none', fontFamily: 'inherit',
+              }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--cyan)'; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--shadow)'; }}
+            />
+            {searchRaw && (
+              <button
+                onClick={() => { setSearchRaw(''); setSearchQuery(''); }}
+                style={{ position: 'absolute', right: 6, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--mist)', padding: 0, display: 'flex' }}
+                aria-label="Clear search"
+              >
+                <XIcon size={10} />
+              </button>
+            )}
+          </div>
+
+          {/* Sort dropdown */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0 }}>
+            <ArrowUpDown size={10} style={{ color: 'var(--mist)' }} />
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as SortKey)}
+              style={{
+                background: 'var(--surface)', border: '1px solid var(--shadow)',
+                borderRadius: 4, padding: '4px 6px',
+                color: 'var(--frost)', fontSize: 11, cursor: 'pointer',
+                outline: 'none', fontFamily: 'inherit',
+              }}
+            >
+              <option value="lastActivity">Last Activity</option>
+              <option value="name">Name A–Z</option>
+              <option value="health">Health</option>
+              <option value="type">Type</option>
+              <option value="attention">Attention</option>
+            </select>
+          </div>
+
+          {/* Result count when searching */}
+          {searchQuery && (
+            <span style={{ fontSize: 10, color: 'var(--mist)', flexShrink: 0 }}>
+              {visibleProjects.length} / {projects.length}
+            </span>
+          )}
+        </div>
+      )}
+
       {/* Scrollable body */}
       <div style={{ flex: 1, overflow: 'auto', padding: '20px' }}>
 
@@ -355,7 +490,7 @@ export function PortfolioDashboard() {
         {/* Grid */}
         {!loading && !error && projects.length > 0 && (
           <div style={gridStyle} data-portfolio-grid>
-            {projects.map((project) => (
+            {visibleProjects.map((project) => (
               <div key={project.id} data-project-id={project.id}>
                 <ProjectCard
                   project={project}
@@ -364,6 +499,11 @@ export function PortfolioDashboard() {
                 />
               </div>
             ))}
+            {visibleProjects.length === 0 && searchQuery && (
+              <div style={{ gridColumn: '1/-1', textAlign: 'center', color: 'var(--mist)', fontSize: 12, padding: '32px 0' }}>
+                No projects match &ldquo;{searchQuery}&rdquo;
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -374,6 +514,8 @@ export function PortfolioDashboard() {
         statusFull={detailStatusFull}
         onClose={handleClose}
         onRefresh={selectedProject ? () => { void handleRefresh(); } : undefined}
+        onRemove={handleRemove}
+        onProjectUpdate={handleProjectUpdate}
       />
 
       {/* Add existing project flow */}

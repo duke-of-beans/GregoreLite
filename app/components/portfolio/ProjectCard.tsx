@@ -12,9 +12,11 @@
  */
 
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { cardLift } from '@/lib/design/animations';
 import { formatRelativeTime } from '@/lib/voice/copy-templates';
+import { apiFetch } from '@/lib/api-client';
 import type { ProjectCard as ProjectCardData, ProjectHealth, ProjectType, AttentionSeverity } from '@/lib/portfolio/types';
 
 // ── Type badge colors ─────────────────────────────────────────────────────────
@@ -139,6 +141,37 @@ const ATTENTION_BORDER: Record<AttentionSeverity, string> = {
   low:    'rgba(96, 165, 250, 0.4)',
 };
 
+// ── MetricChip ────────────────────────────────────────────────────────────────
+
+interface MetricChipProps {
+  label: string;
+  color: string;
+}
+
+function MetricChip({ label, color }: MetricChipProps) {
+  return (
+    <span
+      style={{
+        display: 'inline-block',
+        padding: '1px 6px',
+        borderRadius: 3,
+        fontSize: 9,
+        fontWeight: 600,
+        fontFamily: 'monospace',
+        letterSpacing: '0.03em',
+        background: `${color}18`,
+        color,
+        border: `1px solid ${color}40`,
+        flexShrink: 0,
+      }}
+    >
+      {label}
+    </span>
+  );
+}
+
+// ── ProjectCard ───────────────────────────────────────────────────────────────
+
 interface ProjectCardProps {
   project: ProjectCardData;
   onSelect: (id: string) => void;
@@ -148,6 +181,30 @@ interface ProjectCardProps {
 
 export function ProjectCard({ project, onSelect, attentionSeverity }: ProjectCardProps) {
   const relTime = formatRelativeTime(project.lastActivity);
+  const [scanning, setScanning] = useState(false);
+
+  // Sprint 41.0 — staleness: amber if never scanned OR last scan > 24h ago
+  const isStale = project.lastScannedAt != null
+    ? (Date.now() - project.lastScannedAt) > 24 * 3600 * 1000
+    : true;
+  const notYetScanned = project.healthReason === 'Not yet scanned';
+
+  const handleScanNow = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (scanning) return;
+    setScanning(true);
+    try {
+      await apiFetch('/api/portfolio/scan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projectId: project.id }),
+      });
+    } catch { /* silent */ } finally {
+      setScanning(false);
+    }
+  };
+
+  const hasMetrics = project.version != null || project.testCount !== undefined || project.tscErrors !== undefined;
 
   const borderColor = attentionSeverity
     ? ATTENTION_BORDER[attentionSeverity]
@@ -201,16 +258,67 @@ export function ProjectCard({ project, onSelect, attentionSeverity }: ProjectCar
         />
       </div>
 
-      {/* Row 2: type badge + last activity */}
+      {/* Row 2: type badge + last activity + staleness dot */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'space-between' }}>
         <TypeBadge type={project.type} label={project.typeLabel} />
-        <span style={{ fontSize: 11, color: 'var(--mist)', flexShrink: 0 }}>
-          {relTime}
-        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0 }}>
+          {/* Staleness amber dot — shown when scanned but data is old */}
+          {isStale && !notYetScanned && project.lastScannedAt != null && (
+            <span
+              title="Scan data is over 24h old"
+              style={{
+                display: 'inline-block', width: 5, height: 5,
+                borderRadius: '50%', background: '#f59e0b',
+                boxShadow: '0 0 4px #f59e0b88', flexShrink: 0,
+              }}
+            />
+          )}
+          <span style={{ fontSize: 11, color: 'var(--mist)' }}>
+            {relTime}
+          </span>
+        </div>
       </div>
 
-      {/* Row 3: phase */}
-      {project.phase && (
+      {/* Row 3: metrics strip — version pill + test chip + tsc chip */}
+      {hasMetrics && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
+          {project.version != null && (
+            <MetricChip label={`v${project.version}`} color="var(--frost)" />
+          )}
+          {project.testCount !== undefined && (
+            <MetricChip
+              label={`${project.testPassing ?? 0}/${project.testCount} tests`}
+              color={(project.testPassing ?? 0) >= project.testCount ? '#22c55e' : '#ef4444'}
+            />
+          )}
+          {project.tscErrors !== undefined && (
+            <MetricChip
+              label={`tsc: ${project.tscErrors}`}
+              color={project.tscErrors === 0 ? '#22c55e' : '#ef4444'}
+            />
+          )}
+        </div>
+      )}
+
+      {/* "Not yet scanned" notice */}
+      {notYetScanned && (
+        <p style={{ fontSize: 11, color: 'var(--mist)', margin: 0 }}>
+          Not yet scanned —{' '}
+          <button
+            onClick={handleScanNow}
+            style={{
+              background: 'none', border: 'none', cursor: scanning ? 'not-allowed' : 'pointer',
+              color: 'var(--cyan)', fontSize: 11, padding: 0, textDecoration: 'underline',
+              fontFamily: 'inherit',
+            }}
+          >
+            {scanning ? 'Scanning…' : 'Scan now'}
+          </button>
+        </p>
+      )}
+
+      {/* Row 4: phase */}
+      {project.phase && !notYetScanned && (
         <p
           style={{
             fontSize: 11,
@@ -226,7 +334,7 @@ export function ProjectCard({ project, onSelect, attentionSeverity }: ProjectCar
         </p>
       )}
 
-      {/* Row 4: next action */}
+      {/* Row 5: next action */}
       {project.nextAction && (
         <p
           style={{

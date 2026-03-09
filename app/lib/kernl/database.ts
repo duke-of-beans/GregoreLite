@@ -582,6 +582,39 @@ function runMigrations(db: Database.Database): void {
   } catch {
     // Tables already exist — silently continue
   }
+
+  // Sprint 41.0 — Deduplication: remove duplicate paths (keep earliest rowid), then add unique index
+  try {
+    db.exec(`
+      DELETE FROM portfolio_projects
+      WHERE rowid NOT IN (
+        SELECT MIN(rowid) FROM portfolio_projects GROUP BY lower(path)
+      );
+    `);
+  } catch {
+    // Safe to ignore — empty table or no duplicates
+  }
+  try {
+    db.exec(`
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_portfolio_projects_path_unique
+        ON portfolio_projects(path);
+    `);
+  } catch {
+    // Index may already exist
+  }
+
+  // Sprint 41.0 — Project exclusions: paths permanently excluded from auto-scan
+  try {
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS portfolio_exclusions (
+        path        TEXT    PRIMARY KEY,
+        excluded_at INTEGER NOT NULL DEFAULT (unixepoch('now','subsec') * 1000),
+        reason      TEXT
+      );
+    `);
+  } catch {
+    // Table may already exist
+  }
 }
 
 export function closeDatabase(): void {

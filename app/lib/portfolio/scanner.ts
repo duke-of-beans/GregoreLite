@@ -480,9 +480,15 @@ export function scanSingleProject(projectPath: string): ProjectCard | null {
 
 export function scanAllProjects(): ProjectCard[] {
   const db = getDatabase();
-  const rows = db.prepare(
-    `SELECT id, name, path, type, status FROM portfolio_projects WHERE status != 'archived'`
-  ).all() as Array<{ id: string; name: string; path: string; type: ProjectType; status: ProjectStatus }>;
+  // Sprint 41.0 — exclude paths in portfolio_exclusions
+  const rows = db.prepare(`
+    SELECT p.id, p.name, p.path, p.type, p.status
+    FROM portfolio_projects p
+    WHERE p.status != 'archived'
+      AND NOT EXISTS (
+        SELECT 1 FROM portfolio_exclusions e WHERE lower(e.path) = lower(p.path)
+      )
+  `).all() as Array<{ id: string; name: string; path: string; type: ProjectType; status: ProjectStatus }>;
 
   const cards: ProjectCard[] = [];
 
@@ -535,6 +541,18 @@ export function seedFromWorkspaces(): void {
     VALUES (?, ?, ?, ?, ?, ?)
   `);
 
+  // Sprint 41.0 — existence + exclusion pre-checks
+  const checkExists   = db.prepare(`SELECT id FROM portfolio_projects WHERE lower(path) = lower(?)`);
+  let checkExcluded: ReturnType<typeof db.prepare> | null = null;
+  try {
+    checkExcluded = db.prepare(`SELECT 1 FROM portfolio_exclusions WHERE lower(path) = lower(?)`);
+  } catch { /* table may not exist on first boot — safe to skip */ }
+
+  // Normalize path: forward→backslash, strip trailing slashes
+  function normalizePath(p: string): string {
+    return p.replace(/\//g, '\\').replace(/[\\/]+$/, '');
+  }
+
   // Map WORKSPACES.yaml status to portfolio status
   function mapStatus(wsStatus: string): ProjectStatus {
     if (wsStatus === 'archived') return 'archived';
@@ -553,16 +571,12 @@ export function seedFromWorkspaces(): void {
   for (const [key, ws] of Object.entries(workspaces)) {
     if (ws.status === 'archived') continue; // Skip archived from WORKSPACES.yaml
     try {
-      // Normalize path: YAML uses forward slashes, convert to Windows backslashes
-      const normalizedPath = ws.path.replace(/\//g, '\\');
-      insert.run(
-        key,
-        ws.name,
-        normalizedPath,
-        mapType(ws.type),
-        mapStatus(ws.status),
-        now
-      );
+      const normalizedPath = normalizePath(ws.path);
+      // Sprint 41.0 — skip excluded paths
+      if (checkExcluded?.get(normalizedPath)) continue;
+      // Sprint 41.0 — skip paths already registered (case-insensitive)
+      if (checkExists.get(normalizedPath)) continue;
+      insert.run(key, ws.name, normalizedPath, mapType(ws.type), mapStatus(ws.status), now);
     } catch (err) {
       console.warn(`[portfolio/scanner] Failed to seed workspace ${key}:`, err);
     }
@@ -571,7 +585,11 @@ export function seedFromWorkspaces(): void {
   // Always register the explicit projects
   for (const p of ALWAYS_REGISTER) {
     try {
-      insert.run(p.id, p.name, p.path, p.type, 'active', now);
+      const normalizedPath = normalizePath(p.path);
+      // Sprint 41.0 — skip excluded / already-registered
+      if (checkExcluded?.get(normalizedPath)) continue;
+      if (checkExists.get(normalizedPath)) continue;
+      insert.run(p.id, p.name, normalizedPath, p.type, 'active', now);
     } catch (err) {
       console.warn(`[portfolio/scanner] Failed to seed always-register ${p.id}:`, err);
     }

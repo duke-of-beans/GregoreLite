@@ -1,1 +1,34 @@
-release: v1.1.1 patch -- UX overhaul, tour fix, settings modal, DB migration fix
+feat(portfolio): Sprint 41.0 — Projects & UX Polish
+
+Tasks 1 & 7 confirmed already shipped (Sprint 38/39).
+
+Task 2 — Deduplication
+- database.ts: Sprint 41.0 migration — DELETE duplicate rows (MIN rowid per lower(path)), CREATE UNIQUE INDEX on portfolio_projects(path)
+- portfolio/route.ts: lower(path) existence check before INSERT, path normalization (strip trailing slashes)
+- scanner.ts: normalizePath() helper, checkExists + checkExcluded prepared stmts in seedFromWorkspaces()
+
+Task 3 — Exclusions
+- database.ts: CREATE TABLE portfolio_exclusions (path PK, excluded_at, reason)
+- [id]/route.ts: DELETE handler with optional exclude+reason — inserts to exclusions then removes row
+- scanner.ts: scanAllProjects() skips paths present in portfolio_exclusions (NOT EXISTS subquery)
+
+Task 4 — Project management
+- [id]/route.ts: PATCH handler — dynamic SET clause for name/type/status fields
+- ProjectDetail.tsx: collapsible Edit section — name input, type dropdown, Save/Saved state, Remove with two-button confirmation (remove only vs remove + exclude)
+- PortfolioDashboard.tsx: search bar (150ms debounce) + sort dropdown (lastActivity/name/health/type/attention) + result count; handleRemove + handleProjectUpdate for optimistic state
+
+Task 5 — ProjectCard enhancements
+- MetricChip sub-component (monospace pill with color+border)
+- Metrics strip: version pill, test pass/fail chip, TSC errors chip — shown when scan data present
+- "Not yet scanned" notice + "Scan now" link (POST /api/portfolio/scan with projectId)
+- Amber staleness dot when last_scanned_at older than 24h
+
+Task 6 (scan/route.ts)
+- Added optional projectId body for targeted single-project rescan
+
+types.ts
+- Added ExclusionRecord, PatchProjectBody, DeleteProjectBody interfaces
+- Added lastScannedAt?: number | null to ProjectCard
+
+TSC gate: 0 errors (exit 0, 46s real compile)
+STATUS.md: updated before commit

@@ -60,3 +60,13 @@ src-tauri/.keys/
 test-output.txt
 test-cost.txt
 test_output.txt
+
+# Sidecar build artifacts — binary is rebuilt on every release, no need to track
+src-tauri/binaries/*.exe
+src-tauri/binaries/*.node
+
+# Tauri build logs
+tauri-build.log
+
+# Temp commit message file
+temp_commit_msg.txt

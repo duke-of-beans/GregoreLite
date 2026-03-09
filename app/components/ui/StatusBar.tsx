@@ -12,7 +12,7 @@ import { apiFetch } from '@/lib/api-client';
 
 
 import { useState, useEffect, useCallback } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useJobStore } from '@/lib/stores/job-store';
 import { useContextPanel } from '@/lib/context/context-provider';
 import { useGhostStore } from '@/lib/stores/ghost-store';
@@ -149,40 +149,58 @@ export function StatusBar() {
     window.dispatchEvent(new CustomEvent('greglite:open-settings', { detail: { section: 'memory' } }));
   };
 
-  // Collapsed: render a 20px tall bar with visible "▲  System Status" affordance
+  // Collapsed: 20px bar — left label (non-interactive) + right ChevronUp matching expanded ChevronDown position
   if (statusBarCollapsed) {
     return (
-      <button
+      <div
         onClick={toggleStatusBar}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggleStatusBar(); }}
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center',
+          justifyContent: 'space-between',
           width: '100%',
           height: 20,
           flexShrink: 0,
           cursor: 'pointer',
-          border: 'none',
-          borderTop: '1px solid rgba(0, 212, 255, 0.4)',
+          borderTop: '1px solid var(--shadow)',
           background: 'var(--deep-space)',
-          transition: 'background 0.15s ease, border-color 0.15s ease',
-          gap: 6,
-        }}
-        onMouseEnter={(e) => {
-          (e.currentTarget as HTMLButtonElement).style.background = 'var(--elevated)';
-          (e.currentTarget as HTMLButtonElement).style.borderTopColor = 'rgba(0, 212, 255, 0.7)';
-        }}
-        onMouseLeave={(e) => {
-          (e.currentTarget as HTMLButtonElement).style.background = 'var(--deep-space)';
-          (e.currentTarget as HTMLButtonElement).style.borderTopColor = 'rgba(0, 212, 255, 0.4)';
+          paddingLeft: 16,
+          paddingRight: 16,
+          boxSizing: 'border-box',
         }}
         aria-label={NAV.statusbar_expand}
         title={NAV.statusbar_expand}
       >
-        <span style={{ fontSize: 10, color: 'var(--mist)', letterSpacing: '0.06em', userSelect: 'none' }}>
-          ▲&nbsp;&nbsp;System Status
+        {/* Left: faint non-interactive label */}
+        <span
+          style={{
+            fontSize: 10,
+            color: 'var(--mist)',
+            letterSpacing: '0.06em',
+            userSelect: 'none',
+            pointerEvents: 'none',
+            opacity: 0.5,
+          }}
+        >
+          SYSTEM STATUS
         </span>
-      </button>
+
+        {/* Right: ChevronUp — same size/position as expanded ChevronDown */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+          }}
+        >
+          <ChevronUp
+            style={{ width: 12, height: 12, color: 'var(--mist)' }}
+          />
+        </div>
+      </div>
     );
   }
 
